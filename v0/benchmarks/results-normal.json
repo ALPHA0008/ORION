@@ -1,0 +1,69 @@
+{
+  "durability": "normal",
+  "rows": [
+    {
+      "n": 1300,
+      "build_ms": 2.4,
+      "append_p50": 0.0177,
+      "append_p95": 0.0417,
+      "append_p99": 0.0749,
+      "full_replay_p50": 1.8,
+      "snapshot_load_p50": 0.285,
+      "snapshot_load_p95": 0.451,
+      "snapshot_load_p99": 0.459,
+      "fork_p50_ms": 2.1,
+      "db_mb": 0.8,
+      "bytes_per_event": 595,
+      "hot_state_bytes": 8421,
+      "heap_mb": 8.2
+    },
+    {
+      "n": 10300,
+      "build_ms": 16.4,
+      "append_p50": 0.0164,
+      "append_p95": 0.0346,
+      "append_p99": 0.066,
+      "full_replay_p50": 12.3,
+      "snapshot_load_p50": 0.236,
+      "snapshot_load_p95": 0.267,
+      "snapshot_load_p99": 0.334,
+      "fork_p50_ms": 12.1,
+      "db_mb": 6.1,
+      "bytes_per_event": 594,
+      "hot_state_bytes": 8470,
+      "heap_mb": 51.5
+    },
+    {
+      "n": 100300,
+      "build_ms": 203.3,
+      "append_p50": 0.0139,
+      "append_p95": 0.0263,
+      "append_p99": 0.0421,
+      "full_replay_p50": 128.6,
+      "snapshot_load_p50": 0.235,
+      "snapshot_load_p95": 0.404,
+      "snapshot_load_p99": 0.423,
+      "fork_p50_ms": 154.1,
+      "db_mb": 59.8,
+      "bytes_per_event": 596,
+      "hot_state_bytes": 8519,
+      "heap_mb": 327.1
+    },
+    {
+      "n": 1000300,
+      "build_ms": 1969.7,
+      "append_p50": 0.0136,
+      "append_p95": 0.0254,
+      "append_p99": 0.0363,
+      "full_replay_p50": 1784.5,
+      "snapshot_load_p50": 0.237,
+      "snapshot_load_p95": 0.264,
+      "snapshot_load_p99": 0.426,
+      "fork_p50_ms": 1860.3,
+      "db_mb": 598.6,
+      "bytes_per_event": 598,
+      "hot_state_bytes": 8568,
+      "heap_mb": 877.5
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+=== qm ===
+c7caba56cf0e6c7bd4fa7c0236ae1250b0f631f5
+branch: main
+LAST: c7caba56cf0e6c7bd4fa7c0236ae1250b0f631f5 2026-08-25T14:38:07-07:00 Joshua France <francejoshuar1@gmail.com> Route Auto-posture tool-result quarantines through a HiLO release approval (#676)
+FIRST: 57b51916f479fd642b4c0c89fb07961fd3f862b4 2026-07-29T11:13:20-07:00 Regan Bell <reganbell@gmail.com> Fresh repo history
+tags: 4 latest: v0.1.5
+commits: 176
+status: 0 dirty files
+
+=== hermes-agent ===
+d62a05e94c7478cc8043465b4345ff69f8fcb97f
+branch: main
+LAST: d62a05e94c7478cc8043465b4345ff69f8fcb97f 2026-08-26T16:28:07+05:30 kshitijk4poor <82637225+kshitijk4poor@users.noreply.github.com> fix(checkpoints): surface skipped_oversize to users and stop misreporting failed deletes as restored
+FIRST: 21d80ca68346dfdb8d3556015a723a9217f8566f 2025-07-22T18:32:44-07:00 Teknium <127238744+teknium1@users.noreply.github.com> initital commit
+tags: 35 latest: v2026.8.19
+commits: 25451
+status: 0 dirty files
+
+=== ruflo ===
+e21aa352fdc80fd2d3cc4e83404a76a18d118b96
+branch: main
+LAST: e21aa352fdc80fd2d3cc4e83404a76a18d118b96 2026-08-24T15:45:21-04:00 ruv <ruv@ruv.net> chore(release): 3.38.19 -> 3.38.20
+FIRST: 7c1f9402d70e7af56c01a879073cbac92564dc4e 2025-06-02T17:24:20-04:00 rUv <ruv@ruv.net> Initial commit
+tags: 1635 latest: v3.38.20
+commits: 7396
+status: 0 dirty files
+

@@ -1,0 +1,313 @@
+{
+  "label": "lease/concurrency",
+  "pass": 51,
+  "fail": 0,
+  "results": [
+    {
+      "group": "I1 worker A claims; worker B cannot claim the same run",
+      "test": "A got the lease",
+      "pass": true,
+      "detail": "{\"runId\":\"run_6b08d10c97\",\"leaseToken\":\"b47de7eb2185ccd8\"}"
+    },
+    {
+      "group": "I1 worker A claims; worker B cannot claim the same run",
+      "test": "B got nothing (no other runnable run)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I1 worker A claims; worker B cannot claim the same run",
+      "test": "A holds a valid lease",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I1 worker A claims; worker B cannot claim the same run",
+      "test": "B does not hold the lease",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I1/I5 lease expiry then reclaim by B",
+      "test": "B blocked while A's lease is live",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I1/I5 lease expiry then reclaim by B",
+      "test": "B reclaims after expiry",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I1/I5 lease expiry then reclaim by B",
+      "test": "A no longer holds the lease",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I1/I5 lease expiry then reclaim by B",
+      "test": "B holds the lease",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I1/I5 lease expiry then reclaim by B",
+      "test": "lease tokens differ",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I4 stale worker (A) cannot write after losing the lease — FENCING",
+      "test": "A's renew is rejected after losing the lease",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I4 stale worker (A) cannot write after losing the lease — FENCING",
+      "test": "A cannot terminalize the run it no longer owns",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I4 stale worker (A) cannot write after losing the lease — FENCING",
+      "test": "run is still running under B",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I4 stale worker (A) cannot write after losing the lease — FENCING",
+      "test": "B still holds the lease after A's attempts",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I4 stale worker (A) cannot write after losing the lease — FENCING",
+      "test": "B (the real owner) can terminalize",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I3 no run is terminalized twice",
+      "test": "first terminalization succeeds",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I3 no run is terminalized twice",
+      "test": "second terminalization is refused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I3 no run is terminalized twice",
+      "test": "status remains completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I3 no run is terminalized twice",
+      "test": "a completed run is not claimable",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "A renews near expiration and keeps the lease",
+      "test": "renew succeeds before expiry",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "A renews near expiration and keeps the lease",
+      "test": "lease still held after renewal window",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "A renews near expiration and keeps the lease",
+      "test": "B still cannot claim",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "worker dies DURING renewal (renewal never lands)",
+      "test": "lease is expired but run still marked running",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "worker dies DURING renewal (renewal never lands)",
+      "test": "reaper requeues exactly one run",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "worker dies DURING renewal (renewal never lands)",
+      "test": "run returned to pending",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "worker dies DURING renewal (renewal never lands)",
+      "test": "lease fields cleared",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "worker dies DURING renewal (renewal never lands)",
+      "test": "lease loss is recorded in the log",
+      "pass": true,
+      "detail": "{\"reason\":\"lease_expired\",\"attempts\":1,\"reaper\":\"reaper\"}"
+    },
+    {
+      "group": "worker dies IMMEDIATELY after claim (no work done)",
+      "test": "B can claim after the reaper ran",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "worker dies IMMEDIATELY after claim (no work done)",
+      "test": "attempts incremented twice (A then B)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I5 two reapers race — exactly one acts",
+      "test": "first reaper requeues all 20",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I5 two reapers race — exactly one acts",
+      "test": "second reaper requeues none",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I5 two reapers race — exactly one acts",
+      "test": "no run got two lease_lost events",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I5 two reapers race — exactly one acts",
+      "test": "all runs are pending exactly once",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I1/I2 multi-PROCESS claim storm: N processes, M runs, no double-claim, no loss",
+      "test": "all claim workers exited 0",
+      "pass": true,
+      "detail": "0,0,0,0,0,0"
+    },
+    {
+      "group": "I1/I2 multi-PROCESS claim storm: N processes, M runs, no double-claim, no loss",
+      "test": "every run was claimed at least once",
+      "pass": true,
+      "detail": "30/30"
+    },
+    {
+      "group": "I1/I2 multi-PROCESS claim storm: N processes, M runs, no double-claim, no loss",
+      "test": "no run was claimed twice concurrently",
+      "pass": true,
+      "detail": "30 claims for 30 runs"
+    },
+    {
+      "group": "I1/I2 multi-PROCESS claim storm: N processes, M runs, no double-claim, no loss",
+      "test": "I2 no run was lost — all reached a terminal state",
+      "pass": true,
+      "detail": "30/30 completed"
+    },
+    {
+      "group": "I1/I2 multi-PROCESS claim storm: N processes, M runs, no double-claim, no loss",
+      "test": "I3 no run completed twice",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "I1/I2 multi-PROCESS claim storm: N processes, M runs, no double-claim, no loss",
+      "test": "every run log is gapless",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "randomized soak: claim/renew/expire/reap interleavings",
+      "test": "I1 no concurrent double-ownership observed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "randomized soak: claim/renew/expire/reap interleavings",
+      "test": "I3 no run terminalized twice under randomized timing",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "randomized soak: claim/renew/expire/reap interleavings",
+      "test": "I2 no run stranded beyond reaper reach",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "human request expiry parks the run rather than losing it",
+      "test": "one request expired",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "human request expiry parks the run rather than losing it",
+      "test": "run parked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "human request expiry parks the run rather than losing it",
+      "test": "timeout recorded in the log",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "human request expiry parks the run rather than losing it",
+      "test": "projection shows no open requests",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "REGRESSION: a paused run can be claimed by an explicit resume",
+      "test": "run is paused with no lease",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "REGRESSION: a paused run can be claimed by an explicit resume",
+      "test": "a targeted claim CAN take a paused run (this is resume)",
+      "pass": true,
+      "detail": "claimed"
+    },
+    {
+      "group": "REGRESSION: a paused run can be claimed by an explicit resume",
+      "test": "the resuming worker holds a valid lease",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "REGRESSION: a paused run can be claimed by an explicit resume",
+      "test": "status returns to running",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "a paused run is NOT picked up by the general queue scan while it waits on a human",
+      "test": "an unanswered paused run is not swept up by a generic worker",
+      "pass": true,
+      "detail": "correctly skipped"
+    },
+    {
+      "group": "a paused run is NOT picked up by the general queue scan while it waits on a human",
+      "test": "once the human answers, the general scan CAN pick it up",
+      "pass": true,
+      "detail": "run_aeb36cdd25"
+    }
+  ]
+}

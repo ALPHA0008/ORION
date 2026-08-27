@@ -1,0 +1,419 @@
+// The worker loop. Stateless: everything it knows comes from folding the log.
+
+import { project, stableDigest } from '../../core/projection/index.mjs';
+import { decideRecovery, Decision as RecDecision } from '../../core/recovery/index.mjs';
+import { Decision as AuthDecision, digestArgs } from '../../auth/default/index.mjs';
+import { modelRespondedPayload } from '../../core/event/index.mjs';
+import { toolDefinitions, validateArgs } from '../tools/index.mjs';
+import { LeaseLostError, uid } from '../../core/run/store.mjs';
+
+export const ExitReason = Object.freeze({
+  MODEL_FINISHED: 'model_finished',
+  NO_PROGRESS: 'no_progress',
+  MAX_TURNS: 'max_turns',              // safety ceiling, not an explanation
+  BUDGET_EXHAUSTED: 'budget_exhausted',
+  AWAITING_HUMAN: 'awaiting_human',
+  AMBIGUOUS_RECOVERY: 'ambiguous_tool_recovery',
+  LEASE_LOST: 'lease_lost',
+  MODEL_FAILED: 'model_failed',
+  MODEL_UNAVAILABLE: 'model_unavailable',
+});
+
+export class Worker {
+  #leaseTokens = new Map();
+
+  constructor(store, {
+    sandbox, model, tools, authorize,
+    workerId = uid('w'),
+    leaseMs = 30_000,
+    snapshotEvery = 50,
+    maxTurns = 40,
+    maxRepeatedCalls = 3,          // ADR-006
+    maxTurnsWithoutProgress = 5,   // ADR-006
+    maxConsecutiveModelFailures = 3,
+    budget = { tokens: 500_000, tool_calls: 200, cost_usd: 5 },
+    systemPrompt = DEFAULT_SYSTEM,
+    hooks = {},                    // { beforeAppend(marker, ctx) } — crash injection in tests
+  } = {}) {
+    Object.assign(this, { store, sandbox, model, tools, authorize, workerId, leaseMs,
+      snapshotEvery, maxTurns, maxRepeatedCalls, maxTurnsWithoutProgress,
+      maxConsecutiveModelFailures, budget, systemPrompt, hooks });
+  }
+
+  #hook(marker, ctx = {}) { this.hooks.beforeAppend?.(marker, ctx); }
+
+  #append(runId, type, payload, opts = {}) {
+    const leaseToken = opts.leaseToken ?? this.#leaseTokens.get(runId);
+    try {
+      return this.store.append(runId, type, payload,
+        leaseToken === undefined ? opts : { ...opts, leaseToken });
+    } catch (err) {
+      if (err instanceof LeaseLostError) return null;
+      throw err;
+    }
+  }
+
+  /** Fenced write: if we lost the lease, stop rather than clobber the new owner. */
+  #ensureLease(runId, leaseToken) {
+    return this.store.holdsLease(runId, leaseToken);
+  }
+
+  /**
+   * Run one worker session. Assumes the caller already holds the lease.
+   * Returns { status, reason, ... }.
+   */
+  async run(runId, leaseToken, { input = null } = {}) {
+    this.#leaseTokens.set(runId, leaseToken);
+    try {
+      return await this.#runLoop(runId, leaseToken, { input });
+    } finally {
+      if (this.#leaseTokens.get(runId) === leaseToken) this.#leaseTokens.delete(runId);
+    }
+  }
+
+  async #runLoop(runId, leaseToken, { input = null } = {}) {
+    const S = this.store;
+    if (input !== null && this.#append(runId, 'turn.started', { input }) === null)
+      return this.#leaseLost();
+
+    // ---- 1. reconcile orphans (ADR-002/003) before doing anything new ----
+    const rec = await this.#reconcile(runId, leaseToken);
+    if (rec) return rec;
+
+    // ---- 2. consume any human answers that arrived while we were away ----
+    const hr = this.#consumeHumanAnswers(runId, leaseToken);
+    if (hr) return hr;
+
+    // ---- 3. main loop ----
+    for (let turn = 0; turn < this.maxTurns; turn++) {
+      if (!this.store.renew(runId, leaseToken, { leaseMs: this.leaseMs }))
+        return this.#stop(runId, leaseToken, 'failed', ExitReason.LEASE_LOST);
+
+      let state = project(S, runId);
+
+      // budget
+      const over = this.#budgetExceeded(state);
+      if (over) return this.#stop(runId, leaseToken, 'failed', ExitReason.BUDGET_EXHAUSTED, { detail: over });
+
+      // no-progress (ADR-006) — checked BEFORE spending another model call
+      const np = this.#noProgress(state);
+      if (np) return this.#stop(runId, leaseToken, 'failed', ExitReason.NO_PROGRESS, { detail: np });
+
+      // ---- model ----
+      const az = this.authorize({ kind: 'model', name: this.model.name, args_digest: '' },
+        this.#ctx(runId, state));
+      if (az.decision === AuthDecision.DENY)
+        return this.#stop(runId, leaseToken, 'failed', 'model_denied', { detail: az.reason });
+
+      if (this.#append(runId, 'model.requested', { model: this.model.name, messages: state.recent_messages.length }) === null)
+        return this.#leaseLost();
+      this.#hook('after:model.requested', { runId });
+
+      let resp;
+      try {
+        resp = await this.model.invoke({
+          messages: this.#buildMessages(state),
+          tools: toolDefinitions(this.tools),
+        });
+      } catch (err) {
+        const recorded = this.#append(runId, 'model.failed', {
+          error: String(err?.message ?? err), kind: err?.kind ?? 'unknown', retryable: !!err?.retryable });
+        if (recorded === null) return this.#leaseLost();
+        if (err?.retryable) {
+          const fails = project(S, runId).progress.consecutive_model_failures;
+          if (fails >= this.maxConsecutiveModelFailures)
+            return this.#stop(runId, leaseToken, 'failed', ExitReason.MODEL_UNAVAILABLE,
+              { detail: `${fails} consecutive model failures (${err.kind ?? 'error'}): ${String(err?.message ?? err).slice(0, 120)}` });
+          this.#append(runId, 'degraded', { subsystem: 'model', reason: `retrying after ${err.kind ?? 'error'}` });
+          continue;                       // the client already backed off internally
+        }
+        return this.#stop(runId, leaseToken, 'failed', ExitReason.MODEL_FAILED, { detail: String(err?.message ?? err) });
+      }
+
+      // The model client retries transient provider faults INTERNALLY. Without the next block a
+      // response that took 4 attempts is indistinguishable in the log from one that took 1 —
+      // a silent degradation. Found by fault-injecting in front of a real model (Step 7).
+      const attempts = Number(resp?.ext?.attempts ?? 1);
+      if (attempts > 1 &&
+          this.#append(runId, 'degraded', { subsystem: 'model', attempts,
+            reason: `provider succeeded only after ${attempts} attempts (transient faults absorbed by the client)` }) === null)
+        return this.#leaseLost();
+      // A provider shim rewriting the response is also a departure from the normal path.
+      if (resp?.ext?.shimmed &&
+          this.#append(runId, 'degraded', { subsystem: 'model_adapter',
+            reason: `provider response required a shim: ${resp.ext.shimmed}` }) === null)
+        return this.#leaseLost();
+
+      if (this.#append(runId, 'model.responded', modelRespondedPayload(resp)) === null)
+        return this.#leaseLost();
+      this.#hook('after:model.responded', { runId });
+
+      if (resp.finish || !resp.tool_calls?.length) {
+        return this.#stop(runId, leaseToken, 'completed', ExitReason.MODEL_FINISHED, { result: resp.content ?? '' });
+      }
+
+      // ---- tools ----
+      for (const tc of resp.tool_calls) {
+        const paused = await this.#runToolCall(runId, leaseToken, tc);
+        if (paused) return paused;
+      }
+
+      this.#maybeSnapshot(runId);
+    }
+
+    return this.#stop(runId, leaseToken, 'failed', ExitReason.MAX_TURNS);
+  }
+
+  // ------------------------------------------------------------------ tools
+  async #runToolCall(runId, leaseToken, tc) {
+    const S = this.store;
+    const tcid = tc.id ?? uid('tc');
+    const tool = this.tools[tc.name];
+
+    if (!this.#ensureLease(runId, leaseToken)) return this.#leaseLost();
+
+    this.#append(runId, 'tool.requested', { tool_call_id: tcid, name: tc.name, args: tc.args });
+    this.#hook('after:tool.requested', { runId, tcid });
+
+    if (!tool) {
+      this.#append(runId, 'tool.failed', { tool_call_id: tcid, name: tc.name,
+        error: `unknown tool '${tc.name}'. Available: ${Object.keys(this.tools).join(', ')}` });
+      return null;
+    }
+    if (tc.argError) {
+      this.#append(runId, 'tool.failed', { tool_call_id: tcid, name: tc.name, error: tc.argError });
+      return null;
+    }
+    const errs = validateArgs(tool, tc.args);
+    if (errs.length) {
+      this.#append(runId, 'tool.failed', { tool_call_id: tcid, name: tc.name,
+        error: `invalid arguments: ${errs.join('; ')}` });
+      return null;
+    }
+
+    const recovery = tool.recovery?.(tc.args) ?? { class: 'UNSAFE' };
+    const action = { kind: 'tool', name: tc.name, args_digest: digestArgs(tc.args),
+                     effects: tool.effects, recovery_class: recovery.class,
+                     command: tc.name === 'bash' ? tc.args?.cmd : undefined,
+                     prompt: tc.args?.prompt, options: tc.args?.options };
+    const d = tool.alwaysEscalate
+      ? { decision: AuthDecision.ESCALATE, prompt: tc.args?.prompt ?? 'Input needed', options: tc.args?.options }
+      : this.authorize(action, this.#ctx(runId, project(S, runId)));
+
+    if (d.decision === AuthDecision.DENY) {
+      this.#append(runId, 'tool.denied', { tool_call_id: tcid, name: tc.name, reason: d.reason });
+      return null;
+    }
+
+    if (d.decision === AuthDecision.ESCALATE) {
+      const rid = S.createHumanRequest(runId, d.prompt ?? `Allow ${tc.name}?`, { options: d.options });
+      this.#append(runId, 'tool.escalated', { tool_call_id: tcid, name: tc.name, args: tc.args });
+      this.#hook('before:human.requested', { runId });
+      this.#append(runId, 'human.requested', { request_id: rid, tool_call_id: tcid, prompt: d.prompt });
+      this.#hook('after:human.requested', { runId });
+      return this.#pause(runId, leaseToken, ExitReason.AWAITING_HUMAN, { request_id: rid });
+    }
+
+    this.#append(runId, 'tool.authorized', { tool_call_id: tcid, name: tc.name });
+    this.#hook('after:tool.authorized', { runId, tcid });
+    this.#append(runId, 'tool.started', { tool_call_id: tcid, name: tc.name, args: tc.args });
+    this.#hook('after:tool.started', { runId, tcid });
+
+    // Last safe point before an external effect. Expiry after this check is an
+    // unavoidable in-flight boundary; recovery handles the resulting orphan.
+    if (!this.#ensureLease(runId, leaseToken)) return this.#leaseLost();
+    this.#hook('before:tool.effect', { runId, tcid });
+
+    let out = null, failed = null;
+    try { out = await tool.run(tc.args); } catch (e) { failed = e; }
+    this.#hook('after:tool.effect', { runId, tcid });    // <- the crash window
+
+    const recorded = failed
+      ? this.#append(runId, 'tool.failed', { tool_call_id: tcid, name: tc.name, error: String(failed.message ?? failed) })
+      : this.#append(runId, 'tool.succeeded', { tool_call_id: tcid, name: tc.name, result: String(out ?? '') });
+    if (recorded === null) return this.#leaseLost();
+    this.#hook('after:tool.succeeded', { runId, tcid });
+    return null;
+  }
+
+  // ------------------------------------------------------------- recovery
+  async #reconcile(runId, leaseToken) {
+    const S = this.store;
+    let state = project(S, runId);
+    for (const [tcid, pend] of Object.entries(state.pending_tool_calls)) {
+      if (pend.escalated) continue;                       // waiting on a human, not orphaned
+      const tool = this.tools[pend.name];
+      const recovery = tool?.recovery?.(pend.args) ?? { class: 'UNSAFE' };
+      const decision = decideRecovery(recovery);
+
+      if (!this.#ensureLease(runId, leaseToken)) return this.#leaseLost();
+      if (this.#append(runId, 'tool.recovery_decided', {
+        tool_call_id: tcid, name: pend.name, class: decision.class,
+        decision: decision.decision, verified: decision.verified, reason: decision.reason }) === null) return this.#leaseLost();
+      if (this.#append(runId, 'degraded', { subsystem: 'recovery',
+        reason: `orphaned ${pend.name} (${decision.class}) -> ${decision.decision}` }) === null) return this.#leaseLost();
+
+      if (decision.decision === RecDecision.SKIP) {
+        if (this.#append(runId, 'tool.succeeded', { tool_call_id: tcid, name: pend.name,
+          result: '[recovered] effect verified as already applied' }) === null) return this.#leaseLost();
+      } else if (decision.decision === RecDecision.REISSUE) {
+        if (!this.#ensureLease(runId, leaseToken)) return this.#leaseLost();
+        try {
+          const r = await tool.run(pend.args);
+          if (this.#append(runId, 'tool.succeeded', { tool_call_id: tcid, name: pend.name, result: String(r ?? '') }) === null) return this.#leaseLost();
+        } catch (e) {
+          if (this.#append(runId, 'tool.failed', { tool_call_id: tcid, name: pend.name, error: String(e.message ?? e) }) === null) return this.#leaseLost();
+        }
+      } else {
+        const rid = S.createHumanRequest(runId,
+          `After a crash, '${pend.name}' may or may not have run. ${decision.reason}. Re-run it?`,
+          { options: ['approve', 'skip'] });
+        if (this.#append(runId, 'human.requested', { request_id: rid, tool_call_id: tcid, prompt: 'ambiguous recovery' }) === null) return this.#leaseLost();
+        return this.#pause(runId, leaseToken, ExitReason.AMBIGUOUS_RECOVERY, { request_id: rid });
+      }
+      state = project(S, runId);
+    }
+    return null;
+  }
+
+  #consumeHumanAnswers(runId, leaseToken) {
+    const S = this.store;
+    let state = project(S, runId);
+    for (const hr of S.humanRequests(runId, 'answered')) {
+      if (!this.#ensureLease(runId, leaseToken)) return this.#leaseLost();
+      if (!state.open_human_requests[hr.id]) { S.consumeHumanRequest(hr.id); continue; }
+      const tcid = state.open_human_requests[hr.id].tool_call_id;
+      if (this.#append(runId, 'human.responded', { request_id: hr.id, response: hr.response, tool_call_id: tcid }) === null) return this.#leaseLost();
+      if (tcid) {
+        const pend = state.pending_tool_calls[tcid];
+        if (hr.response === 'approve' && pend) {
+          if (!this.#ensureLease(runId, leaseToken)) return this.#leaseLost();
+          this.#append(runId, 'tool.started', { tool_call_id: tcid, name: pend.name, args: pend.args });
+          try {
+            const r = this.tools[pend.name].run(pend.args);
+            if (this.#append(runId, 'tool.succeeded', { tool_call_id: tcid, name: pend.name, result: String(r ?? '') }) === null) return this.#leaseLost();
+          } catch (e) {
+            if (this.#append(runId, 'tool.failed', { tool_call_id: tcid, name: pend.name, error: String(e.message ?? e) }) === null) return this.#leaseLost();
+          }
+        } else {
+          this.#append(runId, 'tool.denied', { tool_call_id: tcid, name: pend?.name ?? 'unknown',
+            reason: `human responded: ${hr.response}` });
+        }
+      }
+      S.consumeHumanRequest(hr.id);
+      state = project(S, runId);
+    }
+    if (S.run(runId)?.status === 'paused') {
+      S.setStatus(runId, 'running', { force: true });
+    if (this.#append(runId, 'run.resumed', {}) === null) return this.#leaseLost();
+    }
+    return null;
+  }
+
+  // ------------------------------------------------------------ heuristics
+  #noProgress(state) {
+    if (state.progress.repeat_count > this.maxRepeatedCalls)
+      return `identical tool request repeated ${state.progress.repeat_count} times`;
+    if (state.progress.turns_without_progress > this.maxTurnsWithoutProgress)
+      return `${state.progress.turns_without_progress} turns with no successful tool call`;
+    return null;
+  }
+
+  #budgetExceeded(state) {
+    const b = this.budget ?? {};
+    if (b.tokens && state.budget.tokens > b.tokens) return `tokens ${state.budget.tokens} > ${b.tokens}`;
+    if (b.tool_calls && state.budget.tool_calls > b.tool_calls) return `tool_calls ${state.budget.tool_calls} > ${b.tool_calls}`;
+    if (b.cost_usd && state.budget.cost_usd > b.cost_usd) return `cost ${state.budget.cost_usd} > ${b.cost_usd}`;
+    return null;
+  }
+
+  #ctx(runId, state) {
+    return { principal: 'local', scope: this.store.run(runId)?.scope ?? 'personal:local',
+             run_id: runId, posture: null, environment: 'local',
+             budget_remaining: {
+               tokens: (this.budget?.tokens ?? Infinity) - state.budget.tokens,
+               tool_calls: (this.budget?.tool_calls ?? Infinity) - state.budget.tool_calls,
+               cost_usd: (this.budget?.cost_usd ?? Infinity) - state.budget.cost_usd } };
+  }
+
+  /** Build the provider message array from the BOUNDED projection (ADR-001). */
+  #buildMessages(state) {
+    const msgs = [{ role: 'system', content: this.systemPrompt }];
+    if (state.dropped_message_count > 0)
+      msgs.push({ role: 'system',
+        content: `[${state.dropped_message_count} earlier messages are not shown. They remain in the run history and can be retrieved.]` });
+    for (const m of state.recent_messages) {
+      if (m.role === 'tool')
+        msgs.push({ role: 'tool', tool_call_id: m.tool_call_id, content: String(m.content ?? '') });
+      else if (m.role === 'assistant')
+        msgs.push({ role: 'assistant', content: m.content ?? '',
+          ...(m.tool_calls?.length ? { tool_calls: m.tool_calls.map(t => ({
+            id: t.id, type: 'function',
+            function: { name: t.name, arguments: JSON.stringify(t.args ?? {}) } })) } : {}) });
+      else msgs.push({ role: m.role, content: String(m.content ?? '') });
+    }
+    return repairOrphans(msgs);
+  }
+
+  // ---------------------------------------------------------------- exits
+  #stop(runId, leaseToken, status, reason, extra = {}) {
+    this.#hook('before:terminal', { runId });
+    const type = status === 'completed' ? 'run.completed' : 'run.failed';
+    if (!this.#ensureLease(runId, leaseToken)) return this.#leaseLost();
+    const seq = this.store.appendStatus(runId, type, { reason, ...extra }, status,
+      { leaseToken, releaseLease: true });
+    if (!seq) return this.#leaseLost();
+    this.#maybeSnapshot(runId, true);
+    return { status, reason, ...extra };
+  }
+  #pause(runId, leaseToken, reason, extra = {}) {
+    if (!this.#ensureLease(runId, leaseToken)) return this.#leaseLost();
+    const seq = this.store.appendStatus(runId, 'run.paused', { reason, ...extra }, 'paused',
+      { leaseToken, releaseLease: true });  // lease RELEASED
+    if (!seq) return this.#leaseLost();
+    this.#maybeSnapshot(runId, true);
+    return { status: 'paused', reason, ...extra };
+  }
+  #leaseLost() { return { status: 'failed', reason: ExitReason.LEASE_LOST }; }
+  #maybeSnapshot(runId, force = false) {
+    const seq = this.store.lastSeq(runId);
+    if (force || seq % this.snapshotEvery < 8) {
+      this.store.putSnapshot(runId, seq, project(this.store, runId));
+    }
+  }
+}
+
+/**
+ * Provider contract repair (Hermes L-04): every assistant tool_call must have a matching
+ * tool message, or the next request is rejected by the provider.
+ */
+export function repairOrphans(msgs) {
+  const out = [];
+  for (let i = 0; i < msgs.length; i++) {
+    const m = msgs[i];
+    out.push(m);
+    if (m.role === 'assistant' && m.tool_calls?.length) {
+      const answered = new Set();
+      for (let j = i + 1; j < msgs.length && msgs[j].role === 'tool'; j++) answered.add(msgs[j].tool_call_id);
+      for (const tc of m.tool_calls)
+        if (!answered.has(tc.id))
+          out.push({ role: 'tool', tool_call_id: tc.id, content: '[no result recorded]' });
+    }
+  }
+  // drop leading orphan tool messages (window may have cut their assistant turn)
+  while (out.length && out[0].role === 'tool') out.shift();
+  const firstNonSystem = out.findIndex(m => m.role !== 'system');
+  if (firstNonSystem > 0) {
+    const head = out.slice(0, firstNonSystem);
+    let rest = out.slice(firstNonSystem);
+    while (rest.length && rest[0].role === 'tool') rest.shift();
+    return [...head, ...rest];
+  }
+  return out;
+}
+
+export const DEFAULT_SYSTEM =
+`You are a coding agent working inside a sandboxed workspace.
+Use the provided tools to inspect and modify files. Prefer 'edit' over 'write' when changing
+part of a file. When the task is complete, reply with a short summary and no tool calls.
+If a tool fails, read the error and adapt — do not repeat the identical call.`;

@@ -1,0 +1,271 @@
+{
+  "label": "replay semantics",
+  "pass": 44,
+  "fail": 0,
+  "results": [
+    {
+      "group": "setup: original run against a nondeterministic provider",
+      "test": "original completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "setup: original run against a nondeterministic provider",
+      "test": "provider was really called over HTTP",
+      "pass": true,
+      "detail": "5 HTTP calls"
+    },
+    {
+      "group": "setup: original run against a nondeterministic provider",
+      "test": "provider output carries a nonce (is nondeterministic)",
+      "pass": true,
+      "detail": "Done: created a.txt and b.txt, bumped VALUE to 20. [nonce 738a78d5]"
+    },
+    {
+      "group": "REPLAY — reconstruct history, make NO model calls",
+      "test": "kind is replay",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "REPLAY — reconstruct history, make NO model calls",
+      "test": "replay made ZERO model calls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "REPLAY — reconstruct history, make NO model calls",
+      "test": "replay reports model_calls_made = 0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "REPLAY — reconstruct history, make NO model calls",
+      "test": "replay is byte-identical across repeats",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "REPLAY — reconstruct history, make NO model calls",
+      "test": "replay reproduces the ORIGINAL nondeterministic content exactly",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "REPLAY — reconstruct history, make NO model calls",
+      "test": "replay is flagged deterministic",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "REPLAY — reconstruct history, make NO model calls",
+      "test": "snapshot-assisted projection == full replay",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "REPLAY at a point in time",
+      "test": "replay stops at the requested seq",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "REPLAY at a point in time",
+      "test": "mid-run state is not terminal",
+      "pass": true,
+      "detail": "running"
+    },
+    {
+      "group": "REPLAY at a point in time",
+      "test": "mid-run has fewer messages than the end",
+      "pass": true,
+      "detail": "5 < 10"
+    },
+    {
+      "group": "REPLAY at a point in time",
+      "test": "point-in-time replay is repeatable",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "FORK — new run seeded with history, NEW future",
+      "test": "found a fork point (before the edit)",
+      "pass": true,
+      "detail": "23"
+    },
+    {
+      "group": "FORK — new run seeded with history, NEW future",
+      "test": "kind is fork",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "FORK — new run seeded with history, NEW future",
+      "test": "fork itself makes no model calls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "FORK — new run seeded with history, NEW future",
+      "test": "provenance: parent recorded",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "FORK — new run seeded with history, NEW future",
+      "test": "provenance: fork point recorded",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "FORK — new run seeded with history, NEW future",
+      "test": "inherited history matches the source up to the fork point",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "FORK — new run seeded with history, NEW future",
+      "test": "fork has a visible seam event",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "FORK — new run seeded with history, NEW future",
+      "test": "source run is unchanged",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "FORK — new run seeded with history, NEW future",
+      "test": "a workspace checkpoint exists at/before the fork point",
+      "pass": true,
+      "detail": "seq 22"
+    },
+    {
+      "group": "FORK — new run seeded with history, NEW future",
+      "test": "fork DID make new model calls",
+      "pass": true,
+      "detail": "3 new calls"
+    },
+    {
+      "group": "FORK — new run seeded with history, NEW future",
+      "test": "fork reached a terminal state",
+      "pass": true,
+      "detail": "failed"
+    },
+    {
+      "group": "FORK — new run seeded with history, NEW future",
+      "test": "fork diverged from the original",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "FORK — new run seeded with history, NEW future",
+      "test": "divergence is visible in the fork log",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "FORK — new run seeded with history, NEW future",
+      "test": "original filesystem untouched by the fork",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "FORK — new run seeded with history, NEW future",
+      "test": "fork filesystem took the other path",
+      "pass": true,
+      "detail": "\"beta\\nVALUE=2\""
+    },
+    {
+      "group": "FORK — new run seeded with history, NEW future",
+      "test": "original run STILL replays identically after being forked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "RERUN — fresh execution, shares nothing but the task",
+      "test": "kind is rerun",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "RERUN — fresh execution, shares nothing but the task",
+      "test": "rerun inherits the task text",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "RERUN — fresh execution, shares nothing but the task",
+      "test": "rerun starts with no inherited history",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "RERUN — fresh execution, shares nothing but the task",
+      "test": "rerun has no parent link",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "RERUN — fresh execution, shares nothing but the task",
+      "test": "rerun made new model calls",
+      "pass": true,
+      "detail": "5"
+    },
+    {
+      "group": "RERUN — fresh execution, shares nothing but the task",
+      "test": "rerun completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "RERUN — fresh execution, shares nothing but the task",
+      "test": "rerun content DIFFERS from the original (nondeterminism is real)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "RERUN — fresh execution, shares nothing but the task",
+      "test": "but rerun reached the same WORLD state",
+      "pass": true,
+      "detail": "\"beta\\nVALUE=20\\n\" vs \"beta\\nVALUE=20\\n\""
+    },
+    {
+      "group": "the three operations are genuinely different",
+      "test": "replay: 0 model calls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "the three operations are genuinely different",
+      "test": "replay: reproduces historical output exactly",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "the three operations are genuinely different",
+      "test": "a fresh execution does NOT reproduce it — so replay ≠ rerun is a real distinction",
+      "pass": true,
+      "detail": "verified by the RERUN block: same task, same tools, different content"
+    },
+    {
+      "group": "guard rails",
+      "test": "fork out of range is rejected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "guard rails",
+      "test": "fork at 0 is rejected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "guard rails",
+      "test": "replay of an unknown run yields empty state",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

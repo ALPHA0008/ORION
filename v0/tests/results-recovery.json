@@ -1,0 +1,325 @@
+{
+  "label": "recovery + no-progress",
+  "pass": 53,
+  "fail": 0,
+  "results": [
+    {
+      "group": "Phase E — recovery class of every V0 tool",
+      "test": "read      -> READ_ONLY",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase E — recovery class of every V0 tool",
+      "test": "grep      -> READ_ONLY",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase E — recovery class of every V0 tool",
+      "test": "write     -> SAFE_RETRY",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase E — recovery class of every V0 tool",
+      "test": "edit      -> SELF_VERIFYING",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase E — recovery class of every V0 tool",
+      "test": "ask_user  -> READ_ONLY",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase E — recovery class of every V0 tool",
+      "test": "ask_user is flagged alwaysEscalate",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase E — recovery class of every V0 tool",
+      "test": "bash \"mkdir -p a/b\"   -> SAFE_RETRY",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase E — recovery class of every V0 tool",
+      "test": "bash \"echo hi\"        -> SAFE_RETRY",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase E — recovery class of every V0 tool",
+      "test": "bash \"echo x >> f\"    -> UNSAFE",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase E — recovery class of every V0 tool",
+      "test": "bash \"git push\"       -> UNSAFE",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase E — recovery class of every V0 tool",
+      "test": "bash \"curl -X POST\"   -> UNSAFE",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase E — recovery class of every V0 tool",
+      "test": "bash unknown command  -> UNSAFE (default deny)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase E — recovery class of every V0 tool",
+      "test": "SAME TOOL, opposite class — the ADR-002 result",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — Case 1: effect has NOT happened -> reissue",
+      "test": "decision",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — Case 1: effect has NOT happened -> reissue",
+      "test": "verify() reported not-applied",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — Case 1: effect has NOT happened -> reissue",
+      "test": "file genuinely absent beforehand",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — Case 2: effect HAS happened and is verifiable -> skip",
+      "test": "decision",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — Case 2: effect HAS happened and is verifiable -> skip",
+      "test": "verify() reported applied",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — Case 2b: edit is SELF_VERIFYING in both directions",
+      "test": "before the edit -> reissue",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — Case 2b: edit is SELF_VERIFYING in both directions",
+      "test": "after the edit  -> skip",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — Case 2b: edit is SELF_VERIFYING in both directions",
+      "test": "replaying edit by hand would throw (self-rejecting)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — Case 3: cannot be verified -> ESCALATE (never guess)",
+      "test": "decision",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — Case 3: cannot be verified -> ESCALATE (never guess)",
+      "test": "class",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — Case 3: cannot be verified -> ESCALATE (never guess)",
+      "test": "reason explains why",
+      "pass": true,
+      "detail": "UNSAFE with no verify() — cannot determine whether the effect landed"
+    },
+    {
+      "group": "Phase F — decideRecovery edge cases",
+      "test": "READ_ONLY reissues",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — decideRecovery edge cases",
+      "test": "TRANSACTIONAL reissues",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — decideRecovery edge cases",
+      "test": "EXTERNALLY_DEDUPED w/ key reissues",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — decideRecovery edge cases",
+      "test": "EXTERNALLY_DEDUPED w/o key escalates",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — decideRecovery edge cases",
+      "test": "verify() throwing escalates",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — decideRecovery edge cases",
+      "test": "verify() unknown + UNSAFE escalates",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — decideRecovery edge cases",
+      "test": "verify() unknown + SAFE_RETRY still reissues",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F — decideRecovery edge cases",
+      "test": "missing recovery contract escalates",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F in situ — UNSAFE orphan pauses the run for a human",
+      "test": "run paused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F in situ — UNSAFE orphan pauses the run for a human",
+      "test": "reason is ambiguous recovery",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F in situ — UNSAFE orphan pauses the run for a human",
+      "test": "lease released so no worker is pinned",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F in situ — UNSAFE orphan pauses the run for a human",
+      "test": "a HumanRequest was persisted",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F in situ — UNSAFE orphan pauses the run for a human",
+      "test": "decision recorded as escalate",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F in situ — UNSAFE orphan pauses the run for a human",
+      "test": "decision is an explicit state transition, not a silent guess",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F in situ — SAFE_RETRY orphan is skipped when verify() says applied",
+      "test": "decision recorded as skip",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F in situ — SAFE_RETRY orphan is skipped when verify() says applied",
+      "test": "verify said applied",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase F in situ — SAFE_RETRY orphan is skipped when verify() says applied",
+      "test": "orphan got a terminal tool event",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase G — repeated identical tool request terminates with no_progress",
+      "test": "terminated as no_progress",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase G — repeated identical tool request terminates with no_progress",
+      "test": "NOT max_turns",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase G — repeated identical tool request terminates with no_progress",
+      "test": "stopped well before the turn ceiling",
+      "pass": true,
+      "detail": "1 turns"
+    },
+    {
+      "group": "Phase G — repeated identical tool request terminates with no_progress",
+      "test": "failure reason is in the log",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase G — repeated identical tool request terminates with no_progress",
+      "test": "the explanation names the cause",
+      "pass": true,
+      "detail": "identical tool request repeated 4 times"
+    },
+    {
+      "group": "Phase G — N turns with no successful tool call terminates with no_progress",
+      "test": "terminated as no_progress",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase G — N turns with no successful tool call terminates with no_progress",
+      "test": "detail mentions turns without a successful tool call",
+      "pass": true,
+      "detail": "5 turns with no successful tool call"
+    },
+    {
+      "group": "Phase G — a healthy run is NOT falsely flagged",
+      "test": "completed normally",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase G — a healthy run is NOT falsely flagged",
+      "test": "reason is model_finished",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase G — a healthy run is NOT falsely flagged",
+      "test": "no false no-progress",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase G — max_turns remains a ceiling, distinct from no_progress",
+      "test": "hit the ceiling, not the progress detector",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Phase G — max_turns remains a ceiling, distinct from no_progress",
+      "test": "work really was happening",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+[
+  {
+    "tool": "read_file",
+    "classification": "READ_ONLY",
+    "effect_after_reissue": "identical",
+    "divergence_detectable": "n/a",
+    "note": "Pure read. Re-issue is always safe. Result may differ if the world changed, but no effect is duplicated."
+  },
+  {
+    "tool": "grep / search_files",
+    "classification": "READ_ONLY",
+    "effect_after_reissue": "identical",
+    "divergence_detectable": "n/a",
+    "note": "Pure read."
+  },
+  {
+    "tool": "write_file",
+    "classification": "MUTATING_SAFE_RETRY",
+    "effect_after_reissue": "identical",
+    "divergence_detectable": "yes (hash)",
+    "note": "Whole-content write is naturally idempotent: f(f(x)) == f(x). Re-issue is safe by construction."
+  },
+  {
+    "tool": "patch / edit_file",
+    "classification": "MUTATING_SELF_VERIFYING",
+    "effect_after_reissue": "no-op (rejected)",
+    "divergence_detectable": "yes (precondition)",
+    "note": "Re-issue rejected with \"old_string not found\". Content-addressed precondition means a replay either applies exactly once or fails loudly. Doubled=false. This is the strongest recovery property found and it requires NO idempotency key."
+  },
+  {
+    "tool": "bash (>> append)",
+    "classification": "MUTATING_UNSAFE_RETRY",
+    "effect_after_reissue": "DUPLICATED",
+    "divergence_detectable": "no",
+    "note": "Re-issue duplicated the effect (2 lines, expected 1). Shell commands are opaque: the runtime cannot know whether \"echo x >> f\" is safe to repeat. THIS IS THE HARD CASE."
+  },
+  {
+    "tool": "bash (mkdir -p)",
+    "classification": "MUTATING_SAFE_RETRY",
+    "effect_after_reissue": "identical",
+    "divergence_detectable": "no",
+    "note": "Same tool (bash), opposite safety. Proves safety is a property of the ARGUMENTS, not the tool."
+  },
+  {
+    "tool": "git commit",
+    "classification": "MUTATING_SELF_VERIFYING",
+    "effect_after_reissue": "no-op (rejected)",
+    "divergence_detectable": "yes (rev-parse)",
+    "note": "Second commit refused (nothing to commit); history depth=1. Git refuses an empty commit, and state is verifiable via rev-parse. Recovery = compare HEAD to the recorded sha (b9a2a746)."
+  },
+  {
+    "tool": "HTTP POST (no key)",
+    "classification": "MUTATING_UNSAFE_RETRY",
+    "effect_after_reissue": "DUPLICATED",
+    "divergence_detectable": "no",
+    "note": "Server saw 2 requests. Classic at-least-once hazard. Unrecoverable without a key or a server-side query to check whether the first one landed."
+  },
+  {
+    "tool": "HTTP POST (+key)",
+    "classification": "EXTERNALLY_DEDUPLICATED",
+    "effect_after_reissue": "identical",
+    "divergence_detectable": "yes (key)",
+    "note": "Deduped server-side: both calls returned id=1. Requires the REMOTE to honour the key — the harness cannot provide this property itself, only propagate it."
+  },
+  {
+    "tool": "send_email",
+    "classification": "MUTATING_UNSAFE_RETRY",
+    "effect_after_reissue": "DUPLICATED",
+    "divergence_detectable": "no",
+    "note": "2 emails sent. Irreversible AND undetectable from the harness. Must escalate."
+  },
+  {
+    "tool": "db mutation (tx)",
+    "classification": "TRANSACTIONAL",
+    "effect_after_reissue": "identical",
+    "divergence_detectable": "yes (op ledger)",
+    "note": "First=applied, second=already-applied, rows=1. When the effect and the dedup marker commit in ONE transaction, exactly-once is achievable. This is the only class with a real guarantee."
+  },
+  {
+    "tool": "ask_user",
+    "classification": "READ_ONLY (no world effect)",
+    "effect_after_reissue": "identical",
+    "divergence_detectable": "yes",
+    "note": "Creates a durable HumanRequest; re-issue is deduped by request_id. No external effect."
+  }
+]

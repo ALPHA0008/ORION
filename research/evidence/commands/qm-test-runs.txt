@@ -1,0 +1,9 @@
+=== QM TEST RUNS 2026-08-26 ===
+--- security+policy+scope+acl (5 files) ---
+ℹ tests 63
+ℹ pass 63
+ℹ fail 0
+--- durability+harness (5 files) ---
+ℹ tests 40
+ℹ pass 40
+ℹ fail 0

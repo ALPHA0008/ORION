@@ -1,0 +1,188 @@
+{
+  "pass": 18,
+  "fail": 2,
+  "checks": [
+    {
+      "test": "1.1 stream normalized without error",
+      "pass": true,
+      "detail": "13 events"
+    },
+    {
+      "test": "1.2 all emitted types are in the closed vocabulary",
+      "pass": true,
+      "detail": "all valid"
+    },
+    {
+      "test": "1.3 projection derives a terminal state",
+      "pass": true,
+      "detail": "completed"
+    },
+    {
+      "test": "1.4 tool calls captured",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "1.5 permission denial mapped to tool.denied",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "1.6 rate limit + retry mapped to degraded",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "1.7 compaction mapped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "3.1 extension mode preserves strictly more",
+      "pass": true,
+      "detail": "33 lost closed vs 2 lost extension"
+    },
+    {
+      "test": "3.2 core event types unchanged by extension mode",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "4.1 CLOSED: cost/latency answerable?",
+      "pass": false,
+      "detail": "no — dropped"
+    },
+    {
+      "test": "4.2 EXT: cost/latency answerable?",
+      "pass": true,
+      "detail": "cost=$0.0123, ttft=410ms"
+    },
+    {
+      "test": "4.3 CLOSED: cache-hit accounting?",
+      "pass": false,
+      "detail": "no — dropped"
+    },
+    {
+      "test": "4.4 EXT: cache-hit accounting?",
+      "pass": true,
+      "detail": "cache_read=900"
+    },
+    {
+      "test": "4.5 EXT: thinking blocks retained",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "4.6 EXT: SDK uuids retained for cross-referencing",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "5.1 replay: deterministic projection",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "5.2 replay: point-in-time works",
+      "pass": true,
+      "detail": "seq=6 status=pending"
+    },
+    {
+      "test": "5.3 fork: an adapted run can be forked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "5.4 explain: human-readable history renders",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "5.5 mid-stream state shows in-flight work",
+      "pass": true,
+      "detail": "pending at seq 8: []"
+    }
+  ],
+  "sdk_messages": 15,
+  "core_events": 13,
+  "closed": {
+    "mapped": 19,
+    "lost": [
+      "session_id",
+      "cwd",
+      "tools",
+      "mcp_servers",
+      "permissionMode",
+      "slash_commands",
+      "apiKeySource",
+      "output_style",
+      "agents",
+      "uuid",
+      "stream_event (token deltas)",
+      "parent_tool_use_id",
+      "thinking_blocks",
+      "stop_reason",
+      "cache_creation_input_tokens",
+      "cache_read_input_tokens",
+      "model",
+      "error",
+      "tool_progress (no core equivalent)",
+      "type",
+      "retry_after",
+      "attempt",
+      "pre_tokens",
+      "duration_ms",
+      "duration_api_ms",
+      "ttft_ms",
+      "num_turns",
+      "total_cost_usd",
+      "usage",
+      "modelUsage",
+      "permission_denials",
+      "api_error_status",
+      "structured_output"
+    ],
+    "unknownTypes": [
+      "tool_progress"
+    ]
+  },
+  "extension": {
+    "preserved": [
+      "session_id",
+      "cwd",
+      "tools",
+      "mcp_servers",
+      "permissionMode",
+      "slash_commands",
+      "apiKeySource",
+      "output_style",
+      "agents",
+      "uuid",
+      "parent_tool_use_id",
+      "thinking_blocks",
+      "stop_reason",
+      "cache_creation_input_tokens",
+      "cache_read_input_tokens",
+      "model",
+      "error",
+      "type",
+      "retry_after",
+      "attempt",
+      "pre_tokens",
+      "duration_ms",
+      "duration_api_ms",
+      "ttft_ms",
+      "num_turns",
+      "total_cost_usd",
+      "usage",
+      "modelUsage",
+      "permission_denials",
+      "api_error_status",
+      "structured_output"
+    ],
+    "stillLost": [
+      "stream_event (token deltas)",
+      "tool_progress (no core equivalent)"
+    ]
+  }
+}

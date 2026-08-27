@@ -1,0 +1,325 @@
+{
+  "label": "provider / real-HTTP",
+  "pass": 53,
+  "fail": 0,
+  "results": [
+    {
+      "group": "Test 1 — multi-step tool task over real HTTP",
+      "test": "run completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 1 — multi-step tool task over real HTTP",
+      "test": "model calls recorded",
+      "pass": true,
+      "detail": "5"
+    },
+    {
+      "group": "Test 1 — multi-step tool task over real HTTP",
+      "test": "tool calls recorded",
+      "pass": true,
+      "detail": "4"
+    },
+    {
+      "group": "Test 1 — multi-step tool task over real HTTP",
+      "test": "tokens accounted",
+      "pass": true,
+      "detail": "695"
+    },
+    {
+      "group": "Test 1 — multi-step tool task over real HTTP",
+      "test": "cost accounted (promoted to core, ADR-004)",
+      "pass": true,
+      "detail": "$0.000945"
+    },
+    {
+      "group": "Test 1 — multi-step tool task over real HTTP",
+      "test": "cache tokens captured",
+      "pass": true,
+      "detail": "320"
+    },
+    {
+      "group": "Test 1 — multi-step tool task over real HTTP",
+      "test": "world state correct",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 1 — multi-step tool task over real HTTP",
+      "test": "run terminated cleanly",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 2 — provider emits unparseable tool arguments",
+      "test": "bad arguments produce an explicit tool.failed",
+      "pass": true,
+      "detail": "unparseable arguments: Unexpected end of JSON input"
+    },
+    {
+      "group": "Test 2 — provider emits unparseable tool arguments",
+      "test": "error names the cause",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 2 — provider emits unparseable tool arguments",
+      "test": "run state remains valid (reached a terminal state)",
+      "pass": true,
+      "detail": "completed"
+    },
+    {
+      "group": "Test 2 — provider emits unparseable tool arguments",
+      "test": "no dangling in-flight tool calls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 2b — schema validation rejects wrong-typed / missing args",
+      "test": "invalid args caught before execution",
+      "pass": true,
+      "detail": "invalid arguments: missing required property: content; property path must be string, got number"
+    },
+    {
+      "group": "Test 2b — schema validation rejects wrong-typed / missing args",
+      "test": "both problems reported",
+      "pass": true,
+      "detail": "invalid arguments: missing required property: content; property path must be string, got number"
+    },
+    {
+      "group": "Test 2b — schema validation rejects wrong-typed / missing args",
+      "test": "nothing was written to disk",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 3 — tool fails; the failure reaches the model and the run stays valid",
+      "test": "tool failure recorded explicitly",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 3 — tool fails; the failure reaches the model and the run stays valid",
+      "test": "the failure was surfaced to the model",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 3 — tool fails; the failure reaches the model and the run stays valid",
+      "test": "the agent adapted and recovered",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 3 — tool fails; the failure reaches the model and the run stays valid",
+      "test": "run completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 3 — tool fails; the failure reaches the model and the run stays valid",
+      "test": "message array stayed consistent",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 4 — denial is enforced by the seam, not by the model",
+      "test": "tool.denied emitted",
+      "pass": true,
+      "detail": "command matches a hard-deny pattern"
+    },
+    {
+      "group": "Test 4 — denial is enforced by the seam, not by the model",
+      "test": "hard-deny pattern matched",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 4 — denial is enforced by the seam, not by the model",
+      "test": "no tool.started for the denied call",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 4 — denial is enforced by the seam, not by the model",
+      "test": "the model could not bypass the seam",
+      "pass": true,
+      "detail": "no_progress"
+    },
+    {
+      "group": "Test 4b — denial in a permissive posture still blocks hard-denies",
+      "test": "hard denial applies even at the most permissive posture",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 5 — model keeps asking for an unavailable action -> no_progress",
+      "test": "terminated as no_progress",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 5 — model keeps asking for an unavailable action -> no_progress",
+      "test": "did not burn the full turn budget",
+      "pass": true,
+      "detail": "4 model calls"
+    },
+    {
+      "group": "Test 5 — model keeps asking for an unavailable action -> no_progress",
+      "test": "unknown tool reported helpfully",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 6 — rate limit (429) is retried and degraded is emitted",
+      "test": "run still completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 6 — rate limit (429) is retried and degraded is emitted",
+      "test": "provider saw the retries",
+      "pass": true,
+      "detail": "7 HTTP calls"
+    },
+    {
+      "group": "Test 6b — 5xx is retried; exhaustion is an explicit model.failed",
+      "test": "model.failed recorded",
+      "pass": true,
+      "detail": "provider 500"
+    },
+    {
+      "group": "Test 6b — 5xx is retried; exhaustion is an explicit model.failed",
+      "test": "classified as retryable server_error",
+      "pass": true,
+      "detail": "server_error"
+    },
+    {
+      "group": "Test 6b — 5xx is retried; exhaustion is an explicit model.failed",
+      "test": "degraded emitted for the retry",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 6b — 5xx is retried; exhaustion is an explicit model.failed",
+      "test": "run reached a terminal state",
+      "pass": true,
+      "detail": "failed"
+    },
+    {
+      "group": "Test 6c — malformed JSON body is retryable",
+      "test": "recovered and completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 6d — timeout aborts and is retried",
+      "test": "recovered after the timeout",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 6d — timeout aborts and is retried",
+      "test": "the timeout actually fired (took > 400ms)",
+      "pass": true,
+      "detail": "1195ms"
+    },
+    {
+      "group": "Test 6e — 4xx is NOT retried (permanent)",
+      "test": "run failed fast",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 6e — 4xx is NOT retried (permanent)",
+      "test": "reason is model_failed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 6e — 4xx is NOT retried (permanent)",
+      "test": "exactly one HTTP call — no retry storm",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 6e — 4xx is NOT retried (permanent)",
+      "test": "classified as non-retryable client_error",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 6f — empty choices array is treated as malformed",
+      "test": "recovered",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "Test 7 — context pressure: hot projection stays bounded, nothing silently lost",
+      "test": "run completed under pressure",
+      "pass": true,
+      "detail": "completed"
+    },
+    {
+      "group": "Test 7 — context pressure: hot projection stays bounded, nothing silently lost",
+      "test": "many messages accumulated",
+      "pass": true,
+      "detail": "122 messages"
+    },
+    {
+      "group": "Test 7 — context pressure: hot projection stays bounded, nothing silently lost",
+      "test": "hot window respected the cap",
+      "pass": true,
+      "detail": "40"
+    },
+    {
+      "group": "Test 7 — context pressure: hot projection stays bounded, nothing silently lost",
+      "test": "dropped messages are COUNTED, not silently lost",
+      "pass": true,
+      "detail": "82 dropped + 40 hot = 122"
+    },
+    {
+      "group": "Test 7 — context pressure: hot projection stays bounded, nothing silently lost",
+      "test": "projection respects the WINDOW x MSG_CLAMP ceiling",
+      "pass": true,
+      "detail": "peak 89448B <= ceiling 96800B"
+    },
+    {
+      "group": "Test 7 — context pressure: hot projection stays bounded, nothing silently lost",
+      "test": "projection PLATEAUS once the window saturates",
+      "pass": true,
+      "detail": "89444B -> 85357B over the last 40% of the run (0.954x)"
+    },
+    {
+      "group": "Test 7 — context pressure: hot projection stays bounded, nothing silently lost",
+      "test": "individual messages are byte-clamped in hot state",
+      "pass": true,
+      "detail": "max hot message 26 chars"
+    },
+    {
+      "group": "Test 7 — context pressure: hot projection stays bounded, nothing silently lost",
+      "test": "full history is still in the log",
+      "pass": true,
+      "detail": "427 events"
+    },
+    {
+      "group": "Test 7 — context pressure: hot projection stays bounded, nothing silently lost",
+      "test": "the model was told history was elided",
+      "pass": true,
+      "detail": "buildMessages injects a system notice"
+    },
+    {
+      "group": "transcript repair: every tool_call gets a matching tool message",
+      "test": "missing tool message synthesised",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "transcript repair: every tool_call gets a matching tool message",
+      "test": "leading orphan tool message dropped",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

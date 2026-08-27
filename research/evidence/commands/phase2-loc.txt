@@ -1,0 +1,85 @@
+=== qm ===
+TOTAL files=1362  lines=330501
+ext            files      lines       MB
+.ts             1127     265550     10.8
+.md              119      23898      1.4
+.html              2      14607      0.6
+.json             40      12867      0.5
+.css               1       7511      0.2
+.png               2       1749      0.5
+.tf                4        987      0.0
+.mjs               7        898      0.0
+.py                3        697      0.0
+.toml             14        503      0.0
+(noext)           22        489      0.0
+.sh                8        299      0.0
+.yaml              6        160      0.0
+.example           3        133      0.0
+.jsonc             2         79      0.0
+.yml               1         55      0.0
+.mts               1         19      0.0
+CODE     files=  1145 lines=   267444
+DOCS     files=   119 lines=    23898
+CONFIG   files=    61 lines=    13585
+DOC:CODE line ratio = 0.09 : 1
+
+=== hermes-agent ===
+TOTAL files=10323  lines=3250586
+ext            files      lines       MB
+.py             4615    1850331     74.3
+.md             1546     472065     20.3
+.ts             1823     387563     13.7
+.tsx             751     209345      7.7
+.png              53      97442     25.2
+.json            105      65694      2.7
+.mjs             174      28828      1.1
+.js               16      18296      0.7
+.jpg               4      16832      4.0
+.yaml            192      12411      0.8
+.sh               37      10375      0.4
+.bst               5       7761      0.2
+.ps1              10       7311      0.4
+.icns              2       6980      2.1
+.sty              13       6859      0.3
+.css              12       6042      0.2
+.nix              18       5230      0.2
+.lock              2       5194      0.7
+.rs               10       5149      0.2
+.pdf               5       4524      0.7
+.tex              11       4071      0.2
+.html             11       3754      0.1
+CODE     files=  7437 lines=  2517451
+DOCS     files=  1560 lines=   472565
+CONFIG   files=   305 lines=    84031
+DOC:CODE line ratio = 0.19 : 1
+
+=== ruflo ===
+TOTAL files=5554  lines=1835052
+ext            files      lines       MB
+.ts             2148     758681     25.3
+.md             1861     454692     16.0
+.json            436     331010     14.8
+.mjs             261      54899      2.3
+.gif               4      48665      7.1
+.sh              173      28254      1.0
+.yaml             85      26967      1.0
+.js               82      26461      1.0
+.png              32      24677      6.8
+.tsx              78      13776      0.6
+.wasm              4      12017      1.7
+.svelte           85      11828      0.4
+.ttf               9      10951      2.8
+.rs               39       8460      0.3
+.cjs              23       8187      0.3
+.sql               8       3591      0.1
+.lock              5       3301      0.1
+(noext)           47       1528      0.0
+.jpg               2       1039      0.3
+.toml             16       1023      0.0
+.yml              10        761      0.0
+.txt              14        587      0.0
+CODE     files=  2819 lines=   914885
+DOCS     files=  1875 lines=   455279
+CONFIG   files=   553 lines=   363083
+DOC:CODE line ratio = 0.50 : 1
+

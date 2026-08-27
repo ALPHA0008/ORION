@@ -1,0 +1,43 @@
+{
+  "label": "crash-matrix",
+  "pass": 6,
+  "fail": 0,
+  "results": [
+    {
+      "group": "Phase D — crash matrix (real SIGKILL at each loop position)",
+      "test": "every REACHABLE crash point actually killed the process",
+      "pass": true,
+      "detail": "15 fired, 1 unreachable (before:terminal/n3)"
+    },
+    {
+      "group": "Phase D — crash matrix (real SIGKILL at each loop position)",
+      "test": "no crash produced a duplicated side effect",
+      "pass": true,
+      "detail": "none"
+    },
+    {
+      "group": "Phase D — crash matrix (real SIGKILL at each loop position)",
+      "test": "every crashed run reached a terminal state after resume",
+      "pass": true,
+      "detail": "completed,completed,completed,completed,completed,completed,completed,completed,completed,completed,completed,completed,completed,completed,completed,completed"
+    },
+    {
+      "group": "Phase D — crash matrix (real SIGKILL at each loop position)",
+      "test": "final world state matches the golden no-crash run in every case",
+      "pass": true,
+      "detail": "all match"
+    },
+    {
+      "group": "Phase D — crash matrix (real SIGKILL at each loop position)",
+      "test": "crash AFTER the effect is detected as an orphan",
+      "pass": true,
+      "detail": "1:1 3:1"
+    },
+    {
+      "group": "Phase D — crash matrix (real SIGKILL at each loop position)",
+      "test": "orphans produce an explicit recovery decision",
+      "pass": true,
+      "detail": "write:SAFE_RETRY->skip(applied) | grep:READ_ONLY->reissue"
+    }
+  ]
+}

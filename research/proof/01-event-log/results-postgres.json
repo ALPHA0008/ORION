@@ -1,0 +1,74 @@
+[
+  {
+    "store": "postgres",
+    "n": 1000,
+    "append_mode": "single",
+    "append_p50": 0.8376,
+    "append_p95": 1.0158,
+    "append_p99": 1.2091,
+    "append_total_ms": 843.98,
+    "read_ms": 4.4437,
+    "fold_ms": 0.3619,
+    "pure_fold_ms": 0.3619,
+    "full_load_ms": 4.8056,
+    "snap": {
+      "1000": {
+        "p50": 1.231,
+        "p95": 2.1923,
+        "p99": 2.1923,
+        "max": 2.1923
+      }
+    },
+    "db_bytes": 278528,
+    "state_bytes": 80167,
+    "bytes_per_event": 278.528
+  },
+  {
+    "store": "postgres",
+    "n": 10000,
+    "append_mode": "single",
+    "append_p50": 0.6995,
+    "append_p95": 0.8601,
+    "append_p99": 1.0533,
+    "append_total_ms": 7175.6955,
+    "read_ms": 13.674,
+    "fold_ms": 1.6122,
+    "pure_fold_ms": 1.6122,
+    "full_load_ms": 15.2862,
+    "snap": {
+      "1000": {
+        "p50": 4.7737,
+        "p95": 5.026,
+        "p99": 5.026,
+        "max": 5.026
+      }
+    },
+    "db_bytes": 2514944,
+    "state_bytes": 792173,
+    "bytes_per_event": 251.4944
+  },
+  {
+    "store": "postgres",
+    "n": 100000,
+    "append_mode": "batch1000",
+    "append_p50": 0.048043300000000004,
+    "append_p95": 0.0517564,
+    "append_p99": 0.0595125,
+    "append_total_ms": 4800.5278,
+    "read_ms": 133.6459,
+    "fold_ms": 71.8899,
+    "pure_fold_ms": 71.8899,
+    "full_load_ms": 205.5358,
+    "snap": {
+      "1000": {
+        "p50": 70.9869,
+        "p95": 100.2584,
+        "p99": 100.2584,
+        "max": 100.2584
+      }
+    },
+    "db_bytes": 24961024,
+    "state_bytes": 8031314,
+    "bytes_per_event": 249.61024
+  }
+]

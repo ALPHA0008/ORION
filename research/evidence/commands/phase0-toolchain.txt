@@ -1,0 +1,16 @@
+=== TOOLCHAIN 2026-08-26T11:18:12Z ===
+OS: MINGW64_NT-10.0-26100 3.6.7-fb42d713.x86_64 x86_64
+Windows: 11 Pro 10.0.26100
+git: git version 2.54.0.windows.1
+node: v24.18.0
+npm: 11.16.0
+python: Python was not found; run without arguments to install from the Microsoft Store, or disable this shortcut from Settings > Apps > Advanced app settings > App execution aliases.
+pip: pip 26.1.2 from C:\Users\abhijith.p\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\pip (python 3.14)
+uv: /usr/bin/bash: line 6: uv: command not found
+go: /usr/bin/bash: line 7: go: command not found
+rustc: /usr/bin/bash: line 8: rustc: command not found
+cargo: /usr/bin/bash: line 8: cargo: command not found
+bun: /usr/bin/bash: line 9: bun: command not found
+pnpm: /usr/bin/bash: line 9: pnpm: command not found
+docker: Docker version 29.5.3, build d1c06ef
+cloc: /usr/bin/bash: line 11: cloc: command not found

@@ -1,0 +1,37 @@
+{
+  "durability": "full",
+  "rows": [
+    {
+      "n": 1300,
+      "build_ms": 3,
+      "append_p50": 0.3131,
+      "append_p95": 0.4276,
+      "append_p99": 0.5446,
+      "full_replay_p50": 1.7,
+      "snapshot_load_p50": 0.271,
+      "snapshot_load_p95": 0.431,
+      "snapshot_load_p99": 0.477,
+      "fork_p50_ms": 2.6,
+      "db_mb": 0.8,
+      "bytes_per_event": 595,
+      "hot_state_bytes": 8421,
+      "heap_mb": 8.1
+    },
+    {
+      "n": 10300,
+      "build_ms": 19,
+      "append_p50": 0.2921,
+      "append_p95": 0.3878,
+      "append_p99": 0.5133,
+      "full_replay_p50": 12.4,
+      "snapshot_load_p50": 0.234,
+      "snapshot_load_p95": 0.272,
+      "snapshot_load_p99": 0.339,
+      "fork_p50_ms": 13.7,
+      "db_mb": 6.1,
+      "bytes_per_event": 595,
+      "hot_state_bytes": 8470,
+      "heap_mb": 51.5
+    }
+  ]
+}

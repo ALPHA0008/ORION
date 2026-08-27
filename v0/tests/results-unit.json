@@ -1,0 +1,163 @@
+{
+  "label": "event-store",
+  "pass": 26,
+  "fail": 0,
+  "results": [
+    {
+      "group": "4.1 event ordering: (run_id, seq) unique & monotonic",
+      "test": "seq allocation is contiguous from 1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "4.1 event ordering: (run_id, seq) unique & monotonic",
+      "test": "no duplicate seqs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "4.1 event ordering: (run_id, seq) unique & monotonic",
+      "test": "strictly increasing",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "4.1 event ordering: (run_id, seq) unique & monotonic",
+      "test": "duplicate (run_id,seq) rejected by PRIMARY KEY",
+      "pass": true,
+      "detail": "Error"
+    },
+    {
+      "group": "4.1 event ordering: (run_id, seq) unique & monotonic",
+      "test": "no gaps in the sequence",
+      "pass": true,
+      "detail": "51 events"
+    },
+    {
+      "group": "4.1 event ordering: (run_id, seq) unique & monotonic",
+      "test": "reads are ordered regardless of insert order",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "4.1 event ordering: (run_id, seq) unique & monotonic",
+      "test": "unknown event type rejected",
+      "pass": true,
+      "detail": "UnknownEventType"
+    },
+    {
+      "group": "4.1 event ordering: (run_id, seq) unique & monotonic",
+      "test": "rejection is a typed error",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "4.1 event ordering: (run_id, seq) unique & monotonic",
+      "test": "non-serialisable payload rejected",
+      "pass": true,
+      "detail": "TypeError"
+    },
+    {
+      "group": "4.1 event ordering: (run_id, seq) unique & monotonic",
+      "test": "appendMany rolls back entirely on a bad entry",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "4.1 concurrent append from multiple PROCESSES",
+      "test": "all appender processes exited 0",
+      "pass": true,
+      "detail": "0,0,0,0"
+    },
+    {
+      "group": "4.1 concurrent append from multiple PROCESSES",
+      "test": "every process got a seq for every append",
+      "pass": true,
+      "detail": "160"
+    },
+    {
+      "group": "4.1 concurrent append from multiple PROCESSES",
+      "test": "no two processes were given the same seq",
+      "pass": true,
+      "detail": "160 unique of 160"
+    },
+    {
+      "group": "4.1 concurrent append from multiple PROCESSES",
+      "test": "log has exactly the expected number of events",
+      "pass": true,
+      "detail": "161"
+    },
+    {
+      "group": "4.1 concurrent append from multiple PROCESSES",
+      "test": "log is gapless after concurrent writes",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "4.1 process death during append",
+      "test": "appender died by signal",
+      "pass": true,
+      "detail": "null/1"
+    },
+    {
+      "group": "4.1 process death during append",
+      "test": "committed event survived the kill",
+      "pass": true,
+      "detail": "11 -> 12"
+    },
+    {
+      "group": "4.1 process death during append",
+      "test": "log still gapless after a kill",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "4.1 process death during append",
+      "test": "every payload still parses",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "4.2 projection determinism",
+      "test": "fold is deterministic across 3 runs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "4.2 projection determinism",
+      "test": "snapshot+tail == full replay at every snapshot point",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "4.2 projection determinism",
+      "test": "projecting does not mutate the stored snapshot",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "4.3 projection boundedness (1k / 10k / 100k / 1m)",
+      "test": "hot state does NOT grow with event count",
+      "pass": true,
+      "detail": "7874B @1000 -> 8024B @1000000 (1.02x over 1000x more events)"
+    },
+    {
+      "group": "4.3 projection boundedness (1k / 10k / 100k / 1m)",
+      "test": "hot message window stays at the cap",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "4.3 projection boundedness (1k / 10k / 100k / 1m)",
+      "test": "full message count is still tracked",
+      "pass": true,
+      "detail": "749999 total vs 40 hot"
+    },
+    {
+      "group": "4.3 projection boundedness (1k / 10k / 100k / 1m)",
+      "test": "state stays under 32KB at 1M events",
+      "pass": true,
+      "detail": "8024B"
+    }
+  ]
+}

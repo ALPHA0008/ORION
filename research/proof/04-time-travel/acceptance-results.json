@@ -1,0 +1,227 @@
+{
+  "pass": 44,
+  "fail": 0,
+  "results": [
+    {
+      "test": "A1 run completes",
+      "pass": true,
+      "detail": "completed"
+    },
+    {
+      "test": "A2 all three files written",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "A3 edit applied",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "A4 bash check ran",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "A5 events recorded",
+      "pass": true,
+      "detail": "49 events"
+    },
+    {
+      "test": "B1 child was alive and then SIGKILLed",
+      "pass": true,
+      "detail": "alive=true exit={\"code\":null,\"sig\":\"SIGKILL\"}"
+    },
+    {
+      "test": "B2 partial work survived the kill",
+      "pass": true,
+      "detail": "23 events persisted"
+    },
+    {
+      "test": "B3 run left un-terminal",
+      "pass": true,
+      "detail": "running"
+    },
+    {
+      "test": "B4 reaper ignores a live lease",
+      "pass": true,
+      "detail": "{\"requeued\":0,\"parked\":0}"
+    },
+    {
+      "test": "B5 reaper requeues an expired lease",
+      "pass": true,
+      "detail": "{\"requeued\":1,\"parked\":0}"
+    },
+    {
+      "test": "B6 second process resumed and completed",
+      "pass": true,
+      "detail": "completed (0)"
+    },
+    {
+      "test": "B7 final state correct after resume",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "B8 all files present after resume",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "B9 more events than at crash",
+      "pass": true,
+      "detail": "23 -> 51"
+    },
+    {
+      "test": "C1 snapshot-load == full replay",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "C2 point-in-time replay works",
+      "pass": true,
+      "detail": "seq 24, 7 msgs vs 14"
+    },
+    {
+      "test": "C3 replay is repeatable (byte-identical)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "C4 event sequence matches baseline run",
+      "pass": true,
+      "detail": "49 vs 49 events"
+    },
+    {
+      "test": "D1 fork copied history up to N",
+      "pass": true,
+      "detail": "fork seq=37, forkAt=36"
+    },
+    {
+      "test": "D2 fork records provenance",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "D3 fork did not mutate the source",
+      "pass": true,
+      "detail": "49"
+    },
+    {
+      "test": "D4 fork ran to a terminal state",
+      "pass": true,
+      "detail": "failed"
+    },
+    {
+      "test": "D5 branches diverged",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "D6 original filesystem untouched by fork",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "D7 fork filesystem shows the different path",
+      "pass": true,
+      "detail": "fork b.txt = \"beta\\nVALUE=2\""
+    },
+    {
+      "test": "D8 divergence cause is in the fork log",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "E1 run paused on escalation",
+      "pass": true,
+      "detail": "paused awaiting_human"
+    },
+    {
+      "test": "E2 lease released (no worker holds it)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "E3 HumanRequest durably persisted",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "E4 process 1 exited cleanly",
+      "pass": true,
+      "detail": "exit=0"
+    },
+    {
+      "test": "E5 open request visible in projection",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "E6 a different process resumed after the human answered",
+      "pass": true,
+      "detail": "completed"
+    },
+    {
+      "test": "E7 human response recorded in the log",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "E8 no open requests remain",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "F1 model retry emitted degraded",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "F2 model.failed recorded",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "F3 degradations visible in final state",
+      "pass": true,
+      "detail": "count=3"
+    },
+    {
+      "test": "F4 run still completed despite degradation",
+      "pass": true,
+      "detail": "completed"
+    },
+    {
+      "test": "F5 status derives from counted effects, not config",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "G1 orphan detected and a decision logged",
+      "pass": true,
+      "detail": "orphaned write (SAFE_RETRY) -> skip"
+    },
+    {
+      "test": "G2 verify() short-circuited the re-issue",
+      "pass": true,
+      "detail": "orphaned write (SAFE_RETRY) -> skip"
+    },
+    {
+      "test": "G3 orphan resolved to a terminal tool event",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "test": "G4 UNSAFE orphan escalates instead of guessing",
+      "pass": true,
+      "detail": "paused/ambiguous_tool_recovery"
+    },
+    {
+      "test": "G5 lease released while awaiting the human",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "root": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\tt-1787815004902"
+}

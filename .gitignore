@@ -1,0 +1,52 @@
+# ─── Audited third-party repositories (2.2 GB) ────────────────────────────────
+# QM, Hermes Agent and Ruflo were cloned for the source-level audit. They are other
+# people's code with their own history and licences — never commit them.
+# Recreate with the pinned commits recorded in research/notes/01-git-forensics.md:
+#   git clone --filter=blob:none https://github.com/yc-software/qm.git
+#   git clone --filter=blob:none https://github.com/NousResearch/hermes-agent.git
+#   git clone --filter=blob:none https://github.com/ruvnet/ruflo.git
+research/repos/
+
+# ─── Hands-on install artifacts (1.2 GB) ──────────────────────────────────────
+# node_modules, venvs and workspaces created while driving the audited systems.
+research/runs/
+
+# ─── Dependencies / build output ──────────────────────────────────────────────
+node_modules/
+dist/
+build/
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# ─── Runtime state — never source ─────────────────────────────────────────────
+# Event-log databases, WAL/SHM sidecars, workspace shadow repos.
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+.harness/
+shadow.git/
+*shadow.git/
+
+# ─── Secrets ──────────────────────────────────────────────────────────────────
+# Credentials are passed by environment variable only. Nothing here should ever exist.
+.env
+.env.*
+*.key
+*.pem
+secrets.json
+
+# ─── Scratch / editor / OS ────────────────────────────────────────────────────
+_*.mjs
+_*.json
+_*.md
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

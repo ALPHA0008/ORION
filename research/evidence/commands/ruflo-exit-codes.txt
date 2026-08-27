@@ -1,0 +1,7 @@
+=== RUFLO EXIT CODE PROBE 2026-08-26 ===
+--- npx ruflo memory get --key does/not/exist
+    exit=1
+--- npx ruflo nonsensecommand
+    exit=1
+--- npx ruflo memory store --key x
+    exit=1

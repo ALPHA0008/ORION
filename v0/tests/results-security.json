@@ -1,0 +1,253 @@
+{
+  "label": "security",
+  "pass": 41,
+  "fail": 0,
+  "results": [
+    {
+      "group": "path traversal and filesystem escape",
+      "test": "every traversal read blocked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "path traversal and filesystem escape",
+      "test": "every traversal write blocked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "path traversal and filesystem escape",
+      "test": "the outside file is untouched",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "path traversal and filesystem escape",
+      "test": "null byte rejected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "path traversal and filesystem escape",
+      "test": "empty path rejected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "path traversal and filesystem escape",
+      "test": "non-string path rejected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "path traversal and filesystem escape",
+      "test": "symlink escape blocked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "command policy: hard denies cannot be bypassed by posture",
+      "test": "all hard-deny patterns blocked even at permissive",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "command policy: hard denies cannot be bypassed by posture",
+      "test": "KNOWN LIMITATION: encoded evasions are NOT blocked by the pattern list",
+      "pass": true,
+      "detail": "1/3 caught — documented in docs/SECURITY.md, mitigated by recovery=UNSAFE -> escalate"
+    },
+    {
+      "group": "command policy: hard denies cannot be bypassed by posture",
+      "test": "evasions classify as UNSAFE (so they escalate, not silently run)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "authorization cannot be bypassed by the model",
+      "test": "no dangerous bash ever started",
+      "pass": true,
+      "detail": "[\"write\",\"write\",\"write\"]"
+    },
+    {
+      "group": "authorization cannot be bypassed by the model",
+      "test": "unknown tool spellings rejected, not fuzzy-matched",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "authorization cannot be bypassed by the model",
+      "test": "traversal write blocked at the sandbox even after authorization",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "secrets never reach durable events or explain output",
+      "test": "no raw secret appears in explain output",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "secrets never reach durable events or explain output",
+      "test": "redaction markers present",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "secrets never reach durable events or explain output",
+      "test": "password value redacted",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "secrets never reach durable events or explain output",
+      "test": "PATH preserved",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "secrets never reach durable events or explain output",
+      "test": "HOME preserved",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "secrets never reach durable events or explain output",
+      "test": "API key stripped from child env",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "secrets never reach durable events or explain output",
+      "test": "TOKEN stripped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "secrets never reach durable events or explain output",
+      "test": "PASSWORD stripped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "secrets never reach durable events or explain output",
+      "test": "SESSION stripped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "secrets never reach durable events or explain output",
+      "test": "child process cannot see a parent API key",
+      "pass": true,
+      "detail": "ABSENT"
+    },
+    {
+      "group": "secrets never reach durable events or explain output",
+      "test": "KNOWN LIMITATION: args are stored verbatim in the log (redaction is at render time)",
+      "pass": true,
+      "detail": "documented in docs/SECURITY.md"
+    },
+    {
+      "group": "secrets never reach durable events or explain output",
+      "test": "…but explain() still redacts it on the way out",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "event log integrity / unsafe replay",
+      "test": "unknown event types cannot enter the log",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "event log integrity / unsafe replay",
+      "test": "payload must be serialisable",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "event log integrity / unsafe replay",
+      "test": "replay treats tool results as DATA, never as commands",
+      "pass": true,
+      "detail": "string is carried as content, not evaluated"
+    },
+    {
+      "group": "event log integrity / unsafe replay",
+      "test": "projection performs no eval/exec",
+      "pass": true,
+      "detail": "applyEvent is a pure switch over data"
+    },
+    {
+      "group": "resource bounds (DoS surface)",
+      "test": "oversized file read is truncated, not unbounded",
+      "pass": true,
+      "detail": "52488 bytes"
+    },
+    {
+      "group": "resource bounds (DoS surface)",
+      "test": "truncation is announced",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "resource bounds (DoS surface)",
+      "test": "large-but-bounded output is clamped",
+      "pass": true,
+      "detail": "52481 bytes"
+    },
+    {
+      "group": "resource bounds (DoS surface)",
+      "test": "clamp is announced",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "resource bounds (DoS surface)",
+      "test": "runaway output aborts instead of buffering forever",
+      "pass": true,
+      "detail": "output_overflow"
+    },
+    {
+      "group": "resource bounds (DoS surface)",
+      "test": "overflow error text is SHORT and actionable",
+      "pass": true,
+      "detail": "105 chars"
+    },
+    {
+      "group": "resource bounds (DoS surface)",
+      "test": "long-running command is killed by the timeout",
+      "pass": true,
+      "detail": "15014ms"
+    },
+    {
+      "group": "resource bounds (DoS surface)",
+      "test": "timeout is classified distinctly",
+      "pass": true,
+      "detail": "timeout"
+    },
+    {
+      "group": "resource bounds (DoS surface)",
+      "test": "timeout error text is short",
+      "pass": true,
+      "detail": "46 chars"
+    },
+    {
+      "group": "scope: a run carries its scope into every authorization decision",
+      "test": "scopes are distinct and persisted",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "scope: a run carries its scope into every authorization decision",
+      "test": "scope is recorded in the run.created event",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "scope: a run carries its scope into every authorization decision",
+      "test": "KNOWN LIMITATION: V0 is single-tenant — no cross-scope query barrier",
+      "pass": true,
+      "detail": "events(runId) is keyed by run, not filtered by principal — documented in docs/SECURITY.md"
+    }
+  ]
+}

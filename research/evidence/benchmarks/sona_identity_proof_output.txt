@@ -1,0 +1,3 @@
+B matrix sum(|B|)          : 0
+max |output - input|       : 0
+output identical to input? : true

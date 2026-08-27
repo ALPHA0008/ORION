@@ -1,0 +1,208 @@
+[
+  {
+    "store": "sqlite",
+    "n": 10,
+    "append_p50": 0.0221,
+    "append_p95": 0.0745,
+    "append_p99": 0.0745,
+    "append_total_ms": 0.3068,
+    "read_ms": 0.0703,
+    "fold_ms": 0.1397,
+    "pure_fold_ms": 0.0159,
+    "full_load_ms": 0.21,
+    "snap": {
+      "100": null,
+      "500": null,
+      "1000": null,
+      "5000": null
+    },
+    "db_bytes": 20480,
+    "state_bytes": 878,
+    "bytes_per_event": 2048,
+    "heap_delta_mb": 0.12732800000000033
+  },
+  {
+    "store": "sqlite",
+    "n": 100,
+    "append_p50": 0.0141,
+    "append_p95": 0.0411,
+    "append_p99": 0.0522,
+    "append_total_ms": 1.9131,
+    "read_ms": 0.1659,
+    "fold_ms": 0.0456,
+    "pure_fold_ms": 0.0122,
+    "full_load_ms": 0.2115,
+    "snap": {
+      "100": {
+        "buildMs": 0.4471,
+        "p50": 0.0205,
+        "p95": 0.1217,
+        "p99": 0.1217,
+        "max": 0.1217,
+        "snap_count": 1,
+        "snap_bytes": 8444
+      },
+      "500": null,
+      "1000": null,
+      "5000": null
+    },
+    "db_bytes": 36864,
+    "state_bytes": 8444,
+    "bytes_per_event": 368.64,
+    "heap_delta_mb": 0.7345440000000005
+  },
+  {
+    "store": "sqlite",
+    "n": 1000,
+    "append_p50": 0.0134,
+    "append_p95": 0.0356,
+    "append_p99": 0.0623,
+    "append_total_ms": 23.6178,
+    "read_ms": 1.8087,
+    "fold_ms": 0.1617,
+    "pure_fold_ms": 0.1214,
+    "full_load_ms": 1.9704,
+    "snap": {
+      "100": {
+        "buildMs": 2.2687,
+        "p50": 0.1164,
+        "p95": 0.34,
+        "p99": 0.34,
+        "max": 0.34,
+        "snap_count": 10,
+        "snap_bytes": 452673
+      },
+      "500": {
+        "buildMs": 0.6568,
+        "p50": 0.0786,
+        "p95": 0.2052,
+        "p99": 0.2052,
+        "max": 0.2052,
+        "snap_count": 2,
+        "snap_bytes": 121896
+      },
+      "1000": {
+        "buildMs": 0.435,
+        "p50": 0.0878,
+        "p95": 0.1715,
+        "p99": 0.1715,
+        "max": 0.1715,
+        "snap_count": 1,
+        "snap_bytes": 80164
+      },
+      "5000": null
+    },
+    "db_bytes": 184320,
+    "state_bytes": 80164,
+    "bytes_per_event": 184.32,
+    "heap_delta_mb": 2.074312
+  },
+  {
+    "store": "sqlite",
+    "n": 10000,
+    "append_p50": 0.0117,
+    "append_p95": 0.0225,
+    "append_p99": 0.0394,
+    "append_total_ms": 190.7922,
+    "read_ms": 13.0437,
+    "fold_ms": 2.426,
+    "pure_fold_ms": 0.7547,
+    "full_load_ms": 15.4697,
+    "snap": {
+      "100": {
+        "buildMs": 240.7,
+        "p50": 1.0972,
+        "p95": 1.8846,
+        "p99": 1.8846,
+        "max": 1.8846,
+        "snap_count": 100,
+        "snap_bytes": 39937529
+      },
+      "500": {
+        "buildMs": 45.2105,
+        "p50": 1.0822,
+        "p95": 2.067,
+        "p99": 2.067,
+        "max": 2.067,
+        "snap_count": 20,
+        "snap_bytes": 8303466
+      },
+      "1000": {
+        "buildMs": 22.1139,
+        "p50": 1.12,
+        "p95": 1.9744,
+        "p99": 1.9744,
+        "max": 1.9744,
+        "snap_count": 10,
+        "snap_bytes": 4348629
+      },
+      "5000": {
+        "buildMs": 4.1788,
+        "p50": 1.1378,
+        "p95": 2.5989,
+        "p99": 2.5989,
+        "max": 2.5989,
+        "snap_count": 2,
+        "snap_bytes": 1186977
+      }
+    },
+    "db_bytes": 1638400,
+    "state_bytes": 792169,
+    "bytes_per_event": 163.84,
+    "heap_delta_mb": 24.746536000000003
+  },
+  {
+    "store": "sqlite",
+    "n": 100000,
+    "append_p50": 0.0118,
+    "append_p95": 0.0206,
+    "append_p99": 0.0332,
+    "append_total_ms": 1944.3167,
+    "read_ms": 139.6683,
+    "fold_ms": 69.8343,
+    "pure_fold_ms": 50.7133,
+    "full_load_ms": 209.50259999999997,
+    "snap": {
+      "100": {
+        "buildMs": 22891.84,
+        "p50": 13.9685,
+        "p95": 17.6371,
+        "p99": 17.6371,
+        "max": 17.6371,
+        "snap_count": 1000,
+        "snap_bytes": 4012627976
+      },
+      "500": {
+        "buildMs": 4414.8154,
+        "p50": 14.249,
+        "p95": 16.949,
+        "p99": 16.949,
+        "max": 16.949,
+        "snap_count": 200,
+        "snap_bytes": 805736988
+      },
+      "1000": {
+        "buildMs": 2256.6465,
+        "p50": 15.1141,
+        "p95": 27.783,
+        "p99": 27.783,
+        "max": 27.783,
+        "snap_count": 100,
+        "snap_bytes": 404871831
+      },
+      "5000": {
+        "buildMs": 518.6356,
+        "p50": 14.8211,
+        "p95": 17.6524,
+        "p99": 17.6524,
+        "max": 17.6524,
+        "snap_count": 20,
+        "snap_bytes": 84191155
+      }
+    },
+    "db_bytes": 16769024,
+    "state_bytes": 8031309,
+    "bytes_per_event": 167.69024,
+    "heap_delta_mb": 98.327472
+  }
+]

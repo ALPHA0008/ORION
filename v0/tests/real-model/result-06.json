@@ -1,0 +1,148 @@
+{
+  "provider": [
+    {
+      "label": "429 rate limit",
+      "expect": "recover",
+      "status": "completed",
+      "reason": "model_finished",
+      "model_failed": 0,
+      "kinds": [],
+      "degraded": 3,
+      "wrote": true
+    },
+    {
+      "label": "500 server error",
+      "expect": "recover",
+      "status": "completed",
+      "reason": "model_finished",
+      "model_failed": 0,
+      "kinds": [],
+      "degraded": 3,
+      "wrote": true
+    },
+    {
+      "label": "503 unavailable",
+      "expect": "recover",
+      "status": "completed",
+      "reason": "model_finished",
+      "model_failed": 0,
+      "kinds": [],
+      "degraded": 3,
+      "wrote": true
+    },
+    {
+      "label": "malformed body",
+      "expect": "recover",
+      "status": "completed",
+      "reason": "model_finished",
+      "model_failed": 0,
+      "kinds": [],
+      "degraded": 3,
+      "wrote": true
+    },
+    {
+      "label": "empty choices",
+      "expect": "recover",
+      "status": "completed",
+      "reason": "model_finished",
+      "model_failed": 0,
+      "kinds": [],
+      "degraded": 3,
+      "wrote": true
+    },
+    {
+      "label": "timeout",
+      "expect": "recover",
+      "status": "completed",
+      "reason": "model_finished",
+      "model_failed": 0,
+      "kinds": [],
+      "degraded": 3,
+      "wrote": true
+    },
+    {
+      "label": "persistent 500 (total outage)",
+      "expect": "terminate",
+      "status": "failed",
+      "reason": "model_unavailable",
+      "model_failed": 3,
+      "kinds": [
+        "server_error"
+      ],
+      "degraded": 2,
+      "wrote": false
+    }
+  ],
+  "context": {
+    "metrics": {
+      "wall_ms": 0,
+      "events": 136,
+      "model_calls": 17,
+      "model_failures": 0,
+      "tool_calls": 16,
+      "tool_succeeded": 16,
+      "tool_failed": 0,
+      "tool_denied": 0,
+      "degraded": 17,
+      "recovery_decisions": 0,
+      "human_requests": 0,
+      "input_tokens": 30252,
+      "output_tokens": 344,
+      "est_cost_usd": 0,
+      "shimmed_responses": 17
+    },
+    "message_count": 34,
+    "hot": 34,
+    "dropped": 0,
+    "peak_projection_bytes": 34232,
+    "ceiling": 96800,
+    "status": "completed",
+    "reason": "model_finished",
+    "sizes": [
+      984,
+      1481,
+      3874,
+      6241,
+      8609,
+      10977,
+      13344,
+      15711,
+      18079,
+      20449,
+      22698,
+      24925,
+      27154,
+      29403,
+      31652,
+      33922,
+      34232
+    ],
+    "wrote_summary": true,
+    "explain": "Run run_9d749a3a33\n  task: Read every file in the data/ directory one at a time, from f0.txt through f13.txt. After reading all…\n────────────────────────────────────────────────────────────────\n   1  12:20:07  · run created (scope personal:local)\n   3  12:20:07  ▸ task: Read every file in the data/ directory one at a time, from f0.txt through f13.txt. After r…\n   6  12:20:08  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  12:20:08  🧠 wants 1 tool call: bash 483→15tok\n  10  12:20:08  · bash {\"cmd\":\"ls data/\"}\n  11  12:20:08  ✓ bash → f0.txt f1.txt f10.txt f11.txt f12.txt f13.txt f2.txt f3.txt f4.txt f5.…\n  14  12:20:08  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  12:20:08  🧠 wants 1 tool call: read 578→22tok\n  18  12:20:08  · read {\"path\":\"data/f0.txt\"}\n  19  12:20:08  ✓ read → file 0 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX…\n  22  12:20:09  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  12:20:09  🧠 wants 1 tool call: read 750→22tok\n  26  12:20:09  · read {\"path\":\"data/f1.txt\"}\n  27  12:20:09  ✓ read → file 1 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX…\n  30  12:20:09  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  31  12:20:09  🧠 wants 1 tool call: read 922→18tok\n  34  12:20:09  · read {\"path\":\"data/f2.txt\"}\n  35  12:20:09  ✓ read → file 2 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX…\n  38  12:20:10  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  39  12:20:10  🧠 wants 1 tool call: read 1094→18tok\n  42  12:20:10  · read {\"path\":\"data/f3.txt\"}\n  43  12:20:10  ✓ read → file 3 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX…\n  46  12:20:10  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  47  12:20:10  🧠 wants 1 tool call: read 1266→18tok\n  50  12:20:10  · read {\"path\":\"data/f4.txt\"}\n  51  12:20:10  ✓ read → file 4 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX…\n  54  12:20:10  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  55  12:20:11  🧠 wants 1 tool call: read 1438→18tok\n  58  12:20:11  · read {\"path\":\"data/f5.txt\"}\n  59  12:20:11  ✓ read → file 5 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX…\n  62  12:20:11  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  63  12:20:11  🧠 wants 1 tool call: read 1610→18tok\n  66  12:20:11  · read {\"path\":\"data/f6.txt\"}\n  67  12:20:11  ✓ read → file 6 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX…\n  70  12:20:11  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  71  12:20:11  🧠 wants 1 tool call: read 1782→18tok\n  74  12:20:11  · read {\"path\":\"data/f7.txt\"}\n  75  12:20:11  ✓ read → file 7 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX…\n  78  12:20:12  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  79  12:20:12  🧠 wants 1 tool call: read 1954→18tok\n  82  12:20:12  · read {\"path\":\"data/f8.txt\"}\n  83  12:20:12  ✓ read → file 8 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX…\n  86  12:20:12  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  87  12:20:12  🧠 wants 1 tool call: read 2126→18tok\n  90  12:20:12  · read {\"path\":\"data/f9.txt\"}\n  91  12:20:12  ✓ read → file 9 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX…\n  94  12:20:13  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  95  12:20:13  🧠 wants 1 tool call: read 2298→19tok\n  98  12:20:13  · read {\"path\":\"data/f10.txt\"}\n  99  12:20:13  ✓ read → file 10 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX…\n 102  12:20:13  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 103  12:20:13  🧠 wants 1 tool call: read 2471→19tok\n 106  12:20:13  · read {\"path\":\"data/f11.txt\"}\n 107  12:20:13  ✓ read → file 11 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX…\n 110  12:20:13  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 111  12:20:13  🧠 wants 1 tool call: read 2644→19tok\n 114  12:20:13  · read {\"path\":\"data/f12.txt\"}\n 115  12:20:13  ✓ read → file 12 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX…\n 118  12:20:14  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 119  12:20:14  🧠 wants 1 tool call: read 2817→19tok\n 122  12:20:14  · read {\"path\":\"data/f13.txt\"}\n 123  12:20:14  ✓ read → file 13 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX…\n 126  12:20:14  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 127  12:20:14  🧠 wants 1 tool call: write 2990→21tok\n 130  12:20:14  · write {\"content\":\"COMPLETE\",\"path\":\"summary.txt\"}\n 131  12:20:14  ✓ write → wrote summary.txt (8 bytes)\n 134  12:20:15  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n 135  12:20:15  🧠 \"I have read all files from `data/f0.txt` through `data/f13.txt` and created the …\" 3029→44tok\n 136  12:20:15  ✓ completed — model_finished: \"I have read all files from `data/f0.txt` through `data/f13.t…\""
+  },
+  "orphan": [
+    {
+      "label": "not-applied -> reissue",
+      "decision": "reissue",
+      "verified": "not-applied",
+      "status": "completed",
+      "reason": "model_finished",
+      "explain": "Run run_13c8e93380\n  task: Write a file called note.txt containing exactly: hello. Then reply DONE.\n────────────────────────────────────────────────────────────────\n   1  12:20:15  · run created (scope personal:local)\n   2  12:20:15  ▸ task: Write a file called note.txt containing exactly: hello. Then reply DONE.\n   3  12:20:15  · write {\"path\":\"note.txt\",\"content\":\"hello\"}\n   5  12:20:15  ♻ recovery: write (SAFE_RETRY) → reissue [verify: not-applied]\n   6  12:20:15  ⚠ DEGRADED [recovery] orphaned write (SAFE_RETRY) -> reissue\n   7  12:20:15  ✓ write → wrote note.txt (5 bytes)\n  10  12:20:16  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  11  12:20:16  🧠 wants 1 tool call: write 457→21tok\n  14  12:20:16  · write {\"content\":\"hello\",\"path\":\"note.txt\"}\n  15  12:20:16  ✓ write → wrote note.txt (5 bytes)\n  18  12:20:16  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  19  12:20:16  🧠 \"DONE\" 492→6tok\n  20  12:20:16  ✓ completed — model_finished: \"DONE\""
+    },
+    {
+      "label": "applied -> skip",
+      "decision": "skip",
+      "verified": "applied",
+      "status": "completed",
+      "reason": "model_finished",
+      "explain": "Run run_3fba285938\n  task: Write a file called note.txt containing exactly: hello. Then reply DONE.\n────────────────────────────────────────────────────────────────\n   1  12:20:16  · run created (scope personal:local)\n   2  12:20:16  ▸ task: Write a file called note.txt containing exactly: hello. Then reply DONE.\n   3  12:20:16  · write {\"path\":\"note.txt\",\"content\":\"hello\"}\n   5  12:20:16  ♻ recovery: write (SAFE_RETRY) → skip [verify: applied]\n   6  12:20:16  ⚠ DEGRADED [recovery] orphaned write (SAFE_RETRY) -> skip\n   7  12:20:16  ✓ write → [recovered] effect verified as already applied\n  10  12:20:16  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  11  12:20:16  🧠 wants 1 tool call: write 457→21tok\n  14  12:20:16  · write {\"content\":\"hello\",\"path\":\"note.txt\"}\n  15  12:20:16  ✓ write → wrote note.txt (5 bytes)\n  18  12:20:16  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  19  12:20:16  🧠 \"DONE\" 492→6tok\n  20  12:20:16  ✓ completed — model_finished: \"DONE\""
+    },
+    {
+      "label": "unknown -> escalate",
+      "decision": "escalate",
+      "status": "paused",
+      "reason": "ambiguous_tool_recovery",
+      "explain": "Run run_8740b93629\n  task: x\n────────────────────────────────────────────────────────────────\n   1  12:20:16  · run created (scope personal:local)\n   2  12:20:16  ▸ task: x\n   3  12:20:16  · bash {\"cmd\":\"echo audit >> log.txt\"}\n   5  12:20:16  ♻ recovery: bash (UNSAFE) → escalate\n   6  12:20:16  ⚠ DEGRADED [recovery] orphaned bash (UNSAFE) -> escalate\n   7  12:20:16  🙋 asked: \"ambiguous recovery\"\n   8  12:20:16  ⏸ paused — ambiguous_tool_recovery"
+    }
+  ]
+}

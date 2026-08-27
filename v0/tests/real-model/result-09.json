@@ -1,0 +1,189 @@
+[
+  {
+    "label": "25pct",
+    "target_events": 10,
+    "seq_at_kill": 10,
+    "child_alive_before_kill": true,
+    "child_exit": {
+      "code": null,
+      "sig": "SIGKILL"
+    },
+    "events_at_crash": 10,
+    "last_durable_event": "10 tool.started",
+    "files_at_crash": [],
+    "orphans_at_crash": [
+      "bash()"
+    ],
+    "lease_held_by_dead_worker": true,
+    "reaper": {
+      "requeued": 1,
+      "parked": 0,
+      "skipped": 0,
+      "actions": [
+        {
+          "run_id": "run_9f98778901",
+          "action": "requeued",
+          "attempts": 1
+        }
+      ]
+    },
+    "recovery_decisions": [
+      "bash:SAFE_RETRY->reissue"
+    ],
+    "resumed_status": "completed",
+    "resumed_reason": "model_finished",
+    "events_at_end": 52,
+    "model_calls_after_resume": 5,
+    "tool_calls_after_resume": 4,
+    "redone_writes": [],
+    "files_end": [
+      "notes/step1.txt",
+      "notes/step2.txt",
+      "notes/step3.txt"
+    ],
+    "final_status": "completed",
+    "final_result": "I created the files notes/step1.txt, notes/step2.txt, and notes/step3.txt.",
+    "metrics": {
+      "wall_ms": 0,
+      "events": 52,
+      "model_calls": 6,
+      "model_failures": 0,
+      "tool_calls": 5,
+      "tool_succeeded": 5,
+      "tool_failed": 0,
+      "tool_denied": 0,
+      "degraded": 7,
+      "recovery_decisions": 1,
+      "human_requests": 0,
+      "input_tokens": 3724,
+      "output_tokens": 145,
+      "est_cost_usd": 0,
+      "shimmed_responses": 6
+    },
+    "explain": "Run run_9f98778901\n  task: Do these steps in order, one tool call at a time: 1) write a file notes/step1.txt containing exactly…\n────────────────────────────────────────────────────────────────\n   1  12:34:12  · run created (scope personal:local)\n   3  12:34:12  ▸ task: Do these steps in order, one tool call at a time: 1) write a file notes/step1.txt containi…\n   6  12:34:12  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  12:34:12  🧠 wants 1 tool call: bash 530→16tok\n  10  12:34:12  · bash {\"cmd\":\"mkdir -p notes\"}\n  11  12:34:12  ⚠ lease lost (lease_expired) — will be reclaimed\n  13  12:34:13  ♻ recovery: bash (SAFE_RETRY) → reissue\n  14  12:34:13  ⚠ DEGRADED [recovery] orphaned bash (SAFE_RETRY) -> reissue\n  15  12:34:13  ✓ bash → \n  18  12:34:14  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  19  12:34:14  🧠 wants 1 tool call: write 552→28tok\n  22  12:34:14  · write {\"content\":\"alpha\",\"path\":\"notes/step1.txt\"}\n  23  12:34:14  ✓ write → wrote notes/step1.txt (5 bytes)\n  26  12:34:14  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  27  12:34:14  🧠 wants 1 tool call: write 597→28tok\n  30  12:34:14  · write {\"content\":\"beta\",\"path\":\"notes/step2.txt\"}\n  31  12:34:14  ✓ write → wrote notes/step2.txt (4 bytes)\n  34  12:34:15  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  35  12:34:15  🧠 wants 1 tool call: write 642→24tok\n  38  12:34:15  · write {\"content\":\"gamma\",\"path\":\"notes/step3.txt\"}\n  39  12:34:15  ✓ write → wrote notes/step3.txt (5 bytes)\n  42  12:34:15  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  43  12:34:15  🧠 wants 1 tool call: read 687→18tok\n  46  12:34:15  · read {\"path\":\"notes/step1.txt\"}\n  47  12:34:15  ✓ read → alpha\n  50  12:34:16  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  51  12:34:16  🧠 \"I created the files notes/step1.txt, notes/step2.txt, and notes/step3.txt.\" 716→31tok\n  52  12:34:16  ✓ completed — model_finished: \"I created the files notes/step1.txt, notes/step2.txt, and no…\""
+  },
+  {
+    "label": "50pct",
+    "target_events": 21,
+    "seq_at_kill": 21,
+    "child_alive_before_kill": true,
+    "child_exit": {
+      "code": null,
+      "sig": "SIGKILL"
+    },
+    "events_at_crash": 21,
+    "last_durable_event": "21 model.requested",
+    "files_at_crash": [
+      "notes/step1.txt"
+    ],
+    "orphans_at_crash": [],
+    "lease_held_by_dead_worker": true,
+    "reaper": {
+      "requeued": 1,
+      "parked": 0,
+      "skipped": 0,
+      "actions": [
+        {
+          "run_id": "run_2b47ae447c",
+          "action": "requeued",
+          "attempts": 1
+        }
+      ]
+    },
+    "recovery_decisions": [],
+    "resumed_status": "completed",
+    "resumed_reason": "model_finished",
+    "events_at_end": 52,
+    "model_calls_after_resume": 4,
+    "tool_calls_after_resume": 3,
+    "redone_writes": [],
+    "files_end": [
+      "notes/step1.txt",
+      "notes/step2.txt",
+      "notes/step3.txt"
+    ],
+    "final_status": "completed",
+    "final_result": "I created the files notes/step1.txt, notes/step2.txt, and notes/step3.txt.",
+    "metrics": {
+      "wall_ms": 0,
+      "events": 52,
+      "model_calls": 7,
+      "model_failures": 0,
+      "tool_calls": 5,
+      "tool_succeeded": 5,
+      "tool_failed": 0,
+      "tool_denied": 0,
+      "degraded": 6,
+      "recovery_decisions": 0,
+      "human_requests": 0,
+      "input_tokens": 3724,
+      "output_tokens": 145,
+      "est_cost_usd": 0,
+      "shimmed_responses": 6
+    },
+    "explain": "Run run_2b47ae447c\n  task: Do these steps in order, one tool call at a time: 1) write a file notes/step1.txt containing exactly…\n────────────────────────────────────────────────────────────────\n   1  12:34:16  · run created (scope personal:local)\n   3  12:34:16  ▸ task: Do these steps in order, one tool call at a time: 1) write a file notes/step1.txt containi…\n   6  12:34:16  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  12:34:16  🧠 wants 1 tool call: bash 530→16tok\n  10  12:34:16  · bash {\"cmd\":\"mkdir -p notes\"}\n  11  12:34:17  ✓ bash → \n  14  12:34:17  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  12:34:17  🧠 wants 1 tool call: write 552→28tok\n  18  12:34:17  · write {\"content\":\"alpha\",\"path\":\"notes/step1.txt\"}\n  19  12:34:17  ✓ write → wrote notes/step1.txt (5 bytes)\n  22  12:34:17  ⚠ lease lost (lease_expired) — will be reclaimed\n  26  12:34:18  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  27  12:34:18  🧠 wants 1 tool call: write 597→28tok\n  30  12:34:18  · write {\"content\":\"beta\",\"path\":\"notes/step2.txt\"}\n  31  12:34:18  ✓ write → wrote notes/step2.txt (4 bytes)\n  34  12:34:19  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  35  12:34:19  🧠 wants 1 tool call: write 642→24tok\n  38  12:34:19  · write {\"content\":\"gamma\",\"path\":\"notes/step3.txt\"}\n  39  12:34:19  ✓ write → wrote notes/step3.txt (5 bytes)\n  42  12:34:19  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  43  12:34:19  🧠 wants 1 tool call: read 687→18tok\n  46  12:34:19  · read {\"path\":\"notes/step1.txt\"}\n  47  12:34:19  ✓ read → alpha\n  50  12:34:20  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  51  12:34:20  🧠 \"I created the files notes/step1.txt, notes/step2.txt, and notes/step3.txt.\" 716→31tok\n  52  12:34:20  ✓ completed — model_finished: \"I created the files notes/step1.txt, notes/step2.txt, and no…\""
+  },
+  {
+    "label": "75pct",
+    "target_events": 31,
+    "seq_at_kill": 37,
+    "child_alive_before_kill": true,
+    "child_exit": {
+      "code": null,
+      "sig": "SIGKILL"
+    },
+    "events_at_crash": 37,
+    "last_durable_event": "37 model.requested",
+    "files_at_crash": [
+      "notes/step1.txt",
+      "notes/step2.txt",
+      "notes/step3.txt"
+    ],
+    "orphans_at_crash": [],
+    "lease_held_by_dead_worker": true,
+    "reaper": {
+      "requeued": 1,
+      "parked": 0,
+      "skipped": 0,
+      "actions": [
+        {
+          "run_id": "run_1fc99d837d",
+          "action": "requeued",
+          "attempts": 1
+        }
+      ]
+    },
+    "recovery_decisions": [],
+    "resumed_status": "completed",
+    "resumed_reason": "model_finished",
+    "events_at_end": 52,
+    "model_calls_after_resume": 2,
+    "tool_calls_after_resume": 1,
+    "redone_writes": [],
+    "files_end": [
+      "notes/step1.txt",
+      "notes/step2.txt",
+      "notes/step3.txt"
+    ],
+    "final_status": "completed",
+    "final_result": "I created the files notes/step1.txt, notes/step2.txt, and notes/step3.txt.",
+    "metrics": {
+      "wall_ms": 0,
+      "events": 52,
+      "model_calls": 7,
+      "model_failures": 0,
+      "tool_calls": 5,
+      "tool_succeeded": 5,
+      "tool_failed": 0,
+      "tool_denied": 0,
+      "degraded": 6,
+      "recovery_decisions": 0,
+      "human_requests": 0,
+      "input_tokens": 3724,
+      "output_tokens": 145,
+      "est_cost_usd": 0,
+      "shimmed_responses": 6
+    },
+    "explain": "Run run_1fc99d837d\n  task: Do these steps in order, one tool call at a time: 1) write a file notes/step1.txt containing exactly…\n────────────────────────────────────────────────────────────────\n   1  12:34:20  · run created (scope personal:local)\n   3  12:34:20  ▸ task: Do these steps in order, one tool call at a time: 1) write a file notes/step1.txt containi…\n   6  12:34:20  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  12:34:20  🧠 wants 1 tool call: bash 530→16tok\n  10  12:34:20  · bash {\"cmd\":\"mkdir -p notes\"}\n  11  12:34:21  ✓ bash → \n  14  12:34:21  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  12:34:21  🧠 wants 1 tool call: write 552→28tok\n  18  12:34:21  · write {\"content\":\"alpha\",\"path\":\"notes/step1.txt\"}\n  19  12:34:21  ✓ write → wrote notes/step1.txt (5 bytes)\n  22  12:34:22  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  12:34:22  🧠 wants 1 tool call: write 597→28tok\n  26  12:34:22  · write {\"content\":\"beta\",\"path\":\"notes/step2.txt\"}\n  27  12:34:22  ✓ write → wrote notes/step2.txt (4 bytes)\n  30  12:34:22  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  31  12:34:22  🧠 wants 1 tool call: write 642→24tok\n  34  12:34:22  · write {\"content\":\"gamma\",\"path\":\"notes/step3.txt\"}\n  35  12:34:22  ✓ write → wrote notes/step3.txt (5 bytes)\n  38  12:34:22  ⚠ lease lost (lease_expired) — will be reclaimed\n  42  12:34:23  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  43  12:34:23  🧠 wants 1 tool call: read 687→18tok\n  46  12:34:23  · read {\"path\":\"notes/step1.txt\"}\n  47  12:34:23  ✓ read → alpha\n  50  12:34:23  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  51  12:34:23  🧠 \"I created the files notes/step1.txt, notes/step2.txt, and notes/step3.txt.\" 716→31tok\n  52  12:34:23  ✓ completed — model_finished: \"I created the files notes/step1.txt, notes/step2.txt, and no…\""
+  }
+]

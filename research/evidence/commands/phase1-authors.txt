@@ -1,0 +1,81 @@
+############ qm ############
+--- total commits: 176
+--- distinct authors by email: 7
+--- distinct authors by name: 6
+--- TOP 15 AUTHORS (email) ---
+    117 reganbell@gmail.com
+     54 francejoshuar1@gmail.com
+      1 regan@ycombinator.com
+      1 kai.kaushik@justmovein.com
+      1 garrytan@gmail.com
+      1 anuoluwakolapo94@gmail.com
+      1 BinSquare@users.noreply.github.com
+--- TOP 10 COMMITTERS ---
+    160 noreply@github.com
+     15 reganbell@gmail.com
+      1 regan@ycombinator.com
+
+############ hermes-agent ############
+--- total commits: 25451
+--- distinct authors by email: 3048
+--- distinct authors by name: 2944
+--- TOP 15 AUTHORS (email) ---
+   7084 127238744+teknium1@users.noreply.github.com
+   3239 brooklyn.bb.nicholson@gmail.com
+   1826 teknium1@gmail.com
+   1598 82637225+kshitijk4poor@users.noreply.github.com
+    456 arilotter@gmail.com
+    436 ben@nousresearch.com
+    310 4317663+helix4u@users.noreply.github.com
+    219 307254004+hermes-seaeye[bot]@users.noreply.github.com
+    205 tuancanhnguyen706@gmail.com
+    197 35742124+0xbyt4@users.noreply.github.com
+    185 pickett.austin@gmail.com
+    165 sunsky.lau@gmail.com
+    156 liruixinch@outlook.com
+    156 eri@plasticlabs.ai
+    137 afournier@nvidia.com
+--- TOP 10 COMMITTERS ---
+  11811 127238744+teknium1@users.noreply.github.com
+   5399 noreply@github.com
+   2624 82637225+kshitijk4poor@users.noreply.github.com
+   2436 brooklyn.bb.nicholson@gmail.com
+   1412 teknium1@gmail.com
+    347 arilotter@gmail.com
+    155 35742124+0xbyt4@users.noreply.github.com
+    136 afournier@nvidia.com
+    104 pickett.austin@gmail.com
+     94 ben@nousresearch.com
+
+############ ruflo ############
+--- total commits: 7396
+--- distinct authors by email: 42
+--- distinct authors by name: 41
+--- TOP 15 AUTHORS (email) ---
+   6927 ruv@ruv.net
+    292 cohen@ruv-mac-mini.local
+     50 noreply@anthropic.com
+     35 you@example.com
+     11 ruflo-bot@users.noreply.github.com
+     10 spiridonovdragan@gmail.com
+      9 mikewushuwen@outlook.com
+      7 ruvnet@gmail.com
+      7 eroszansan@gmail.com
+      5 49699333+dependabot[bot]@users.noreply.github.com
+      4 lanemcunningham@gmail.com
+      4 140900186+tommy-ca@users.noreply.github.com
+      3 oshaal@phase2technology.com
+      3 92616678+Gujiassh@users.noreply.github.com
+      2 tjaiyen.sterling@gmail.com
+--- TOP 10 COMMITTERS ---
+   6377 ruv@ruv.net
+    607 noreply@github.com
+    292 cohen@ruv-mac-mini.local
+     50 noreply@anthropic.com
+     35 you@example.com
+     11 ruflo-bot@users.noreply.github.com
+      7 ruvnet@gmail.com
+      7 eroszansan@gmail.com
+      4 140900186+tommy-ca@users.noreply.github.com
+      2 tjaiyen.sterling@gmail.com
+
