@@ -1,0 +1,2060 @@
+{
+  "label": "v0-real-baseline",
+  "runner": "harness-v0",
+  "model": "gemma4-31b",
+  "endpoint_kind": "openai-compatible",
+  "compaction": "none",
+  "at": "2026-08-28T08:52:08.321Z",
+  "node": "v24.18.0",
+  "merged_from": [
+    "_rb-isnum.json",
+    "_rb-camel.json",
+    "_rb-ansi.json",
+    "_rb-slug.json",
+    "_rb-plimit.json"
+  ],
+  "repositories": {
+    "is-number": {
+      "url": "https://github.com/jonschlinkert/is-number.git",
+      "commit": "98e8ff1da1a89f93d1397a24d7413ed15421c139",
+      "test_command": "npx mocha"
+    },
+    "slugify": {
+      "url": "https://github.com/sindresorhus/slugify.git",
+      "commit": "7c318bd1aa4b4affab29761f15a9604323fe2a3b",
+      "test_command": "npx ava"
+    },
+    "p-limit": {
+      "url": "https://github.com/sindresorhus/p-limit.git",
+      "commit": "df476048d023ff868cd45b35ee47f5fb0ca2b25a",
+      "test_command": "npx ava"
+    },
+    "ansi-styles": {
+      "url": "https://github.com/chalk/ansi-styles.git",
+      "commit": "c1c3dd4e017a2938807aaff0d361f46d086aeab7",
+      "test_command": "npx ava"
+    },
+    "camelcase": {
+      "url": "https://github.com/sindresorhus/camelcase.git",
+      "commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "test_command": "npx ava"
+    }
+  },
+  "aggregate": {
+    "tasks_total": 22,
+    "tasks_scored": 22,
+    "infra_failures": 0,
+    "passed": 7,
+    "failed": 15,
+    "timeouts": 0,
+    "success_rate": 31.8,
+    "by_difficulty": {
+      "easy": {
+        "total": 4,
+        "pass": 3,
+        "rate": 75
+      },
+      "medium": {
+        "total": 10,
+        "pass": 4,
+        "rate": 40
+      },
+      "hard": {
+        "total": 8,
+        "pass": 0,
+        "rate": 0
+      }
+    },
+    "by_category": {
+      "bug_fix": {
+        "total": 22,
+        "pass": 7,
+        "rate": 31.8
+      },
+      "single_file": {
+        "total": 6,
+        "pass": 4,
+        "rate": 66.7
+      },
+      "test_interpretation": {
+        "total": 2,
+        "pass": 1,
+        "rate": 50
+      },
+      "edge_case": {
+        "total": 5,
+        "pass": 2,
+        "rate": 40
+      },
+      "debugging": {
+        "total": 9,
+        "pass": 1,
+        "rate": 11.1
+      },
+      "specification": {
+        "total": 1,
+        "pass": 1,
+        "rate": 100
+      },
+      "regex": {
+        "total": 7,
+        "pass": 0,
+        "rate": 0
+      },
+      "multi_read": {
+        "total": 1,
+        "pass": 0,
+        "rate": 0
+      },
+      "option_handling": {
+        "total": 2,
+        "pass": 0,
+        "rate": 0
+      },
+      "unicode": {
+        "total": 1,
+        "pass": 0,
+        "rate": 0
+      },
+      "numeric": {
+        "total": 1,
+        "pass": 0,
+        "rate": 0
+      },
+      "string_processing": {
+        "total": 2,
+        "pass": 1,
+        "rate": 50
+      },
+      "multi_file": {
+        "total": 1,
+        "pass": 0,
+        "rate": 0
+      },
+      "exploration": {
+        "total": 1,
+        "pass": 0,
+        "rate": 0
+      },
+      "error_handling": {
+        "total": 3,
+        "pass": 2,
+        "rate": 66.7
+      },
+      "async": {
+        "total": 3,
+        "pass": 0,
+        "rate": 0
+      },
+      "concurrency": {
+        "total": 2,
+        "pass": 0,
+        "rate": 0
+      },
+      "validation": {
+        "total": 1,
+        "pass": 1,
+        "rate": 100
+      }
+    },
+    "avg_wall_ms": 17592.64,
+    "p50_wall_ms": 9724,
+    "p95_wall_ms": 57301,
+    "model_calls_per_success": 13.71,
+    "tool_calls_per_success": 13,
+    "tokens_per_success": 46997,
+    "cost_per_success": 0,
+    "total_input_tokens": 882432,
+    "total_output_tokens": 6402,
+    "total_cost_usd": 0,
+    "avg_duplicate_rate": 0.41,
+    "avg_tool_success_rate": 0.85,
+    "total_degraded": 240,
+    "total_escalations": 0,
+    "runs_with_recovery": 0
+  },
+  "results": [
+    {
+      "task_id": "isnum-string-trim",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "is-number",
+      "base_commit": "98e8ff1da1a89f93d1397a24d7413ed15421c139",
+      "difficulty": "easy",
+      "categories": [
+        "bug_fix",
+        "single_file",
+        "test_interpretation"
+      ],
+      "outcome": "PASS",
+      "detail": "npx mocha passed",
+      "evidence": " a number\n    √ \"\" should not be a number\n    √ \"\" should not be a number\n    √ \"3a\" should not be a number\n    √ \"abc\" should not be a number\n    √ \"false\" should not be a number\n    √ \"null\" should not be a number\n    √ \"true\" should not be a number\n    √ \"undefined\" should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ {} should not be a number\n    √ [1,2,3] should not be a number\n    √ [1] should not be a number\n    √ [] should not be a number\n    √ true should not be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-28T08:44:17.724Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (5ms)\n\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "The issue was that strings containing only whitespace (like `\"\\r\\n\\t\"` or `\"   \"`) were being treated as numbers because the unary plus operator (`+num`) converts them to `0`, and `isFinite(0)` is true.\n\nI fixed this by adding a `.trim()` check to the string validation in `index.js`, ensuring that strings consisting only of whitespace are correctly identified as not being numbers.\n\n```javascript\n ",
+      "metrics": {
+        "events": 136,
+        "turns": 1,
+        "model_calls": 17,
+        "model_failures": 0,
+        "tool_calls": 16,
+        "tool_succeeded": 13,
+        "tool_failed": 3,
+        "tool_denied": 0,
+        "duplicate_action_count": 3,
+        "duplicate_action_rate": 0.188,
+        "tool_success_rate": 0.813,
+        "failure_density": 0.0221,
+        "tools_used": {
+          "bash": {
+            "started": 13,
+            "succeeded": 10,
+            "failed": 3
+          },
+          "read": {
+            "started": 2,
+            "succeeded": 2,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "index.js",
+          "test.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 2,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 16,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 17,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 34,
+        "messages_hot": 34,
+        "messages_dropped": 0,
+        "projection_bytes": 23233,
+        "input_tokens": 65450,
+        "output_tokens": 616,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 35388,
+        "model_ms": 14612,
+        "tool_ms": 20720,
+        "other_ms": 56,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": null,
+      "explain": "Run run_7a63c57069\n  task: The test suite fails. Run `npx mocha` to see the failures, find the defect in the source and fix it …\n────────────────────────────────────────────────────────────────\n   1  08:43:41  · run created (scope personal:local)\n   3  08:43:41  ▸ task: The test suite fails. Run `npx mocha` to see the failures, find the defect in the source a…\n   6  08:43:41  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:43:41  🧠 wants 1 tool call: bash 478→15tok\n  10  08:43:41  · bash {\"cmd\":\"npx mocha\"}\n  11  08:43:44  ✕ bash failed: command failed (exit 2): is a number √ 255 should be a number √ 5000 s…\n  14  08:43:44  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:43:44  🧠 wants 1 tool call: bash 1287→19tok\n  18  08:43:44  · bash {\"cmd\":\"ls -R\"}\n  19  08:43:45  ✓ bash → .: benchmark index.js LICENSE node_modules package.json README.md test…\n  22  08:43:45  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:43:45  🧠 wants 1 tool call: read 1354→19tok\n  26  08:43:45  · read {\"path\":\"index.js\"}\n  27  08:43:45  ✓ read → /*! * is-number <https://github.com/jonschlinkert/is-number> * * Copyr…\n  30  08:43:46  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:43:46  🧠 wants 1 tool call: read 1518→19tok\n  34  08:43:46  · read {\"path\":\"test.js\"}\n  35  08:43:46  ✓ read → /*! * is-number <https://github.com/jonschlinkert/is-number> * * Copyr…\n  38  08:43:46  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:43:46  🧠 wants 1 tool call: bash 2456→19tok\n  42  08:43:46  · bash {\"cmd\":\"npx mocha\"}\n  43  08:43:48  ✕ bash failed: command failed (exit 2): is a number √ 255 should be a number √ 5000 s…\n  46  08:43:49  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  08:43:49  🧠 wants 1 tool call: bash 3269→31tok\n  50  08:43:49  · bash {\"cmd\":\"node -e \\\"console.log(' '.trim() === '')\\\"\"}\n  51  08:43:50  ✓ bash → true\n  54  08:43:51  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  55  08:43:51  🧠 wants 1 tool call: bash 3308→31tok\n  58  08:43:51  · bash {\"cmd\":\"node -e \\\"console.log('\\\\r\\\\n\\\\t'.trim() === '')\\\"\"}\n  59  08:43:51  ✓ bash → true\n  62  08:43:52  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  63  08:43:52  🧠 wants 1 tool call: bash 3351→23tok\n  66  08:43:52  · bash {\"cmd\":\"node -e \\\"console.log(+' ')\\\"\"}\n  67  08:43:52  ✓ bash → 0\n  70  08:43:53  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  71  08:43:53  🧠 wants 1 tool call: bash 3386→28tok\n  74  08:43:53  · bash {\"cmd\":\"node -e \\\"console.log(+'\\\\r\\\\n\\\\t')\\\"\"}\n  75  08:43:53  ✓ bash → 0\n  78  08:43:56  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  79  08:43:56  🧠 wants 1 tool call: edit 3426→112tok\n  82  08:43:56  · edit {\"new_string\":\" if (typeof num === 'string' && num.trim() !== '') {\\n …\n  83  08:43:56  ✓ edit → edited index.js\n  86  08:43:56  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  87  08:43:56  🧠 wants 1 tool call: bash 3548→15tok\n  90  08:43:56  · bash {\"cmd\":\"npx mocha\"}\n  91  08:43:58  ✓ bash → is a number √ 255 should be a number √ 5000 should be a number √ 0 sho…\n  94  08:43:59  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  95  08:43:59  🧠 wants 1 tool call: bash 4504→19tok\n  98  08:43:59  · bash {\"cmd\":\"npx mocha\"}\n  99  08:44:01  ✓ bash → is a number √ 255 should be a number √ 5000 should be a number √ 0 sho…\n 102  08:44:02  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 103  08:44:02  🧠 wants 1 tool call: bash 5460→22tok\n 106  08:44:02  · bash {\"cmd\":\"npx mocha --reporter list\"}\n 107  08:44:04  ✓ bash → is a number 255 should be a number: √ is a number 255 should be a numb…\n 110  08:44:04  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 111  08:44:04  🧠 wants 1 tool call: bash 6266→22tok\n 114  08:44:04  · bash {\"cmd\":\"npx mocha --reporter spec\"}\n 115  08:44:07  ✓ bash → is a number √ 255 should be a number √ 5000 should be a number √ 0 sho…\n 118  08:44:07  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 119  08:44:07  🧠 wants 1 tool call: bash 7224→31tok\n 122  08:44:07  · bash {\"cmd\":\"npx mocha --reporter spec | grep -A 5 \\\"fail\\\"\"}\n 123  08:44:10  ✕ bash failed: command failed (exit 1):\n 126  08:44:11  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 127  08:44:11  🧠 wants 1 tool call: bash 7275→44tok\n 130  08:44:11  · bash {\"cmd\":\"npx mocha --reporter spec | grep -v \\\"√\\\" | grep -v \\\"is a num…\n 131  08:44:13  ✓ bash → 111 passing (4ms)\n 134  08:44:16  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n 135  08:44:16  🧠 \"The issue was that strings containing only whitespace (like `\"\\r\\n\\t\"` or `\" \"`)…\" 7340→147tok\n 136  08:44:16  ✓ completed — model_finished: \"The issue was that strings containing only whitespace (like …\""
+    },
+    {
+      "task_id": "isnum-nan-guard",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "is-number",
+      "base_commit": "98e8ff1da1a89f93d1397a24d7413ed15421c139",
+      "difficulty": "easy",
+      "categories": [
+        "bug_fix",
+        "single_file",
+        "edge_case"
+      ],
+      "outcome": "PASS",
+      "detail": "npx mocha passed",
+      "evidence": " a number\n    √ \"\" should not be a number\n    √ \"\" should not be a number\n    √ \"3a\" should not be a number\n    √ \"abc\" should not be a number\n    √ \"false\" should not be a number\n    √ \"null\" should not be a number\n    √ \"true\" should not be a number\n    √ \"undefined\" should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ {} should not be a number\n    √ [1,2,3] should not be a number\n    √ [1] should not be a number\n    √ [] should not be a number\n    √ true should not be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-28T08:45:16.563Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (5ms)\n\n",
+      "agent_status": "failed",
+      "agent_reason": "max_turns",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 324,
+        "turns": 1,
+        "model_calls": 40,
+        "model_failures": 0,
+        "tool_calls": 40,
+        "tool_succeeded": 35,
+        "tool_failed": 5,
+        "tool_denied": 0,
+        "duplicate_action_count": 11,
+        "duplicate_action_rate": 0.275,
+        "tool_success_rate": 0.875,
+        "failure_density": 0.0154,
+        "tools_used": {
+          "bash": {
+            "started": 31,
+            "succeeded": 27,
+            "failed": 4
+          },
+          "read": {
+            "started": 7,
+            "succeeded": 7,
+            "failed": 0
+          },
+          "edit": {
+            "started": 2,
+            "succeeded": 1,
+            "failed": 1
+          }
+        },
+        "files_touched": 3,
+        "file_list": [
+          "test.js",
+          "index.js",
+          "src/utils/validation.ts"
+        ],
+        "edits": 2,
+        "writes": 0,
+        "test_runs": 4,
+        "failed_test_runs": 4,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 40,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 40,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 81,
+        "messages_hot": 40,
+        "messages_dropped": 41,
+        "projection_bytes": 16041,
+        "input_tokens": 177839,
+        "output_tokens": 1162,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 57301,
+        "model_ms": 33362,
+        "tool_ms": 23816,
+        "other_ms": 123,
+        "status": "failed",
+        "exit_reason": "max_turns"
+      },
+      "failure_class": null,
+      "explain": "Run run_1a9be4ff97\n  task: Running `npx mocha` shows failing assertions. Diagnose and fix the source so every test passes. Do n…\n────────────────────────────────────────────────────────────────\n   1  08:44:18  · run created (scope personal:local)\n   3  08:44:18  ▸ task: Running `npx mocha` shows failing assertions. Diagnose and fix the source so every test pa…\n   6  08:44:18  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:44:18  🧠 wants 1 tool call: bash 467→15tok\n  10  08:44:18  · bash {\"cmd\":\"npx mocha\"}\n  11  08:44:20  ✕ bash failed: command failed (exit 13): is a number √ 255 should be a number √ 5000 …\n  14  08:44:21  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:44:21  🧠 wants 1 tool call: bash 1270→19tok\n  18  08:44:21  · bash {\"cmd\":\"ls -R\"}\n  19  08:44:21  ✓ bash → .: benchmark index.js LICENSE node_modules package.json README.md test…\n  22  08:44:22  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:44:22  🧠 wants 1 tool call: read 1337→19tok\n  26  08:44:22  · read {\"path\":\"test.js\"}\n  27  08:44:22  ✓ read → /*! * is-number <https://github.com/jonschlinkert/is-number> * * Copyr…\n  30  08:44:22  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:44:22  🧠 wants 1 tool call: read 2275→19tok\n  34  08:44:22  · read {\"path\":\"index.js\"}\n  35  08:44:22  ✓ read → /*! * is-number <https://github.com/jonschlinkert/is-number> * * Copyr…\n  38  08:44:23  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:44:23  🧠 wants 1 tool call: bash 2437→19tok\n  42  08:44:23  · bash {\"cmd\":\"npx mocha\"}\n  43  08:44:25  ✕ bash failed: command failed (exit 13): is a number √ 255 should be a number √ 5000 …\n  46  08:44:25  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  08:44:25  🧠 wants 1 tool call: read 3244→19tok\n  50  08:44:25  · read {\"path\":\"test.js\"}\n  51  08:44:25  ✓ read → /*! * is-number <https://github.com/jonschlinkert/is-number> * * Copyr…\n  54  08:44:26  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  55  08:44:26  🧠 wants 1 tool call: read 4182→19tok\n  58  08:44:26  · read {\"path\":\"test.js\"}\n  59  08:44:26  ✓ read → /*! * is-number <https://github.com/jonschlinkert/is-number> * * Copyr…\n  62  08:44:26  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  63  08:44:26  🧠 wants 1 tool call: bash 5120→16tok\n  66  08:44:26  · bash {\"cmd\":\"cat test.js\"}\n  67  08:44:27  ✓ bash → /*! * is-number <https://github.com/jonschlinkert/is-number> * * Copyr…\n  70  08:44:27  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  71  08:44:27  🧠 wants 1 tool call: bash 6059→21tok\n  74  08:44:27  · bash {\"cmd\":\"tail -n 50 test.js\"}\n  75  08:44:28  ✓ bash → assert(isNumber(num), 'expected \"' + String(num) + '\" to be a number')…\n  78  08:44:28  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  79  08:44:28  🧠 wants 1 tool call: bash 6399→15tok\n  82  08:44:28  · bash {\"cmd\":\"npx mocha\"}\n  83  08:44:30  ✕ bash failed: command failed (exit 13): is a number √ 255 should be a number √ 5000 …\n  86  08:44:31  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  87  08:44:31  🧠 wants 1 tool call: bash 7206→27tok\n  90  08:44:31  · bash {\"cmd\":\"node -e \\\"console.log(typeof null)\\\"\"}\n  91  08:44:32  ✓ bash → object\n  94  08:44:32  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  95  08:44:32  🧠 wants 1 tool call: bash 7241→22tok\n  98  08:44:32  · bash {\"cmd\":\"node -e \\\"console.log(+null)\\\"\"}\n  99  08:44:33  ✓ bash → 0\n 102  08:44:34  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 103  08:44:34  🧠 wants 1 tool call: bash 7275→28tok\n 106  08:44:34  · bash {\"cmd\":\"node -e \\\"console.log(Number.isFinite(+null))\\\"\"}\n 107  08:44:34  ✓ bash → true\n 110  08:44:35  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 111  08:44:35  🧠 wants 1 tool call: bash 7315→26tok\n 114  08:44:35  · bash {\"cmd\":\"node -e \\\"console.log(isFinite(+null))\\\"\"}\n 115  08:44:35  ✓ bash → true\n 118  08:44:36  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 119  08:44:36  🧠 wants 1 tool call: bash 7353→23tok\n 122  08:44:36  · bash {\"cmd\":\"node -e \\\"console.log(typeof NaN)\\\"\"}\n 123  08:44:36  ✓ bash → number\n 126  08:44:37  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 127  08:44:37  🧠 wants 1 tool call: bash 7388→28tok\n 130  08:44:37  · bash {\"cmd\":\"node -e \\\"console.log(Number.isFinite(NaN))\\\"\"}\n 131  08:44:38  ✓ bash → false\n 134  08:44:38  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 135  08:44:38  🧠 wants 1 tool call: bash 7428→26tok\n 138  08:44:38  · bash {\"cmd\":\"node -e \\\"console.log(isFinite(NaN))\\\"\"}\n 139  08:44:39  ✓ bash → false\n 142  08:44:39  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 143  08:44:39  🧠 wants 1 tool call: bash 7466→28tok\n 146  08:44:39  · bash {\"cmd\":\"node -e \\\"console.log(Number.isFinite(Infinity))\\\"\"}\n 147  08:44:40  ✓ bash → false\n 150  08:44:41  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 151  08:44:41  🧠 wants 1 tool call: bash 7506→26tok\n 154  08:44:41  · bash {\"cmd\":\"node -e \\\"console.log(isFinite(Infinity))\\\"\"}\n 155  08:44:41  ✓ bash → false\n 158  08:44:42  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 159  08:44:42  🧠 wants 1 tool call: bash 7544→23tok\n 162  08:44:42  · bash {\"cmd\":\"node -e \\\"console.log(typeof Infinity)\\\"\"}\n 163  08:44:42  ✓ bash → number\n 166  08:44:44  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 167  08:44:44  🧠 wants 1 tool call: bash 7572→26tok\n 170  08:44:44  · bash {\"cmd\":\"node -e \\\"console.log(typeof 123)\\\"\"}\n 171  08:44:44  ✓ bash → number\n 174  08:44:46  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 175  08:44:46  🧠 wants 1 tool call: bash 6803→30tok\n 178  08:44:46  · bash {\"cmd\":\"node -e \\\"console.log(Number.isFinite(123))\\\"\"}\n 179  08:44:47  ✓ bash → true\n 182  08:44:48  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 183  08:44:48  🧠 wants 1 tool call: bash 6778→28tok\n 186  08:44:48  · bash {\"cmd\":\"node -e \\\"console.log(isFinite(123))\\\"\"}\n 187  08:44:49  ✓ bash → true\n 190  08:44:50  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 191  08:44:50  🧠 wants 1 tool call: bash 5880→28tok\n 194  08:44:50  · bash {\"cmd\":\"node -e \\\"console.log(Number.isFinite(Infinity))\\\"\"}\n 195  08:44:50  ✓ bash → false\n 198  08:44:52  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 199  08:44:52  🧠 wants 1 tool call: bash 5758→26tok\n 202  08:44:52  · bash {\"cmd\":\"node -e \\\"console.log(isFinite(Infinity))\\\"\"}\n 203  08:44:52  ✓ bash → false\n 206  08:44:53  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 207  08:44:53  🧠 wants 1 tool call: bash 4990→28tok\n 210  08:44:53  · bash {\"cmd\":\"node -e \\\"console.log(isFinite('123'))\\\"\"}\n 211  08:44:54  ✓ bash → true\n 214  08:44:55  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 215  08:44:55  🧠 wants 1 tool call: bash 4092→26tok\n 218  08:44:55  · bash {\"cmd\":\"node -e \\\"console.log(isFinite('abc'))\\\"\"}\n 219  08:44:56  ✓ bash → false\n 222  08:44:56  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 223  08:44:56  🧠 wants 1 tool call: bash 3192→25tok\n 226  08:44:56  · bash {\"cmd\":\"node -e \\\"console.log(isFinite(' '))\\\"\"}\n 227  08:44:57  ✓ bash → true\n 230  08:44:58  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 231  08:44:58  🧠 wants 1 tool call: bash 2290→25tok\n 234  08:44:58  · bash {\"cmd\":\"node -e \\\"console.log(isFinite(''))\\\"\"}\n 235  08:44:58  ✓ bash → true\n 238  08:44:59  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 239  08:44:59  🧠 wants 1 tool call: bash 1987→26tok\n 242  08:44:59  · bash {\"cmd\":\"node -e \\\"console.log(isFinite(null))\\\"\"}\n 243  08:45:00  ✓ bash → true\n 246  08:45:00  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 247  08:45:00  🧠 wants 1 tool call: bash 1218→26tok\n 250  08:45:00  · bash {\"cmd\":\"node -e \\\"console.log(isFinite(undefined))\\\"\"}\n 251  08:45:01  ✓ bash → false\n 254  08:45:03  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 255  08:45:03  🧠 wants 1 tool call: edit 1221→88tok\n 258  08:45:03  · edit {\"new_string\":\" if (typeof value !== 'number' || !Number.isFinite(valu…\n 259  08:45:03  ✕ edit failed: ENOENT: no such file or directory, open 'C:\\Users\\abhijith.p\\AppData\\L…\n 262  08:45:03  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 263  08:45:03  🧠 wants 1 tool call: bash 1350→28tok\n 266  08:45:03  · bash {\"cmd\":\"find . -maxdepth 3 -name \\\"*.ts\\\"\"}\n 267  08:45:04  ✓ bash → \n 270  08:45:04  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 271  08:45:04  🧠 wants 1 tool call: bash 1344→15tok\n 274  08:45:04  · bash {\"cmd\":\"ls -R\"}\n 275  08:45:05  ✓ bash → .: benchmark index.js LICENSE node_modules package.json README.md test…\n 278  08:45:05  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 279  08:45:05  🧠 wants 1 tool call: read 1373→19tok\n 282  08:45:05  · read {\"path\":\"index.js\"}\n 283  08:45:05  ✓ read → /*! * is-number <https://github.com/jonschlinkert/is-number> * * Copyr…\n 286  08:45:06  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 287  08:45:06  🧠 wants 1 tool call: read 1500→19tok\n 290  08:45:06  · read {\"path\":\"test.js\"}\n 291  08:45:06  ✓ read → /*! * is-number <https://github.com/jonschlinkert/is-number> * * Copyr…\n 294  08:45:06  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 295  08:45:06  🧠 wants 1 tool call: bash 2398→18tok\n 298  08:45:06  · bash {\"cmd\":\"npm test\"}\n 299  08:45:08  ✕ bash failed: command failed (exit 13): > is-number@7.0.0 test > mocha is a number √…\n 302  08:45:09  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 303  08:45:09  🧠 wants 1 tool call: read 3161→19tok\n 306  08:45:09  · read {\"path\":\"test.js\"}\n 307  08:45:09  ✓ read → /*! * is-number <https://github.com/jonschlinkert/is-number> * * Copyr…\n 310  08:45:10  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 311  08:45:10  🧠 wants 1 tool call: bash 4059→21tok\n 314  08:45:10  · bash {\"cmd\":\"tail -n 50 test.js\"}\n 315  08:45:10  ✓ bash → assert(isNumber(num), 'expected \"' + String(num) + '\" to be a number')…\n 318  08:45:15  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 319  08:45:15  🧠 wants 1 tool call: edit 4361→203tok\n 322  08:45:15  · edit {\"new_string\":\"module.exports = function(num) {\\n if (typeof num === '…\n 323  08:45:15  ✓ edit → edited index.js\n 324  08:45:15  ✕ failed — max_turns"
+    },
+    {
+      "task_id": "isnum-finite-inversion",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "is-number",
+      "base_commit": "98e8ff1da1a89f93d1397a24d7413ed15421c139",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "single_file",
+        "debugging"
+      ],
+      "outcome": "PASS",
+      "detail": "npx mocha passed",
+      "evidence": " a number\n    √ \"\" should not be a number\n    √ \"\" should not be a number\n    √ \"3a\" should not be a number\n    √ \"abc\" should not be a number\n    √ \"false\" should not be a number\n    √ \"null\" should not be a number\n    √ \"true\" should not be a number\n    √ \"undefined\" should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ {} should not be a number\n    √ [1,2,3] should not be a number\n    √ [1] should not be a number\n    √ [] should not be a number\n    √ true should not be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-28T08:45:28.993Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (6ms)\n\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "The root cause was a logic error in `index.js` where the `Number.isFinite` check for strings was negated (`!Number.isFinite(+num)`), causing it to return `false` for valid numeric strings and `true` for non-numeric ones. I removed the negation to correctly validate that the converted string is a finite number.\n\nSummary of changes:\n- Modified `index.js` to remove the `!` operator from `Number.isFin",
+      "metrics": {
+        "events": 56,
+        "turns": 1,
+        "model_calls": 7,
+        "model_failures": 0,
+        "tool_calls": 6,
+        "tool_succeeded": 5,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 1,
+        "duplicate_action_rate": 0.167,
+        "tool_success_rate": 0.833,
+        "failure_density": 0.0179,
+        "tools_used": {
+          "bash": {
+            "started": 3,
+            "succeeded": 2,
+            "failed": 1
+          },
+          "read": {
+            "started": 2,
+            "succeeded": 2,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "index.js",
+          "test.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 6,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 7,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 14,
+        "messages_hot": 14,
+        "messages_dropped": 0,
+        "projection_bytes": 11075,
+        "input_tokens": 13087,
+        "output_tokens": 268,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 10968,
+        "model_ms": 6048,
+        "tool_ms": 4899,
+        "other_ms": 21,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": null,
+      "explain": "Run run_69b051c743\n  task: A recent change broke numeric-string handling: `npx mocha` fails. Locate the root cause and repair i…\n────────────────────────────────────────────────────────────────\n   1  08:45:16  · run created (scope personal:local)\n   3  08:45:16  ▸ task: A recent change broke numeric-string handling: `npx mocha` fails. Locate the root cause an…\n   6  08:45:17  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:45:17  🧠 wants 1 tool call: bash 475→15tok\n  10  08:45:17  · bash {\"cmd\":\"npx mocha\"}\n  11  08:45:19  ✕ bash failed: command failed (exit 25): is a number √ 255 should be a number √ 5000 …\n  14  08:45:20  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:45:20  🧠 wants 1 tool call: bash 1278→19tok\n  18  08:45:20  · bash {\"cmd\":\"ls -R\"}\n  19  08:45:20  ✓ bash → .: benchmark index.js LICENSE node_modules package.json README.md test…\n  22  08:45:20  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:45:20  🧠 wants 1 tool call: read 1345→19tok\n  26  08:45:20  · read {\"path\":\"index.js\"}\n  27  08:45:20  ✓ read → /*! * is-number <https://github.com/jonschlinkert/is-number> * * Copyr…\n  30  08:45:21  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:45:21  🧠 wants 1 tool call: read 1513→19tok\n  34  08:45:21  · read {\"path\":\"test.js\"}\n  35  08:45:21  ✓ read → /*! * is-number <https://github.com/jonschlinkert/is-number> * * Copyr…\n  38  08:45:23  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:45:23  🧠 wants 1 tool call: edit 2451→74tok\n  42  08:45:23  · edit {\"new_string\":\" return Number.isFinite ? Number.isFinite(+num) : isFin…\n  43  08:45:23  ✓ edit → edited index.js\n  46  08:45:23  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  47  08:45:23  🧠 wants 1 tool call: bash 2535→15tok\n  50  08:45:23  · bash {\"cmd\":\"npx mocha\"}\n  51  08:45:25  ✓ bash → is a number √ 255 should be a number √ 5000 should be a number √ 0 sho…\n  54  08:45:27  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  55  08:45:27  🧠 \"The root cause was a logic error in `index.js` where the `Number.isFinite` check…\" 3490→107tok\n  56  08:45:27  ✓ completed — model_finished: \"The root cause was a logic error in `index.js` where the `Nu…\""
+    },
+    {
+      "task_id": "isnum-hidden-contract",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "is-number",
+      "base_commit": "98e8ff1da1a89f93d1397a24d7413ed15421c139",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "single_file",
+        "specification"
+      ],
+      "outcome": "PASS",
+      "detail": "all checks passed",
+      "evidence": "[ok] repo_suite\n a number\n    √ \"\" should not be a number\n    √ \"\" should not be a number\n    √ \"3a\" should not be a number\n    √ \"abc\" should not be a number\n    √ \"false\" should not be a number\n    √ \"null\" should not be a number\n    √ \"true\" should not be a number\n    √ \"undefined\" should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ {} should not be a number\n    √ [1,2,3] should not be a number\n    √ [1] should not be a number\n    √ [] should not be a number\n    √ true should not be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-28T08:45:47.566Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (6ms)\n\n\n---\n[ok] hidden:contract.test.cjs\nhidden contract ok\n",
+      "agent_status": "failed",
+      "agent_reason": "no_progress",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 77,
+        "turns": 1,
+        "model_calls": 9,
+        "model_failures": 0,
+        "tool_calls": 9,
+        "tool_succeeded": 8,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 4,
+        "duplicate_action_rate": 0.444,
+        "tool_success_rate": 0.889,
+        "failure_density": 0.013,
+        "tools_used": {
+          "bash": {
+            "started": 6,
+            "succeeded": 5,
+            "failed": 1
+          },
+          "read": {
+            "started": 2,
+            "succeeded": 2,
+            "failed": 0
+          },
+          "write": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "index.js",
+          "test.js"
+        ],
+        "edits": 0,
+        "writes": 1,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 9,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 9,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 19,
+        "messages_hot": 19,
+        "messages_dropped": 0,
+        "projection_bytes": 17947,
+        "input_tokens": 21605,
+        "output_tokens": 243,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 17121,
+        "model_ms": 5780,
+        "tool_ms": 11315,
+        "other_ms": 26,
+        "status": "failed",
+        "exit_reason": "no_progress"
+      },
+      "failure_class": null,
+      "explain": "Run run_c80f4aed5b\n  task: The exported function must return `true` only for values that represent finite numbers: finite numbe…\n────────────────────────────────────────────────────────────────\n   1  08:45:29  · run created (scope personal:local)\n   3  08:45:29  ▸ task: The exported function must return `true` only for values that represent finite numbers: fi…\n   6  08:45:29  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:45:29  🧠 wants 1 tool call: bash 530→15tok\n  10  08:45:29  · bash {\"cmd\":\"ls -R\"}\n  11  08:45:30  ✓ bash → .: benchmark index.js LICENSE node_modules package.json README.md test…\n  14  08:45:30  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:45:30  🧠 wants 1 tool call: read 593→19tok\n  18  08:45:30  · read {\"path\":\"index.js\"}\n  19  08:45:30  ✓ read → 'use strict'; module.exports = function(num) { if (typeof num === 'num…\n  22  08:45:31  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:45:31  🧠 wants 1 tool call: read 661→19tok\n  26  08:45:31  · read {\"path\":\"test.js\"}\n  27  08:45:31  ✓ read → /*! * is-number <https://github.com/jonschlinkert/is-number> * * Copyr…\n  30  08:45:31  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:45:31  🧠 wants 1 tool call: bash 1599→19tok\n  34  08:45:31  · bash {\"cmd\":\"npx mocha\"}\n  35  08:45:33  ✕ bash failed: command failed (exit 30): is a number √ 255 should be a number √ 5000 …\n  38  08:45:35  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:45:35  🧠 wants 1 tool call: write 2406→99tok\n  42  08:45:35  · write {\"content\":\"'use strict';\\n\\nmodule.exports = function(num) {\\n if (ty…\n  43  08:45:35  ✓ write → wrote index.js (222 bytes)\n  46  08:45:36  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  47  08:45:36  🧠 wants 1 tool call: bash 2521→15tok\n  50  08:45:36  · bash {\"cmd\":\"npx mocha\"}\n  51  08:45:38  ✓ bash → is a number √ 255 should be a number √ 5000 should be a number √ 0 sho…\n  54  08:45:38  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  55  08:45:38  🧠 wants 1 tool call: bash 3476→19tok\n  58  08:45:38  · bash {\"cmd\":\"npx mocha\"}\n  59  08:45:41  ✓ bash → is a number √ 255 should be a number √ 5000 should be a number √ 0 sho…\n  62  08:45:41  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  63  08:45:41  🧠 wants 1 tool call: bash 4432→19tok\n  66  08:45:41  · bash {\"cmd\":\"npx mocha\"}\n  67  08:45:43  ✓ bash → is a number √ 255 should be a number √ 5000 should be a number √ 0 sho…\n  70  08:45:44  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  71  08:45:44  🧠 wants 1 tool call: bash 5387→19tok\n  74  08:45:44  · bash {\"cmd\":\"npx mocha\"}\n  75  08:45:46  ✓ bash → is a number √ 255 should be a number √ 5000 should be a number √ 0 sho…\n  77  08:45:46  ✕ failed — no_progress (identical tool request repeated 4 times)"
+    },
+    {
+      "task_id": "camel-separator-strip",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "camelcase",
+      "base_commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "difficulty": "easy",
+      "categories": [
+        "bug_fix",
+        "single_file",
+        "test_interpretation"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "\n\r\n  camelCase with preserveConsecutiveUppercase option\r\n\r\n  test.js:161\r\n\r\n   160:   t.is(camelCase(['---_', '--', '', '-_- '], {preserveConsecutiveUpperc…\n   161:   t.is(camelCase('foo BAR?', {preserveConsecutiveUppercase: true}), 'fo…\n   162:   t.is(camelCase('foo BAR!', {preserveConsecutiveUppercase: true}), 'fo…\r\n\r\n  Difference (- actual, + expected):\n\n  - 'foo BAR?'\n  + 'fooBAR?'\r\n\r\n  › file:///test.js:161:4\r\n\r\n\r\n\r\n  camelCase with both pascalCase and preserveConsecutiveUppercase option\r\n\r\n  test.js:194\r\n\r\n   193:   t.is(camelCase(['---_', '--', '', '-_- '], {pascalCase: true, preserv…\n   194:   t.is(camelCase('foo BAR?', {pascalCase: true, preserveConsecutiveUppe…\n   195:   t.is(camelCase('foo BAR!', {pascalCase: true, preserveConsecutiveUppe…\r\n\r\n  Difference (- actual, + expected):\n\n  - 'Foo BAR?'\n  + 'FooBAR?'\r\n\r\n  › file:///test.js:194:4\r\n\r\n\r\n\r\n  edge cases: extreme inputs\r\n\r\n  test.js:404\r\n\r\n   403:   // Mixed repeated separators              \n   404:   t.is(camelCase('_-. _-. _-.foo'), '_foo');\n   405:                                             \r\n\r\n  Difference (- actual, + expected):\n\n  - '_ _-. Foo'\n  + '_foo'\r\n\r\n  › file:///test.js:404:4\r\n\r\n  ─\r\n\r\n  5 tests failed\r\n",
+      "agent_status": "failed",
+      "agent_reason": "no_progress",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 77,
+        "turns": 1,
+        "model_calls": 9,
+        "model_failures": 0,
+        "tool_calls": 9,
+        "tool_succeeded": 8,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 5,
+        "duplicate_action_rate": 0.556,
+        "tool_success_rate": 0.889,
+        "failure_density": 0.013,
+        "tools_used": {
+          "bash": {
+            "started": 6,
+            "succeeded": 5,
+            "failed": 1
+          },
+          "read": {
+            "started": 3,
+            "succeeded": 3,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "index.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 9,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 9,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 19,
+        "messages_hot": 19,
+        "messages_dropped": 0,
+        "projection_bytes": 21303,
+        "input_tokens": 23812,
+        "output_tokens": 171,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 11042,
+        "model_ms": 4496,
+        "tool_ms": 6505,
+        "other_ms": 41,
+        "status": "failed",
+        "exit_reason": "no_progress"
+      },
+      "failure_class": "no_progress",
+      "explain": "Run run_af92647688\n  task: The test suite fails. Run `npx ava` to see which cases break, then fix the source. Do not edit tests…\n────────────────────────────────────────────────────────────────\n   1  08:05:31  · run created (scope personal:local)\n   3  08:05:31  ▸ task: The test suite fails. Run `npx ava` to see which cases break, then fix the source. Do not …\n   6  08:05:31  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:05:31  🧠 wants 1 tool call: bash 468→15tok\n  10  08:05:31  · bash {\"cmd\":\"npx ava\"}\n  11  08:05:35  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n  14  08:05:35  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:05:35  🧠 wants 1 tool call: bash 1148→19tok\n  18  08:05:35  · bash {\"cmd\":\"ls -R\"}\n  19  08:05:36  ✓ bash → .: index.d.ts index.js index.test-d.ts license node_modules package.js…\n  22  08:05:36  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:05:36  🧠 wants 1 tool call: read 1211→19tok\n  26  08:05:36  · read {\"path\":\"index.js\"}\n  27  08:05:36  ✓ read → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  30  08:05:37  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:05:37  🧠 wants 1 tool call: read 1864→19tok\n  34  08:05:37  · read {\"path\":\"index.js\"}\n  35  08:05:37  ✓ read → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  38  08:05:37  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:05:37  🧠 wants 1 tool call: read 2517→19tok\n  42  08:05:37  · read {\"path\":\"index.js\"}\n  43  08:05:37  ✓ read → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  46  08:05:38  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  08:05:38  🧠 wants 1 tool call: bash 3170→20tok\n  50  08:05:38  · bash {\"cmd\":\"cat index.js\"}\n  51  08:05:38  ✓ bash → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  54  08:05:39  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  55  08:05:39  🧠 wants 1 tool call: bash 3824→20tok\n  58  08:05:39  · bash {\"cmd\":\"cat index.js\"}\n  59  08:05:39  ✓ bash → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  62  08:05:40  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  63  08:05:40  🧠 wants 1 tool call: bash 4478→20tok\n  66  08:05:40  · bash {\"cmd\":\"cat index.js\"}\n  67  08:05:40  ✓ bash → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  70  08:05:41  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  71  08:05:41  🧠 wants 1 tool call: bash 5132→20tok\n  74  08:05:41  · bash {\"cmd\":\"cat index.js\"}\n  75  08:05:42  ✓ bash → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  77  08:05:42  ✕ failed — no_progress (identical tool request repeated 4 times)"
+    },
+    {
+      "task_id": "camel-leading-capital",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "camelcase",
+      "base_commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "single_file",
+        "regex",
+        "debugging"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": ": camelCase with preserveConsecutiveUppercase option\r\n  ✔ camelCase with both pascalCase and preserveConsecutiveUppercase option\r\n  ✔ camelCase with locale option\r\n  ✔ camelCase with disabled locale\r\n  ✔ number handling follows Google Style Guide\r\n  ✔ camelCase with capitalizeAfterNumber option\r\n  ✔ capitalizeAfterNumber edge cases\r\n  ✔ case preservation after numbers (capitalizeAfterNumber: false)\r\n  ✔ preserve leading underscores and dollar signs\r\n  ✔ edge cases: emoji and unicode\r\n  ✔ edge cases: combined options\r\n  ✔ edge cases: numbers\r\n  ✔ edge cases: locale with capitalizeAfterNumber\r\n  ✔ edge cases: special characters\r\n  ✔ edge cases: array input\r\n  ✔ edge cases: uppercase transitions\r\n  ✔ edge cases: extreme inputs\r\n  ✔ invalid input\r\n  ─\r\n\r\n  camelCase with preserveConsecutiveUppercase option\r\n\r\n  test.js:152\r\n\r\n   151:   t.is(camelCase('fooBaR', {preserveConsecutiveUppercase: true}), 'fooB…\n   152:   t.is(camelCase('FOÈ-BAR', {preserveConsecutiveUppercase: true}), 'FOÈ…\n   153:   t.is(camelCase(['foo', 'BAR'], {preserveConsecutiveUppercase: true}),…\r\n\r\n  Difference (- actual, + expected):\n\n  - 'fOÈBAR'\n  + 'FOÈBAR'\r\n\r\n  › file:///test.js:152:4\r\n\r\n  ─\r\n\r\n  1 test failed\r\n",
+      "agent_status": "failed",
+      "agent_reason": "no_progress",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 53,
+        "turns": 1,
+        "model_calls": 6,
+        "model_failures": 0,
+        "tool_calls": 6,
+        "tool_succeeded": 5,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 3,
+        "duplicate_action_rate": 0.5,
+        "tool_success_rate": 0.833,
+        "failure_density": 0.0189,
+        "tools_used": {
+          "bash": {
+            "started": 2,
+            "succeeded": 1,
+            "failed": 1
+          },
+          "read": {
+            "started": 4,
+            "succeeded": 4,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "index.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 6,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 6,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 13,
+        "messages_hot": 13,
+        "messages_dropped": 0,
+        "projection_bytes": 13092,
+        "input_tokens": 9049,
+        "output_tokens": 110,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 5938,
+        "model_ms": 2732,
+        "tool_ms": 3180,
+        "other_ms": 26,
+        "status": "failed",
+        "exit_reason": "no_progress"
+      },
+      "failure_class": "no_progress",
+      "explain": "Run run_507a923e0c\n  task: `npx ava` reports failures around capitalisation handling. Find the defect and fix it. The tests exp…\n────────────────────────────────────────────────────────────────\n   1  08:05:44  · run created (scope personal:local)\n   3  08:05:44  ▸ task: `npx ava` reports failures around capitalisation handling. Find the defect and fix it. The…\n   6  08:05:44  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:05:44  🧠 wants 1 tool call: bash 472→15tok\n  10  08:05:44  · bash {\"cmd\":\"npx ava\"}\n  11  08:05:47  ✕ bash failed: command failed (exit 1): ✔ camelCase ✔ camelCase with pascalCase optio…\n  14  08:05:47  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:05:47  🧠 wants 1 tool call: bash 885→19tok\n  18  08:05:47  · bash {\"cmd\":\"ls -R\"}\n  19  08:05:48  ✓ bash → .: index.d.ts index.js index.test-d.ts license node_modules package.js…\n  22  08:05:48  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:05:48  🧠 wants 1 tool call: read 948→19tok\n  26  08:05:48  · read {\"path\":\"index.js\"}\n  27  08:05:48  ✓ read → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  30  08:05:49  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:05:49  🧠 wants 1 tool call: read 1598→19tok\n  34  08:05:49  · read {\"path\":\"index.js\"}\n  35  08:05:49  ✓ read → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  38  08:05:49  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:05:49  🧠 wants 1 tool call: read 2248→19tok\n  42  08:05:49  · read {\"path\":\"index.js\"}\n  43  08:05:49  ✓ read → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  46  08:05:49  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  08:05:49  🧠 wants 1 tool call: read 2898→19tok\n  50  08:05:49  · read {\"path\":\"index.js\"}\n  51  08:05:49  ✓ read → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  53  08:05:49  ✕ failed — no_progress (identical tool request repeated 4 times)"
+    },
+    {
+      "task_id": "camel-preserve-consecutive",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "camelcase",
+      "base_commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "difficulty": "hard",
+      "categories": [
+        "bug_fix",
+        "multi_read",
+        "option_handling",
+        "debugging"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "reme inputs\r\n  ✔ invalid input\r\n  ─\r\n\r\n  camelCase\r\n\r\n  test.js:34\r\n\r\n   33:   t.is(camelCase('fooBarBaz-bazzy'), 'fooBarBazBazzy');\n   34:   t.is(camelCase('FBBazzy'), 'fbBazzy');               \n   35:   t.is(camelCase('F'), 'f');                           \r\n\r\n  Difference (- actual, + expected):\n\n  - 'fbbazzy'\n  + 'fbBazzy'\r\n\r\n  › file:///test.js:34:4\r\n\r\n\r\n\r\n  camelCase with pascalCase option\r\n\r\n  test.js:107\r\n\r\n   106:   t.is(camelCase('fooBarBaz-bazzy', {pascalCase: true}), 'FooBarBazBazz…\n   107:   t.is(camelCase('FBBazzy', {pascalCase: true}), 'FbBazzy');            \n   108:   t.is(camelCase('F', {pascalCase: true}), 'F');                        \r\n\r\n  Difference (- actual, + expected):\n\n  - 'Fbbazzy'\n  + 'FbBazzy'\r\n\r\n  › file:///test.js:107:4\r\n\r\n\r\n\r\n  camelCase with preserveConsecutiveUppercase option\r\n\r\n  test.js:176\r\n\r\n   175:   t.is(camelCase('桑德_在这里。', {preserveConsecutiveUppercase: true})…      \n   176:   t.is(camelCase('IDs', {preserveConsecutiveUppercase: true}), 'iDs');  \n   177:   t.is(camelCase('FooIDs', {preserveConsecutiveUppercase: true}), 'fooI…\r\n\r\n  Difference (- actual, + expected):\n\n  - 'IDs'\n  + 'iDs'\r\n\r\n  › file:///test.js:176:4\r\n\r\n  ─\r\n\r\n  3 tests failed\r\n",
+      "agent_status": "failed",
+      "agent_reason": "no_progress",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 69,
+        "turns": 1,
+        "model_calls": 8,
+        "model_failures": 0,
+        "tool_calls": 8,
+        "tool_succeeded": 7,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 4,
+        "duplicate_action_rate": 0.5,
+        "tool_success_rate": 0.875,
+        "failure_density": 0.0145,
+        "tools_used": {
+          "bash": {
+            "started": 6,
+            "succeeded": 5,
+            "failed": 1
+          },
+          "read": {
+            "started": 2,
+            "succeeded": 2,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "index.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 8,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 8,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 17,
+        "messages_hot": 17,
+        "messages_dropped": 0,
+        "projection_bytes": 18982,
+        "input_tokens": 19039,
+        "output_tokens": 152,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 9147,
+        "model_ms": 3757,
+        "tool_ms": 5356,
+        "other_ms": 34,
+        "status": "failed",
+        "exit_reason": "no_progress"
+      },
+      "failure_class": "no_progress",
+      "explain": "Run run_e05f5d3eab\n  task: The `preserveConsecutiveUppercase` option no longer behaves correctly and `npx ava` fails. Investiga…\n────────────────────────────────────────────────────────────────\n   1  08:05:52  · run created (scope personal:local)\n   3  08:05:52  ▸ task: The `preserveConsecutiveUppercase` option no longer behaves correctly and `npx ava` fails.…\n   6  08:05:52  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:05:52  🧠 wants 1 tool call: bash 479→15tok\n  10  08:05:52  · bash {\"cmd\":\"npx ava\"}\n  11  08:05:55  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n  14  08:05:55  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:05:55  🧠 wants 1 tool call: bash 1193→19tok\n  18  08:05:55  · bash {\"cmd\":\"ls -R\"}\n  19  08:05:56  ✓ bash → .: index.d.ts index.js index.test-d.ts license node_modules package.js…\n  22  08:05:56  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:05:56  🧠 wants 1 tool call: read 1256→19tok\n  26  08:05:56  · read {\"path\":\"index.js\"}\n  27  08:05:56  ✓ read → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  30  08:05:57  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:05:57  🧠 wants 1 tool call: read 1911→19tok\n  34  08:05:57  · read {\"path\":\"index.js\"}\n  35  08:05:57  ✓ read → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  38  08:05:57  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:05:57  🧠 wants 1 tool call: bash 2566→20tok\n  42  08:05:57  · bash {\"cmd\":\"cat index.js\"}\n  43  08:05:58  ✓ bash → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  46  08:05:58  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  08:05:58  🧠 wants 1 tool call: bash 3222→20tok\n  50  08:05:58  · bash {\"cmd\":\"cat index.js\"}\n  51  08:05:59  ✓ bash → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  54  08:05:59  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  55  08:05:59  🧠 wants 1 tool call: bash 3878→20tok\n  58  08:05:59  · bash {\"cmd\":\"cat index.js\"}\n  59  08:06:00  ✓ bash → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  62  08:06:00  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  63  08:06:00  🧠 wants 1 tool call: bash 4534→20tok\n  66  08:06:00  · bash {\"cmd\":\"cat index.js\"}\n  67  08:06:01  ✓ bash → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  69  08:06:01  ✕ failed — no_progress (identical tool request repeated 4 times)"
+    },
+    {
+      "task_id": "camel-numbers-identifier",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "camelcase",
+      "base_commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "difficulty": "hard",
+      "categories": [
+        "bug_fix",
+        "regex",
+        "edge_case"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "izeAfterNumber edge cases\r\n  ✔ case preservation after numbers (capitalizeAfterNumber: false)\r\n  ✔ preserve leading underscores and dollar signs\r\n  ✔ edge cases: emoji and unicode\r\n  ✔ edge cases: combined options\r\n  ✔ edge cases: numbers\r\n  ✔ edge cases: locale with capitalizeAfterNumber\r\n  ✔ edge cases: special characters\r\n  ✔ edge cases: array input\r\n  ✔ edge cases: uppercase transitions\r\n  ✔ edge cases: extreme inputs\r\n  ✔ invalid input\r\n  ─\r\n\r\n  camelCase\r\n\r\n  test.js:65\r\n\r\n   64:   t.is(camelCase('Hello1World'), 'hello1World');  \n   65:   t.is(camelCase('Hello11World'), 'hello11World');\n   66:   t.is(camelCase('hello1world'), 'hello1World');  \r\n\r\n  Difference (- actual, + expected):\n\n  - 'hello11world'\n  + 'hello11World'\r\n\r\n  › file:///test.js:65:4\r\n\r\n\r\n\r\n  camelCase with pascalCase option\r\n\r\n  test.js:131\r\n\r\n   130:   t.is(camelCase('Hello1World', {pascalCase: true}), 'Hello1World');  \n   131:   t.is(camelCase('Hello11World', {pascalCase: true}), 'Hello11World');\n   132:   t.is(camelCase('hello1world', {pascalCase: true}), 'Hello1World');  \r\n\r\n  Difference (- actual, + expected):\n\n  - 'Hello11world'\n  + 'Hello11World'\r\n\r\n  › file:///test.js:131:4\r\n\r\n  ─\r\n\r\n  2 tests failed\r\n",
+      "agent_status": "failed",
+      "agent_reason": "no_progress",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 69,
+        "turns": 1,
+        "model_calls": 8,
+        "model_failures": 0,
+        "tool_calls": 8,
+        "tool_succeeded": 7,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 4,
+        "duplicate_action_rate": 0.5,
+        "tool_success_rate": 0.875,
+        "failure_density": 0.0145,
+        "tools_used": {
+          "bash": {
+            "started": 6,
+            "succeeded": 5,
+            "failed": 1
+          },
+          "read": {
+            "started": 2,
+            "succeeded": 2,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "index.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 8,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 8,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 17,
+        "messages_hot": 17,
+        "messages_dropped": 0,
+        "projection_bytes": 18473,
+        "input_tokens": 17880,
+        "output_tokens": 152,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 9150,
+        "model_ms": 3886,
+        "tool_ms": 5231,
+        "other_ms": 33,
+        "status": "failed",
+        "exit_reason": "no_progress"
+      },
+      "failure_class": "no_progress",
+      "explain": "Run run_04bf62a9f6\n  task: Strings containing digits are no longer cased correctly; `npx ava` fails. Locate the cause and fix i…\n────────────────────────────────────────────────────────────────\n   1  08:06:03  · run created (scope personal:local)\n   3  08:06:03  ▸ task: Strings containing digits are no longer cased correctly; `npx ava` fails. Locate the cause…\n   6  08:06:03  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:06:03  🧠 wants 1 tool call: bash 469→15tok\n  10  08:06:03  · bash {\"cmd\":\"npx ava\"}\n  11  08:06:06  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n  14  08:06:06  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:06:06  🧠 wants 1 tool call: bash 1031→19tok\n  18  08:06:06  · bash {\"cmd\":\"ls -R\"}\n  19  08:06:07  ✓ bash → .: index.d.ts index.js index.test-d.ts license node_modules package.js…\n  22  08:06:07  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:06:07  🧠 wants 1 tool call: read 1094→19tok\n  26  08:06:07  · read {\"path\":\"index.js\"}\n  27  08:06:07  ✓ read → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  30  08:06:08  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:06:08  🧠 wants 1 tool call: read 1748→19tok\n  34  08:06:08  · read {\"path\":\"index.js\"}\n  35  08:06:08  ✓ read → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  38  08:06:08  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:06:08  🧠 wants 1 tool call: bash 2402→20tok\n  42  08:06:08  · bash {\"cmd\":\"cat index.js\"}\n  43  08:06:09  ✓ bash → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  46  08:06:09  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  08:06:09  🧠 wants 1 tool call: bash 3057→20tok\n  50  08:06:09  · bash {\"cmd\":\"cat index.js\"}\n  51  08:06:10  ✓ bash → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  54  08:06:10  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  55  08:06:10  🧠 wants 1 tool call: bash 3712→20tok\n  58  08:06:10  · bash {\"cmd\":\"cat index.js\"}\n  59  08:06:11  ✓ bash → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  62  08:06:11  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  63  08:06:11  🧠 wants 1 tool call: bash 4367→20tok\n  66  08:06:11  · bash {\"cmd\":\"cat index.js\"}\n  67  08:06:12  ✓ bash → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  69  08:06:12  ✕ failed — no_progress (identical tool request repeated 4 times)"
+    },
+    {
+      "task_id": "camel-leading-separators",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "camelcase",
+      "base_commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "regex",
+        "edge_case"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": " 'foo_@#Bar'\r\n\r\n  › file:///test.js:376:4\r\n\r\n\r\n\r\n  edge cases: array input\r\n\r\n  test.js:381\r\n\r\n   380:   // Array with leading prefixes                 \n   381:   t.is(camelCase(['_foo', '$bar']), '_foo-$bar');\n   382:                                                  \r\n\r\n  Difference (- actual, + expected):\n\n  - '_foo$bar'\n  + '_foo-$bar'\r\n\r\n  › file:///test.js:381:4\r\n\r\n\r\n\r\n  edge cases: uppercase transitions\r\n\r\n  test.js:390\r\n\r\n   389:   // Multiple rapid transitions         \n   390:   t.is(camelCase('aAbBcC'), 'aAbBcC');  \n   391:   t.is(camelCase('a1A2B3C'), 'a1A2B3C');\r\n\r\n  Difference (- actual, + expected):\n\n  - 'aabBcC'\n  + 'aAbBcC'\r\n\r\n  › file:///test.js:390:4\r\n\r\n\r\n\r\n  edge cases: extreme inputs\r\n\r\n  test.js:401\r\n\r\n   400:   const longPrefix = '_'.repeat(50);                                    \n   401:   t.is(camelCase(longPrefix + 'foo' + longPrefix + 'bar'), longPrefix +…\n   402:                                                                         \r\n\r\n  Difference (- actual, + expected):\n\n  - '__________________________________________________foobar'\n  + '__________________________________________________fooBar'\r\n\r\n  › file:///test.js:401:4\r\n\r\n  ─\r\n\r\n  15 tests failed\r\n",
+      "agent_status": "failed",
+      "agent_reason": "no_progress",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 77,
+        "turns": 1,
+        "model_calls": 9,
+        "model_failures": 0,
+        "tool_calls": 9,
+        "tool_succeeded": 8,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 4,
+        "duplicate_action_rate": 0.444,
+        "tool_success_rate": 0.889,
+        "failure_density": 0.013,
+        "tools_used": {
+          "bash": {
+            "started": 6,
+            "succeeded": 5,
+            "failed": 1
+          },
+          "read": {
+            "started": 3,
+            "succeeded": 3,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "package.json",
+          "index.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 9,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 9,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 19,
+        "messages_hot": 19,
+        "messages_dropped": 0,
+        "projection_bytes": 20328,
+        "input_tokens": 21035,
+        "output_tokens": 171,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 9724,
+        "model_ms": 4375,
+        "tool_ms": 5315,
+        "other_ms": 34,
+        "status": "failed",
+        "exit_reason": "no_progress"
+      },
+      "failure_class": "no_progress",
+      "explain": "Run run_1f5c854206\n  task: Input with leading separators (for example `--foo-bar`) is no longer handled correctly and `npx ava`…\n────────────────────────────────────────────────────────────────\n   1  08:06:14  · run created (scope personal:local)\n   3  08:06:14  ▸ task: Input with leading separators (for example `--foo-bar`) is no longer handled correctly and…\n   6  08:06:14  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:06:14  🧠 wants 1 tool call: bash 477→15tok\n  10  08:06:14  · bash {\"cmd\":\"ls -R\"}\n  11  08:06:15  ✓ bash → .: index.d.ts index.js index.test-d.ts license node_modules package.js…\n  14  08:06:15  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:06:15  🧠 wants 1 tool call: read 536→19tok\n  18  08:06:15  · read {\"path\":\"package.json\"}\n  19  08:06:15  ✓ read → { \"name\": \"camelcase\", \"version\": \"9.0.0\", \"description\": \"Convert a d…\n  22  08:06:16  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:06:16  🧠 wants 1 tool call: bash 963→19tok\n  26  08:06:16  · bash {\"cmd\":\"npx ava\"}\n  27  08:06:19  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n  30  08:06:19  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:06:19  🧠 wants 1 tool call: read 1543→19tok\n  34  08:06:19  · read {\"path\":\"index.js\"}\n  35  08:06:19  ✓ read → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  38  08:06:20  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:06:20  🧠 wants 1 tool call: read 2196→19tok\n  42  08:06:20  · read {\"path\":\"index.js\"}\n  43  08:06:20  ✓ read → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  46  08:06:20  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  08:06:20  🧠 wants 1 tool call: bash 2849→20tok\n  50  08:06:20  · bash {\"cmd\":\"cat index.js\"}\n  51  08:06:21  ✓ bash → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  54  08:06:21  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  55  08:06:21  🧠 wants 1 tool call: bash 3503→20tok\n  58  08:06:21  · bash {\"cmd\":\"cat index.js\"}\n  59  08:06:22  ✓ bash → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  62  08:06:22  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  63  08:06:22  🧠 wants 1 tool call: bash 4157→20tok\n  66  08:06:22  · bash {\"cmd\":\"cat index.js\"}\n  67  08:06:23  ✓ bash → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  70  08:06:23  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  71  08:06:23  🧠 wants 1 tool call: bash 4811→20tok\n  74  08:06:23  · bash {\"cmd\":\"cat index.js\"}\n  75  08:06:24  ✓ bash → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  77  08:06:24  ✕ failed — no_progress (identical tool request repeated 4 times)"
+    },
+    {
+      "task_id": "camel-unicode-uppercase",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "camelcase",
+      "base_commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "regex",
+        "unicode"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "reserveConsecutiveUppercase option\r\n  ✔ camelCase with both pascalCase and preserveConsecutiveUppercase option\r\n  ✔ camelCase with locale option\r\n  ✔ camelCase with disabled locale\r\n  ✔ number handling follows Google Style Guide\r\n  ✔ camelCase with capitalizeAfterNumber option\r\n  ✔ capitalizeAfterNumber edge cases\r\n  ✔ case preservation after numbers (capitalizeAfterNumber: false)\r\n  ✔ preserve leading underscores and dollar signs\r\n  ✔ edge cases: emoji and unicode\r\n  ✔ edge cases: combined options\r\n  ✔ edge cases: numbers\r\n  ✔ edge cases: locale with capitalizeAfterNumber\r\n  ✔ edge cases: special characters\r\n  ✔ edge cases: array input\r\n  ✔ edge cases: uppercase transitions\r\n  ✔ edge cases: extreme inputs\r\n  ✔ invalid input\r\n  ─\r\n\r\n  camelCase with pascalCase option\r\n\r\n  test.js:139\r\n\r\n   138:   t.is(camelCase('h1W', {pascalCase: true}), 'H1W');                    \n   139:   t.is(camelCase('РозовыйПушистыйЕдинороги', {pascalCase: true}), 'Розо…\n   140:   t.is(camelCase('розовый_пушистый-единороги', {pascalCase: true}), 'Ро…\r\n\r\n  Difference (- actual, + expected):\n\n  - 'Розовыйпушистыйединороги'\n  + 'РозовыйПушистыйЕдинороги'\r\n\r\n  › file:///test.js:139:4\r\n\r\n  ─\r\n\r\n  1 test failed\r\n",
+      "agent_status": "failed",
+      "agent_reason": "no_progress",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 61,
+        "turns": 1,
+        "model_calls": 7,
+        "model_failures": 0,
+        "tool_calls": 7,
+        "tool_succeeded": 6,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 3,
+        "duplicate_action_rate": 0.429,
+        "tool_success_rate": 0.857,
+        "failure_density": 0.0164,
+        "tools_used": {
+          "bash": {
+            "started": 2,
+            "succeeded": 1,
+            "failed": 1
+          },
+          "read": {
+            "started": 5,
+            "succeeded": 5,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "package.json",
+          "index.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 7,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 7,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 15,
+        "messages_hot": 15,
+        "messages_dropped": 0,
+        "projection_bytes": 14726,
+        "input_tokens": 11490,
+        "output_tokens": 129,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 6564,
+        "model_ms": 3225,
+        "tool_ms": 3306,
+        "other_ms": 33,
+        "status": "failed",
+        "exit_reason": "no_progress"
+      },
+      "failure_class": "no_progress",
+      "explain": "Run run_2394ed594d\n  task: Non-ASCII uppercase letters are no longer recognised, so `npx ava` fails on international input. Loc…\n────────────────────────────────────────────────────────────────\n   1  08:06:26  · run created (scope personal:local)\n   3  08:06:26  ▸ task: Non-ASCII uppercase letters are no longer recognised, so `npx ava` fails on international …\n   6  08:06:26  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:06:26  🧠 wants 1 tool call: bash 473→15tok\n  10  08:06:26  · bash {\"cmd\":\"ls -R\"}\n  11  08:06:27  ✓ bash → .: index.d.ts index.js index.test-d.ts license node_modules package.js…\n  14  08:06:27  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:06:27  🧠 wants 1 tool call: read 532→19tok\n  18  08:06:27  · read {\"path\":\"package.json\"}\n  19  08:06:27  ✓ read → { \"name\": \"camelcase\", \"version\": \"9.0.0\", \"description\": \"Convert a d…\n  22  08:06:28  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:06:28  🧠 wants 1 tool call: bash 959→19tok\n  26  08:06:28  · bash {\"cmd\":\"npx ava\"}\n  27  08:06:31  ✕ bash failed: command failed (exit 1): ✔ camelCase ✘ [fail]: camelCase with pascalCa…\n  30  08:06:31  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:06:31  🧠 wants 1 tool call: read 1402→19tok\n  34  08:06:31  · read {\"path\":\"index.js\"}\n  35  08:06:31  ✓ read → const UPPERCASE = /[A-Z]/u; const LOWERCASE = /[\\p{Ll}]/u; const LEADI…\n  38  08:06:32  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:06:32  🧠 wants 1 tool call: read 2055→19tok\n  42  08:06:32  · read {\"path\":\"index.js\"}\n  43  08:06:32  ✓ read → const UPPERCASE = /[A-Z]/u; const LOWERCASE = /[\\p{Ll}]/u; const LEADI…\n  46  08:06:32  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  08:06:32  🧠 wants 1 tool call: read 2708→19tok\n  50  08:06:32  · read {\"path\":\"index.js\"}\n  51  08:06:32  ✓ read → const UPPERCASE = /[A-Z]/u; const LOWERCASE = /[\\p{Ll}]/u; const LEADI…\n  54  08:06:33  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  55  08:06:33  🧠 wants 1 tool call: read 3361→19tok\n  58  08:06:33  · read {\"path\":\"index.js\"}\n  59  08:06:33  ✓ read → const UPPERCASE = /[A-Z]/u; const LOWERCASE = /[\\p{Ll}]/u; const LEADI…\n  61  08:06:33  ✕ failed — no_progress (identical tool request repeated 4 times)"
+    },
+    {
+      "task_id": "camel-identifier-endanchor",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "camelcase",
+      "base_commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "difficulty": "hard",
+      "categories": [
+        "bug_fix",
+        "regex",
+        "edge_case",
+        "debugging"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "e\r\n  ✔ camelCase with capitalizeAfterNumber option\r\n  ✔ capitalizeAfterNumber edge cases\r\n  ✔ case preservation after numbers (capitalizeAfterNumber: false)\r\n  ✔ preserve leading underscores and dollar signs\r\n  ✔ edge cases: emoji and unicode\r\n  ✔ edge cases: combined options\r\n  ✔ edge cases: numbers\r\n  ✔ edge cases: locale with capitalizeAfterNumber\r\n  ✔ edge cases: special characters\r\n  ✔ edge cases: array input\r\n  ✔ edge cases: uppercase transitions\r\n  ✔ edge cases: extreme inputs\r\n  ✔ invalid input\r\n  ─\r\n\r\n  camelCase\r\n\r\n  test.js:18\r\n\r\n   17:   t.is(camelCase('FOÈ-BAR'), 'foèBar');     \n   18:   t.is(camelCase('-foo-bar-'), 'fooBar');   \n   19:   t.is(camelCase('--foo--bar--'), 'fooBar');\r\n\r\n  Difference (- actual, + expected):\n\n  - 'fooBar-'\n  + 'fooBar'\r\n\r\n  › file:///test.js:18:4\r\n\r\n\r\n\r\n  camelCase with pascalCase option\r\n\r\n  test.js:91\r\n\r\n   90:   t.is(camelCase('FOÈ-BAR', {pascalCase: true}), 'FoèBar');     \n   91:   t.is(camelCase('-foo-bar-', {pascalCase: true}), 'FooBar');   \n   92:   t.is(camelCase('--foo--bar--', {pascalCase: true}), 'FooBar');\r\n\r\n  Difference (- actual, + expected):\n\n  - 'FooBar-'\n  + 'FooBar'\r\n\r\n  › file:///test.js:91:4\r\n\r\n  ─\r\n\r\n  2 tests failed\r\n",
+      "agent_status": "failed",
+      "agent_reason": "no_progress",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 53,
+        "turns": 1,
+        "model_calls": 6,
+        "model_failures": 0,
+        "tool_calls": 6,
+        "tool_succeeded": 5,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 3,
+        "duplicate_action_rate": 0.5,
+        "tool_success_rate": 0.833,
+        "failure_density": 0.0189,
+        "tools_used": {
+          "bash": {
+            "started": 2,
+            "succeeded": 1,
+            "failed": 1
+          },
+          "read": {
+            "started": 4,
+            "succeeded": 4,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "index.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 6,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 6,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 13,
+        "messages_hot": 13,
+        "messages_dropped": 0,
+        "projection_bytes": 13409,
+        "input_tokens": 9295,
+        "output_tokens": 110,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 6016,
+        "model_ms": 2721,
+        "tool_ms": 3272,
+        "other_ms": 23,
+        "status": "failed",
+        "exit_reason": "no_progress"
+      },
+      "failure_class": "no_progress",
+      "explain": "Run run_78ec77a4b9\n  task: `npx ava` fails on inputs where a separator or digit run reaches the end of the string. The identifi…\n────────────────────────────────────────────────────────────────\n   1  08:06:35  · run created (scope personal:local)\n   3  08:06:35  ▸ task: `npx ava` fails on inputs where a separator or digit run reaches the end of the string. Th…\n   6  08:06:35  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:06:35  🧠 wants 1 tool call: bash 481→15tok\n  10  08:06:35  · bash {\"cmd\":\"ls -R\"}\n  11  08:06:36  ✓ bash → .: index.d.ts index.js index.test-d.ts license node_modules package.js…\n  14  08:06:36  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:06:36  🧠 wants 1 tool call: bash 540→19tok\n  18  08:06:36  · bash {\"cmd\":\"npx ava\"}\n  19  08:06:39  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n  22  08:06:39  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:06:39  🧠 wants 1 tool call: read 1089→19tok\n  26  08:06:39  · read {\"path\":\"index.js\"}\n  27  08:06:39  ✓ read → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  30  08:06:40  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:06:40  🧠 wants 1 tool call: read 1742→19tok\n  34  08:06:40  · read {\"path\":\"index.js\"}\n  35  08:06:40  ✓ read → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  38  08:06:40  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:06:40  🧠 wants 1 tool call: read 2395→19tok\n  42  08:06:40  · read {\"path\":\"index.js\"}\n  43  08:06:40  ✓ read → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  46  08:06:41  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  08:06:41  🧠 wants 1 tool call: read 3048→19tok\n  50  08:06:41  · read {\"path\":\"index.js\"}\n  51  08:06:41  ✓ read → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  53  08:06:41  ✕ failed — no_progress (identical tool request repeated 4 times)"
+    },
+    {
+      "task_id": "ansi-brightness-bit",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "ansi-styles",
+      "base_commit": "c1c3dd4e017a2938807aaff0d361f46d086aeab7",
+      "difficulty": "hard",
+      "categories": [
+        "bug_fix",
+        "numeric",
+        "debugging"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "\r\n  ✔ return ANSI escape codes\r\n  ✔ group related codes into categories\r\n  ✔ groups should not be enumerable\r\n  ✘ [fail]: support conversion to ansi (16 colors)\r\n  ✔ support conversion to ansi (256 colors)\r\n  ✔ support conversion to ansi (16 million colors)\r\n  ✔ 16/256/16m color close escapes\r\n  ✔ export raw ANSI escape codes\r\n  ✔ rgb → truecolor is stubbed\r\n  ✔ non-styles should not be exported\r\n  ─\r\n\r\n  support conversion to ansi (16 colors)\r\n\r\n  test\\test.js:28\r\n\r\n   27: test('support conversion to ansi (16 colors)', t => {                    \n   28:   t.is(ansiStyles.color.ansi(ansiStyles.rgbToAnsi(255, 255, 255)), '\\u{1…\n   29:   t.is(ansiStyles.color.ansi(ansiStyles.hexToAnsi('#990099')), '\\u{1B}[3…\r\n\r\n  Difference (- actual, + expected):\n\n  - ''\n  + ''\r\n\r\n  › file:///test/test.js:28:4\r\n\r\n  ─\r\n\r\n  1 test failed\r\n",
+      "agent_status": "failed",
+      "agent_reason": "max_turns",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 324,
+        "turns": 1,
+        "model_calls": 40,
+        "model_failures": 0,
+        "tool_calls": 40,
+        "tool_succeeded": 33,
+        "tool_failed": 7,
+        "tool_denied": 0,
+        "duplicate_action_count": 17,
+        "duplicate_action_rate": 0.425,
+        "tool_success_rate": 0.825,
+        "failure_density": 0.0216,
+        "tools_used": {
+          "bash": {
+            "started": 34,
+            "succeeded": 27,
+            "failed": 7
+          },
+          "read": {
+            "started": 4,
+            "succeeded": 4,
+            "failed": 0
+          },
+          "edit": {
+            "started": 2,
+            "succeeded": 2,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "index.js",
+          "test/test.js"
+        ],
+        "edits": 2,
+        "writes": 0,
+        "test_runs": 1,
+        "failed_test_runs": 7,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 40,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 40,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 81,
+        "messages_hot": 40,
+        "messages_dropped": 41,
+        "projection_bytes": 19472,
+        "input_tokens": 342355,
+        "output_tokens": 1058,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 98469,
+        "model_ms": 64240,
+        "tool_ms": 34090,
+        "other_ms": 139,
+        "status": "failed",
+        "exit_reason": "max_turns"
+      },
+      "failure_class": "budget_exhausted",
+      "explain": "Run run_3d4018539c\n  task: `npx ava` fails: bright colour variants are not produced correctly during ANSI-256 to ANSI-16 conver…\n────────────────────────────────────────────────────────────────\n   1  08:35:54  · run created (scope personal:local)\n   3  08:35:54  ▸ task: `npx ava` fails: bright colour variants are not produced correctly during ANSI-256 to ANSI…\n   6  08:35:55  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:35:55  🧠 wants 1 tool call: bash 486→15tok\n  10  08:35:55  · bash {\"cmd\":\"ls -R\"}\n  11  08:35:55  ✓ bash → .: index.d.ts index.js index.test-d.ts license node_modules package.js…\n  14  08:35:56  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:35:56  🧠 wants 1 tool call: bash 559→19tok\n  18  08:35:56  · bash {\"cmd\":\"npx ava\"}\n  19  08:36:00  ✕ bash failed: command failed (exit 1): ✔ return ANSI escape codes ✔ group related co…\n  22  08:36:00  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:36:00  🧠 wants 1 tool call: read 913→19tok\n  26  08:36:00  · read {\"path\":\"index.js\"}\n  27  08:36:00  ✓ read → const ANSI_BACKGROUND_OFFSET = 10; const ANSI_UNDERLINE_OFFSET = 20; c…\n  30  08:36:01  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:36:01  🧠 wants 1 tool call: read 1902→19tok\n  34  08:36:01  · read {\"path\":\"index.js\"}\n  35  08:36:01  ✓ read → const ANSI_BACKGROUND_OFFSET = 10; const ANSI_UNDERLINE_OFFSET = 20; c…\n  38  08:36:01  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:36:01  🧠 wants 1 tool call: bash 2891→28tok\n  42  08:36:01  · bash {\"cmd\":\"grep -n \\\"rgbToAnsi\\\" index.js\"}\n  43  08:36:02  ✓ bash → 152: rgbToAnsi256: { 201: value: hex => styles.rgbToAnsi256(...styles.…\n  46  08:36:03  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  47  08:36:03  🧠 wants 1 tool call: bash 3023→27tok\n  50  08:36:03  · bash {\"cmd\":\"grep -n \\\"ansi256ToAnsi\\\" index.js\"}\n  51  08:36:03  ✓ bash → 204: ansi256ToAnsi: { 250: value: (red, green, blue) => styles.ansi256…\n  54  08:36:04  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  55  08:36:04  🧠 wants 1 tool call: bash 3149→32tok\n  58  08:36:04  · bash {\"cmd\":\"grep -n \\\"ansi256ToAnsi\\\" index.js -A 20\"}\n  59  08:36:04  ✓ bash → 204: ansi256ToAnsi: { 205- value(code) { 206- if (code < 8) { 207- ret…\n  62  08:36:05  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  63  08:36:05  🧠 wants 1 tool call: read 3607→15tok\n  66  08:36:05  · read {\"path\":\"index.js\"}\n  67  08:36:05  ✓ read → const ANSI_BACKGROUND_OFFSET = 10; const ANSI_UNDERLINE_OFFSET = 20; c…\n  70  08:36:06  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  71  08:36:06  🧠 wants 1 tool call: bash 4596→37tok\n  74  08:36:06  · bash {\"cmd\":\"grep -n \\\"ansi256ToAnsi\\\" index.js -A 100\"}\n  75  08:36:06  ✓ bash → 204: ansi256ToAnsi: { 205- value(code) { 206- if (code < 8) { 207- ret…\n  78  08:36:07  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  79  08:36:07  🧠 wants 1 tool call: bash 5360→19tok\n  82  08:36:07  · bash {\"cmd\":\"npx ava\"}\n  83  08:36:09  ✕ bash failed: command failed (exit 1): ✔ return ANSI escape codes ✔ group related co…\n  86  08:36:10  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  87  08:36:10  🧠 wants 1 tool call: read 5714→21tok\n  90  08:36:10  · read {\"path\":\"test/test.js\"}\n  91  08:36:10  ✓ read → import test from 'ava'; import ansiStyles, { backgroundColorNames, col…\n  94  08:36:11  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  95  08:36:11  🧠 wants 1 tool call: bash 6629→26tok\n  98  08:36:11  · bash {\"cmd\":\"grep -n \\\"ansi\\\" index.js -A 20\"}\n  99  08:36:11  ✓ bash → 24: // Extended underline styles (`SGR 4:x` sub-parameters). Not in up…\n 102  08:36:12  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 103  08:36:12  🧠 wants 1 tool call: bash 7654→32tok\n 106  08:36:12  · bash {\"cmd\":\"grep -n \\\"ansi256ToAnsi\\\" index.js -A 50\"}\n 107  08:36:12  ✓ bash → 204: ansi256ToAnsi: { 205- value(code) { 206- if (code < 8) { 207- ret…\n 110  08:36:13  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 111  08:36:13  🧠 wants 1 tool call: bash 8417→20tok\n 114  08:36:13  · bash {\"cmd\":\"cat index.js\"}\n 115  08:36:13  ✓ bash → const ANSI_BACKGROUND_OFFSET = 10; const ANSI_UNDERLINE_OFFSET = 20; c…\n 118  08:36:14  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 119  08:36:14  🧠 wants 1 tool call: bash 9407→32tok\n 122  08:36:14  · bash {\"cmd\":\"grep -n \\\"ansi256ToAnsi\\\" index.js -A 50\"}\n 123  08:36:15  ✓ bash → 204: ansi256ToAnsi: { 205- value(code) { 206- if (code < 8) { 207- ret…\n 126  08:36:15  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 127  08:36:15  🧠 wants 1 tool call: bash 10170→16tok\n 130  08:36:15  · bash {\"cmd\":\"cat index.js\"}\n 131  08:36:16  ✓ bash → const ANSI_BACKGROUND_OFFSET = 10; const ANSI_UNDERLINE_OFFSET = 20; c…\n 134  08:36:17  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 135  08:36:17  🧠 wants 1 tool call: bash 11160→28tok\n 138  08:36:17  · bash {\"cmd\":\"sed -n '200,250p' index.js\"}\n 139  08:36:17  ✓ bash → hexToAnsi256: { value: hex => styles.rgbToAnsi256(...styles.hexToRgb(h…\n 142  08:36:18  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 143  08:36:18  🧠 wants 1 tool call: bash 11629→32tok\n 146  08:36:18  · bash {\"cmd\":\"grep -n \\\"rgbToAnsi256\\\" index.js -A 20\"}\n 147  08:36:19  ✓ bash → 152: rgbToAnsi256: { 153- value(red, green, blue) { 154- // We use the…\n 150  08:36:19  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 151  08:36:19  🧠 wants 1 tool call: bash 12407→16tok\n 154  08:36:19  · bash {\"cmd\":\"cat index.js\"}\n 155  08:36:20  ✓ bash → const ANSI_BACKGROUND_OFFSET = 10; const ANSI_UNDERLINE_OFFSET = 20; c…\n 158  08:36:20  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 159  08:36:20  🧠 wants 1 tool call: bash 13397→28tok\n 162  08:36:20  · bash {\"cmd\":\"sed -n '200,250p' index.js\"}\n 163  08:36:21  ✓ bash → hexToAnsi256: { value: hex => styles.rgbToAnsi256(...styles.hexToRgb(h…\n 166  08:36:24  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 167  08:36:24  🧠 wants 1 tool call: bash 13840→28tok\n 170  08:36:24  · bash {\"cmd\":\"sed -n '150,175p' index.js\"}\n 171  08:36:24  ✓ bash → // From https://github.com/Qix-/color-convert/blob/3f0e0d4e92e235796cc…\n 174  08:36:27  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 175  08:36:27  🧠 wants 1 tool call: bash 14102→15tok\n 178  08:36:27  · bash {\"cmd\":\"npx ava\"}\n 179  08:36:30  ✕ bash failed: command failed (exit 1): ✔ return ANSI escape codes ✔ group related co…\n 182  08:36:33  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 183  08:36:33  🧠 wants 1 tool call: bash 14102→28tok\n 186  08:36:33  · bash {\"cmd\":\"sed -n '205,246p' index.js\"}\n 187  08:36:33  ✓ bash → value(code) { if (code < 8) { return 30 + code; } if (code < 16) { ret…\n 190  08:36:36  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 191  08:36:36  🧠 wants 1 tool call: bash 13469→28tok\n 194  08:36:36  · bash {\"cmd\":\"sed -n '153,166p' index.js\"}\n 195  08:36:36  ✓ bash → value(red, green, blue) { // We use the extended greyscale palette her…\n 198  08:36:39  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 199  08:36:39  🧠 wants 1 tool call: bash 12650→15tok\n 202  08:36:39  · bash {\"cmd\":\"npx ava\"}\n 203  08:36:41  ✕ bash failed: command failed (exit 1): ✔ return ANSI escape codes ✔ group related co…\n 206  08:36:45  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 207  08:36:45  🧠 wants 1 tool call: edit 12873→76tok\n 210  08:36:45  · edit {\"new_string\":\"\\t\\t\\t\\t\\tif (red > 248) {\\n\\t\\t\\t\\t\\t\\treturn 15;\\n\\t\\…\n 211  08:36:45  ✓ edit → edited index.js\n 214  08:36:48  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 215  08:36:48  🧠 wants 1 tool call: bash 12833→15tok\n 218  08:36:48  · bash {\"cmd\":\"npx ava\"}\n 219  08:36:50  ✕ bash failed: command failed (exit 1): ✔ return ANSI escape codes ✔ group related co…\n 222  08:36:54  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 223  08:36:54  🧠 wants 1 tool call: edit 12916→72tok\n 226  08:36:54  · edit {\"new_string\":\"\\t\\t\\t\\t\\tif (red > 248) {\\n\\t\\t\\t\\t\\t\\treturn 231;\\n\\t…\n 227  08:36:54  ✓ edit → edited index.js\n 230  08:36:56  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 231  08:36:56  🧠 wants 1 tool call: bash 12013→15tok\n 234  08:36:56  · bash {\"cmd\":\"npx ava\"}\n 235  08:36:59  ✕ bash failed: command failed (exit 1): ✔ return ANSI escape codes ✔ group related co…\n 238  08:37:02  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 239  08:37:02  🧠 wants 1 tool call: bash 11603→28tok\n 242  08:37:02  · bash {\"cmd\":\"sed -n '205,246p' index.js\"}\n 243  08:37:03  ✓ bash → value(code) { if (code < 8) { return 30 + code; } if (code < 16) { ret…\n 246  08:37:05  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 247  08:37:05  🧠 wants 1 tool call: bash 11605→15tok\n 250  08:37:05  · bash {\"cmd\":\"npx ava\"}\n 251  08:37:08  ✕ bash failed: command failed (exit 1): ✔ return ANSI escape codes ✔ group related co…\n 254  08:37:11  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 255  08:37:11  🧠 wants 1 tool call: bash 11044→28tok\n 258  08:37:11  · bash {\"cmd\":\"sed -n '240,246p' index.js\"}\n 259  08:37:11  ✓ bash → if (value === 3) { result += 60; } return result; },\n 262  08:37:14  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 263  08:37:14  🧠 wants 1 tool call: bash 10087→28tok\n 266  08:37:14  · bash {\"cmd\":\"sed -n '232,246p' index.js\"}\n 267  08:37:15  ✓ bash → const value = Math.max(red, green, blue) * 2; if (value === 0) { retur…\n 270  08:37:17  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 271  08:37:17  🧠 wants 1 tool call: bash 9482→18tok\n 274  08:37:17  · bash {\"cmd\":\"cat test/test.js\"}\n 275  08:37:17  ✓ bash → import test from 'ava'; import ansiStyles, { backgroundColorNames, col…\n 278  08:37:20  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 279  08:37:20  🧠 wants 1 tool call: bash 9408→28tok\n 282  08:37:20  · bash {\"cmd\":\"sed -n '232,246p' index.js\"}\n 283  08:37:21  ✓ bash → const value = Math.max(red, green, blue) * 2; if (value === 0) { retur…\n 286  08:37:22  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 287  08:37:22  🧠 wants 1 tool call: bash 8803→28tok\n 290  08:37:22  · bash {\"cmd\":\"sed -n '205,212p' index.js\"}\n 291  08:37:23  ✓ bash → value(code) { if (code < 8) { return 30 + code; } if (code < 16) { ret…\n 294  08:37:25  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 295  08:37:25  🧠 wants 1 tool call: bash 7907→28tok\n 298  08:37:25  · bash {\"cmd\":\"sed -n '218,223p' index.js\"}\n 299  08:37:25  ✓ bash → if (code >= 232) { red = (((code - 232) * 10) + 8) / 255; green = red;…\n 302  08:37:28  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 303  08:37:28  🧠 wants 1 tool call: bash 7540→28tok\n 306  08:37:28  · bash {\"cmd\":\"sed -n '232,246p' index.js\"}\n 307  08:37:28  ✓ bash → const value = Math.max(red, green, blue) * 2; if (value === 0) { retur…\n 310  08:37:31  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 311  08:37:31  🧠 wants 1 tool call: bash 6920→28tok\n 314  08:37:31  · bash {\"cmd\":\"sed -n '232,246p' index.js\"}\n 315  08:37:31  ✓ bash → const value = Math.max(red, green, blue) * 2; if (value === 0) { retur…\n 318  08:37:32  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 319  08:37:32  🧠 wants 1 tool call: bash 6088→28tok\n 322  08:37:32  · bash {\"cmd\":\"sed -n '232,246p' index.js\"}\n 323  08:37:33  ✓ bash → const value = Math.max(red, green, blue) * 2; if (value === 0) { retur…\n 324  08:37:33  ✕ failed — max_turns"
+    },
+    {
+      "task_id": "ansi-16m-escape",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "ansi-styles",
+      "base_commit": "c1c3dd4e017a2938807aaff0d361f46d086aeab7",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "string_processing"
+      ],
+      "outcome": "PASS",
+      "detail": "npx ava passed",
+      "evidence": "\r\n  ✔ return ANSI escape codes\r\n  ✔ group related codes into categories\r\n  ✔ groups should not be enumerable\r\n  ✔ support conversion to ansi (16 colors)\r\n  ✔ support conversion to ansi (256 colors)\r\n  ✔ support conversion to ansi (16 million colors)\r\n  ✔ 16/256/16m color close escapes\r\n  ✔ export raw ANSI escape codes\r\n  ✔ rgb → truecolor is stubbed\r\n  ✔ non-styles should not be exported\r\n  ─\r\n\r\n  10 tests passed\r\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "The 24-bit (truecolor) escape sequences were using the `5` parameter (reserved for 256-color mode) instead of the `2` parameter required for RGB truecolor. I updated the `wrapAnsi16m` function in `index.js` to use `;2;` instead of `;5;`.\n\n```javascript\n// Before\nconst wrapAnsi16m = (offset = 0) => (red, green, blue) => `\\u{1B}[${38 + offset};5;${red};${green};${blue}m`;\n\n// After\nconst wrapAnsi16m",
+      "metrics": {
+        "events": 48,
+        "turns": 1,
+        "model_calls": 6,
+        "model_failures": 0,
+        "tool_calls": 5,
+        "tool_succeeded": 4,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 1,
+        "duplicate_action_rate": 0.2,
+        "tool_success_rate": 0.8,
+        "failure_density": 0.0208,
+        "tools_used": {
+          "bash": {
+            "started": 3,
+            "succeeded": 2,
+            "failed": 1
+          },
+          "read": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "index.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 5,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 6,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 12,
+        "messages_hot": 12,
+        "messages_dropped": 0,
+        "projection_bytes": 8254,
+        "input_tokens": 9432,
+        "output_tokens": 390,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 14136,
+        "model_ms": 8257,
+        "tool_ms": 5863,
+        "other_ms": 16,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": null,
+      "explain": "Run run_e2dfacc116\n  task: The 24-bit (truecolor) escape sequences are malformed and `npx ava` fails. Repair the sequence build…\n────────────────────────────────────────────────────────────────\n   1  08:37:35  · run created (scope personal:local)\n   3  08:37:35  ▸ task: The 24-bit (truecolor) escape sequences are malformed and `npx ava` fails. Repair the sequ…\n   6  08:37:35  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:37:35  🧠 wants 1 tool call: bash 469→15tok\n  10  08:37:35  · bash {\"cmd\":\"npx ava\"}\n  11  08:37:38  ✕ bash failed: command failed (exit 1): ✔ return ANSI escape codes ✔ group related co…\n  14  08:37:39  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:37:39  🧠 wants 1 tool call: bash 1050→19tok\n  18  08:37:39  · bash {\"cmd\":\"ls -R\"}\n  19  08:37:39  ✓ bash → .: index.d.ts index.js index.test-d.ts license node_modules package.js…\n  22  08:37:39  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  23  08:37:39  🧠 wants 1 tool call: read 1127→15tok\n  26  08:37:39  · read {\"path\":\"index.js\"}\n  27  08:37:39  ✓ read → const ANSI_BACKGROUND_OFFSET = 10; const ANSI_UNDERLINE_OFFSET = 20; c…\n  30  08:37:42  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:37:42  🧠 wants 1 tool call: edit 2116→131tok\n  34  08:37:42  · edit {\"new_string\":\"const wrapAnsi16m = (offset = 0) => (red, green, blue) …\n  35  08:37:42  ✓ edit → edited index.js\n  38  08:37:43  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  39  08:37:43  🧠 wants 1 tool call: bash 2257→15tok\n  42  08:37:43  · bash {\"cmd\":\"npx ava\"}\n  43  08:37:45  ✓ bash → ✔ return ANSI escape codes ✔ group related codes into categories ✔ gro…\n  46  08:37:49  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  47  08:37:49  🧠 \"The 24-bit (truecolor) escape sequences were using the `5` parameter (reserved f…\" 2413→195tok\n  48  08:37:49  ✓ completed — model_finished: \"The 24-bit (truecolor) escape sequences were using the `5` p…\""
+    },
+    {
+      "task_id": "slug-trailing-separator",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "slugify",
+      "base_commit": "7c318bd1aa4b4affab29761f15a9604323fe2a3b",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "regex",
+        "string_processing"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "file:///test.js:68:4\r\n\r\n\r\n\r\n  lowercase option\r\n\r\n  test.js:101\r\n\r\n   100:   t.is(slugify('BAR&baz', {lowercase: false}), 'BAR-and-baz');          \n   101:   t.is(slugify('Déjà Vu!', {separator: '_', lowercase: false}), 'Deja_V…\n   102:   t.is(slugify('UNICORNS AND RAINBOWS!', {separator: '@', lowercase: fa…\r\n\r\n  Difference (- actual, + expected):\n\n  - 'Deja_Vu_'\n  + 'Deja_Vu'\r\n\r\n  › file:///test.js:101:4\r\n\r\n\r\n\r\n  trailing dash\r\n\r\n  test.js:160\r\n\r\n   159: test('trailing dash', t => {                                           \n   160:   t.is(slugify('foo bar-', {preserveTrailingDash: true}), 'foo-bar-'); \n   161:   t.is(slugify('foo-bar--', {preserveTrailingDash: true}), 'foo-bar-');\r\n\r\n  Difference (- actual, + expected):\n\n  - 'foo-bar--'\n  + 'foo-bar-'\r\n\r\n  › file:///test.js:160:4\r\n\r\n\r\n\r\n  preserve characters\r\n\r\n  test.js:206\r\n\r\n   205:   t.is(slugify('foo.bar', {preserveCharacters: []}), 'foo-bar');    \n   206:   t.is(slugify('foo?bar ', {preserveCharacters: ['#']}), 'foo-bar');\n   207:   t.is(slugify('foo#bar', {preserveCharacters: ['#']}), 'foo#bar'); \r\n\r\n  Difference (- actual, + expected):\n\n  - 'foo-bar-'\n  + 'foo-bar'\r\n\r\n  › file:///test.js:206:4\r\n\r\n  ─\r\n\r\n  6 tests failed\r\n",
+      "agent_status": "failed",
+      "agent_reason": "no_progress",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 69,
+        "turns": 1,
+        "model_calls": 8,
+        "model_failures": 0,
+        "tool_calls": 8,
+        "tool_succeeded": 7,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 4,
+        "duplicate_action_rate": 0.5,
+        "tool_success_rate": 0.875,
+        "failure_density": 0.0145,
+        "tools_used": {
+          "bash": {
+            "started": 6,
+            "succeeded": 5,
+            "failed": 1
+          },
+          "read": {
+            "started": 2,
+            "succeeded": 2,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "index.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 8,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 8,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 17,
+        "messages_hot": 17,
+        "messages_dropped": 0,
+        "projection_bytes": 18865,
+        "input_tokens": 19410,
+        "output_tokens": 148,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 9394,
+        "model_ms": 3930,
+        "tool_ms": 5431,
+        "other_ms": 33,
+        "status": "failed",
+        "exit_reason": "no_progress"
+      },
+      "failure_class": "no_progress",
+      "explain": "Run run_67e179d42b\n  task: `npx ava` fails: slugs keep a separator at the end that should have been stripped. Find the defect i…\n────────────────────────────────────────────────────────────────\n   1  08:15:55  · run created (scope personal:local)\n   3  08:15:55  ▸ task: `npx ava` fails: slugs keep a separator at the end that should have been stripped. Find th…\n   6  08:15:56  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:15:56  🧠 wants 1 tool call: bash 478→15tok\n  10  08:15:56  · bash {\"cmd\":\"npx ava\"}\n  11  08:15:59  ✕ bash failed: command failed (exit 1): ✘ [fail]: main ✔ possessives and contractions…\n  14  08:15:59  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:15:59  🧠 wants 1 tool call: bash 1241→19tok\n  18  08:15:59  · bash {\"cmd\":\"ls -R\"}\n  19  08:16:00  ✓ bash → .: index.d.ts index.js license node_modules overridable-replacements.j…\n  22  08:16:00  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  23  08:16:00  🧠 wants 1 tool call: read 1305→15tok\n  26  08:16:00  · read {\"path\":\"index.js\"}\n  27  08:16:00  ✓ read → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  30  08:16:00  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:16:00  🧠 wants 1 tool call: read 1962→19tok\n  34  08:16:00  · read {\"path\":\"index.js\"}\n  35  08:16:00  ✓ read → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  38  08:16:01  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:16:01  🧠 wants 1 tool call: bash 2619→20tok\n  42  08:16:01  · bash {\"cmd\":\"cat index.js\"}\n  43  08:16:01  ✓ bash → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  46  08:16:02  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  08:16:02  🧠 wants 1 tool call: bash 3277→20tok\n  50  08:16:02  · bash {\"cmd\":\"cat index.js\"}\n  51  08:16:03  ✓ bash → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  54  08:16:03  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  55  08:16:03  🧠 wants 1 tool call: bash 3935→20tok\n  58  08:16:03  · bash {\"cmd\":\"cat index.js\"}\n  59  08:16:04  ✓ bash → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  62  08:16:04  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  63  08:16:04  🧠 wants 1 tool call: bash 4593→20tok\n  66  08:16:04  · bash {\"cmd\":\"cat index.js\"}\n  67  08:16:05  ✓ bash → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  69  08:16:05  ✕ failed — no_progress (identical tool request repeated 4 times)"
+    },
+    {
+      "task_id": "slug-lowercase-option",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "slugify",
+      "base_commit": "7c318bd1aa4b4affab29761f15a9604323fe2a3b",
+      "difficulty": "hard",
+      "categories": [
+        "bug_fix",
+        "option_handling",
+        "debugging"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "\n  supports Turkish\r\n\r\n  test.js:145\r\n\r\n   144: test('supports Turkish', t => {                                         \n   145:   t.is(slugify('İ ı Ş ş Ç ç Ğ ğ', {lowercase: false, separator: ' '}), …\n   146: });                                                                     \r\n\r\n  Difference (- actual, + expected):\n\n  - 'i s c g'\n  + 'I i S s C c G g'\r\n\r\n  › file:///test.js:145:4\r\n\r\n\r\n\r\n  supports Armenian\r\n\r\n  test.js:149\r\n\r\n   148: test('supports Armenian', t => {                                        \n   149:   t.is(slugify('Ե ր ե ւ ա ն', {lowercase: false, separator: ' '}), 'Ye …\n   150: });                                                                     \r\n\r\n  Difference (- actual, + expected):\n\n  - 'e r ye a n'\n  + 'Ye r ye a n'\r\n\r\n  › file:///test.js:149:4\r\n\r\n\r\n\r\n  counter\r\n\r\n  test.js:189\r\n\r\n   188:   t.is(slugify('foo-111-1'), 'foo-111-1-1');                            \n   189:   t.is(slugify('fooCamelCase', {lowercase: false, decamelize: false}), …\n   190:   t.is(slugify('fooCamelCase', {decamelize: false}), 'foocamelcase-2'); \r\n\r\n  Difference (- actual, + expected):\n\n  - 'foo-amel-ase'\n  + 'fooCamelCase'\r\n\r\n  › file:///test.js:189:4\r\n\r\n  ─\r\n\r\n  8 tests failed\r\n",
+      "agent_status": "failed",
+      "agent_reason": "no_progress",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 77,
+        "turns": 1,
+        "model_calls": 9,
+        "model_failures": 0,
+        "tool_calls": 9,
+        "tool_succeeded": 8,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 5,
+        "duplicate_action_rate": 0.556,
+        "tool_success_rate": 0.889,
+        "failure_density": 0.013,
+        "tools_used": {
+          "bash": {
+            "started": 6,
+            "succeeded": 5,
+            "failed": 1
+          },
+          "read": {
+            "started": 3,
+            "succeeded": 3,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "index.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 9,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 9,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 19,
+        "messages_hot": 19,
+        "messages_dropped": 0,
+        "projection_bytes": 21317,
+        "input_tokens": 23563,
+        "output_tokens": 167,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 9498,
+        "model_ms": 4216,
+        "tool_ms": 5242,
+        "other_ms": 40,
+        "status": "failed",
+        "exit_reason": "no_progress"
+      },
+      "failure_class": "no_progress",
+      "explain": "Run run_56c9fdb80f\n  task: The `lowercase` option behaves backwards and `npx ava` fails. Trace how the option builds the charac…\n────────────────────────────────────────────────────────────────\n   1  08:16:07  · run created (scope personal:local)\n   3  08:16:07  ▸ task: The `lowercase` option behaves backwards and `npx ava` fails. Trace how the option builds …\n   6  08:16:07  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:16:07  🧠 wants 1 tool call: bash 468→15tok\n  10  08:16:07  · bash {\"cmd\":\"ls -R\"}\n  11  08:16:08  ✓ bash → .: index.d.ts index.js license node_modules overridable-replacements.j…\n  14  08:16:08  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:16:08  🧠 wants 1 tool call: bash 528→19tok\n  18  08:16:08  · bash {\"cmd\":\"npx ava\"}\n  19  08:16:11  ✕ bash failed: command failed (exit 1): ✔ main ✔ possessives and contractions ✔ custo…\n  22  08:16:11  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:16:11  🧠 wants 1 tool call: read 1261→19tok\n  26  08:16:11  · read {\"path\":\"index.js\"}\n  27  08:16:11  ✓ read → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  30  08:16:12  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:16:12  🧠 wants 1 tool call: read 1915→19tok\n  34  08:16:12  · read {\"path\":\"index.js\"}\n  35  08:16:12  ✓ read → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  38  08:16:12  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:16:12  🧠 wants 1 tool call: read 2569→19tok\n  42  08:16:12  · read {\"path\":\"index.js\"}\n  43  08:16:12  ✓ read → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  46  08:16:13  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  08:16:13  🧠 wants 1 tool call: bash 3223→20tok\n  50  08:16:13  · bash {\"cmd\":\"cat index.js\"}\n  51  08:16:13  ✓ bash → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  54  08:16:14  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  55  08:16:14  🧠 wants 1 tool call: bash 3878→20tok\n  58  08:16:14  · bash {\"cmd\":\"cat index.js\"}\n  59  08:16:14  ✓ bash → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  62  08:16:15  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  63  08:16:15  🧠 wants 1 tool call: bash 4533→20tok\n  66  08:16:15  · bash {\"cmd\":\"cat index.js\"}\n  67  08:16:15  ✓ bash → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  70  08:16:16  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  71  08:16:16  🧠 wants 1 tool call: bash 5188→16tok\n  74  08:16:16  · bash {\"cmd\":\"cat index.js\"}\n  75  08:16:16  ✓ bash → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  77  08:16:16  ✕ failed — no_progress (identical tool request repeated 4 times)"
+    },
+    {
+      "task_id": "slug-decamelize-acronym",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "slugify",
+      "base_commit": "7c318bd1aa4b4affab29761f15a9604323fe2a3b",
+      "difficulty": "hard",
+      "categories": [
+        "bug_fix",
+        "regex",
+        "debugging"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "\r\n  ✘ [fail]: main\r\n  ✔ possessives and contractions\r\n  ✔ custom separator\r\n  ✔ custom replacements\r\n  ✔ lowercase option\r\n  ✔ decamelize option\r\n  ✔ supports German umlauts\r\n  ✔ supports Vietnamese\r\n  ✔ supports Arabic\r\n  ✔ supports Persian / Farsi\r\n  ✔ supports Urdu\r\n  ✔ supports Pashto\r\n  ✔ supports Russian\r\n  ✔ supports Romanian\r\n  ✔ supports Turkish\r\n  ✔ supports Armenian\r\n  ✔ leading underscore\r\n  ✔ trailing dash\r\n  ✔ counter\r\n  ✔ preserve characters\r\n  ✔ locale option\r\n  ✔ transliterate option disabled\r\n  ─\r\n\r\n  main\r\n\r\n  test.js:27\r\n\r\n   26:   t.is(slugify('FOOBar'), 'foo-bar');        \n   27:   t.is(slugify('APIs'), 'apis');             \n   28:   t.is(slugify('APISection'), 'api-section');\r\n\r\n  Difference (- actual, + expected):\n\n  - 'ap-is'\n  + 'apis'\r\n\r\n  › file:///test.js:27:4\r\n\r\n  ─\r\n\r\n  1 test failed\r\n",
+      "agent_status": "failed",
+      "agent_reason": "no_progress",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 53,
+        "turns": 1,
+        "model_calls": 6,
+        "model_failures": 0,
+        "tool_calls": 6,
+        "tool_succeeded": 5,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 3,
+        "duplicate_action_rate": 0.5,
+        "tool_success_rate": 0.833,
+        "failure_density": 0.0189,
+        "tools_used": {
+          "bash": {
+            "started": 2,
+            "succeeded": 1,
+            "failed": 1
+          },
+          "read": {
+            "started": 4,
+            "succeeded": 4,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "index.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 6,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 6,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 13,
+        "messages_hot": 13,
+        "messages_dropped": 0,
+        "projection_bytes": 12646,
+        "input_tokens": 8641,
+        "output_tokens": 110,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 6133,
+        "model_ms": 2739,
+        "tool_ms": 3369,
+        "other_ms": 25,
+        "status": "failed",
+        "exit_reason": "no_progress"
+      },
+      "failure_class": "no_progress",
+      "explain": "Run run_723c1443e2\n  task: Camel-cased input and acronyms are split incorrectly, so `npx ava` fails. Read the decamelize logic …\n────────────────────────────────────────────────────────────────\n   1  08:16:18  · run created (scope personal:local)\n   3  08:16:18  ▸ task: Camel-cased input and acronyms are split incorrectly, so `npx ava` fails. Read the decamel…\n   6  08:16:19  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:16:19  🧠 wants 1 tool call: bash 477→15tok\n  10  08:16:19  · bash {\"cmd\":\"npx ava\"}\n  11  08:16:22  ✕ bash failed: command failed (exit 1): ✘ [fail]: main ✔ possessives and contractions…\n  14  08:16:22  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:16:22  🧠 wants 1 tool call: bash 798→19tok\n  18  08:16:22  · bash {\"cmd\":\"ls -R\"}\n  19  08:16:23  ✓ bash → .: index.d.ts index.js license node_modules overridable-replacements.j…\n  22  08:16:23  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:16:23  🧠 wants 1 tool call: read 862→19tok\n  26  08:16:23  · read {\"path\":\"index.js\"}\n  27  08:16:23  ✓ read → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  30  08:16:24  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:16:24  🧠 wants 1 tool call: read 1515→19tok\n  34  08:16:24  · read {\"path\":\"index.js\"}\n  35  08:16:24  ✓ read → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  38  08:16:24  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:16:24  🧠 wants 1 tool call: read 2168→19tok\n  42  08:16:24  · read {\"path\":\"index.js\"}\n  43  08:16:24  ✓ read → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  46  08:16:24  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  08:16:24  🧠 wants 1 tool call: read 2821→19tok\n  50  08:16:24  · read {\"path\":\"index.js\"}\n  51  08:16:24  ✓ read → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  53  08:16:24  ✕ failed — no_progress (identical tool request repeated 4 times)"
+    },
+    {
+      "task_id": "slug-overridable-replacements",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "slugify",
+      "base_commit": "7c318bd1aa4b4affab29761f15a9604323fe2a3b",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "multi_file",
+        "exploration"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "         \r\n\r\n  Difference (- actual, + expected):\n\n  - 'foo-bar'\n  + 'foo-and-bar'\r\n\r\n  › file:///test.js:14:4\r\n\r\n\r\n\r\n  custom separator\r\n\r\n  test.js:49\r\n\r\n   48:   t.is(slugify('aaa bbb', {separator: ''}), 'aaabbb');      \n   49:   t.is(slugify('BAR&baz', {separator: '_'}), 'bar_and_baz');\n   50:   t.is(slugify('Déjà Vu!', {separator: '-'}), 'deja-vu');   \r\n\r\n  Difference (- actual, + expected):\n\n  - 'bar_baz'\n  + 'bar_and_baz'\r\n\r\n  › file:///test.js:49:4\r\n\r\n\r\n\r\n  lowercase option\r\n\r\n  test.js:100\r\n\r\n    99:   t.is(slugify('foo bar', {lowercase: false}), 'foo-bar');              \n   100:   t.is(slugify('BAR&baz', {lowercase: false}), 'BAR-and-baz');          \n   101:   t.is(slugify('Déjà Vu!', {separator: '_', lowercase: false}), 'Deja_V…\r\n\r\n  Difference (- actual, + expected):\n\n  - 'BAR-baz'\n  + 'BAR-and-baz'\r\n\r\n  › file:///test.js:100:4\r\n\r\n\r\n\r\n  transliterate option disabled\r\n\r\n  test.js:256\r\n\r\n   255:   t.is(slugify('Déjà Vu'), 'deja-vu');      \n   256:   t.is(slugify('foo & bar'), 'foo-and-bar');\n   257: });                                         \r\n\r\n  Difference (- actual, + expected):\n\n  - 'foo-bar'\n  + 'foo-and-bar'\r\n\r\n  › file:///test.js:256:4\r\n\r\n  ─\r\n\r\n  4 tests failed\r\n",
+      "agent_status": "failed",
+      "agent_reason": "no_progress",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 77,
+        "turns": 1,
+        "model_calls": 9,
+        "model_failures": 0,
+        "tool_calls": 9,
+        "tool_succeeded": 8,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 4,
+        "duplicate_action_rate": 0.444,
+        "tool_success_rate": 0.889,
+        "failure_density": 0.013,
+        "tools_used": {
+          "bash": {
+            "started": 6,
+            "succeeded": 5,
+            "failed": 1
+          },
+          "read": {
+            "started": 3,
+            "succeeded": 3,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "overridable-replacements.js",
+          "index.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 9,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 9,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 19,
+        "messages_hot": 19,
+        "messages_dropped": 0,
+        "projection_bytes": 19495,
+        "input_tokens": 21414,
+        "output_tokens": 176,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 9556,
+        "model_ms": 4311,
+        "tool_ms": 5209,
+        "other_ms": 36,
+        "status": "failed",
+        "exit_reason": "no_progress"
+      },
+      "failure_class": "no_progress",
+      "explain": "Run run_c4601a245e\n  task: Some built-in character replacements no longer apply and `npx ava` fails. The replacement table live…\n────────────────────────────────────────────────────────────────\n   1  08:16:26  · run created (scope personal:local)\n   3  08:16:26  ▸ task: Some built-in character replacements no longer apply and `npx ava` fails. The replacement …\n   6  08:16:27  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:16:27  🧠 wants 1 tool call: bash 478→15tok\n  10  08:16:27  · bash {\"cmd\":\"npx ava\"}\n  11  08:16:29  ✕ bash failed: command failed (exit 1): ✘ [fail]: main ✔ possessives and contractions…\n  14  08:16:30  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:16:30  🧠 wants 1 tool call: bash 1283→19tok\n  18  08:16:30  · bash {\"cmd\":\"ls -R\"}\n  19  08:16:30  ✓ bash → .: index.d.ts index.js license node_modules overridable-replacements.j…\n  22  08:16:31  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:16:31  🧠 wants 1 tool call: read 1347→24tok\n  26  08:16:31  · read {\"path\":\"overridable-replacements.js\"}\n  27  08:16:31  ✓ read → const overridableReplacements = [ ['🦄', ' unicorn '], ['♥', ' love ']…\n  30  08:16:31  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:16:31  🧠 wants 1 tool call: read 1415→19tok\n  34  08:16:31  · read {\"path\":\"index.js\"}\n  35  08:16:31  ✓ read → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  38  08:16:32  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:16:32  🧠 wants 1 tool call: read 2069→19tok\n  42  08:16:32  · read {\"path\":\"index.js\"}\n  43  08:16:32  ✓ read → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  46  08:16:32  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  08:16:32  🧠 wants 1 tool call: bash 2723→20tok\n  50  08:16:32  · bash {\"cmd\":\"cat index.js\"}\n  51  08:16:33  ✓ bash → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  54  08:16:33  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  55  08:16:33  🧠 wants 1 tool call: bash 3378→20tok\n  58  08:16:33  · bash {\"cmd\":\"cat index.js\"}\n  59  08:16:34  ✓ bash → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  62  08:16:34  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  63  08:16:34  🧠 wants 1 tool call: bash 4033→20tok\n  66  08:16:34  · bash {\"cmd\":\"cat index.js\"}\n  67  08:16:35  ✓ bash → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  70  08:16:36  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  71  08:16:36  🧠 wants 1 tool call: bash 4688→20tok\n  74  08:16:36  · bash {\"cmd\":\"cat index.js\"}\n  75  08:16:36  ✓ bash → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  77  08:16:36  ✕ failed — no_progress (identical tool request repeated 4 times)"
+    },
+    {
+      "task_id": "slug-preserve-conflict",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "slugify",
+      "base_commit": "7c318bd1aa4b4affab29761f15a9604323fe2a3b",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "error_handling",
+        "edge_case"
+      ],
+      "outcome": "PASS",
+      "detail": "npx ava passed",
+      "evidence": "\r\n  ✔ main\r\n  ✔ possessives and contractions\r\n  ✔ custom separator\r\n  ✔ custom replacements\r\n  ✔ lowercase option\r\n  ✔ decamelize option\r\n  ✔ supports German umlauts\r\n  ✔ supports Vietnamese\r\n  ✔ supports Arabic\r\n  ✔ supports Persian / Farsi\r\n  ✔ supports Urdu\r\n  ✔ supports Pashto\r\n  ✔ supports Russian\r\n  ✔ supports Romanian\r\n  ✔ supports Turkish\r\n  ✔ supports Armenian\r\n  ✔ leading underscore\r\n  ✔ trailing dash\r\n  ✔ counter\r\n  ✔ preserve characters\r\n  ✔ locale option\r\n  ✔ transliterate option disabled\r\n  ─\r\n\r\n  22 tests passed\r\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "The issue was caused by a `false &&` guard in the `buildPatternSlug` function within `index.js`, which prevented the error from being thrown when a preserved character matched the separator. I removed the `false &&` condition to restore the intended validation.\n\n```javascript\n// index.js\n// Before:\nif (false && character === options.separator) {\n// After:\nif (character === options.separator) {\n```",
+      "metrics": {
+        "events": 48,
+        "turns": 1,
+        "model_calls": 6,
+        "model_failures": 0,
+        "tool_calls": 5,
+        "tool_succeeded": 4,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 1,
+        "duplicate_action_rate": 0.2,
+        "tool_success_rate": 0.8,
+        "failure_density": 0.0208,
+        "tools_used": {
+          "bash": {
+            "started": 2,
+            "succeeded": 1,
+            "failed": 1
+          },
+          "read": {
+            "started": 2,
+            "succeeded": 2,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "test.js",
+          "index.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 5,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 6,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 12,
+        "messages_hot": 12,
+        "messages_dropped": 0,
+        "projection_bytes": 10280,
+        "input_tokens": 10544,
+        "output_tokens": 356,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 13641,
+        "model_ms": 7969,
+        "tool_ms": 5650,
+        "other_ms": 22,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": null,
+      "explain": "Run run_90c6223772\n  task: Passing a preserved character that equals the separator should throw a clear error, but the guard is…\n────────────────────────────────────────────────────────────────\n   1  08:16:38  · run created (scope personal:local)\n   3  08:16:38  ▸ task: Passing a preserved character that equals the separator should throw a clear error, but th…\n   6  08:16:39  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:16:39  🧠 wants 1 tool call: bash 471→15tok\n  10  08:16:39  · bash {\"cmd\":\"npx ava\"}\n  11  08:16:41  ✕ bash failed: command failed (exit 1): ✔ main ✔ possessives and contractions ✔ custo…\n  14  08:16:42  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:16:42  🧠 wants 1 tool call: read 785→19tok\n  18  08:16:42  · read {\"path\":\"test.js\"}\n  19  08:16:42  ✓ read → import test from 'ava'; import slugify, {slugifyWithCounter} from './i…\n  22  08:16:43  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:16:43  🧠 wants 1 tool call: read 1693→19tok\n  26  08:16:43  · read {\"path\":\"index.js\"}\n  27  08:16:43  ✓ read → import escapeStringRegexp from 'escape-string-regexp'; import translit…\n  30  08:16:46  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:16:46  🧠 wants 1 tool call: edit 2345→179tok\n  34  08:16:46  · edit {\"new_string\":\"\\t\\tfor (const character of options.preserveCharacters)…\n  35  08:16:46  ✓ edit → edited index.js\n  38  08:16:47  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:16:47  🧠 wants 1 tool call: bash 2534→19tok\n  42  08:16:47  · bash {\"cmd\":\"npx ava\"}\n  43  08:16:50  ✓ bash → ✔ main ✔ possessives and contractions ✔ custom separator ✔ custom repl…\n  46  08:16:52  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  47  08:16:52  🧠 \"The issue was caused by a `false &&` guard in the `buildPatternSlug` function wi…\" 2716→105tok\n  48  08:16:52  ✓ completed — model_finished: \"The issue was caused by a `false &&` guard in the `buildPatt…\""
+    },
+    {
+      "task_id": "plimit-concurrency-guard",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "p-limit",
+      "base_commit": "df476048d023ff868cd45b35ee47f5fb0ca2b25a",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "async",
+        "concurrency"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "onously\r\n  ✔ non-promise returning function\r\n  ✔ map accepts an iterable (set)\r\n  ✔ map accepts an iterable (array iterator)\r\n  ✔ map\r\n  ✔ propagates async execution context properly\r\n  ✔ shared context with a limited provider helper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (115ms)\r\n  ✔ accepts options object (115ms)\r\n  ✔ does not ignore errors (130ms)\r\n  ✘ [fail]: change concurrency to smaller value\r\n  ✔ change concurrency to bigger value (168ms)\r\n  ✔ concurrency: 1 (631ms)\r\n  ✔ limitFunction() (2.4s)\r\n  ✔ concurrency: 4 (2.5s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  change concurrency to smaller value\r\n\r\n  test.js:341\r\n\r\n   340:   await Promise.all(promises);                     \n   341:   t.deepEqual(log, [1, 2, 3, 4, 2, 2, 2, 2, 2, 2]);\n   342: });                                                \r\n\r\n  Difference (- actual, + expected):\n\n    [\n      1,\n      2,\n      3,\n      4,\n  -   3,\n  -   3,\n  -   3,\n  -   3,\n  -   3,\n  -   3,\n  +   2,\n  +   2,\n  +   2,\n  +   2,\n  +   2,\n  +   2,\n    ]\r\n\r\n  › file:///test.js:341:4\r\n\r\n  ─\r\n\r\n  1 test failed\r\n",
+      "agent_status": "failed",
+      "agent_reason": "no_progress",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 61,
+        "turns": 1,
+        "model_calls": 7,
+        "model_failures": 0,
+        "tool_calls": 7,
+        "tool_succeeded": 6,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 3,
+        "duplicate_action_rate": 0.429,
+        "tool_success_rate": 0.857,
+        "failure_density": 0.0164,
+        "tools_used": {
+          "bash": {
+            "started": 2,
+            "succeeded": 1,
+            "failed": 1
+          },
+          "read": {
+            "started": 5,
+            "succeeded": 5,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "package.json",
+          "index.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 7,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 7,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 15,
+        "messages_hot": 15,
+        "messages_dropped": 0,
+        "projection_bytes": 15007,
+        "input_tokens": 11675,
+        "output_tokens": 129,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 9826,
+        "model_ms": 3435,
+        "tool_ms": 6373,
+        "other_ms": 18,
+        "status": "failed",
+        "exit_reason": "no_progress"
+      },
+      "failure_class": "no_progress",
+      "explain": "Run run_8604964002\n  task: `npx ava` fails: the concurrency limit is not being respected. Read the queue logic and fix the defe…\n────────────────────────────────────────────────────────────────\n   1  08:25:59  · run created (scope personal:local)\n   3  08:25:59  ▸ task: `npx ava` fails: the concurrency limit is not being respected. Read the queue logic and fi…\n   6  08:26:00  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:26:00  🧠 wants 1 tool call: bash 471→15tok\n  10  08:26:00  · bash {\"cmd\":\"ls -R\"}\n  11  08:26:00  ✓ bash → .: benchmark.js index.d.ts index.js index.test-d.ts license node_modul…\n  14  08:26:01  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:26:01  🧠 wants 1 tool call: read 549→19tok\n  18  08:26:01  · read {\"path\":\"package.json\"}\n  19  08:26:01  ✓ read → { \"name\": \"p-limit\", \"version\": \"7.3.1\", \"description\": \"Run multiple …\n  22  08:26:01  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:26:01  🧠 wants 1 tool call: bash 1039→19tok\n  26  08:26:01  · bash {\"cmd\":\"npx ava\"}\n  27  08:26:07  ✕ bash failed: command failed (exit 1): ✔ throws on invalid concurrency argument ✔ cl…\n  30  08:26:08  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:26:08  🧠 wants 1 tool call: read 1552→19tok\n  34  08:26:08  · read {\"path\":\"index.js\"}\n  35  08:26:08  ✓ read → import Queue from 'yocto-queue'; export default function pLimit(concur…\n  38  08:26:08  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:26:08  🧠 wants 1 tool call: read 2120→19tok\n  42  08:26:08  · read {\"path\":\"index.js\"}\n  43  08:26:08  ✓ read → import Queue from 'yocto-queue'; export default function pLimit(concur…\n  46  08:26:09  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  08:26:09  🧠 wants 1 tool call: read 2688→19tok\n  50  08:26:09  · read {\"path\":\"index.js\"}\n  51  08:26:09  ✓ read → import Queue from 'yocto-queue'; export default function pLimit(concur…\n  54  08:26:09  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  55  08:26:09  🧠 wants 1 tool call: read 3256→19tok\n  58  08:26:09  · read {\"path\":\"index.js\"}\n  59  08:26:09  ✓ read → import Queue from 'yocto-queue'; export default function pLimit(concur…\n  61  08:26:09  ✕ failed — no_progress (identical tool request repeated 4 times)"
+    },
+    {
+      "task_id": "plimit-active-count",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "p-limit",
+      "base_commit": "df476048d023ff868cd45b35ee47f5fb0ca2b25a",
+      "difficulty": "hard",
+      "categories": [
+        "bug_fix",
+        "async",
+        "concurrency",
+        "debugging"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "AppData/Local/Temp/harness-real-eval/_deps/p-limit@df476048d023/node_modules/ava/lib/runner.js:238:13)\n      at process.emit (node:events:509:28)\r\n\r\n\r\n\r\n  change concurrency to bigger value\r\n\r\n  Error: Promise returned by test never resolved\r\n\r\n  Error: Promise returned by test never resolved\n      at Test.finishDueToInactivity (file:///C:/Users/abhijith.p/AppData/Local/Temp/harness-real-eval/_deps/p-limit@df476048d023/node_modules/ava/lib/test.js:587:9)\n      at Runner.beforeExitHandler (file:///C:/Users/abhijith.p/AppData/Local/Temp/harness-real-eval/_deps/p-limit@df476048d023/node_modules/ava/lib/runner.js:238:13)\n      at process.emit (node:events:509:28)\r\n\r\n\r\n\r\n  limitFunction()\r\n\r\n  Error: Promise returned by test never resolved\r\n\r\n  Error: Promise returned by test never resolved\n      at Test.finishDueToInactivity (file:///C:/Users/abhijith.p/AppData/Local/Temp/harness-real-eval/_deps/p-limit@df476048d023/node_modules/ava/lib/test.js:587:9)\n      at Runner.beforeExitHandler (file:///C:/Users/abhijith.p/AppData/Local/Temp/harness-real-eval/_deps/p-limit@df476048d023/node_modules/ava/lib/runner.js:238:13)\n      at process.emit (node:events:509:28)\r\n\r\n  ─\r\n\r\n  16 tests failed\r\n",
+      "agent_status": "failed",
+      "agent_reason": "no_progress",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 53,
+        "turns": 1,
+        "model_calls": 6,
+        "model_failures": 0,
+        "tool_calls": 6,
+        "tool_succeeded": 5,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 3,
+        "duplicate_action_rate": 0.5,
+        "tool_success_rate": 0.833,
+        "failure_density": 0.0189,
+        "tools_used": {
+          "bash": {
+            "started": 2,
+            "succeeded": 1,
+            "failed": 1
+          },
+          "read": {
+            "started": 4,
+            "succeeded": 4,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "index.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 6,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 6,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 13,
+        "messages_hot": 13,
+        "messages_dropped": 0,
+        "projection_bytes": 13835,
+        "input_tokens": 8904,
+        "output_tokens": 110,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 6924,
+        "model_ms": 2692,
+        "tool_ms": 4215,
+        "other_ms": 17,
+        "status": "failed",
+        "exit_reason": "no_progress"
+      },
+      "failure_class": "no_progress",
+      "explain": "Run run_d509e6cf70\n  task: The active-task counter is not maintained correctly, so queued work stalls or over-runs and `npx ava…\n────────────────────────────────────────────────────────────────\n   1  08:26:14  · run created (scope personal:local)\n   3  08:26:14  ▸ task: The active-task counter is not maintained correctly, so queued work stalls or over-runs an…\n   6  08:26:15  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:26:15  🧠 wants 1 tool call: bash 480→15tok\n  10  08:26:15  · bash {\"cmd\":\"ls -R\"}\n  11  08:26:15  ✓ bash → .: benchmark.js index.d.ts index.js index.test-d.ts license node_modul…\n  14  08:26:16  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:26:16  🧠 wants 1 tool call: bash 558→19tok\n  18  08:26:16  · bash {\"cmd\":\"npx ava\"}\n  19  08:26:19  ✕ bash failed: command failed (exit 1): ✔ throws on invalid concurrency argument ✔ cl…\n  22  08:26:20  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:26:20  🧠 wants 1 tool call: read 1110→19tok\n  26  08:26:20  · read {\"path\":\"index.js\"}\n  27  08:26:20  ✓ read → import Queue from 'yocto-queue'; export default function pLimit(concur…\n  30  08:26:20  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:26:20  🧠 wants 1 tool call: read 1681→19tok\n  34  08:26:20  · read {\"path\":\"index.js\"}\n  35  08:26:20  ✓ read → import Queue from 'yocto-queue'; export default function pLimit(concur…\n  38  08:26:21  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:26:21  🧠 wants 1 tool call: read 2252→19tok\n  42  08:26:21  · read {\"path\":\"index.js\"}\n  43  08:26:21  ✓ read → import Queue from 'yocto-queue'; export default function pLimit(concur…\n  46  08:26:21  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  08:26:21  🧠 wants 1 tool call: read 2823→19tok\n  50  08:26:21  · read {\"path\":\"index.js\"}\n  51  08:26:21  ✓ read → import Queue from 'yocto-queue'; export default function pLimit(concur…\n  53  08:26:21  ✕ failed — no_progress (identical tool request repeated 4 times)"
+    },
+    {
+      "task_id": "plimit-validate-concurrency",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "p-limit",
+      "base_commit": "df476048d023ff868cd45b35ee47f5fb0ca2b25a",
+      "difficulty": "easy",
+      "categories": [
+        "bug_fix",
+        "validation",
+        "error_handling"
+      ],
+      "outcome": "PASS",
+      "detail": "npx ava passed",
+      "evidence": "\r\n  ✔ throws on invalid concurrency argument\r\n  ✔ clearQueue\r\n  ✔ accepts additional arguments\r\n  ✔ continues after sync throw\r\n  ✔ runs all tasks asynchronously\r\n  ✔ non-promise returning function\r\n  ✔ map accepts an iterable (set)\r\n  ✔ map accepts an iterable (array iterator)\r\n  ✔ map\r\n  ✔ propagates async execution context properly\r\n  ✔ shared context with a limited provider helper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (114ms)\r\n  ✔ accepts options object (114ms)\r\n  ✔ does not ignore errors (129ms)\r\n  ✔ change concurrency to bigger value (178ms)\r\n  ✔ change concurrency to smaller value (230ms)\r\n  ✔ concurrency: 1 (633ms)\r\n  ✔ limitFunction() (2.4s)\r\n  ✔ concurrency: 4 (2.6s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  22 tests passed\r\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "The issue was that the validation of the `concurrency` argument in `pLimit` was wrapped in an incorrect conditional check (`if (concurrency === -1)`), which effectively disabled validation for all other invalid inputs (like `0` or non-numeric values).\n\nI have restored the validation by removing the conditional check and calling `validateConcurrency(concurrency)` directly.\n\n```javascript\n// index.j",
+      "metrics": {
+        "events": 88,
+        "turns": 1,
+        "model_calls": 11,
+        "model_failures": 0,
+        "tool_calls": 10,
+        "tool_succeeded": 9,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 3,
+        "duplicate_action_rate": 0.3,
+        "tool_success_rate": 0.9,
+        "failure_density": 0.0114,
+        "tools_used": {
+          "bash": {
+            "started": 5,
+            "succeeded": 4,
+            "failed": 1
+          },
+          "read": {
+            "started": 4,
+            "succeeded": 4,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "index.js",
+          "test.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 10,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 11,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 22,
+        "messages_hot": 22,
+        "messages_dropped": 0,
+        "projection_bytes": 18428,
+        "input_tokens": 27623,
+        "output_tokens": 364,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 21685,
+        "model_ms": 8431,
+        "tool_ms": 13227,
+        "other_ms": 27,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": null,
+      "explain": "Run run_459493acef\n  task: Invalid concurrency values are no longer rejected and `npx ava` fails. Restore the validation so bad…\n────────────────────────────────────────────────────────────────\n   1  08:26:24  · run created (scope personal:local)\n   3  08:26:24  ▸ task: Invalid concurrency values are no longer rejected and `npx ava` fails. Restore the validat…\n   6  08:26:25  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:26:25  🧠 wants 1 tool call: bash 474→27tok\n  10  08:26:25  · bash {\"cmd\":\"find . -maxdepth 2 -not -path '*/.*'\"}\n  11  08:26:25  ✓ bash → . ./benchmark.js ./index.d.ts ./index.js ./index.test-d.ts ./license .…\n  14  08:26:26  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:26:26  🧠 wants 1 tool call: read 574→19tok\n  18  08:26:26  · read {\"path\":\"index.js\"}\n  19  08:26:26  ✓ read → import Queue from 'yocto-queue'; export default function pLimit(concur…\n  22  08:26:26  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:26:26  🧠 wants 1 tool call: read 1144→19tok\n  26  08:26:26  · read {\"path\":\"test.js\"}\n  27  08:26:26  ✓ read → import process from 'node:process'; import {AsyncLocalStorage} from 'n…\n  30  08:26:27  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:26:27  🧠 wants 1 tool call: bash 1876→19tok\n  34  08:26:27  · bash {\"cmd\":\"npx ava\"}\n  35  08:26:33  ✕ bash failed: command failed (exit 1): ✘ [fail]: throws on invalid concurrency argum…\n  38  08:26:33  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:26:33  🧠 wants 1 tool call: read 2279→19tok\n  42  08:26:33  · read {\"path\":\"index.js\"}\n  43  08:26:33  ✓ read → import Queue from 'yocto-queue'; export default function pLimit(concur…\n  46  08:26:34  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  47  08:26:34  🧠 wants 1 tool call: bash 2849→22tok\n  50  08:26:34  · bash {\"cmd\":\"grep -n \\\"validateConcurrency\\\" index.js\"}\n  51  08:26:34  ✓ bash → 10: if (concurrency === -1) validateConcurrency(concurrency); 95: vali…\n  54  08:26:35  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  55  08:26:35  🧠 wants 1 tool call: read 2924→15tok\n  58  08:26:35  · read {\"path\":\"index.js\"}\n  59  08:26:35  ✓ read → import Queue from 'yocto-queue'; export default function pLimit(concur…\n  62  08:26:35  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  63  08:26:35  🧠 wants 1 tool call: bash 3494→21tok\n  66  08:26:35  · bash {\"cmd\":\"tail -n 50 index.js\"}\n  67  08:26:36  ✓ bash → value() { if (!rejectOnClear) { queue.clear(); return; } const abortEr…\n  70  08:26:37  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  71  08:26:37  🧠 wants 1 tool call: edit 3864→55tok\n  74  08:26:37  · edit {\"new_string\":\"\\tvalidateConcurrency(concurrency);\",\"old_string\":\"\\tif…\n  75  08:26:37  ✓ edit → edited index.js\n  78  08:26:37  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  79  08:26:37  🧠 wants 1 tool call: bash 3929→15tok\n  82  08:26:37  · bash {\"cmd\":\"npx ava\"}\n  83  08:26:43  ✓ bash → ✔ throws on invalid concurrency argument ✔ clearQueue ✔ accepts additi…\n  86  08:26:46  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  87  08:26:46  🧠 \"The issue was that the validation of the `concurrency` argument in `pLimit` was …\" 4216→133tok\n  88  08:26:46  ✓ completed — model_finished: \"The issue was that the validation of the `concurrency` argum…\""
+    },
+    {
+      "task_id": "plimit-error-propagation",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "p-limit",
+      "base_commit": "df476048d023ff868cd45b35ee47f5fb0ca2b25a",
+      "difficulty": "hard",
+      "categories": [
+        "bug_fix",
+        "async",
+        "error_handling",
+        "debugging"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "✔ clearQueue\r\n  ✔ accepts additional arguments\r\n  ✔ runs all tasks asynchronously\r\n  ✔ continues after sync throw\r\n  ✔ non-promise returning function\r\n  ✔ map accepts an iterable (set)\r\n  ✔ map accepts an iterable (array iterator)\r\n  ✔ map\r\n  ✔ propagates async execution context properly\r\n  ✔ shared context with a limited provider helper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (104ms)\r\n  ✔ accepts options object (107ms)\r\n  ✔ change concurrency to bigger value (171ms)\r\n  ✘ [fail]: does not ignore errors\r\n  ✔ change concurrency to smaller value (221ms)\r\n  ✔ concurrency: 1 (621ms)\r\n  ✔ limitFunction() (2.4s)\r\n  ✔ concurrency: 4 (2.5s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  does not ignore errors\r\n\r\n  test.js:135\r\n\r\n   134:                                                           \n   135:   await t.throwsAsync(Promise.all(promises), {is: error});\n   136: });                                                       \r\n\r\n  Promise resolved with:\n\n  [\n    undefined,\n    undefined,\n    undefined,\n  ]\r\n\r\n  › file:///test.js:135:10\r\n\r\n  ─\r\n\r\n  1 test failed\r\n",
+      "agent_status": "failed",
+      "agent_reason": "no_progress",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 53,
+        "turns": 1,
+        "model_calls": 6,
+        "model_failures": 0,
+        "tool_calls": 6,
+        "tool_succeeded": 5,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 3,
+        "duplicate_action_rate": 0.5,
+        "tool_success_rate": 0.833,
+        "failure_density": 0.0189,
+        "tools_used": {
+          "bash": {
+            "started": 2,
+            "succeeded": 1,
+            "failed": 1
+          },
+          "read": {
+            "started": 4,
+            "succeeded": 4,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "test.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 6,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 6,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 13,
+        "messages_hot": 13,
+        "messages_dropped": 0,
+        "projection_bytes": 13283,
+        "input_tokens": 9290,
+        "output_tokens": 110,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 9417,
+        "model_ms": 3000,
+        "tool_ms": 6398,
+        "other_ms": 19,
+        "status": "failed",
+        "exit_reason": "no_progress"
+      },
+      "failure_class": "no_progress",
+      "explain": "Run run_89515d00db\n  task: When a limited function rejects, the rejection must still reach the caller while the queue keeps dra…\n────────────────────────────────────────────────────────────────\n   1  08:26:51  · run created (scope personal:local)\n   3  08:26:51  ▸ task: When a limited function rejects, the rejection must still reach the caller while the queue…\n   6  08:26:52  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  08:26:52  🧠 wants 1 tool call: bash 480→15tok\n  10  08:26:52  · bash {\"cmd\":\"ls -R\"}\n  11  08:26:52  ✓ bash → .: benchmark.js index.d.ts index.js index.test-d.ts license node_modul…\n  14  08:26:52  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  08:26:52  🧠 wants 1 tool call: bash 558→19tok\n  18  08:26:52  · bash {\"cmd\":\"npx ava\"}\n  19  08:26:58  ✕ bash failed: command failed (exit 1): ✔ throws on invalid concurrency argument ✔ cl…\n  22  08:26:59  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  08:26:59  🧠 wants 1 tool call: read 965→19tok\n  26  08:26:59  · read {\"path\":\"test.js\"}\n  27  08:26:59  ✓ read → import process from 'node:process'; import {AsyncLocalStorage} from 'n…\n  30  08:27:00  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  08:27:00  🧠 wants 1 tool call: read 1697→19tok\n  34  08:27:00  · read {\"path\":\"test.js\"}\n  35  08:27:00  ✓ read → import process from 'node:process'; import {AsyncLocalStorage} from 'n…\n  38  08:27:00  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  08:27:00  🧠 wants 1 tool call: read 2429→19tok\n  42  08:27:00  · read {\"path\":\"test.js\"}\n  43  08:27:00  ✓ read → import process from 'node:process'; import {AsyncLocalStorage} from 'n…\n  46  08:27:00  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  08:27:00  🧠 wants 1 tool call: read 3161→19tok\n  50  08:27:00  · read {\"path\":\"test.js\"}\n  51  08:27:01  ✓ read → import process from 'node:process'; import {AsyncLocalStorage} from 'n…\n  53  08:27:01  ✕ failed — no_progress (identical tool request repeated 4 times)"
+    }
+  ]
+}

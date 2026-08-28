@@ -1,0 +1,335 @@
+{
+  "at": "2026-08-28T10:23:47.645Z",
+  "rows": [
+    {
+      "task_id": "isnum-string-trim",
+      "repository": "is-number",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx mocha failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx mocha passed",
+        "evidence": "\n    √ [] should not be a number\n    √ true should not be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-28T10:21:58.853Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (5ms)\n\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "isnum-nan-guard",
+      "repository": "is-number",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx mocha failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx mocha passed",
+        "evidence": "\n    √ [] should not be a number\n    √ true should not be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-28T10:22:01.799Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (5ms)\n\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "isnum-finite-inversion",
+      "repository": "is-number",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx mocha failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx mocha passed",
+        "evidence": "\n    √ [] should not be a number\n    √ true should not be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-28T10:22:04.727Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (5ms)\n\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "isnum-hidden-contract",
+      "repository": "is-number",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "failed: repo_suite, hidden:contract.test.cjs"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "all checks passed",
+        "evidence": " be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-28T10:22:07.780Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (5ms)\n\n\n---\n[ok] hidden:contract.test.cjs\nhidden contract ok\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "camel-separator-strip",
+      "repository": "camelcase",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "erNumber option\r\n  ✔ capitalizeAfterNumber edge cases\r\n  ✔ case preservation after numbers (capitalizeAfterNumber: false)\r\n  ✔ preserve leading underscores and dollar signs\r\n  ✔ edge cases: emoji and unicode\r\n  ✔ edge cases: combined options\r\n  ✔ edge cases: numbers\r\n  ✔ edge cases: locale with capitalizeAfterNumber\r\n  ✔ edge cases: special characters\r\n  ✔ edge cases: array input\r\n  ✔ edge cases: uppercase transitions\r\n  ✔ edge cases: extreme inputs\r\n  ✔ invalid input\r\n  ─\r\n\r\n  20 tests passed\r\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "camel-leading-capital",
+      "repository": "camelcase",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "erNumber option\r\n  ✔ capitalizeAfterNumber edge cases\r\n  ✔ case preservation after numbers (capitalizeAfterNumber: false)\r\n  ✔ preserve leading underscores and dollar signs\r\n  ✔ edge cases: emoji and unicode\r\n  ✔ edge cases: combined options\r\n  ✔ edge cases: numbers\r\n  ✔ edge cases: locale with capitalizeAfterNumber\r\n  ✔ edge cases: special characters\r\n  ✔ edge cases: array input\r\n  ✔ edge cases: uppercase transitions\r\n  ✔ edge cases: extreme inputs\r\n  ✔ invalid input\r\n  ─\r\n\r\n  20 tests passed\r\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "camel-preserve-consecutive",
+      "repository": "camelcase",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "erNumber option\r\n  ✔ capitalizeAfterNumber edge cases\r\n  ✔ case preservation after numbers (capitalizeAfterNumber: false)\r\n  ✔ preserve leading underscores and dollar signs\r\n  ✔ edge cases: emoji and unicode\r\n  ✔ edge cases: combined options\r\n  ✔ edge cases: numbers\r\n  ✔ edge cases: locale with capitalizeAfterNumber\r\n  ✔ edge cases: special characters\r\n  ✔ edge cases: array input\r\n  ✔ edge cases: uppercase transitions\r\n  ✔ edge cases: extreme inputs\r\n  ✔ invalid input\r\n  ─\r\n\r\n  20 tests passed\r\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "camel-numbers-identifier",
+      "repository": "camelcase",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "erNumber option\r\n  ✔ capitalizeAfterNumber edge cases\r\n  ✔ case preservation after numbers (capitalizeAfterNumber: false)\r\n  ✔ preserve leading underscores and dollar signs\r\n  ✔ edge cases: emoji and unicode\r\n  ✔ edge cases: combined options\r\n  ✔ edge cases: numbers\r\n  ✔ edge cases: locale with capitalizeAfterNumber\r\n  ✔ edge cases: special characters\r\n  ✔ edge cases: array input\r\n  ✔ edge cases: uppercase transitions\r\n  ✔ edge cases: extreme inputs\r\n  ✔ invalid input\r\n  ─\r\n\r\n  20 tests passed\r\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "camel-leading-separators",
+      "repository": "camelcase",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "erNumber option\r\n  ✔ capitalizeAfterNumber edge cases\r\n  ✔ case preservation after numbers (capitalizeAfterNumber: false)\r\n  ✔ preserve leading underscores and dollar signs\r\n  ✔ edge cases: emoji and unicode\r\n  ✔ edge cases: combined options\r\n  ✔ edge cases: numbers\r\n  ✔ edge cases: locale with capitalizeAfterNumber\r\n  ✔ edge cases: special characters\r\n  ✔ edge cases: array input\r\n  ✔ edge cases: uppercase transitions\r\n  ✔ edge cases: extreme inputs\r\n  ✔ invalid input\r\n  ─\r\n\r\n  20 tests passed\r\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "camel-unicode-uppercase",
+      "repository": "camelcase",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "erNumber option\r\n  ✔ capitalizeAfterNumber edge cases\r\n  ✔ case preservation after numbers (capitalizeAfterNumber: false)\r\n  ✔ preserve leading underscores and dollar signs\r\n  ✔ edge cases: emoji and unicode\r\n  ✔ edge cases: combined options\r\n  ✔ edge cases: numbers\r\n  ✔ edge cases: locale with capitalizeAfterNumber\r\n  ✔ edge cases: special characters\r\n  ✔ edge cases: array input\r\n  ✔ edge cases: uppercase transitions\r\n  ✔ edge cases: extreme inputs\r\n  ✔ invalid input\r\n  ─\r\n\r\n  20 tests passed\r\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "camel-identifier-endanchor",
+      "repository": "camelcase",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "erNumber option\r\n  ✔ capitalizeAfterNumber edge cases\r\n  ✔ case preservation after numbers (capitalizeAfterNumber: false)\r\n  ✔ preserve leading underscores and dollar signs\r\n  ✔ edge cases: emoji and unicode\r\n  ✔ edge cases: combined options\r\n  ✔ edge cases: numbers\r\n  ✔ edge cases: locale with capitalizeAfterNumber\r\n  ✔ edge cases: special characters\r\n  ✔ edge cases: array input\r\n  ✔ edge cases: uppercase transitions\r\n  ✔ edge cases: extreme inputs\r\n  ✔ invalid input\r\n  ─\r\n\r\n  20 tests passed\r\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "ansi-brightness-bit",
+      "repository": "ansi-styles",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "\r\n  ✔ return ANSI escape codes\r\n  ✔ group related codes into categories\r\n  ✔ groups should not be enumerable\r\n  ✔ support conversion to ansi (16 colors)\r\n  ✔ support conversion to ansi (256 colors)\r\n  ✔ support conversion to ansi (16 million colors)\r\n  ✔ 16/256/16m color close escapes\r\n  ✔ export raw ANSI escape codes\r\n  ✔ rgb → truecolor is stubbed\r\n  ✔ non-styles should not be exported\r\n  ─\r\n\r\n  10 tests passed\r\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "ansi-16m-escape",
+      "repository": "ansi-styles",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "\r\n  ✔ return ANSI escape codes\r\n  ✔ group related codes into categories\r\n  ✔ groups should not be enumerable\r\n  ✔ support conversion to ansi (16 colors)\r\n  ✔ support conversion to ansi (256 colors)\r\n  ✔ support conversion to ansi (16 million colors)\r\n  ✔ 16/256/16m color close escapes\r\n  ✔ export raw ANSI escape codes\r\n  ✔ rgb → truecolor is stubbed\r\n  ✔ non-styles should not be exported\r\n  ─\r\n\r\n  10 tests passed\r\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "slug-trailing-separator",
+      "repository": "slugify",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "ntractions\r\n  ✔ custom separator\r\n  ✔ custom replacements\r\n  ✔ lowercase option\r\n  ✔ decamelize option\r\n  ✔ supports German umlauts\r\n  ✔ supports Vietnamese\r\n  ✔ supports Arabic\r\n  ✔ supports Persian / Farsi\r\n  ✔ supports Urdu\r\n  ✔ supports Pashto\r\n  ✔ supports Russian\r\n  ✔ supports Romanian\r\n  ✔ supports Turkish\r\n  ✔ supports Armenian\r\n  ✔ leading underscore\r\n  ✔ trailing dash\r\n  ✔ counter\r\n  ✔ preserve characters\r\n  ✔ locale option\r\n  ✔ transliterate option disabled\r\n  ─\r\n\r\n  22 tests passed\r\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "slug-lowercase-option",
+      "repository": "slugify",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "ntractions\r\n  ✔ custom separator\r\n  ✔ custom replacements\r\n  ✔ lowercase option\r\n  ✔ decamelize option\r\n  ✔ supports German umlauts\r\n  ✔ supports Vietnamese\r\n  ✔ supports Arabic\r\n  ✔ supports Persian / Farsi\r\n  ✔ supports Urdu\r\n  ✔ supports Pashto\r\n  ✔ supports Russian\r\n  ✔ supports Romanian\r\n  ✔ supports Turkish\r\n  ✔ supports Armenian\r\n  ✔ leading underscore\r\n  ✔ trailing dash\r\n  ✔ counter\r\n  ✔ preserve characters\r\n  ✔ locale option\r\n  ✔ transliterate option disabled\r\n  ─\r\n\r\n  22 tests passed\r\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "slug-decamelize-acronym",
+      "repository": "slugify",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "ntractions\r\n  ✔ custom separator\r\n  ✔ custom replacements\r\n  ✔ lowercase option\r\n  ✔ decamelize option\r\n  ✔ supports German umlauts\r\n  ✔ supports Vietnamese\r\n  ✔ supports Arabic\r\n  ✔ supports Persian / Farsi\r\n  ✔ supports Urdu\r\n  ✔ supports Pashto\r\n  ✔ supports Russian\r\n  ✔ supports Romanian\r\n  ✔ supports Turkish\r\n  ✔ supports Armenian\r\n  ✔ leading underscore\r\n  ✔ trailing dash\r\n  ✔ counter\r\n  ✔ preserve characters\r\n  ✔ locale option\r\n  ✔ transliterate option disabled\r\n  ─\r\n\r\n  22 tests passed\r\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "slug-overridable-replacements",
+      "repository": "slugify",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "ntractions\r\n  ✔ custom separator\r\n  ✔ custom replacements\r\n  ✔ lowercase option\r\n  ✔ decamelize option\r\n  ✔ supports German umlauts\r\n  ✔ supports Vietnamese\r\n  ✔ supports Arabic\r\n  ✔ supports Persian / Farsi\r\n  ✔ supports Urdu\r\n  ✔ supports Pashto\r\n  ✔ supports Russian\r\n  ✔ supports Romanian\r\n  ✔ supports Turkish\r\n  ✔ supports Armenian\r\n  ✔ leading underscore\r\n  ✔ trailing dash\r\n  ✔ counter\r\n  ✔ preserve characters\r\n  ✔ locale option\r\n  ✔ transliterate option disabled\r\n  ─\r\n\r\n  22 tests passed\r\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "slug-preserve-conflict",
+      "repository": "slugify",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "ntractions\r\n  ✔ custom separator\r\n  ✔ custom replacements\r\n  ✔ lowercase option\r\n  ✔ decamelize option\r\n  ✔ supports German umlauts\r\n  ✔ supports Vietnamese\r\n  ✔ supports Arabic\r\n  ✔ supports Persian / Farsi\r\n  ✔ supports Urdu\r\n  ✔ supports Pashto\r\n  ✔ supports Russian\r\n  ✔ supports Romanian\r\n  ✔ supports Turkish\r\n  ✔ supports Armenian\r\n  ✔ leading underscore\r\n  ✔ trailing dash\r\n  ✔ counter\r\n  ✔ preserve characters\r\n  ✔ locale option\r\n  ✔ transliterate option disabled\r\n  ─\r\n\r\n  22 tests passed\r\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "plimit-concurrency-guard",
+      "repository": "p-limit",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "elper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (107ms)\r\n  ✔ accepts options object (111ms)\r\n  ✔ does not ignore errors (126ms)\r\n  ✔ change concurrency to bigger value (160ms)\r\n  ✔ change concurrency to smaller value (226ms)\r\n  ✔ concurrency: 1 (647ms)\r\n  ✔ concurrency: 4 (2.6s)\r\n  ✔ limitFunction() (2.7s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  22 tests passed\r\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "plimit-active-count",
+      "repository": "p-limit",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "elper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (107ms)\r\n  ✔ accepts options object (108ms)\r\n  ✔ does not ignore errors (123ms)\r\n  ✔ change concurrency to bigger value (172ms)\r\n  ✔ change concurrency to smaller value (223ms)\r\n  ✔ concurrency: 1 (609ms)\r\n  ✔ limitFunction() (2.4s)\r\n  ✔ concurrency: 4 (2.6s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  22 tests passed\r\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "plimit-validate-concurrency",
+      "repository": "p-limit",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "elper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (110ms)\r\n  ✔ accepts options object (110ms)\r\n  ✔ does not ignore errors (125ms)\r\n  ✔ change concurrency to bigger value (160ms)\r\n  ✔ change concurrency to smaller value (211ms)\r\n  ✔ concurrency: 1 (628ms)\r\n  ✔ concurrency: 4 (2.4s)\r\n  ✔ limitFunction() (2.6s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  22 tests passed\r\n"
+      },
+      "excluded_reason": null
+    },
+    {
+      "task_id": "plimit-error-propagation",
+      "repository": "p-limit",
+      "valid": true,
+      "preflight": {
+        "outcome": "FAIL",
+        "detail": "npx ava failed"
+      },
+      "oracle": {
+        "outcome": "PASS",
+        "detail": "npx ava passed",
+        "evidence": "elper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (110ms)\r\n  ✔ accepts options object (124ms)\r\n  ✔ does not ignore errors (125ms)\r\n  ✔ change concurrency to bigger value (188ms)\r\n  ✔ change concurrency to smaller value (244ms)\r\n  ✔ concurrency: 1 (628ms)\r\n  ✔ concurrency: 4 (2.5s)\r\n  ✔ limitFunction() (2.6s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  22 tests passed\r\n"
+      },
+      "excluded_reason": null
+    }
+  ]
+}

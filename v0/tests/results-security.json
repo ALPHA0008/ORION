@@ -181,7 +181,7 @@
       "group": "resource bounds (DoS surface)",
       "test": "oversized file read is truncated, not unbounded",
       "pass": true,
-      "detail": "52488 bytes"
+      "detail": "39451 bytes"
     },
     {
       "group": "resource bounds (DoS surface)",
@@ -217,7 +217,7 @@
       "group": "resource bounds (DoS surface)",
       "test": "long-running command is killed by the timeout",
       "pass": true,
-      "detail": "15017ms"
+      "detail": "15033ms"
     },
     {
       "group": "resource bounds (DoS surface)",

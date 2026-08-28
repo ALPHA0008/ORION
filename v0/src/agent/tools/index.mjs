@@ -9,15 +9,95 @@ const sha = (s) => crypto.createHash('sha256').update(String(s)).digest('hex').s
 /** Distinguish "genuinely absent" from "could not be read". Only the former is evidence. */
 const isMissing = (e) => e?.code === 'ENOENT' || /ENOENT|no such file/i.test(String(e?.message ?? ''));
 
+// Budget for one page of `read`. Deliberately below MSG_CLAMP (2,000 B) so a full page plus its
+// footer survives the projection clamp intact — a page that gets clamped would reintroduce the
+// exact invisible-tail problem this paging exists to solve.
+const READ_PAGE_BYTES = 1_500;
+
+/**
+ * Read a file as numbered lines, windowed by `offset`/`limit`, and self-describing at the edges.
+ *
+ * The footer is the important part: when content remains, it states the EXACT next call to make.
+ * The failure mode being fixed was an agent re-issuing an identical read forever, so the result
+ * must make "there is more, ask for it this way" unmissable — and must differ between pages, so
+ * that a repeated identical request is never rewarded with an identical result.
+ */
+function readPaged(sandbox, path, offset, limit) {
+  const raw = sandbox.read(path);
+
+  // The sandbox independently clamps very large files at MAX_OUTPUT_BYTES and splices a
+  // `…[file X truncated: N bytes > L limit]…` marker into the middle. That marker must stay
+  // visible on the FIRST page — paging it to some later page would hide from the agent that
+  // the file is not fully retrievable at all, which is precisely the class of silent
+  // invisibility this iteration exists to remove.
+  const sandboxTruncated = /…\[file .*? truncated: \d+ bytes > \d+ limit\]…/.exec(raw);
+
+  const lines = raw.split('\n');
+  // A trailing newline yields a final empty element; don't report a phantom line.
+  if (lines.length > 1 && lines[lines.length - 1] === '') lines.pop();
+  const total = lines.length;
+
+  const start = Math.max(1, Number.isFinite(offset) ? Math.trunc(offset) : 1);
+  if (start > total)
+    return `[${path}: ${total} lines total; offset ${start} is past the end]`;
+
+  const maxLines = Number.isFinite(limit) && limit > 0 ? Math.trunc(limit) : Infinity;
+  const width = String(total).length;
+  const out = [];
+  let bytes = 0, i = start;
+  for (; i <= total && out.length < maxLines; i++) {
+    const line = `${String(i).padStart(width)}\t${lines[i - 1]}`;
+    // Always emit at least one line, even if that single line exceeds the page budget;
+    // otherwise a file with one very long line could never be read at all.
+    if (bytes + line.length > READ_PAGE_BYTES && out.length > 0) break;
+    out.push(line);
+    bytes += line.length + 1;
+  }
+  const last = i - 1;
+
+  const header = start > 1 ? `[${path}: lines ${start}-${last} of ${total}]\n` : '';
+  let footer = '';
+  if (last < total) {
+    footer = `\n[${total - last} more lines. To continue, call read with `
+           + `path="${path}", offset=${last + 1}]`;
+  } else if (start > 1) {
+    footer = `\n[end of ${path}]`;
+  }
+  // Surface the sandbox's own hard truncation on every page, so it can never be paged out of
+  // sight: this file cannot be read in full no matter how far the agent pages.
+  if (sandboxTruncated && !out.some(l => l.includes('truncated:')))
+    footer += `\n${sandboxTruncated[0]}`;
+
+  return header + out.join('\n') + footer;
+}
+
 export function makeTools(sandbox) {
   return {
     read: {
-      description: 'Read a UTF-8 file from the workspace.',
+      // CAPABILITY ITERATION 01 (real-repository baseline).
+      //
+      // Measured: 15 of 15 real-repository failures re-read one identical file 2-4 times and
+      // then died on no_progress. Cause: the bounded projection clamps every tool result at
+      // MSG_CLAMP (2,000 bytes), so on camelcase/index.js (7,527 B) the agent saw 27% of the
+      // file, could not find what it needed, and re-issued the SAME read — getting the same
+      // truncated bytes every time. Pass rate tracked file visibility exactly: 411 B file ->
+      // 100%, 7,527 B file -> 0%.
+      //
+      // The clamp is correct (ADR-001) and is NOT changed. What was missing is a way to reach
+      // the rest of the file. Paging makes the remainder retrievable in clamp-sized bites.
+      description:
+        'Read a UTF-8 file from the workspace. Returns numbered lines. Large files are '
+        + 'truncated, so use `offset` (1-based first line) and `limit` (number of lines) to '
+        + 'page through the rest — the footer tells you the next offset to use.',
       schema: { type: 'object', required: ['path'],
-        properties: { path: { type: 'string' } } },
+        properties: {
+          path: { type: 'string' },
+          offset: { type: 'integer', description: '1-based line to start from (default 1).' },
+          limit: { type: 'integer', description: 'Maximum lines to return (default: all).' },
+        } },
       effects: 'ReadOnly',
       recovery: () => ({ class: RecoveryClass.READ_ONLY }),
-      run: ({ path }) => sandbox.read(path),
+      run: ({ path, offset, limit }) => readPaged(sandbox, path, offset, limit),
     },
 
     grep: {
@@ -115,7 +195,13 @@ export function validateArgs(tool, args) {
   for (const [k, v] of Object.entries(args)) {
     const spec = tool.schema?.properties?.[k];
     if (!spec) { errs.push(`unknown property: ${k}`); continue; }
-    const t = spec.type === 'array' ? (Array.isArray(v) ? 'array' : typeof v) : typeof v;
+    // JSON has no integer type: `2` arrives as a `number`. A schema declaring `integer` must
+    // therefore accept any number with no fractional part, or it is unsatisfiable — which is
+    // exactly what happened when `read` gained offset/limit: every paged call the model made
+    // was rejected with "must be integer, got number" and the run died on no_progress.
+    const t = spec.type === 'array' ? (Array.isArray(v) ? 'array' : typeof v)
+            : spec.type === 'integer' && typeof v === 'number' && Number.isInteger(v) ? 'integer'
+            : typeof v;
     if (spec.type && t !== spec.type) errs.push(`property ${k} must be ${spec.type}, got ${t}`);
   }
   return errs;
