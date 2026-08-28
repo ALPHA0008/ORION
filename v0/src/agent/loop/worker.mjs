@@ -1,6 +1,7 @@
 // The worker loop. Stateless: everything it knows comes from folding the log.
 
 import { project, stableDigest } from '../../core/projection/index.mjs';
+import { compactMessages } from '../../core/projection/compact.mjs';
 import { decideRecovery, Decision as RecDecision } from '../../core/recovery/index.mjs';
 import { Decision as AuthDecision, digestArgs } from '../../auth/default/index.mjs';
 import { modelRespondedPayload } from '../../core/event/index.mjs';
@@ -33,11 +34,12 @@ export class Worker {
     maxConsecutiveModelFailures = 3,
     budget = { tokens: 500_000, tool_calls: 200, cost_usd: 5 },
     systemPrompt = DEFAULT_SYSTEM,
+    compactContext = false,        // opt-in: elide superseded tool results (see compact.mjs)
     hooks = {},                    // { beforeAppend(marker, ctx) } — crash injection in tests
   } = {}) {
     Object.assign(this, { store, sandbox, model, tools, authorize, workerId, leaseMs,
       snapshotEvery, maxTurns, maxRepeatedCalls, maxTurnsWithoutProgress,
-      maxConsecutiveModelFailures, budget, systemPrompt, hooks });
+      maxConsecutiveModelFailures, budget, systemPrompt, compactContext, hooks });
   }
 
   #hook(marker, ctx = {}) { this.hooks.beforeAppend?.(marker, ctx); }
@@ -111,8 +113,20 @@ export class Worker {
 
       let resp;
       try {
+        let outbound = this.#buildMessages(state);
+        if (this.compactContext) {
+          const c = compactMessages(outbound);
+          if (c.elided > 0) {
+            // Record the compaction so it is auditable in the event log and in `explain`.
+            // Failure to append here is a lost lease, exactly like any other append.
+            if (this.#append(runId, 'context.compacted',
+                  { elided: c.elided, bytes_saved: c.bytesSaved, strategy: 'supersede' }) === null)
+              return this.#leaseLost();
+            outbound = c.messages;
+          }
+        }
         resp = await this.model.invoke({
-          messages: this.#buildMessages(state),
+          messages: outbound,
           tools: toolDefinitions(this.tools),
         });
       } catch (err) {

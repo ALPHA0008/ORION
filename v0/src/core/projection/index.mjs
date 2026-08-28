@@ -27,6 +27,7 @@ export function emptyState(runId) {
     recent_messages: [],
     message_count: 0,
     dropped_message_count: 0,
+    elided_message_count: 0,
     // --- open items only (naturally bounded) ---
     pending_tool_calls: {},
     open_human_requests: {},
@@ -133,8 +134,14 @@ export function applyEvent(s, e) {
       break;
 
     case 'context.compacted': {
-      // The window already bounds hot state; record the fact so `explain` can show it.
+      // Two distinct things share this event type, and they must not be conflated:
+      //   `dropped` — messages removed from the hot window entirely (content no longer sent).
+      //   `elided`  — superseded tool results replaced by a marker in the OUTBOUND message
+      //               array only (compact.mjs). Hot state is unchanged, so this must NOT
+      //               increment dropped_message_count or the "N earlier messages are not
+      //               shown" notice would overcount and mislead the model.
       s.dropped_message_count += p.dropped ?? 0;
+      s.elided_message_count = (s.elided_message_count ?? 0) + (p.elided ?? 0);
       break;
     }
     case 'context.retrieved': break;

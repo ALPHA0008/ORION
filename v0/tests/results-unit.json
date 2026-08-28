@@ -139,7 +139,7 @@
       "group": "4.3 projection boundedness (1k / 10k / 100k / 1m)",
       "test": "hot state does NOT grow with event count",
       "pass": true,
-      "detail": "7874B @1000 -> 8024B @1000000 (1.02x over 1000x more events)"
+      "detail": "7899B @1000 -> 8049B @1000000 (1.02x over 1000x more events)"
     },
     {
       "group": "4.3 projection boundedness (1k / 10k / 100k / 1m)",
@@ -157,7 +157,7 @@
       "group": "4.3 projection boundedness (1k / 10k / 100k / 1m)",
       "test": "state stays under 32KB at 1M events",
       "pass": true,
-      "detail": "8024B"
+      "detail": "8049B"
     }
   ]
 }

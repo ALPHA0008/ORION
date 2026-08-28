@@ -13,6 +13,7 @@ export const suites = [
   ['replay/semantics',      []],
   ['integration/provider',  []],
   ['security/security',     []],
+  ['compaction/compaction', []],
 ];
 
 /** A required suite is healthy only with a normal exit and an explicit summary. */

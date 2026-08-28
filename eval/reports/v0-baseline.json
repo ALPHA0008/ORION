@@ -1,0 +1,1112 @@
+{
+  "label": "v0-baseline",
+  "runner": "harness-v0",
+  "model": "gemma4-31b",
+  "endpoint_kind": "openai-compatible",
+  "at": "2026-08-28T05:03:23.680Z",
+  "node": "v24.18.0",
+  "aggregate": {
+    "tasks_total": 12,
+    "tasks_scored": 12,
+    "infra_failures": 0,
+    "passed": 12,
+    "failed": 0,
+    "timeouts": 0,
+    "success_rate": 100,
+    "by_difficulty": {
+      "easy": {
+        "total": 5,
+        "pass": 5,
+        "rate": 100
+      },
+      "medium": {
+        "total": 5,
+        "pass": 5,
+        "rate": 100
+      },
+      "hard": {
+        "total": 2,
+        "pass": 2,
+        "rate": 100
+      }
+    },
+    "by_category": {
+      "bug_fix": {
+        "total": 6,
+        "pass": 6,
+        "rate": 100
+      },
+      "exploration": {
+        "total": 2,
+        "pass": 2,
+        "rate": 100
+      },
+      "deps": {
+        "total": 1,
+        "pass": 1,
+        "rate": 100
+      },
+      "feature": {
+        "total": 3,
+        "pass": 3,
+        "rate": 100
+      },
+      "cli": {
+        "total": 2,
+        "pass": 2,
+        "rate": 100
+      },
+      "multi_file": {
+        "total": 3,
+        "pass": 3,
+        "rate": 100
+      },
+      "api": {
+        "total": 1,
+        "pass": 1,
+        "rate": 100
+      },
+      "edge_case": {
+        "total": 3,
+        "pass": 3,
+        "rate": 100
+      },
+      "refactor": {
+        "total": 1,
+        "pass": 1,
+        "rate": 100
+      },
+      "test_fix": {
+        "total": 1,
+        "pass": 1,
+        "rate": 100
+      }
+    },
+    "avg_wall_ms": 7939.75,
+    "p50_wall_ms": 8444,
+    "p95_wall_ms": 15164,
+    "model_calls_per_success": 5.75,
+    "tool_calls_per_success": 5,
+    "tokens_per_success": 4802,
+    "cost_per_success": 0,
+    "total_input_tokens": 53734,
+    "total_output_tokens": 3894,
+    "total_cost_usd": 0,
+    "avg_duplicate_rate": 0.1,
+    "avg_tool_success_rate": 0.88,
+    "total_degraded": 69,
+    "total_escalations": 0,
+    "runs_with_recovery": 0
+  },
+  "results": [
+    {
+      "task_id": "calc-add-bug",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "difficulty": "easy",
+      "categories": [
+        "bug_fix"
+      ],
+      "repository": "calc-lib",
+      "base_commit": "48b67e5404c1",
+      "outcome": "PASS",
+      "detail": "node test/math.test.mjs exited 0",
+      "evidence": "ok   add(2,3)\nok   add(-1,1)\nok   multiply(3,4)\nok   divide(10,2)\n\nALL PASS\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "final_message": "The bug was in `src/math.js` where the `add` function was incorrectly performing subtraction (`a - b`) instead of addition (`a + b`). I corrected the operator and verified that all tests pass.\n\nSummary of changes:\n- Modified `src/math.js`: Changed `return a - b;` to `return a + b;` in the `add` function.",
+      "metrics": {
+        "events": 54,
+        "turns": 1,
+        "model_calls": 7,
+        "model_failures": 0,
+        "tool_calls": 5,
+        "tool_succeeded": 4,
+        "tool_failed": 2,
+        "tool_denied": 0,
+        "duplicate_action_count": 1,
+        "duplicate_action_rate": 0.2,
+        "tool_success_rate": 0.8,
+        "failure_density": 0.037,
+        "tools_used": {
+          "bash": {
+            "started": 3,
+            "succeeded": 2,
+            "failed": 1
+          },
+          "read": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 1
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "src/math.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 2,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 5,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 7,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_total": 14,
+        "messages_hot": 14,
+        "messages_dropped": 0,
+        "projection_bytes": 4355,
+        "input_tokens": 4878,
+        "output_tokens": 258,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 7441,
+        "model_ms": 5778,
+        "tool_ms": 1643,
+        "other_ms": 20,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "explain": "Run run_97bbcb5a1d\n  task: The test suite fails. Run `node test/math.test.mjs`, find the bug, fix it, and make the suite pass.\n────────────────────────────────────────────────────────────────\n   1  05:01:38  · run created (scope personal:local)\n   3  05:01:38  ▸ task: The test suite fails. Run `node test/math.test.mjs`, find the bug, fix it, and make the su…\n   6  05:01:39  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  05:01:39  🧠 wants 1 tool call: bash 471→21tok\n  10  05:01:39  · bash {\"cmd\":\"node test/math.test.mjs\"}\n  11  05:01:40  ✕ bash failed: command failed (exit 1): FAIL add(2,3): got -1 want 5 FAIL add(-1,1): …\n  14  05:01:40  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  05:01:40  🧠 wants 1 tool call: bash 561→19tok\n  18  05:01:40  · bash {\"cmd\":\"ls -R\"}\n  19  05:01:41  ✓ bash → .: package.json README.md src test ./src: math.js ./test: math.test.mj…\n  22  05:01:41  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  23  05:01:41  🧠 wants 1 tool call: read 619→17tok\n  25  05:01:41  ✕ read failed: invalid arguments: missing required property: path; unknown property: …\n  28  05:01:41  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  29  05:01:41  🧠 wants 1 tool call: read 665→21tok\n  32  05:01:41  · read {\"path\":\"src/math.js\"}\n  33  05:01:41  ✓ read → export function add(a, b) { return a - b; } export function multiply(a…\n  36  05:01:43  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  37  05:01:43  🧠 wants 1 tool call: edit 775→71tok\n  40  05:01:43  · edit {\"new_string\":\"export function add(a, b) {\\n return a + b;\\n}\",\"old_st…\n  41  05:01:43  ✓ edit → edited src/math.js\n  44  05:01:43  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  45  05:01:43  🧠 wants 1 tool call: bash 858→21tok\n  48  05:01:43  · bash {\"cmd\":\"node test/math.test.mjs\"}\n  49  05:01:44  ✓ bash → ok add(2,3) ok add(-1,1) ok multiply(3,4) ok divide(10,2) ALL PASS\n  52  05:01:46  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  53  05:01:46  🧠 \"The bug was in `src/math.js` where the `add` function was incorrectly performing…\" 929→88tok\n  54  05:01:46  ✓ completed — model_finished: \"The bug was in `src/math.js` where the `add` function was in…\"",
+      "workdir": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\harness-eval\\eval-calc-add-bug-1787893298887"
+    },
+    {
+      "task_id": "calc-add-bug-noshell",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "difficulty": "easy",
+      "categories": [
+        "bug_fix"
+      ],
+      "repository": "calc-lib",
+      "base_commit": "48b67e5404c1",
+      "outcome": "PASS",
+      "detail": "node test/math.test.mjs exited 0",
+      "evidence": "ok   add(2,3)\nok   add(-1,1)\nok   multiply(3,4)\nok   divide(10,2)\n\nALL PASS\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "final_message": "The bug in `src/math.js` where the `add()` function was subtracting instead of adding has been fixed.",
+      "metrics": {
+        "events": 24,
+        "turns": 1,
+        "model_calls": 3,
+        "model_failures": 0,
+        "tool_calls": 2,
+        "tool_succeeded": 2,
+        "tool_failed": 0,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 1,
+        "failure_density": 0,
+        "tools_used": {
+          "read": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "src/math.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": false,
+        "authorization_events": 2,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 3,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_total": 6,
+        "messages_hot": 6,
+        "messages_dropped": 0,
+        "projection_bytes": 2105,
+        "input_tokens": 1528,
+        "output_tokens": 94,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 2084,
+        "model_ms": 2067,
+        "tool_ms": 11,
+        "other_ms": 6,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "explain": "Run run_c5c99a0afa\n  task: src/math.js has a bug in add(): it subtracts instead of adding. Fix it.\n────────────────────────────────────────────────────────────────\n   1  05:01:46  · run created (scope personal:local)\n   3  05:01:46  ▸ task: src/math.js has a bug in add(): it subtracts instead of adding. Fix it.\n   6  05:01:47  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  05:01:47  🧠 wants 1 tool call: read 419→17tok\n  10  05:01:47  · read {\"path\":\"src/math.js\"}\n  11  05:01:47  ✓ read → export function add(a, b) { return a - b; } export function multiply(a…\n  14  05:01:48  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  05:01:48  🧠 wants 1 tool call: edit 525→47tok\n  18  05:01:48  · edit {\"new_string\":\" return a + b;\",\"old_string\":\" return a - b;\",\"path\":\"s…\n  19  05:01:48  ✓ edit → edited src/math.js\n  22  05:01:49  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  23  05:01:49  🧠 \"The bug in `src/math.js` where the `add()` function was subtracting instead of a…\" 584→30tok\n  24  05:01:49  ✓ completed — model_finished: \"The bug in `src/math.js` where the `add()` function was subt…\"",
+      "workdir": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\harness-eval\\eval-calc-add-bug-noshell-1787893306941"
+    },
+    {
+      "task_id": "explore-find-tax-rate",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "difficulty": "easy",
+      "categories": [
+        "exploration"
+      ],
+      "repository": "deep-tree",
+      "base_commit": "fe8bd5033b10",
+      "outcome": "PASS",
+      "detail": "path=true value=true",
+      "evidence": null,
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "final_message": "The sales-tax rate constant is defined in `src/billing/rates/legacy/taxRate.js` and its current numeric value is `0.0625`.",
+      "metrics": {
+        "events": 48,
+        "turns": 1,
+        "model_calls": 6,
+        "model_failures": 0,
+        "tool_calls": 5,
+        "tool_succeeded": 5,
+        "tool_failed": 0,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 1,
+        "failure_density": 0,
+        "tools_used": {
+          "grep": {
+            "started": 5,
+            "succeeded": 5,
+            "failed": 0
+          }
+        },
+        "files_touched": 0,
+        "file_list": [],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": false,
+        "authorization_events": 5,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 6,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_total": 12,
+        "messages_hot": 12,
+        "messages_dropped": 0,
+        "projection_bytes": 3210,
+        "input_tokens": 2297,
+        "output_tokens": 126,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 2969,
+        "model_ms": 2824,
+        "tool_ms": 131,
+        "other_ms": 14,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "explain": "Run run_65bcd9d974\n  task: Somewhere in this repository a sales-tax rate constant is defined. Find it and report the exact file…\n────────────────────────────────────────────────────────────────\n   1  05:01:49  · run created (scope personal:local)\n   3  05:01:49  ▸ task: Somewhere in this repository a sales-tax rate constant is defined. Find it and report the …\n   6  05:01:50  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  05:01:50  🧠 wants 1 tool call: grep 301→15tok\n  10  05:01:50  · grep {\"pattern\":\"sales-tax\"}\n  11  05:01:50  ✓ grep → (no matches)\n  14  05:01:50  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  05:01:50  🧠 wants 1 tool call: grep 326→19tok\n  18  05:01:50  · grep {\"pattern\":\"sales_tax\"}\n  19  05:01:50  ✓ grep → (no matches)\n  22  05:01:51  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  05:01:51  🧠 wants 1 tool call: grep 355→19tok\n  26  05:01:51  · grep {\"pattern\":\"tax_rate\"}\n  27  05:01:51  ✓ grep → (no matches)\n  30  05:01:51  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  31  05:01:51  🧠 wants 1 tool call: grep 384→14tok\n  34  05:01:51  · grep {\"pattern\":\"taxrate\"}\n  35  05:01:51  ✓ grep → (no matches)\n  38  05:01:51  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  05:01:51  🧠 wants 1 tool call: grep 412→17tok\n  42  05:01:51  · grep {\"pattern\":\"TAX\"}\n  43  05:01:51  ✓ grep → src/billing/invoice.js:1: import { TAX_RATE } from './rates/legacy/tax…\n  46  05:01:52  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  47  05:01:52  🧠 \"The sales-tax rate constant is defined in `src/billing/rates/legacy/taxRate.js` …\" 519→42tok\n  48  05:01:52  ✓ completed — model_finished: \"The sales-tax rate constant is defined in `src/billing/rates…\"",
+      "workdir": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\harness-eval\\eval-explore-find-tax-rate-1787893309646"
+    },
+    {
+      "task_id": "broken-import-path",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "difficulty": "easy",
+      "categories": [
+        "deps",
+        "bug_fix"
+      ],
+      "repository": "broken-deps",
+      "base_commit": "49d95fb1c79a",
+      "outcome": "PASS",
+      "detail": "node test/greet.test.mjs exited 0",
+      "evidence": "ok   greet\nok   greet trims\n\nALL PASS\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "final_message": "The error was caused by an incorrect import path in `src/greet.js`. It was attempting to import from `./helpers/format.js`, but the actual file was named `formatting.js`. I updated the import path to match the filename.\n\nSummary of changes:\n- Modified `src/greet.js`: Changed `import { formatName } from './helpers/format.js';` to `import { formatName } from './helpers/formatting.js';`.",
+      "metrics": {
+        "events": 48,
+        "turns": 1,
+        "model_calls": 6,
+        "model_failures": 0,
+        "tool_calls": 5,
+        "tool_succeeded": 4,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 1,
+        "duplicate_action_rate": 0.2,
+        "tool_success_rate": 0.8,
+        "failure_density": 0.0208,
+        "tools_used": {
+          "bash": {
+            "started": 3,
+            "succeeded": 2,
+            "failed": 1
+          },
+          "read": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "src/greet.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 2,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 5,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 6,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_total": 12,
+        "messages_hot": 12,
+        "messages_dropped": 0,
+        "projection_bytes": 5285,
+        "input_tokens": 6210,
+        "output_tokens": 250,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 7141,
+        "model_ms": 5477,
+        "tool_ms": 1649,
+        "other_ms": 15,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "explain": "Run run_7c254448e9\n  task: Running `node test/greet.test.mjs` fails with a module resolution error. Diagnose and fix it.\n────────────────────────────────────────────────────────────────\n   1  05:01:52  · run created (scope personal:local)\n   3  05:01:52  ▸ task: Running `node test/greet.test.mjs` fails with a module resolution error. Diagnose and fix …\n   6  05:01:53  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  05:01:53  🧠 wants 1 tool call: bash 465→21tok\n  10  05:01:53  · bash {\"cmd\":\"node test/greet.test.mjs\"}\n  11  05:01:53  ✕ bash failed: command failed (exit 1): node:internal/modules/esm/resolve:271 throw n…\n  14  05:01:54  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  05:01:54  🧠 wants 1 tool call: bash 1017→19tok\n  18  05:01:54  · bash {\"cmd\":\"ls -R\"}\n  19  05:01:54  ✓ bash → .: package.json src test ./src: greet.js helpers ./src/helpers: format…\n  22  05:01:55  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  05:01:55  🧠 wants 1 tool call: read 1083→21tok\n  26  05:01:55  · read {\"path\":\"src/greet.js\"}\n  27  05:01:55  ✓ read → import { formatName } from './helpers/format.js'; export function gree…\n  30  05:01:56  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  05:01:56  🧠 wants 1 tool call: edit 1152→61tok\n  34  05:01:56  · edit {\"new_string\":\"import { formatName } from './helpers/formatting.js';\",…\n  35  05:01:56  ✓ edit → edited src/greet.js\n  38  05:01:57  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  05:01:57  🧠 wants 1 tool call: bash 1225→25tok\n  42  05:01:57  · bash {\"cmd\":\"node test/greet.test.mjs\"}\n  43  05:01:57  ✓ bash → ok greet ok greet trims ALL PASS\n  46  05:02:00  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  47  05:02:00  🧠 \"The error was caused by an incorrect import path in `src/greet.js`. It was attem…\" 1268→103tok\n  48  05:02:00  ✓ completed — model_finished: \"The error was caused by an incorrect import path in `src/gre…\"",
+      "workdir": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\harness-eval\\eval-broken-import-path-1787893312838"
+    },
+    {
+      "task_id": "cli-help-flag",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "difficulty": "easy",
+      "categories": [
+        "feature",
+        "cli"
+      ],
+      "repository": "cli-tool",
+      "base_commit": "7b01bc8f5544",
+      "outcome": "PASS",
+      "detail": "help_mentions_sum=true sum_still_6=true",
+      "evidence": null,
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "final_message": "I have added the `--help` flag to `src/cli.js`. When running `node src/cli.js --help`, it now prints usage instructions including the `sum` command and exits with code 0. The existing `sum` functionality remains intact.",
+      "metrics": {
+        "events": 40,
+        "turns": 1,
+        "model_calls": 5,
+        "model_failures": 0,
+        "tool_calls": 4,
+        "tool_succeeded": 4,
+        "tool_failed": 0,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 1,
+        "failure_density": 0,
+        "tools_used": {
+          "read": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "bash": {
+            "started": 2,
+            "succeeded": 2,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "src/cli.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": false,
+        "authorization_events": 4,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 5,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_total": 10,
+        "messages_hot": 10,
+        "messages_dropped": 0,
+        "projection_bytes": 3990,
+        "input_tokens": 3959,
+        "output_tokens": 400,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 9510,
+        "model_ms": 8366,
+        "tool_ms": 1133,
+        "other_ms": 11,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "explain": "Run run_487c015467\n  task: Add a --help flag to src/cli.js. `node src/cli.js --help` must print usage text containing the word …\n────────────────────────────────────────────────────────────────\n   1  05:02:00  · run created (scope personal:local)\n   3  05:02:00  ▸ task: Add a --help flag to src/cli.js. `node src/cli.js --help` must print usage text containing…\n   6  05:02:01  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  05:02:01  🧠 wants 1 tool call: read 492→17tok\n  10  05:02:01  · read {\"path\":\"src/cli.js\"}\n  11  05:02:01  ✓ read → #!/usr/bin/env node const args = process.argv.slice(2); if (args[0] ==…\n  14  05:02:06  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  05:02:06  🧠 wants 1 tool call: edit 609→270tok\n  18  05:02:06  · edit {\"new_string\":\"if (args[0] === 'sum') {\\n const nums = args.slice(1).m…\n  19  05:02:06  ✓ edit → edited src/cli.js\n  22  05:02:07  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  05:02:07  🧠 wants 1 tool call: bash 891→24tok\n  26  05:02:07  · bash {\"cmd\":\"node src/cli.js --help\"}\n  27  05:02:07  ✓ bash → Usage: node src/cli.js [command] [options] Commands: sum <numbers> Cal…\n  30  05:02:08  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  05:02:08  🧠 wants 1 tool call: bash 965→29tok\n  34  05:02:08  · bash {\"cmd\":\"node src/cli.js sum 1 2 3\"}\n  35  05:02:08  ✓ bash → 6\n  38  05:02:10  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  39  05:02:10  🧠 \"I have added the `--help` flag to `src/cli.js`. When running `node src/cli.js --…\" 1002→60tok\n  40  05:02:10  ✓ completed — model_finished: \"I have added the `--help` flag to `src/cli.js`. When running…\"",
+      "workdir": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\harness-eval\\eval-cli-help-flag-1787893320618"
+    },
+    {
+      "task_id": "config-precedence",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "multi_file"
+      ],
+      "repository": "config-app",
+      "base_commit": "4a43dc211fc2",
+      "outcome": "PASS",
+      "detail": "node test/config.test.mjs exited 0",
+      "evidence": "ok   defaults apply\nok   file overrides defaults\nok   ENV BEATS FILE\nok   env beats defaults\nok   untouched key survives\n\nALL PASS\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "final_message": "The issue was in `src/loadConfig.js`, where the object spread order was `...DEFAULTS, ...fromEnv, ...fileConfig`. This caused the file configuration to override environment variables, contradicting the required precedence of `defaults < file < env`.\n\nI have updated the return statement to `return { ...DEFAULTS, ...fileConfig, ...fromEnv };`, ensuring that environment variables have the highest pri",
+      "metrics": {
+        "events": 64,
+        "turns": 1,
+        "model_calls": 8,
+        "model_failures": 0,
+        "tool_calls": 7,
+        "tool_succeeded": 6,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 1,
+        "duplicate_action_rate": 0.143,
+        "tool_success_rate": 0.857,
+        "failure_density": 0.0156,
+        "tools_used": {
+          "bash": {
+            "started": 3,
+            "succeeded": 2,
+            "failed": 1
+          },
+          "read": {
+            "started": 3,
+            "succeeded": 3,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 3,
+        "file_list": [
+          "src/loadConfig.js",
+          "src/defaults.js",
+          "test/config.test.mjs"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 2,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 7,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 8,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_total": 16,
+        "messages_hot": 16,
+        "messages_dropped": 0,
+        "projection_bytes": 6411,
+        "input_tokens": 7210,
+        "output_tokens": 308,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 8444,
+        "model_ms": 6764,
+        "tool_ms": 1660,
+        "other_ms": 20,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "explain": "Run run_0519b2a7b5\n  task: The config test suite fails: environment variables are supposed to override file config, but they do…\n────────────────────────────────────────────────────────────────\n   1  05:02:11  · run created (scope personal:local)\n   3  05:02:11  ▸ task: The config test suite fails: environment variables are supposed to override file config, b…\n   6  05:02:11  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  05:02:11  🧠 wants 1 tool call: bash 493→21tok\n  10  05:02:11  · bash {\"cmd\":\"node test/config.test.mjs\"}\n  11  05:02:12  ✕ bash failed: command failed (exit 1): ok defaults apply ok file overrides defaults …\n  14  05:02:12  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  05:02:12  🧠 wants 1 tool call: bash 579→19tok\n  18  05:02:12  · bash {\"cmd\":\"ls -R\"}\n  19  05:02:13  ✓ bash → .: package.json README.md src test ./src: defaults.js loadConfig.js ./…\n  22  05:02:13  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  05:02:13  🧠 wants 1 tool call: read 642→22tok\n  26  05:02:13  · read {\"path\":\"src/loadConfig.js\"}\n  27  05:02:13  ✓ read → import { DEFAULTS } from './defaults.js'; // Precedence should be: def…\n  30  05:02:14  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  05:02:14  🧠 wants 1 tool call: read 817→21tok\n  34  05:02:14  · read {\"path\":\"src/defaults.js\"}\n  35  05:02:14  ✓ read → export const DEFAULTS = { host: 'localhost', port: 8080, debug: false,…\n  38  05:02:14  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  39  05:02:14  🧠 wants 1 tool call: read 885→20tok\n  42  05:02:14  · read {\"path\":\"test/config.test.mjs\"}\n  43  05:02:14  ✓ read → import { loadConfig } from '../src/loadConfig.js'; let fails = 0; cons…\n  46  05:02:16  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  05:02:16  🧠 wants 1 tool call: edit 1189→68tok\n  50  05:02:16  · edit {\"new_string\":\" return { ...DEFAULTS, ...fileConfig, ...fromEnv };\",\"o…\n  51  05:02:16  ✓ edit → edited src/loadConfig.js\n  54  05:02:16  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  55  05:02:16  🧠 wants 1 tool call: bash 1270→21tok\n  58  05:02:16  · bash {\"cmd\":\"node test/config.test.mjs\"}\n  59  05:02:17  ✓ bash → ok defaults apply ok file overrides defaults ok ENV BEATS FILE ok env …\n  62  05:02:19  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  63  05:02:19  🧠 \"The issue was in `src/loadConfig.js`, where the object spread order was `...DEFA…\" 1335→116tok\n  64  05:02:19  ✓ completed — model_finished: \"The issue was in `src/loadConfig.js`, where the object sprea…\"",
+      "workdir": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\harness-eval\\eval-config-precedence-1787893331297"
+    },
+    {
+      "task_id": "implement-truncate",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "difficulty": "medium",
+      "categories": [
+        "feature",
+        "api"
+      ],
+      "repository": "string-utils",
+      "base_commit": "5ec68ca8a9b7",
+      "outcome": "PASS",
+      "detail": "node test/index.test.mjs exited 0",
+      "evidence": "ok   slugify basic\nok   truncate short string unchanged\nok   truncate exact length unchanged\nok   truncate adds ellipsis\nok   truncate handles empty\n\nALL PASS\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "final_message": "I have implemented the `truncate` function in `src/index.js` according to the specifications in `SPEC.md`.\n\nThe implementation ensures that:\n1. If the string length is less than or equal to `maxLength`, the string is returned unchanged.\n2. If the string length exceeds `maxLength`, it returns the first `maxLength - 1` characters followed by the ellipsis character `…` (U+2026), resulting in a string",
+      "metrics": {
+        "events": 48,
+        "turns": 1,
+        "model_calls": 6,
+        "model_failures": 0,
+        "tool_calls": 5,
+        "tool_succeeded": 5,
+        "tool_failed": 0,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 1,
+        "failure_density": 0,
+        "tools_used": {
+          "read": {
+            "started": 3,
+            "succeeded": 3,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "bash": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 3,
+        "file_list": [
+          "SPEC.md",
+          "test/index.test.mjs",
+          "src/index.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 1,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": false,
+        "authorization_events": 5,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 6,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_total": 12,
+        "messages_hot": 12,
+        "messages_dropped": 0,
+        "projection_bytes": 5498,
+        "input_tokens": 5109,
+        "output_tokens": 384,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 8730,
+        "model_ms": 8123,
+        "tool_ms": 595,
+        "other_ms": 12,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "explain": "Run run_8837776f87\n  task: test/index.test.mjs imports a truncate() function that does not exist yet. Read SPEC.md for its exac…\n────────────────────────────────────────────────────────────────\n   1  05:02:20  · run created (scope personal:local)\n   3  05:02:20  ▸ task: test/index.test.mjs imports a truncate() function that does not exist yet. Read SPEC.md fo…\n   6  05:02:20  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  05:02:20  🧠 wants 1 tool call: read 484→15tok\n  10  05:02:20  · read {\"path\":\"SPEC.md\"}\n  11  05:02:20  ✓ read → # string-utils ## slugify(s) Lowercase, non-alphanumerics to single hy…\n  14  05:02:21  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  05:02:21  🧠 wants 1 tool call: read 600→24tok\n  18  05:02:21  · read {\"path\":\"test/index.test.mjs\"}\n  19  05:02:21  ✓ read → import { slugify, truncate } from '../src/index.js'; let fails = 0; co…\n  22  05:02:21  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  23  05:02:21  🧠 wants 1 tool call: read 841→17tok\n  26  05:02:21  · read {\"path\":\"src/index.js\"}\n  27  05:02:21  ✓ read → export function slugify(s) { return String(s).toLowerCase().trim().rep…\n  30  05:02:25  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  05:02:25  🧠 wants 1 tool call: edit 914→176tok\n  34  05:02:25  · edit {\"new_string\":\"export function slugify(s) {\\n return String(s).toLower…\n  35  05:02:25  ✓ edit → edited src/index.js\n  38  05:02:25  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  05:02:25  🧠 wants 1 tool call: bash 1102→25tok\n  42  05:02:25  · bash {\"cmd\":\"node test/index.test.mjs\"}\n  43  05:02:26  ✓ bash → ok slugify basic ok truncate short string unchanged ok truncate exact …\n  46  05:02:29  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  47  05:02:29  🧠 \"I have implemented the `truncate` function in `src/index.js` according to the sp…\" 1168→127tok\n  48  05:02:29  ✓ completed — model_finished: \"I have implemented the `truncate` function in `src/index.js`…\"",
+      "workdir": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\harness-eval\\eval-implement-truncate-1787893340378"
+    },
+    {
+      "task_id": "deep-tree-tax-fix",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "exploration"
+      ],
+      "repository": "deep-tree",
+      "base_commit": "fe8bd5033b10",
+      "outcome": "PASS",
+      "detail": "node test/invoice.test.mjs exited 0",
+      "evidence": "ok   lineTotal(100) uses 8.25% tax\nok   lineTotal(0)\n\nALL PASS\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "final_message": "I have updated the sales tax rate in `src/billing/rates/legacy/taxRate.js` from `0.0625` to `0.0825` to match the current statutory rate. This change fixed the failing test in `test/invoice.test.mjs`.\n\n**Summary of changes:**\n- Modified `src/billing/rates/legacy/taxRate.js`: Updated `TAX_RATE` to `0.0825`.\n- Verified the fix by running `node test/invoice.test.mjs`, which now passes.",
+      "metrics": {
+        "events": 48,
+        "turns": 1,
+        "model_calls": 6,
+        "model_failures": 0,
+        "tool_calls": 5,
+        "tool_succeeded": 4,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 1,
+        "duplicate_action_rate": 0.2,
+        "tool_success_rate": 0.8,
+        "failure_density": 0.0208,
+        "tools_used": {
+          "bash": {
+            "started": 2,
+            "succeeded": 1,
+            "failed": 1
+          },
+          "grep": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "read": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "src/billing/rates/legacy/taxRate.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 2,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 5,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 6,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_total": 12,
+        "messages_hot": 12,
+        "messages_dropped": 0,
+        "projection_bytes": 4329,
+        "input_tokens": 4329,
+        "output_tokens": 290,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 7453,
+        "model_ms": 6247,
+        "tool_ms": 1190,
+        "other_ms": 16,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "explain": "Run run_2a07708a2b\n  task: The invoice test fails. `node test/invoice.test.mjs` expects 8.25% sales tax but the code applies an…\n────────────────────────────────────────────────────────────────\n   1  05:02:29  · run created (scope personal:local)\n   3  05:02:29  ▸ task: The invoice test fails. `node test/invoice.test.mjs` expects 8.25% sales tax but the code …\n   6  05:02:30  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  05:02:30  🧠 wants 1 tool call: bash 491→21tok\n  10  05:02:30  · bash {\"cmd\":\"node test/invoice.test.mjs\"}\n  11  05:02:31  ✕ bash failed: command failed (exit 1): FAIL lineTotal(100) uses 8.25% tax: got 106.2…\n  14  05:02:31  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  05:02:31  🧠 wants 1 tool call: grep 576→17tok\n  18  05:02:31  · grep {\"pattern\":\"tax\"}\n  19  05:02:31  ✓ grep → src/billing/invoice.js:1: import { TAX_RATE } from './rates/legacy/tax…\n  22  05:02:32  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  05:02:32  🧠 wants 1 tool call: read 696→28tok\n  26  05:02:32  · read {\"path\":\"src/billing/rates/legacy/taxRate.js\"}\n  27  05:02:32  ✓ read → // Sales tax applied to every invoice line. // NOTE: the statutory rat…\n  30  05:02:33  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  05:02:33  🧠 wants 1 tool call: edit 776→70tok\n  34  05:02:33  · edit {\"new_string\":\"export const TAX_RATE = 0.0825;\",\"old_string\":\"export c…\n  35  05:02:33  ✓ edit → edited src/billing/rates/legacy/taxRate.js\n  38  05:02:34  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  05:02:34  🧠 wants 1 tool call: bash 865→25tok\n  42  05:02:34  · bash {\"cmd\":\"node test/invoice.test.mjs\"}\n  43  05:02:34  ✓ bash → ok lineTotal(100) uses 8.25% tax ok lineTotal(0) ALL PASS\n  46  05:02:37  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  47  05:02:37  🧠 \"I have updated the sales tax rate in `src/billing/rates/legacy/taxRate.js` from …\" 925→129tok\n  48  05:02:37  ✓ completed — model_finished: \"I have updated the sales tax rate in `src/billing/rates/lega…\"",
+      "workdir": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\harness-eval\\eval-deep-tree-tax-fix-1787893349744"
+    },
+    {
+      "task_id": "cli-max-command",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "difficulty": "medium",
+      "categories": [
+        "feature",
+        "cli",
+        "edge_case"
+      ],
+      "repository": "cli-tool",
+      "base_commit": "7b01bc8f5544",
+      "outcome": "PASS",
+      "detail": "max=9:true empty_errors:true sum=6:true",
+      "evidence": null,
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "final_message": "I have added the `max` subcommand to `src/cli.js`. It calculates the maximum of the provided numbers, prints it, and exits with 0. If no numbers are provided, it exits with a non-zero code. The existing `sum` command remains functional.\n\n```javascript\nif (args[0] === 'max') {\n  const nums = args.slice(1).map(Number);\n  if (nums.length === 0) {\n    process.exit(1);\n  }\n  console.log(Math.max(...num",
+      "metrics": {
+        "events": 40,
+        "turns": 1,
+        "model_calls": 5,
+        "model_failures": 0,
+        "tool_calls": 4,
+        "tool_succeeded": 3,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 0.75,
+        "failure_density": 0.025,
+        "tools_used": {
+          "read": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "edit": {
+            "started": 2,
+            "succeeded": 1,
+            "failed": 1
+          },
+          "bash": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "src/cli.js",
+          "`src/cli.js`"
+        ],
+        "edits": 2,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 4,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 5,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_total": 10,
+        "messages_hot": 10,
+        "messages_dropped": 0,
+        "projection_bytes": 4986,
+        "input_tokens": 4537,
+        "output_tokens": 692,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 15164,
+        "model_ms": 14310,
+        "tool_ms": 842,
+        "other_ms": 12,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "explain": "Run run_c02205925e\n  task: Add a `max` subcommand to src/cli.js. `node src/cli.js max 4 9 2` must print 9 and exit 0. `node src…\n────────────────────────────────────────────────────────────────\n   1  05:02:38  · run created (scope personal:local)\n   3  05:02:38  ▸ task: Add a `max` subcommand to src/cli.js. `node src/cli.js max 4 9 2` must print 9 and exit 0.…\n   6  05:02:38  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  05:02:38  🧠 wants 1 tool call: read 509→17tok\n  10  05:02:38  · read {\"path\":\"src/cli.js\"}\n  11  05:02:38  ✓ read → #!/usr/bin/env node const args = process.argv.slice(2); if (args[0] ==…\n  14  05:02:43  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  05:02:43  🧠 wants 1 tool call: edit 626→244tok\n  18  05:02:43  · edit {\"new_string\":\"`if (args[0] === 'sum') {\\n const nums = args.slice(1).…\n  19  05:02:43  ✕ edit failed: ENOENT: no such file or directory, open 'C:\\Users\\abhijith.p\\AppData\\L…\n  22  05:02:48  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  05:02:48  🧠 wants 1 tool call: edit 946→239tok\n  26  05:02:48  · edit {\"new_string\":\"if (args[0] === 'sum') {\\n const nums = args.slice(1).m…\n  27  05:02:48  ✓ edit → edited src/cli.js\n  30  05:02:49  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  05:02:49  🧠 wants 1 tool call: bash 1197→52tok\n  34  05:02:49  · bash {\"cmd\":\"node src/cli.js sum 1 2 3 && node src/cli.js max 4 9 2 && ! no…\n  35  05:02:50  ✓ bash → 6 9\n  38  05:02:53  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  39  05:02:53  🧠 \"I have added the `max` subcommand to `src/cli.js`. It calculates the maximum of …\" 1259→140tok\n  40  05:02:53  ✓ completed — model_finished: \"I have added the `max` subcommand to `src/cli.js`. It calcul…\"",
+      "workdir": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\harness-eval\\eval-cli-max-command-1787893357997"
+    },
+    {
+      "task_id": "multi-file-refactor",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "difficulty": "medium",
+      "categories": [
+        "refactor",
+        "multi_file"
+      ],
+      "repository": "refactor-dup",
+      "base_commit": "59fb8b8c7313",
+      "outcome": "PASS",
+      "detail": "shared=src/total.js still_duplicated=[]",
+      "evidence": null,
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "final_message": "I have extracted the shared total-calculation logic into a new module `src/total.js` and updated `src/orders.js`, `src/quotes.js`, and `src/invoices.js` to use this shared function.\n\n1. Created `src/total.js` with the `calculateTotal` function.\n2. Refactored `src/orders.js`, `src/quotes.js`, and `src/invoices.js` to import and call `calculateTotal`.\n3. Verified that `node test/totals.test.mjs` pas",
+      "metrics": {
+        "events": 56,
+        "turns": 1,
+        "model_calls": 5,
+        "model_failures": 0,
+        "tool_calls": 8,
+        "tool_succeeded": 8,
+        "tool_failed": 0,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 1,
+        "failure_density": 0,
+        "tools_used": {
+          "read": {
+            "started": 3,
+            "succeeded": 3,
+            "failed": 0
+          },
+          "write": {
+            "started": 4,
+            "succeeded": 4,
+            "failed": 0
+          },
+          "bash": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 4,
+        "file_list": [
+          "src/orders.js",
+          "src/quotes.js",
+          "src/invoices.js",
+          "src/total.js"
+        ],
+        "edits": 0,
+        "writes": 4,
+        "test_runs": 1,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": false,
+        "authorization_events": 8,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 5,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_total": 14,
+        "messages_hot": 14,
+        "messages_dropped": 0,
+        "projection_bytes": 5171,
+        "input_tokens": 4422,
+        "output_tokens": 451,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 10034,
+        "model_ms": 9426,
+        "tool_ms": 590,
+        "other_ms": 18,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "explain": "Run run_ae76312b2b\n  task: src/orders.js, src/quotes.js and src/invoices.js each contain an identical total-calculation loop. E…\n────────────────────────────────────────────────────────────────\n   1  05:02:54  · run created (scope personal:local)\n   3  05:02:54  ▸ task: src/orders.js, src/quotes.js and src/invoices.js each contain an identical total-calculati…\n   6  05:02:55  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  05:02:55  🧠 wants 3 tool calls: read, read, read 521→50tok\n  10  05:02:55  · read {\"path\":\"src/orders.js\"}\n  11  05:02:55  ✓ read → export function orderTotal(items) { let t = 0; for (const i of items) …\n  14  05:02:55  · read {\"path\":\"src/quotes.js\"}\n  15  05:02:56  ✓ read → export function quoteTotal(items) { let t = 0; for (const i of items) …\n  18  05:02:56  · read {\"path\":\"src/invoices.js\"}\n  19  05:02:56  ✓ read → export function invoiceTotal(items) { let t = 0; for (const i of items…\n  22  05:02:57  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  05:02:57  🧠 wants 1 tool call: write 773→84tok\n  26  05:02:57  · write {\"content\":\"export function calculateTotal(items) {\\n let t = 0;\\n for…\n  27  05:02:57  ✓ write → wrote src/total.js (138 bytes)\n  30  05:03:01  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  05:03:01  🧠 wants 3 tool calls: write, write, write 875→162tok\n  34  05:03:01  · write {\"content\":\"import { calculateTotal } from './total.js';\\n\\nexport fun…\n  35  05:03:01  ✓ write → wrote src/orders.js (116 bytes)\n  38  05:03:01  · write {\"content\":\"import { calculateTotal } from './total.js';\\n\\nexport fun…\n  39  05:03:01  ✓ write → wrote src/quotes.js (116 bytes)\n  42  05:03:01  · write {\"content\":\"import { calculateTotal } from './total.js';\\n\\nexport fun…\n  43  05:03:01  ✓ write → wrote src/invoices.js (118 bytes)\n  46  05:03:01  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  05:03:01  🧠 wants 1 tool call: bash 1102→25tok\n  50  05:03:01  · bash {\"cmd\":\"node test/totals.test.mjs\"}\n  51  05:03:02  ✓ bash → ok orderTotal ok quoteTotal ok invoiceTotal ALL PASS\n  54  05:03:04  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  55  05:03:04  🧠 \"I have extracted the shared total-calculation logic into a new module `src/total…\" 1151→130tok\n  56  05:03:04  ✓ completed — model_finished: \"I have extracted the shared total-calculation logic into a n…\"",
+      "workdir": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\harness-eval\\eval-multi-file-refactor-1787893374886"
+    },
+    {
+      "task_id": "wrong-test-discrimination",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "difficulty": "hard",
+      "categories": [
+        "test_fix",
+        "edge_case"
+      ],
+      "repository": "failing-suite",
+      "base_commit": "72e411442387",
+      "outcome": "PASS",
+      "detail": "spec_conformant=true suite_passes=true (SPEC_OK)",
+      "evidence": null,
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "final_message": "The test `test/list.test.mjs` was failing because its expectation for `flatten` contradicted the authoritative specification in `SPEC.md`. According to `SPEC.md`, `flatten` should flatten completely to any depth, but the test was asserting a shallow flatten.\n\nI updated the test case to match the specification:\n- Changed `eq('flatten', flatten([1, [2, [3, [4]]]]), [1, 2, [3, [4]]]);` to `eq('flatte",
+      "metrics": {
+        "events": 48,
+        "turns": 1,
+        "model_calls": 6,
+        "model_failures": 0,
+        "tool_calls": 5,
+        "tool_succeeded": 4,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 1,
+        "duplicate_action_rate": 0.2,
+        "tool_success_rate": 0.8,
+        "failure_density": 0.0208,
+        "tools_used": {
+          "bash": {
+            "started": 2,
+            "succeeded": 1,
+            "failed": 1
+          },
+          "read": {
+            "started": 2,
+            "succeeded": 2,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "test/list.test.mjs",
+          "SPEC.md"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 2,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 5,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 6,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_total": 12,
+        "messages_hot": 12,
+        "messages_dropped": 0,
+        "projection_bytes": 5036,
+        "input_tokens": 5012,
+        "output_tokens": 337,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 8624,
+        "model_ms": 7435,
+        "tool_ms": 1173,
+        "other_ms": 16,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "explain": "Run run_1a4869273e\n  task: Running `node test/list.test.mjs` fails. SPEC.md is the authoritative specification for this library…\n────────────────────────────────────────────────────────────────\n   1  05:03:05  · run created (scope personal:local)\n   3  05:03:05  ▸ task: Running `node test/list.test.mjs` fails. SPEC.md is the authoritative specification for th…\n   6  05:03:06  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  05:03:06  🧠 wants 1 tool call: bash 479→21tok\n  10  05:03:06  · bash {\"cmd\":\"node test/list.test.mjs\"}\n  11  05:03:06  ✕ bash failed: command failed (exit 1): ok chunk FAIL flatten: got [1,2,3,4] want [1,…\n  14  05:03:07  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  05:03:07  🧠 wants 1 tool call: read 550→24tok\n  18  05:03:07  · read {\"path\":\"test/list.test.mjs\"}\n  19  05:03:07  ✓ read → import { chunk, flatten } from '../src/list.js'; let fails = 0; const …\n  22  05:03:07  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  05:03:07  🧠 wants 1 tool call: read 815→19tok\n  26  05:03:07  · read {\"path\":\"SPEC.md\"}\n  27  05:03:07  ✓ read → # list utils — authoritative specification ## flatten(xs) Flattens **c…\n  30  05:03:09  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  05:03:09  🧠 wants 1 tool call: edit 966→99tok\n  34  05:03:09  · edit {\"new_string\":\"eq('flatten', flatten([1, [2, [3, [4]]]]), [1, 2, 3, 4]…\n  35  05:03:09  ✓ edit → edited test/list.test.mjs\n  38  05:03:10  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  05:03:10  🧠 wants 1 tool call: bash 1080→25tok\n  42  05:03:10  · bash {\"cmd\":\"node test/list.test.mjs\"}\n  43  05:03:11  ✓ bash → ok chunk ok flatten ALL PASS\n  46  05:03:14  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  47  05:03:14  🧠 \"The test `test/list.test.mjs` was failing because its expectation for `flatten` …\" 1122→149tok\n  48  05:03:14  ✓ completed — model_finished: \"The test `test/list.test.mjs` was failing because its expect…\"",
+      "workdir": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\harness-eval\\eval-wrong-test-discrimination-1787893385559"
+    },
+    {
+      "task_id": "multi-bug-calc",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "difficulty": "hard",
+      "categories": [
+        "bug_fix",
+        "multi_file",
+        "edge_case"
+      ],
+      "repository": "calc-lib",
+      "base_commit": "mutated",
+      "outcome": "PASS",
+      "detail": "node test/math.test.mjs exited 0",
+      "evidence": "ok   add(2,3)\nok   multiply(3,4)\nok   multiply(3,-2) NEGATIVE\nok   divide(10,2)\n\nALL PASS\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "final_message": "The defects in `src/math.js` were:\n1. The `add` function was performing subtraction (`a - b`) instead of addition.\n2. The `multiply` function was implemented using a loop that only worked for positive integers, failing for negative numbers.\n\nI fixed these by correcting the operator in `add` and replacing the loop in `multiply` with the standard multiplication operator (`*`).\n\nAll tests in `test/ma",
+      "metrics": {
+        "events": 48,
+        "turns": 1,
+        "model_calls": 6,
+        "model_failures": 0,
+        "tool_calls": 5,
+        "tool_succeeded": 4,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 1,
+        "duplicate_action_rate": 0.2,
+        "tool_success_rate": 0.8,
+        "failure_density": 0.0208,
+        "tools_used": {
+          "bash": {
+            "started": 2,
+            "succeeded": 1,
+            "failed": 1
+          },
+          "read": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "write": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "src/math.js"
+        ],
+        "edits": 1,
+        "writes": 1,
+        "test_runs": 2,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 5,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 6,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_total": 12,
+        "messages_hot": 12,
+        "messages_dropped": 0,
+        "projection_bytes": 4325,
+        "input_tokens": 4243,
+        "output_tokens": 304,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 7683,
+        "model_ms": 6500,
+        "tool_ms": 1167,
+        "other_ms": 16,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "explain": "Run run_b37cfa69af\n  task: src/math.js has MORE THAN ONE defect. Run `node test/math.test.mjs`, fix every failure, and make the…\n────────────────────────────────────────────────────────────────\n   1  05:03:15  · run created (scope personal:local)\n   3  05:03:15  ▸ task: src/math.js has MORE THAN ONE defect. Run `node test/math.test.mjs`, fix every failure, an…\n   6  05:03:15  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  05:03:15  🧠 wants 1 tool call: bash 481→21tok\n  10  05:03:15  · bash {\"cmd\":\"node test/math.test.mjs\"}\n  11  05:03:16  ✕ bash failed: command failed (exit 1): FAIL add(2,3): got -1 want 5 ok multiply(3,4)…\n  14  05:03:16  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  05:03:16  🧠 wants 1 tool call: read 574→21tok\n  18  05:03:16  · read {\"path\":\"src/math.js\"}\n  19  05:03:16  ✓ read → export function add(a, b) { return a - b; } export function multiply(a…\n  22  05:03:17  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  05:03:17  🧠 wants 1 tool call: edit 684→47tok\n  26  05:03:17  · edit {\"new_string\":\" return a + b;\",\"old_string\":\" return a - b;\",\"path\":\"s…\n  27  05:03:17  ✓ edit → edited src/math.js\n  30  05:03:19  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  05:03:19  🧠 wants 1 tool call: write 743→83tok\n  34  05:03:19  · write {\"content\":\"export function add(a, b) {\\n return a + b;\\n}\\n\\nexport f…\n  35  05:03:19  ✓ write → wrote src/math.js (148 bytes)\n  38  05:03:20  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  05:03:20  🧠 wants 1 tool call: bash 844→25tok\n  42  05:03:20  · bash {\"cmd\":\"node test/math.test.mjs\"}\n  43  05:03:20  ✓ bash → ok add(2,3) ok multiply(3,4) ok multiply(3,-2) NEGATIVE ok divide(10,2…\n  46  05:03:23  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  47  05:03:23  🧠 \"The defects in `src/math.js` were: 1. The `add` function was performing subtract…\" 917→107tok\n  48  05:03:23  ✓ completed — model_finished: \"The defects in `src/math.js` were: 1. The `add` function was…\"",
+      "workdir": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\harness-eval\\eval-multi-bug-calc-1787893395389"
+    }
+  ]
+}

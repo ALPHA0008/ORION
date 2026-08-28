@@ -74,7 +74,9 @@ export function explain(store, runId, { verbose = false, full = false, maxArg = 
       case 'human.responded': text = `human said: ${clip(p.response, 40)}`; break;
       case 'human.timed_out': text = `human request expired`; break;
       case 'degraded':      text = `DEGRADED [${p.subsystem}] ${clip(p.reason, 70)}`; break;
-      case 'context.compacted': text = `compacted context (dropped ${p.dropped ?? '?'} messages)`; break;
+      case 'context.compacted': text = p.elided
+        ? `compacted context (elided ${p.elided} superseded results, saved ${p.bytes_saved ?? 0}b)`
+        : `compacted context (dropped ${p.dropped ?? '?'} messages)`; break;
       case 'run.paused':    text = `paused — ${p.reason}`; break;
       case 'run.resumed':   text = p.seam ? `── fork seam (history above is inherited) ──` : `resumed`; break;
       case 'run.lease_lost':text = `lease lost (${p.reason ?? 'expired'}) — will be reclaimed`; break;
