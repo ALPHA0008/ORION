@@ -47,20 +47,50 @@ export class RealEnvironment {
   }
 
   /** Clone (or update) the bare mirror used as the local source for all checkouts. */
-  #ensureMirror() {
-    if (fs.existsSync(path.join(this.cacheDir, 'HEAD'))) {
-      // Already mirrored. Verify the pinned commit is present; only fetch if it is not.
+  /** Is the pinned commit already in the mirror? Retried, because a concurrent git process
+   *  holding the repo makes this fail transiently — which is not evidence of a missing pin. */
+  #hasPin(attempts = 3) {
+    for (let i = 0; i < attempts; i++) {
       try {
         git(['--git-dir', this.cacheDir, 'cat-file', '-e', `${this.repo.commit}^{commit}`]);
-        return;
-      } catch { /* fall through to fetch */ }
+        return true;
+      } catch {
+        if (i < attempts - 1) sleepSync(200 * (i + 1));
+      }
     }
+    return false;
+  }
+
+  #ensureMirror() {
+    const mirrored = fs.existsSync(path.join(this.cacheDir, 'HEAD'));
+
+    // Fast path: the pin is already present, so no network access is needed at all. Because
+    // commits are immutable and the pin never moves, a mirror that once contained it always
+    // will — so this is the normal path for every run after the first.
+    if (mirrored && this.#hasPin()) return;
+
     fs.mkdirSync(path.dirname(this.cacheDir), { recursive: true });
-    if (!fs.existsSync(path.join(this.cacheDir, 'HEAD'))) {
+    if (!mirrored) {
       git(['clone', '--bare', '--quiet', this.repo.url, this.cacheDir], { stage: 'clone', timeout: 600_000 });
     } else {
-      git(['--git-dir', this.cacheDir, 'fetch', '--quiet', 'origin', '+refs/heads/*:refs/heads/*'],
-          { stage: 'fetch', timeout: 600_000 });
+      // Concurrency: several tasks against the same repo can reach here together, and git
+      // refuses a fetch while another holds the lock. That is contention, not a broken
+      // environment, so retry — and before failing, re-check the pin, since a sibling process
+      // may have completed the very fetch we were denied.
+      let lastErr = null;
+      for (let i = 0; i < 3; i++) {
+        try {
+          git(['--git-dir', this.cacheDir, 'fetch', '--quiet', 'origin', '+refs/heads/*:refs/heads/*'],
+              { stage: 'fetch', timeout: 600_000 });
+          lastErr = null;
+          break;
+        } catch (e) {
+          lastErr = e;
+          if (this.#hasPin(1)) return;      // someone else already brought it in
+          sleepSync(500 * (i + 1));
+        }
+      }
+      if (lastErr && !this.#hasPin()) throw lastErr;
     }
     // The pin must exist, or the task is not reproducible and that is OUR bug, not the agent's.
     git(['--git-dir', this.cacheDir, 'cat-file', '-e', `${this.repo.commit}^{commit}`], { stage: 'verify-pin' });
@@ -176,6 +206,11 @@ export class RealEnvironment {
 }
 
 let counter = 0;
+
+/** Block briefly without pulling in a timer; used only to back off on git lock contention. */
+function sleepSync(ms) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
 
 /** A Windows junction reports as a directory to stat() but as a link to lstat(). */
 function isJunction(p) {

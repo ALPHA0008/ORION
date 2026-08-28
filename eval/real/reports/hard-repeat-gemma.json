@@ -1,0 +1,367 @@
+{
+  "label": "hard-repeat-gemma-3x",
+  "runner": "harness-v0",
+  "model": "gemma4-31b",
+  "endpoint_kind": "openai-compatible",
+  "compaction": "none",
+  "at": "2026-08-28T12:22:49.407Z",
+  "node": "v24.18.0",
+  "merged_from": [
+    "_hr-camel-preserve-consecutive.json"
+  ],
+  "repositories": {
+    "is-number": {
+      "url": "https://github.com/jonschlinkert/is-number.git",
+      "commit": "98e8ff1da1a89f93d1397a24d7413ed15421c139",
+      "test_command": "npx mocha"
+    },
+    "slugify": {
+      "url": "https://github.com/sindresorhus/slugify.git",
+      "commit": "7c318bd1aa4b4affab29761f15a9604323fe2a3b",
+      "test_command": "npx ava"
+    },
+    "p-limit": {
+      "url": "https://github.com/sindresorhus/p-limit.git",
+      "commit": "df476048d023ff868cd45b35ee47f5fb0ca2b25a",
+      "test_command": "npx ava"
+    },
+    "ansi-styles": {
+      "url": "https://github.com/chalk/ansi-styles.git",
+      "commit": "c1c3dd4e017a2938807aaff0d361f46d086aeab7",
+      "test_command": "npx ava"
+    },
+    "camelcase": {
+      "url": "https://github.com/sindresorhus/camelcase.git",
+      "commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "test_command": "npx ava"
+    }
+  },
+  "aggregate": {
+    "tasks_total": 3,
+    "tasks_scored": 3,
+    "infra_failures": 0,
+    "passed": 0,
+    "failed": 3,
+    "timeouts": 0,
+    "success_rate": 0,
+    "by_difficulty": {
+      "hard": {
+        "total": 3,
+        "pass": 0,
+        "rate": 0
+      }
+    },
+    "by_category": {
+      "bug_fix": {
+        "total": 3,
+        "pass": 0,
+        "rate": 0
+      },
+      "multi_read": {
+        "total": 3,
+        "pass": 0,
+        "rate": 0
+      },
+      "option_handling": {
+        "total": 3,
+        "pass": 0,
+        "rate": 0
+      },
+      "debugging": {
+        "total": 3,
+        "pass": 0,
+        "rate": 0
+      }
+    },
+    "avg_wall_ms": 244327,
+    "p50_wall_ms": 194638,
+    "p95_wall_ms": 349496,
+    "model_calls_per_success": 0,
+    "tool_calls_per_success": 0,
+    "tokens_per_success": 0,
+    "cost_per_success": 0,
+    "total_input_tokens": 1070058,
+    "total_output_tokens": 24497,
+    "total_cost_usd": 0,
+    "avg_duplicate_rate": 0.44,
+    "avg_tool_success_rate": 0.75,
+    "total_degraded": 120,
+    "total_escalations": 0,
+    "runs_with_recovery": 0
+  },
+  "results": [
+    {
+      "task_id": "camel-preserve-consecutive",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "camelcase",
+      "base_commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "difficulty": "hard",
+      "categories": [
+        "bug_fix",
+        "multi_read",
+        "option_handling",
+        "debugging"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "\r\n  Uncaught exception in test.js\r\n\r\n  SyntaxError: Unexpected end of input\r\n\r\n  ✘ test.js exited with a non-zero exit code: 1\r\n  ─\r\n\r\n  1 uncaught exception\r\n",
+      "agent_status": "failed",
+      "agent_reason": "max_turns",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 316,
+        "turns": 1,
+        "model_calls": 40,
+        "model_failures": 0,
+        "tool_calls": 36,
+        "tool_succeeded": 29,
+        "tool_failed": 11,
+        "tool_denied": 0,
+        "duplicate_action_count": 19,
+        "duplicate_action_rate": 0.528,
+        "tool_success_rate": 0.806,
+        "failure_density": 0.0348,
+        "tools_used": {
+          "bash": {
+            "started": 5,
+            "succeeded": 1,
+            "failed": 4
+          },
+          "read": {
+            "started": 26,
+            "succeeded": 26,
+            "failed": 0
+          },
+          "edit": {
+            "started": 4,
+            "succeeded": 1,
+            "failed": 3
+          },
+          "write": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 4
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "index.js",
+          "test.js"
+        ],
+        "edits": 4,
+        "writes": 1,
+        "test_runs": 0,
+        "failed_test_runs": 4,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 36,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 40,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 81,
+        "messages_hot": 40,
+        "messages_dropped": 41,
+        "projection_bytes": 81360,
+        "input_tokens": 366386,
+        "output_tokens": 13015,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 349496,
+        "model_ms": 336906,
+        "tool_ms": 12469,
+        "other_ms": 121,
+        "status": "failed",
+        "exit_reason": "max_turns"
+      },
+      "failure_class": "budget_exhausted",
+      "explain": "Run run_dc9c906f9f\n  task: The `preserveConsecutiveUppercase` option no longer behaves correctly and `npx ava` fails. Investiga…\n────────────────────────────────────────────────────────────────\n   1  12:06:51  · run created (scope personal:local)\n   3  12:06:51  ▸ task: The `preserveConsecutiveUppercase` option no longer behaves correctly and `npx ava` fails.…\n   6  12:06:52  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  12:06:52  🧠 wants 1 tool call: bash 572→15tok\n  10  12:06:52  · bash {\"cmd\":\"npx ava\"}\n  11  12:06:56  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n  14  12:06:56  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  12:06:56  🧠 wants 1 tool call: bash 1286→19tok\n  18  12:06:56  · bash {\"cmd\":\"ls -F\"}\n  19  12:06:57  ✓ bash → index.d.ts index.js index.test-d.ts license node_modules@ package.json…\n  22  12:06:57  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  12:06:57  🧠 wants 1 tool call: read 1348→19tok\n  26  12:06:57  · read {\"path\":\"index.js\"}\n  27  12:06:57  ✓ read → 1 const UPPERCASE = /[\\p{Lu}]/u; 2 const LOWERCASE = /[\\p{Ll}]/u; 3 co…\n  30  12:06:58  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  12:06:58  🧠 wants 1 tool call: read 1906→24tok\n  34  12:06:58  · read {\"offset\":30,\"path\":\"index.js\"}\n  35  12:06:58  ✓ read → [index.js: lines 30-71 of 224] 30 // FooBar → Foo-Bar (insert separato…\n  38  12:06:58  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  12:06:58  🧠 wants 1 tool call: read 2506→24tok\n  42  12:06:58  · read {\"offset\":72,\"path\":\"index.js\"}\n  43  12:06:58  ✓ read → [index.js: lines 72-109 of 224] 72 const character = characters[index]…\n  46  12:06:59  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  47  12:06:59  🧠 wants 1 tool call: read 3050→21tok\n  50  12:06:59  · read {\"offset\":110,\"path\":\"index.js\"}\n  51  12:06:59  ✓ read → [index.js: lines 110-143 of 224] 110 Two-pass strategy prevents confli…\n  54  12:06:59  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  55  12:06:59  🧠 wants 1 tool call: read 3608→21tok\n  58  12:06:59  · read {\"offset\":144,\"path\":\"index.js\"}\n  59  12:06:59  ✓ read → [index.js: lines 144-198 of 224] 144 if (!(typeof input === 'string' |…\n  62  12:07:00  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  63  12:07:00  🧠 wants 1 tool call: read 4259→21tok\n  66  12:07:00  · read {\"offset\":199,\"path\":\"index.js\"}\n  67  12:07:00  ✓ read → [index.js: lines 199-224 of 224] 199 toLowerCase, 200 toUpperCase, 201…\n  70  12:07:00  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  71  12:07:00  🧠 wants 1 tool call: bash 4632→19tok\n  74  12:07:00  · bash {\"cmd\":\"npx ava\"}\n  75  12:07:03  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n  78  12:07:04  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  79  12:07:04  🧠 wants 1 tool call: read 5350→19tok\n  82  12:07:04  · read {\"path\":\"index.js\"}\n  83  12:07:04  ✓ read → 1 const UPPERCASE = /[\\p{Lu}]/u; 2 const LOWERCASE = /[\\p{Ll}]/u; 3 co…\n  86  12:07:04  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  87  12:07:04  🧠 wants 1 tool call: read 5908→24tok\n  90  12:07:04  · read {\"offset\":30,\"path\":\"index.js\"}\n  91  12:07:04  ✓ read → [index.js: lines 30-71 of 224] 30 // FooBar → Foo-Bar (insert separato…\n  94  12:07:05  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  95  12:07:05  🧠 wants 1 tool call: read 6508→20tok\n  98  12:07:05  · read {\"offset\":72,\"path\":\"index.js\"}\n  99  12:07:05  ✓ read → [index.js: lines 72-109 of 224] 72 const character = characters[index]…\n 102  12:07:05  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 103  12:07:05  🧠 wants 1 tool call: read 7052→21tok\n 106  12:07:05  · read {\"offset\":110,\"path\":\"index.js\"}\n 107  12:07:05  ✓ read → [index.js: lines 110-143 of 224] 110 Two-pass strategy prevents confli…\n 110  12:07:06  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 111  12:07:06  🧠 wants 1 tool call: read 7610→21tok\n 114  12:07:06  · read {\"offset\":144,\"path\":\"index.js\"}\n 115  12:07:06  ✓ read → [index.js: lines 144-198 of 224] 144 if (!(typeof input === 'string' |…\n 118  12:07:07  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 119  12:07:07  🧠 wants 1 tool call: read 8261→21tok\n 122  12:07:07  · read {\"offset\":199,\"path\":\"index.js\"}\n 123  12:07:07  ✓ read → [index.js: lines 199-224 of 224] 199 toLowerCase, 200 toUpperCase, 201…\n 126  12:07:07  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 127  12:07:07  🧠 wants 1 tool call: bash 8634→19tok\n 130  12:07:07  · bash {\"cmd\":\"npx ava\"}\n 131  12:07:10  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n 134  12:07:10  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 135  12:07:10  🧠 wants 1 tool call: read 9352→19tok\n 138  12:07:10  · read {\"path\":\"test.js\"}\n 139  12:07:10  ✓ read → 1 import test from 'ava'; 2 import camelCase from './index.js'; 3 4 te…\n 142  12:07:11  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 143  12:07:11  🧠 wants 1 tool call: read 10049→20tok\n 146  12:07:11  · read {\"offset\":34,\"path\":\"test.js\"}\n 147  12:07:11  ✓ read → [test.js: lines 34-67 of 443] 34 t.is(camelCase('FBBazzy'), 'fbBazzy')…\n 150  12:07:12  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 151  12:07:12  🧠 wants 1 tool call: read 10767→21tok\n 154  12:07:12  · read {\"offset\":170,\"path\":\"test.js\"}\n 155  12:07:12  ✓ read → [test.js: lines 170-186 of 443] 170 t.is(camelCase('A::a', {preserveCo…\n 158  12:07:12  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 159  12:07:12  🧠 wants 1 tool call: read 11338→19tok\n 162  12:07:12  · read {\"path\":\"index.js\"}\n 163  12:07:12  ✓ read → 1 const UPPERCASE = /[\\p{Lu}]/u; 2 const LOWERCASE = /[\\p{Ll}]/u; 3 co…\n 166  12:07:14  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 167  12:07:14  🧠 wants 1 tool call: read 11877→20tok\n 170  12:07:14  · read {\"offset\":30,\"path\":\"index.js\"}\n 171  12:07:14  ✓ read → [index.js: lines 30-71 of 224] 30 // FooBar → Foo-Bar (insert separato…\n 174  12:07:17  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 175  12:07:17  🧠 wants 1 tool call: read 11759→20tok\n 178  12:07:17  · read {\"offset\":72,\"path\":\"index.js\"}\n 179  12:07:17  ✓ read → [index.js: lines 72-109 of 224] 72 const character = characters[index]…\n 182  12:07:19  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 183  12:07:19  🧠 wants 1 tool call: read 12241→21tok\n 186  12:07:19  · read {\"offset\":110,\"path\":\"index.js\"}\n 187  12:07:19  ✓ read → [index.js: lines 110-143 of 224] 110 Two-pass strategy prevents confli…\n 190  12:07:21  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 191  12:07:21  🧠 wants 1 tool call: read 12241→21tok\n 194  12:07:21  · read {\"offset\":144,\"path\":\"index.js\"}\n 195  12:07:21  ✓ read → [index.js: lines 144-198 of 224] 144 if (!(typeof input === 'string' |…\n 198  12:07:23  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 199  12:07:23  🧠 wants 1 tool call: read 12292→21tok\n 202  12:07:24  · read {\"offset\":199,\"path\":\"index.js\"}\n 203  12:07:24  ✓ read → [index.js: lines 199-224 of 224] 199 toLowerCase, 200 toUpperCase, 201…\n 206  12:07:28  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 207  12:07:28  🧠 wants 1 tool call: edit 12122→100tok\n 210  12:07:28  · edit {\"new_string\":\"\\tconst preserveConsecutiveUppercase = (input, toLowerC…\n 211  12:07:28  ✕ edit failed: old_string not found in index.js\n 214  12:07:31  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 215  12:07:31  🧠 wants 1 tool call: edit 11685→94tok\n 218  12:07:31  · edit {\"new_string\":\"const preserveConsecutiveUppercase = (input, toLowerCas…\n 219  12:07:31  ✓ edit → edited index.js\n 222  12:07:33  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 223  12:07:33  🧠 wants 1 tool call: bash 11142→15tok\n 226  12:07:33  · bash {\"cmd\":\"npx ava\"}\n 227  12:07:36  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n 230  12:07:38  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 231  12:07:38  🧠 wants 1 tool call: read 11487→19tok\n 234  12:07:38  · read {\"path\":\"index.js\"}\n 235  12:07:38  ✓ read → 1 const UPPERCASE = /[\\p{Lu}]/u; 2 const LOWERCASE = /[\\p{Ll}]/u; 3 co…\n 238  12:07:40  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 239  12:07:40  🧠 wants 1 tool call: read 11327→20tok\n 242  12:07:40  · read {\"offset\":30,\"path\":\"index.js\"}\n 243  12:07:40  ✓ read → [index.js: lines 30-72 of 226] 30 // FooBar → Foo-Bar (insert separato…\n 246  12:08:04  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 247  12:08:04  🧠 wants 1 tool call: edit 11360→977tok\n 250  12:08:04  · edit {\"new_string\":\"\\tconst preserveCamelCase = (string, toLowerCase, toUpp…\n 251  12:08:04  ✕ edit failed: old_string not found in index.js\n 254  12:08:06  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 255  12:08:06  🧠 wants 1 tool call: read 11762→20tok\n 258  12:08:06  · read {\"offset\":14,\"path\":\"index.js\"}\n 259  12:08:06  ✓ read → [index.js: lines 14-47 of 226] 14 const preserveCamelCase = (string, t…\n 262  12:08:08  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 263  12:08:08  🧠 wants 1 tool call: read 11793→20tok\n 266  12:08:08  · read {\"offset\":48,\"path\":\"index.js\"}\n 267  12:08:08  ✓ read → [index.js: lines 48-84 of 226] 48 isLastCharLower 49 = toLowerCase(cha…\n 270  12:08:32  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 271  12:08:32  🧠 wants 1 tool call: edit 11783→981tok\n 274  12:08:32  · edit {\"new_string\":\"\\tconst preserveCamelCase = (string, toLowerCase, toUpp…\n 275  12:08:32  ✕ edit failed: old_string not found in index.js\n 278  12:08:34  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 279  12:08:34  🧠 wants 1 tool call: read 12134→19tok\n 282  12:08:34  · read {\"path\":\"index.js\"}\n 283  12:08:34  ✓ read → 1 const UPPERCASE = /[\\p{Lu}]/u; 2 const LOWERCASE = /[\\p{Ll}]/u; 3 co…\n 286  12:09:22  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 287  12:09:22  🧠 wants 1 tool call: write 12319→2048tok\n 289  12:09:22  ✕ write failed: invalid arguments: missing required property: path\n 292  12:10:10  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 293  12:10:10  🧠 wants 1 tool call: write 13677→2048tok\n 295  12:10:10  ✕ write failed: invalid arguments: missing required property: path\n 298  12:10:59  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 299  12:10:59  🧠 wants 1 tool call: write 15056→2048tok\n 301  12:10:59  ✕ write failed: invalid arguments: missing required property: path\n 304  12:11:50  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 305  12:11:50  🧠 wants 1 tool call: write 16414→2048tok\n 307  12:11:50  ✕ write failed: invalid arguments: missing required property: path\n 310  12:12:41  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 311  12:12:41  🧠 wants 1 tool call: write 17919→2048tok\n 314  12:12:41  · write {\"path\":\"index.js\",\"content\":\"const UPPERCASE = /[\\\\p{Lu}]/u;\\nconst L…\n 315  12:12:41  ✓ write → wrote index.js (7241 bytes)\n 316  12:12:41  ✕ failed — max_turns"
+    },
+    {
+      "task_id": "camel-preserve-consecutive",
+      "repeat": 1,
+      "runner": "harness-v0",
+      "repository": "camelcase",
+      "base_commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "difficulty": "hard",
+      "categories": [
+        "bug_fix",
+        "multi_read",
+        "option_handling",
+        "debugging"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "ooBarBazBazz…\n   107:   t.is(camelCase('FBBazzy', {pascalCase: true}), 'FbBazzy');            \n   108:   t.is(camelCase('F', {pascalCase: true}), 'F');                        \r\n\r\n  Difference (- actual, + expected):\n\n  - 'Fbbazzy'\n  + 'FbBazzy'\r\n\r\n  › file:///test.js:107:4\r\n\r\n\r\n\r\n  camelCase with preserveConsecutiveUppercase option\r\n\r\n  test.js:165\r\n\r\n   164:   t.is(camelCase('foo-BAR#', {preserveConsecutiveUppercase: true}), 'fo…\n   165:   t.is(camelCase('XMLHttpRequest', {preserveConsecutiveUppercase: true}…\n   166:   t.is(camelCase('AjaxXMLHttpRequest', {preserveConsecutiveUppercase: t…\r\n\r\n  Difference (- actual, + expected):\n\n  - 'XMLHTtpRequest'\n  + 'XMLHttpRequest'\r\n\r\n  › file:///test.js:165:4\r\n\r\n\r\n\r\n  camelCase with both pascalCase and preserveConsecutiveUppercase option\r\n\r\n  test.js:199\r\n\r\n   198:   t.is(camelCase('xMLHttpRequest', {pascalCase: true, preserveConsecuti…\n   199:   t.is(camelCase('ajaxXMLHttpRequest', {pascalCase: true, preserveConse…\n   200:   t.is(camelCase('Ajax-XMLHttpRequest', {pascalCase: true, preserveCons…\r\n\r\n  Difference (- actual, + expected):\n\n  - 'AjaxXMLHTtpRequest'\n  + 'AjaxXMLHttpRequest'\r\n\r\n  › file:///test.js:199:4\r\n\r\n  ─\r\n\r\n  4 tests failed\r\n",
+      "agent_status": "failed",
+      "agent_reason": "max_turns",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 324,
+        "turns": 1,
+        "model_calls": 40,
+        "model_failures": 0,
+        "tool_calls": 40,
+        "tool_succeeded": 29,
+        "tool_failed": 11,
+        "tool_denied": 0,
+        "duplicate_action_count": 16,
+        "duplicate_action_rate": 0.4,
+        "tool_success_rate": 0.725,
+        "failure_density": 0.034,
+        "tools_used": {
+          "bash": {
+            "started": 8,
+            "succeeded": 1,
+            "failed": 7
+          },
+          "read": {
+            "started": 23,
+            "succeeded": 23,
+            "failed": 0
+          },
+          "edit": {
+            "started": 9,
+            "succeeded": 5,
+            "failed": 4
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "index.js"
+        ],
+        "edits": 9,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 7,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 40,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 40,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 81,
+        "messages_hot": 40,
+        "messages_dropped": 41,
+        "projection_bytes": 44532,
+        "input_tokens": 351836,
+        "output_tokens": 5741,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 188847,
+        "model_ms": 166419,
+        "tool_ms": 22283,
+        "other_ms": 145,
+        "status": "failed",
+        "exit_reason": "max_turns"
+      },
+      "failure_class": "budget_exhausted",
+      "explain": "Run run_869e8f6553\n  task: The `preserveConsecutiveUppercase` option no longer behaves correctly and `npx ava` fails. Investiga…\n────────────────────────────────────────────────────────────────\n   1  12:12:43  · run created (scope personal:local)\n   3  12:12:43  ▸ task: The `preserveConsecutiveUppercase` option no longer behaves correctly and `npx ava` fails.…\n   6  12:12:44  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  12:12:44  🧠 wants 1 tool call: bash 572→15tok\n  10  12:12:44  · bash {\"cmd\":\"npx ava\"}\n  11  12:12:46  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n  14  12:12:47  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  12:12:47  🧠 wants 1 tool call: bash 1286→19tok\n  18  12:12:47  · bash {\"cmd\":\"ls -R\"}\n  19  12:12:47  ✓ bash → .: index.d.ts index.js index.test-d.ts license node_modules package.js…\n  22  12:12:48  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  12:12:48  🧠 wants 1 tool call: read 1349→19tok\n  26  12:12:48  · read {\"path\":\"index.js\"}\n  27  12:12:48  ✓ read → 1 const UPPERCASE = /[\\p{Lu}]/u; 2 const LOWERCASE = /[\\p{Ll}]/u; 3 co…\n  30  12:12:48  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  12:12:48  🧠 wants 1 tool call: read 1907→24tok\n  34  12:12:48  · read {\"offset\":30,\"path\":\"index.js\"}\n  35  12:12:48  ✓ read → [index.js: lines 30-71 of 224] 30 // FooBar → Foo-Bar (insert separato…\n  38  12:12:49  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  39  12:12:49  🧠 wants 1 tool call: read 2507→20tok\n  42  12:12:49  · read {\"offset\":72,\"path\":\"index.js\"}\n  43  12:12:49  ✓ read → [index.js: lines 72-109 of 224] 72 const character = characters[index]…\n  46  12:12:49  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  47  12:12:49  🧠 wants 1 tool call: read 3051→21tok\n  50  12:12:49  · read {\"offset\":110,\"path\":\"index.js\"}\n  51  12:12:49  ✓ read → [index.js: lines 110-143 of 224] 110 Two-pass strategy prevents confli…\n  54  12:12:50  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  55  12:12:50  🧠 wants 1 tool call: read 3609→21tok\n  58  12:12:50  · read {\"offset\":144,\"path\":\"index.js\"}\n  59  12:12:50  ✓ read → [index.js: lines 144-198 of 224] 144 if (!(typeof input === 'string' |…\n  62  12:12:50  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  63  12:12:50  🧠 wants 1 tool call: read 4260→21tok\n  66  12:12:50  · read {\"offset\":199,\"path\":\"index.js\"}\n  67  12:12:50  ✓ read → [index.js: lines 199-224 of 224] 199 toLowerCase, 200 toUpperCase, 201…\n  70  12:12:51  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  71  12:12:51  🧠 wants 1 tool call: bash 4633→19tok\n  74  12:12:51  · bash {\"cmd\":\"npx ava\"}\n  75  12:12:54  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n  78  12:12:54  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  79  12:12:54  🧠 wants 1 tool call: read 5351→19tok\n  82  12:12:54  · read {\"path\":\"index.js\"}\n  83  12:12:54  ✓ read → 1 const UPPERCASE = /[\\p{Lu}]/u; 2 const LOWERCASE = /[\\p{Ll}]/u; 3 co…\n  86  12:12:55  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  87  12:12:55  🧠 wants 1 tool call: read 5909→24tok\n  90  12:12:55  · read {\"offset\":30,\"path\":\"index.js\"}\n  91  12:12:55  ✓ read → [index.js: lines 30-71 of 224] 30 // FooBar → Foo-Bar (insert separato…\n  94  12:12:55  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  95  12:12:55  🧠 wants 1 tool call: read 6509→20tok\n  98  12:12:55  · read {\"offset\":72,\"path\":\"index.js\"}\n  99  12:12:55  ✓ read → [index.js: lines 72-109 of 224] 72 const character = characters[index]…\n 102  12:12:56  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 103  12:12:56  🧠 wants 1 tool call: read 7053→21tok\n 106  12:12:56  · read {\"offset\":110,\"path\":\"index.js\"}\n 107  12:12:56  ✓ read → [index.js: lines 110-143 of 224] 110 Two-pass strategy prevents confli…\n 110  12:12:56  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 111  12:12:56  🧠 wants 1 tool call: read 7611→21tok\n 114  12:12:56  · read {\"offset\":144,\"path\":\"index.js\"}\n 115  12:12:56  ✓ read → [index.js: lines 144-198 of 224] 144 if (!(typeof input === 'string' |…\n 118  12:12:57  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 119  12:12:57  🧠 wants 1 tool call: read 8262→21tok\n 122  12:12:57  · read {\"offset\":199,\"path\":\"index.js\"}\n 123  12:12:57  ✓ read → [index.js: lines 199-224 of 224] 199 toLowerCase, 200 toUpperCase, 201…\n 126  12:12:58  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 127  12:12:58  🧠 wants 1 tool call: bash 8635→19tok\n 130  12:12:58  · bash {\"cmd\":\"npx ava\"}\n 131  12:13:00  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n 134  12:13:06  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 135  12:13:06  🧠 wants 1 tool call: edit 9353→229tok\n 138  12:13:06  · edit {\"new_string\":\"const preserveConsecutiveUppercase = (input, toLowerCas…\n 139  12:13:06  ✓ edit → edited index.js\n 142  12:13:06  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 143  12:13:06  🧠 wants 1 tool call: bash 9592→15tok\n 146  12:13:06  · bash {\"cmd\":\"npx ava\"}\n 147  12:13:09  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n 150  12:13:09  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 151  12:13:09  🧠 wants 1 tool call: read 10310→15tok\n 154  12:13:09  · read {\"path\":\"index.js\"}\n 155  12:13:09  ✓ read → 1 const UPPERCASE = /[\\p{Lu}]/u; 2 const LOWERCASE = /[\\p{Ll}]/u; 3 co…\n 158  12:13:10  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 159  12:13:10  🧠 wants 1 tool call: read 10868→20tok\n 162  12:13:10  · read {\"offset\":30,\"path\":\"index.js\"}\n 163  12:13:10  ✓ read → [index.js: lines 30-70 of 242] 30 // FooBar → Foo-Bar (insert separato…\n 166  12:13:12  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 167  12:13:12  🧠 wants 1 tool call: read 11438→20tok\n 170  12:13:12  · read {\"offset\":71,\"path\":\"index.js\"}\n 171  12:13:12  ✓ read → [index.js: lines 71-107 of 242] 71 if (isUpperCase && (previousWasUppe…\n 174  12:13:14  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 175  12:13:14  🧠 wants 1 tool call: read 11270→21tok\n 178  12:13:14  · read {\"offset\":108,\"path\":\"index.js\"}\n 179  12:13:14  ✓ read → [index.js: lines 108-144 of 242] 108 } else if (SEPARATORS.test(charac…\n 182  12:13:16  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 183  12:13:16  🧠 wants 1 tool call: read 11776→21tok\n 186  12:13:16  · read {\"offset\":145,\"path\":\"index.js\"}\n 187  12:13:16  ✓ read → [index.js: lines 145-195 of 242] 145 } 146 147 // Only uppercase the i…\n 190  12:13:19  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 191  12:13:19  🧠 wants 1 tool call: read 11841→21tok\n 194  12:13:19  · read {\"offset\":196,\"path\":\"index.js\"}\n 195  12:13:19  ✓ read → [index.js: lines 196-237 of 242] 196 : string => string.toLocaleLowerC…\n 198  12:13:21  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 199  12:13:21  🧠 wants 1 tool call: read 11792→21tok\n 202  12:13:21  · read {\"offset\":238,\"path\":\"index.js\"}\n 203  12:13:21  ✓ read → [index.js: lines 238-242 of 242] 238 input = toUpperCase(input[0]) + i…\n 206  12:13:44  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 207  12:13:44  🧠 wants 1 tool call: edit 11365→953tok\n 210  12:13:44  · edit {\"new_string\":\"const preserveCamelCase = (string, toLowerCase, toUpper…\n 211  12:13:44  ✓ edit → edited index.js\n 214  12:13:46  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 215  12:13:46  🧠 wants 1 tool call: bash 11770→15tok\n 218  12:13:46  · bash {\"cmd\":\"npx ava\"}\n 219  12:13:48  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n 222  12:13:58  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 223  12:13:58  🧠 wants 1 tool call: edit 11793→363tok\n 226  12:13:58  · edit {\"new_string\":\"const preserveConsecutiveUppercase = (input, toLowerCas…\n 227  12:13:58  ✓ edit → edited index.js\n 230  12:14:18  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 231  12:14:18  🧠 wants 1 tool call: edit 11797→811tok\n 234  12:14:18  · edit {\"new_string\":\"const preserveCamelCase = (string, toLowerCase, toUpper…\n 235  12:14:18  ✕ edit failed: old_string not found in index.js\n 238  12:14:20  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 239  12:14:20  🧠 wants 1 tool call: read 11915→15tok\n 242  12:14:20  · read {\"path\":\"index.js\"}\n 243  12:14:20  ✓ read → 1 const UPPERCASE = /[\\p{Lu}]/u; 2 const LOWERCASE = /[\\p{Ll}]/u; 3 co…\n 246  12:14:40  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 247  12:14:40  🧠 wants 1 tool call: edit 11924→810tok\n 250  12:14:40  · edit {\"new_string\":\"const preserveCamelCase = (string, toLowerCase, toUpper…\n 251  12:14:40  ✕ edit failed: old_string not found in index.js\n 254  12:14:43  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 255  12:14:43  🧠 wants 1 tool call: read 12159→20tok\n 258  12:14:43  · read {\"offset\":14,\"path\":\"index.js\"}\n 259  12:14:43  ✓ read → [index.js: lines 14-49 of 243] 14 const preserveCamelCase = (string, t…\n 262  12:15:03  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 263  12:15:03  🧠 wants 1 tool call: edit 12178→837tok\n 266  12:15:03  · edit {\"new_string\":\"const preserveCamelCase = (string, toLowerCase, toUpper…\n 267  12:15:03  ✓ edit → edited index.js\n 270  12:15:06  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 271  12:15:06  🧠 wants 1 tool call: bash 12471→15tok\n 274  12:15:06  · bash {\"cmd\":\"npx ava\"}\n 275  12:15:08  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n 278  12:15:11  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 279  12:15:11  🧠 wants 1 tool call: read 12494→25tok\n 282  12:15:11  · read {\"offset\":212,\"path\":\"index.js\"}\n 283  12:15:11  ✓ read → [index.js: lines 212-237 of 237] 212 toLowerCase, 213 toUpperCase, 214…\n 286  12:15:22  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 287  12:15:22  🧠 wants 1 tool call: edit 12494→409tok\n 290  12:15:22  · edit {\"new_string\":\"\\t\\tif (hasUpperCase) {\\n\\t\\t\\tinput = preserveCamelCas…\n 291  12:15:22  ✕ edit failed: old_string not found in index.js\n 294  12:15:32  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 295  12:15:32  🧠 wants 1 tool call: edit 12210→363tok\n 298  12:15:32  · edit {\"new_string\":\"const preserveConsecutiveUppercase = (input, toLowerCas…\n 299  12:15:32  ✕ edit failed: old_string not found in index.js\n 302  12:15:34  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 303  12:15:34  🧠 wants 1 tool call: read 12359→20tok\n 306  12:15:34  · read {\"offset\":61,\"path\":\"index.js\"}\n 307  12:15:34  ✓ read → [index.js: lines 61-94 of 237] 61 for (let index = 0; index < characte…\n 310  12:15:44  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 311  12:15:44  🧠 wants 1 tool call: edit 12172→363tok\n 314  12:15:44  · edit {\"new_string\":\"const preserveConsecutiveUppercase = (input, toLowerCas…\n 315  12:15:44  ✓ edit → edited index.js\n 318  12:15:46  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 319  12:15:46  🧠 wants 1 tool call: bash 11991→15tok\n 322  12:15:46  · bash {\"cmd\":\"npx ava\"}\n 323  12:15:52  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n 324  12:15:52  ✕ failed — max_turns"
+    },
+    {
+      "task_id": "camel-preserve-consecutive",
+      "repeat": 2,
+      "runner": "harness-v0",
+      "repository": "camelcase",
+      "base_commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "difficulty": "hard",
+      "categories": [
+        "bug_fix",
+        "multi_read",
+        "option_handling",
+        "debugging"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "ooBarBazBazz…\n   107:   t.is(camelCase('FBBazzy', {pascalCase: true}), 'FbBazzy');            \n   108:   t.is(camelCase('F', {pascalCase: true}), 'F');                        \r\n\r\n  Difference (- actual, + expected):\n\n  - 'Fbbazzy'\n  + 'FbBazzy'\r\n\r\n  › file:///test.js:107:4\r\n\r\n\r\n\r\n  camelCase with preserveConsecutiveUppercase option\r\n\r\n  test.js:165\r\n\r\n   164:   t.is(camelCase('foo-BAR#', {preserveConsecutiveUppercase: true}), 'fo…\n   165:   t.is(camelCase('XMLHttpRequest', {preserveConsecutiveUppercase: true}…\n   166:   t.is(camelCase('AjaxXMLHttpRequest', {preserveConsecutiveUppercase: t…\r\n\r\n  Difference (- actual, + expected):\n\n  - 'XMLHTtpRequest'\n  + 'XMLHttpRequest'\r\n\r\n  › file:///test.js:165:4\r\n\r\n\r\n\r\n  camelCase with both pascalCase and preserveConsecutiveUppercase option\r\n\r\n  test.js:199\r\n\r\n   198:   t.is(camelCase('xMLHttpRequest', {pascalCase: true, preserveConsecuti…\n   199:   t.is(camelCase('ajaxXMLHttpRequest', {pascalCase: true, preserveConse…\n   200:   t.is(camelCase('Ajax-XMLHttpRequest', {pascalCase: true, preserveCons…\r\n\r\n  Difference (- actual, + expected):\n\n  - 'AjaxXMLHTtpRequest'\n  + 'AjaxXMLHttpRequest'\r\n\r\n  › file:///test.js:199:4\r\n\r\n  ─\r\n\r\n  4 tests failed\r\n",
+      "agent_status": "failed",
+      "agent_reason": "max_turns",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 324,
+        "turns": 1,
+        "model_calls": 40,
+        "model_failures": 0,
+        "tool_calls": 40,
+        "tool_succeeded": 29,
+        "tool_failed": 11,
+        "tool_denied": 0,
+        "duplicate_action_count": 16,
+        "duplicate_action_rate": 0.4,
+        "tool_success_rate": 0.725,
+        "failure_density": 0.034,
+        "tools_used": {
+          "bash": {
+            "started": 8,
+            "succeeded": 1,
+            "failed": 7
+          },
+          "read": {
+            "started": 23,
+            "succeeded": 23,
+            "failed": 0
+          },
+          "edit": {
+            "started": 9,
+            "succeeded": 5,
+            "failed": 4
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "index.js"
+        ],
+        "edits": 9,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 7,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 40,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 40,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 81,
+        "messages_hot": 40,
+        "messages_dropped": 41,
+        "projection_bytes": 44532,
+        "input_tokens": 351836,
+        "output_tokens": 5741,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 194638,
+        "model_ms": 165890,
+        "tool_ms": 28618,
+        "other_ms": 130,
+        "status": "failed",
+        "exit_reason": "max_turns"
+      },
+      "failure_class": "budget_exhausted",
+      "explain": "Run run_c1d43fe831\n  task: The `preserveConsecutiveUppercase` option no longer behaves correctly and `npx ava` fails. Investiga…\n────────────────────────────────────────────────────────────────\n   1  12:15:54  · run created (scope personal:local)\n   3  12:15:54  ▸ task: The `preserveConsecutiveUppercase` option no longer behaves correctly and `npx ava` fails.…\n   6  12:15:54  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  12:15:54  🧠 wants 1 tool call: bash 572→15tok\n  10  12:15:54  · bash {\"cmd\":\"npx ava\"}\n  11  12:15:57  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n  14  12:15:58  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  12:15:58  🧠 wants 1 tool call: bash 1286→19tok\n  18  12:15:58  · bash {\"cmd\":\"ls -R\"}\n  19  12:15:58  ✓ bash → .: index.d.ts index.js index.test-d.ts license node_modules package.js…\n  22  12:15:58  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  12:15:58  🧠 wants 1 tool call: read 1349→19tok\n  26  12:15:58  · read {\"path\":\"index.js\"}\n  27  12:15:58  ✓ read → 1 const UPPERCASE = /[\\p{Lu}]/u; 2 const LOWERCASE = /[\\p{Ll}]/u; 3 co…\n  30  12:15:59  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  12:15:59  🧠 wants 1 tool call: read 1907→24tok\n  34  12:15:59  · read {\"offset\":30,\"path\":\"index.js\"}\n  35  12:15:59  ✓ read → [index.js: lines 30-71 of 224] 30 // FooBar → Foo-Bar (insert separato…\n  38  12:16:00  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  39  12:16:00  🧠 wants 1 tool call: read 2507→20tok\n  42  12:16:00  · read {\"offset\":72,\"path\":\"index.js\"}\n  43  12:16:00  ✓ read → [index.js: lines 72-109 of 224] 72 const character = characters[index]…\n  46  12:16:00  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  47  12:16:00  🧠 wants 1 tool call: read 3051→21tok\n  50  12:16:00  · read {\"offset\":110,\"path\":\"index.js\"}\n  51  12:16:00  ✓ read → [index.js: lines 110-143 of 224] 110 Two-pass strategy prevents confli…\n  54  12:16:01  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  55  12:16:01  🧠 wants 1 tool call: read 3609→21tok\n  58  12:16:01  · read {\"offset\":144,\"path\":\"index.js\"}\n  59  12:16:01  ✓ read → [index.js: lines 144-198 of 224] 144 if (!(typeof input === 'string' |…\n  62  12:16:01  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  63  12:16:01  🧠 wants 1 tool call: read 4260→21tok\n  66  12:16:01  · read {\"offset\":199,\"path\":\"index.js\"}\n  67  12:16:01  ✓ read → [index.js: lines 199-224 of 224] 199 toLowerCase, 200 toUpperCase, 201…\n  70  12:16:02  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  71  12:16:02  🧠 wants 1 tool call: bash 4633→19tok\n  74  12:16:02  · bash {\"cmd\":\"npx ava\"}\n  75  12:16:04  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n  78  12:16:05  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  79  12:16:05  🧠 wants 1 tool call: read 5351→19tok\n  82  12:16:05  · read {\"path\":\"index.js\"}\n  83  12:16:05  ✓ read → 1 const UPPERCASE = /[\\p{Lu}]/u; 2 const LOWERCASE = /[\\p{Ll}]/u; 3 co…\n  86  12:16:06  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  87  12:16:06  🧠 wants 1 tool call: read 5909→24tok\n  90  12:16:06  · read {\"offset\":30,\"path\":\"index.js\"}\n  91  12:16:06  ✓ read → [index.js: lines 30-71 of 224] 30 // FooBar → Foo-Bar (insert separato…\n  94  12:16:06  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  95  12:16:06  🧠 wants 1 tool call: read 6509→20tok\n  98  12:16:06  · read {\"offset\":72,\"path\":\"index.js\"}\n  99  12:16:06  ✓ read → [index.js: lines 72-109 of 224] 72 const character = characters[index]…\n 102  12:16:07  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 103  12:16:07  🧠 wants 1 tool call: read 7053→21tok\n 106  12:16:07  · read {\"offset\":110,\"path\":\"index.js\"}\n 107  12:16:07  ✓ read → [index.js: lines 110-143 of 224] 110 Two-pass strategy prevents confli…\n 110  12:16:07  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 111  12:16:07  🧠 wants 1 tool call: read 7611→21tok\n 114  12:16:07  · read {\"offset\":144,\"path\":\"index.js\"}\n 115  12:16:07  ✓ read → [index.js: lines 144-198 of 224] 144 if (!(typeof input === 'string' |…\n 118  12:16:08  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 119  12:16:08  🧠 wants 1 tool call: read 8262→21tok\n 122  12:16:08  · read {\"offset\":199,\"path\":\"index.js\"}\n 123  12:16:08  ✓ read → [index.js: lines 199-224 of 224] 199 toLowerCase, 200 toUpperCase, 201…\n 126  12:16:08  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 127  12:16:08  🧠 wants 1 tool call: bash 8635→19tok\n 130  12:16:08  · bash {\"cmd\":\"npx ava\"}\n 131  12:16:11  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n 134  12:16:16  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 135  12:16:16  🧠 wants 1 tool call: edit 9353→229tok\n 138  12:16:16  · edit {\"new_string\":\"const preserveConsecutiveUppercase = (input, toLowerCas…\n 139  12:16:16  ✓ edit → edited index.js\n 142  12:16:17  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 143  12:16:17  🧠 wants 1 tool call: bash 9592→15tok\n 146  12:16:17  · bash {\"cmd\":\"npx ava\"}\n 147  12:16:19  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n 150  12:16:20  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 151  12:16:20  🧠 wants 1 tool call: read 10310→15tok\n 154  12:16:20  · read {\"path\":\"index.js\"}\n 155  12:16:20  ✓ read → 1 const UPPERCASE = /[\\p{Lu}]/u; 2 const LOWERCASE = /[\\p{Ll}]/u; 3 co…\n 158  12:16:20  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 159  12:16:20  🧠 wants 1 tool call: read 10868→20tok\n 162  12:16:20  · read {\"offset\":30,\"path\":\"index.js\"}\n 163  12:16:20  ✓ read → [index.js: lines 30-70 of 242] 30 // FooBar → Foo-Bar (insert separato…\n 166  12:16:23  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 167  12:16:23  🧠 wants 1 tool call: read 11438→20tok\n 170  12:16:23  · read {\"offset\":71,\"path\":\"index.js\"}\n 171  12:16:23  ✓ read → [index.js: lines 71-107 of 242] 71 if (isUpperCase && (previousWasUppe…\n 174  12:16:25  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 175  12:16:25  🧠 wants 1 tool call: read 11270→21tok\n 178  12:16:25  · read {\"offset\":108,\"path\":\"index.js\"}\n 179  12:16:25  ✓ read → [index.js: lines 108-144 of 242] 108 } else if (SEPARATORS.test(charac…\n 182  12:16:27  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 183  12:16:27  🧠 wants 1 tool call: read 11776→21tok\n 186  12:16:27  · read {\"offset\":145,\"path\":\"index.js\"}\n 187  12:16:27  ✓ read → [index.js: lines 145-195 of 242] 145 } 146 147 // Only uppercase the i…\n 190  12:16:29  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 191  12:16:29  🧠 wants 1 tool call: read 11841→21tok\n 194  12:16:29  · read {\"offset\":196,\"path\":\"index.js\"}\n 195  12:16:29  ✓ read → [index.js: lines 196-237 of 242] 196 : string => string.toLocaleLowerC…\n 198  12:16:31  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 199  12:16:31  🧠 wants 1 tool call: read 11792→21tok\n 202  12:16:31  · read {\"offset\":238,\"path\":\"index.js\"}\n 203  12:16:31  ✓ read → [index.js: lines 238-242 of 242] 238 input = toUpperCase(input[0]) + i…\n 206  12:16:54  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 207  12:16:54  🧠 wants 1 tool call: edit 11365→953tok\n 210  12:16:54  · edit {\"new_string\":\"const preserveCamelCase = (string, toLowerCase, toUpper…\n 211  12:16:55  ✓ edit → edited index.js\n 214  12:16:57  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 215  12:16:57  🧠 wants 1 tool call: bash 11770→15tok\n 218  12:16:57  · bash {\"cmd\":\"npx ava\"}\n 219  12:17:02  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n 222  12:17:12  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 223  12:17:12  🧠 wants 1 tool call: edit 11793→363tok\n 226  12:17:12  · edit {\"new_string\":\"const preserveConsecutiveUppercase = (input, toLowerCas…\n 227  12:17:12  ✓ edit → edited index.js\n 230  12:17:32  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 231  12:17:32  🧠 wants 1 tool call: edit 11797→811tok\n 234  12:17:32  · edit {\"new_string\":\"const preserveCamelCase = (string, toLowerCase, toUpper…\n 235  12:17:32  ✕ edit failed: old_string not found in index.js\n 238  12:17:34  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 239  12:17:34  🧠 wants 1 tool call: read 11915→15tok\n 242  12:17:34  · read {\"path\":\"index.js\"}\n 243  12:17:34  ✓ read → 1 const UPPERCASE = /[\\p{Lu}]/u; 2 const LOWERCASE = /[\\p{Ll}]/u; 3 co…\n 246  12:17:54  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 247  12:17:54  🧠 wants 1 tool call: edit 11924→810tok\n 250  12:17:54  · edit {\"new_string\":\"const preserveCamelCase = (string, toLowerCase, toUpper…\n 251  12:17:54  ✕ edit failed: old_string not found in index.js\n 254  12:17:56  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 255  12:17:56  🧠 wants 1 tool call: read 12159→20tok\n 258  12:17:56  · read {\"offset\":14,\"path\":\"index.js\"}\n 259  12:17:56  ✓ read → [index.js: lines 14-49 of 243] 14 const preserveCamelCase = (string, t…\n 262  12:18:17  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 263  12:18:17  🧠 wants 1 tool call: edit 12178→837tok\n 266  12:18:17  · edit {\"new_string\":\"const preserveCamelCase = (string, toLowerCase, toUpper…\n 267  12:18:17  ✓ edit → edited index.js\n 270  12:18:19  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 271  12:18:19  🧠 wants 1 tool call: bash 12471→15tok\n 274  12:18:19  · bash {\"cmd\":\"npx ava\"}\n 275  12:18:25  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n 278  12:18:27  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n 279  12:18:27  🧠 wants 1 tool call: read 12494→25tok\n 282  12:18:27  · read {\"offset\":212,\"path\":\"index.js\"}\n 283  12:18:27  ✓ read → [index.js: lines 212-237 of 237] 212 toLowerCase, 213 toUpperCase, 214…\n 286  12:18:38  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 287  12:18:38  🧠 wants 1 tool call: edit 12494→409tok\n 290  12:18:38  · edit {\"new_string\":\"\\t\\tif (hasUpperCase) {\\n\\t\\t\\tinput = preserveCamelCas…\n 291  12:18:38  ✕ edit failed: old_string not found in index.js\n 294  12:18:48  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 295  12:18:48  🧠 wants 1 tool call: edit 12210→363tok\n 298  12:18:48  · edit {\"new_string\":\"const preserveConsecutiveUppercase = (input, toLowerCas…\n 299  12:18:48  ✕ edit failed: old_string not found in index.js\n 302  12:18:51  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 303  12:18:51  🧠 wants 1 tool call: read 12359→20tok\n 306  12:18:51  · read {\"offset\":61,\"path\":\"index.js\"}\n 307  12:18:51  ✓ read → [index.js: lines 61-94 of 237] 61 for (let index = 0; index < characte…\n 310  12:19:01  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 311  12:19:01  🧠 wants 1 tool call: edit 12172→363tok\n 314  12:19:01  · edit {\"new_string\":\"const preserveConsecutiveUppercase = (input, toLowerCas…\n 315  12:19:01  ✓ edit → edited index.js\n 318  12:19:03  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n 319  12:19:03  🧠 wants 1 tool call: bash 11991→15tok\n 322  12:19:03  · bash {\"cmd\":\"npx ava\"}\n 323  12:19:09  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n 324  12:19:09  ✕ failed — max_turns"
+    }
+  ]
+}

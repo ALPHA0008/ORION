@@ -1,5 +1,5 @@
 {
-  "at": "2026-08-28T10:23:47.645Z",
+  "at": "2026-08-28T10:36:48.522Z",
   "rows": [
     {
       "task_id": "isnum-string-trim",
@@ -12,7 +12,7 @@
       "oracle": {
         "outcome": "PASS",
         "detail": "npx mocha passed",
-        "evidence": "\n    √ [] should not be a number\n    √ true should not be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-28T10:21:58.853Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (5ms)\n\n"
+        "evidence": "\n    √ [] should not be a number\n    √ true should not be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-28T10:34:56.329Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (5ms)\n\n"
       },
       "excluded_reason": null
     },
@@ -27,7 +27,7 @@
       "oracle": {
         "outcome": "PASS",
         "detail": "npx mocha passed",
-        "evidence": "\n    √ [] should not be a number\n    √ true should not be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-28T10:22:01.799Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (5ms)\n\n"
+        "evidence": "\n    √ [] should not be a number\n    √ true should not be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-28T10:34:59.365Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (5ms)\n\n"
       },
       "excluded_reason": null
     },
@@ -42,7 +42,7 @@
       "oracle": {
         "outcome": "PASS",
         "detail": "npx mocha passed",
-        "evidence": "\n    √ [] should not be a number\n    √ true should not be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-28T10:22:04.727Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (5ms)\n\n"
+        "evidence": "\n    √ [] should not be a number\n    √ true should not be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-28T10:35:02.344Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (4ms)\n\n"
       },
       "excluded_reason": null
     },
@@ -57,7 +57,7 @@
       "oracle": {
         "outcome": "PASS",
         "detail": "all checks passed",
-        "evidence": " be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-28T10:22:07.780Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (5ms)\n\n\n---\n[ok] hidden:contract.test.cjs\nhidden contract ok\n"
+        "evidence": " be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-28T10:35:05.391Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (4ms)\n\n\n---\n[ok] hidden:contract.test.cjs\nhidden contract ok\n"
       },
       "excluded_reason": null
     },
@@ -282,7 +282,7 @@
       "oracle": {
         "outcome": "PASS",
         "detail": "npx ava passed",
-        "evidence": "elper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (107ms)\r\n  ✔ accepts options object (111ms)\r\n  ✔ does not ignore errors (126ms)\r\n  ✔ change concurrency to bigger value (160ms)\r\n  ✔ change concurrency to smaller value (226ms)\r\n  ✔ concurrency: 1 (647ms)\r\n  ✔ concurrency: 4 (2.6s)\r\n  ✔ limitFunction() (2.7s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  22 tests passed\r\n"
+        "evidence": "elper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (103ms)\r\n  ✔ accepts options object (117ms)\r\n  ✔ does not ignore errors (118ms)\r\n  ✔ change concurrency to bigger value (170ms)\r\n  ✔ change concurrency to smaller value (235ms)\r\n  ✔ concurrency: 1 (636ms)\r\n  ✔ limitFunction() (2.4s)\r\n  ✔ concurrency: 4 (2.5s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  22 tests passed\r\n"
       },
       "excluded_reason": null
     },
@@ -297,7 +297,7 @@
       "oracle": {
         "outcome": "PASS",
         "detail": "npx ava passed",
-        "evidence": "elper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (107ms)\r\n  ✔ accepts options object (108ms)\r\n  ✔ does not ignore errors (123ms)\r\n  ✔ change concurrency to bigger value (172ms)\r\n  ✔ change concurrency to smaller value (223ms)\r\n  ✔ concurrency: 1 (609ms)\r\n  ✔ limitFunction() (2.4s)\r\n  ✔ concurrency: 4 (2.6s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  22 tests passed\r\n"
+        "evidence": "elper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (106ms)\r\n  ✔ accepts options object (106ms)\r\n  ✔ does not ignore errors (122ms)\r\n  ✔ change concurrency to bigger value (156ms)\r\n  ✔ change concurrency to smaller value (207ms)\r\n  ✔ concurrency: 1 (607ms)\r\n  ✔ concurrency: 4 (2.4s)\r\n  ✔ limitFunction() (2.5s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  22 tests passed\r\n"
       },
       "excluded_reason": null
     },
@@ -312,7 +312,7 @@
       "oracle": {
         "outcome": "PASS",
         "detail": "npx ava passed",
-        "evidence": "elper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (110ms)\r\n  ✔ accepts options object (110ms)\r\n  ✔ does not ignore errors (125ms)\r\n  ✔ change concurrency to bigger value (160ms)\r\n  ✔ change concurrency to smaller value (211ms)\r\n  ✔ concurrency: 1 (628ms)\r\n  ✔ concurrency: 4 (2.4s)\r\n  ✔ limitFunction() (2.6s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  22 tests passed\r\n"
+        "evidence": "elper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (105ms)\r\n  ✔ accepts options object (105ms)\r\n  ✔ does not ignore errors (122ms)\r\n  ✔ change concurrency to bigger value (155ms)\r\n  ✔ change concurrency to smaller value (221ms)\r\n  ✔ concurrency: 1 (617ms)\r\n  ✔ limitFunction() (2.4s)\r\n  ✔ concurrency: 4 (2.6s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  22 tests passed\r\n"
       },
       "excluded_reason": null
     },
@@ -327,7 +327,7 @@
       "oracle": {
         "outcome": "PASS",
         "detail": "npx ava passed",
-        "evidence": "elper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (110ms)\r\n  ✔ accepts options object (124ms)\r\n  ✔ does not ignore errors (125ms)\r\n  ✔ change concurrency to bigger value (188ms)\r\n  ✔ change concurrency to smaller value (244ms)\r\n  ✔ concurrency: 1 (628ms)\r\n  ✔ concurrency: 4 (2.5s)\r\n  ✔ limitFunction() (2.6s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  22 tests passed\r\n"
+        "evidence": "elper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (102ms)\r\n  ✔ accepts options object (102ms)\r\n  ✔ does not ignore errors (118ms)\r\n  ✔ change concurrency to bigger value (152ms)\r\n  ✔ change concurrency to smaller value (216ms)\r\n  ✔ concurrency: 1 (620ms)\r\n  ✔ limitFunction() (2.5s)\r\n  ✔ concurrency: 4 (2.5s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  22 tests passed\r\n"
       },
       "excluded_reason": null
     }

@@ -19,7 +19,7 @@
       "group": "setup: original run against a nondeterministic provider",
       "test": "provider output carries a nonce (is nondeterministic)",
       "pass": true,
-      "detail": "Done: created a.txt and b.txt, bumped VALUE to 20. [nonce f693cc8d]"
+      "detail": "Done: created a.txt and b.txt, bumped VALUE to 20. [nonce 56f37a05]"
     },
     {
       "group": "REPLAY — reconstruct history, make NO model calls",
