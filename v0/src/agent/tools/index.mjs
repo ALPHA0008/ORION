@@ -14,6 +14,74 @@ const isMissing = (e) => e?.code === 'ENOENT' || /ENOENT|no such file/i.test(Str
 // exact invisible-tail problem this paging exists to solve.
 const READ_PAGE_BYTES = 1_500;
 
+// ── edit diagnostics (capability experiment 02) ──────────────────────────────
+//
+// MEASURED: 62 `old_string not found` errors across 18 real-repository runs; ZERO ambiguity
+// errors. The one case where the exact bytes were captured (`plimit-active-count`) was an
+// INDENTATION mismatch — the file has one tab before `const next`, the model sent two. The patch
+// was semantically correct. 9 of 11 failing runs re-read the file first and still resent a
+// byte-inequivalent string, because ordinary output renders a leading tab indistinguishably from
+// spaces.
+//
+// The tool remains EXACT: no fuzzy matching, no nearest-match apply. A fuzzy apply would patch
+// text the model never specified AND break the SELF_VERIFYING content-addressed precondition
+// (ADR-002/003) that makes replay safe. Only the error message changes.
+const DIAG_MAX_LINES = 8;        // show a patch region, never a file
+const DIAG_MAX_BYTES = 1_200;    // hard cap, well under MSG_CLAMP (2,000)
+
+/** Render whitespace visibly — the whole point is that tabs and spaces must be distinguishable. */
+const showWs = (s) => s.replace(/\t/g, '→').replace(/ /g, '·');
+const stripIndent = (s) => s.split('\n').map(l => l.replace(/^[ \t]+/, '')).join('\n');
+const collapseWs = (s) => s.replace(/[ \t]+/g, ' ');
+const normEol = (s) => s.replace(/\r\n/g, '\n');
+
+/**
+ * Explain why an exact match failed. Classifies ONLY what the bytes support; when nothing
+ * supports a class it says so rather than inventing a nearest match.
+ *
+ * @returns {string} bounded, model-actionable diagnostic
+ */
+function diagnoseEditMiss(path, src, old) {
+  const candidate = (normalise, kind, hint) => {
+    const at = normalise(src).indexOf(normalise(old));
+    if (at < 0) return null;
+    const line = normalise(src).slice(0, at).split('\n').length;   // 1-based
+    const span = Math.min(old.split('\n').length, DIAG_MAX_LINES);
+    return { kind, hint, line, lines: src.split('\n').slice(line - 1, line - 1 + span) };
+  };
+
+  // Most specific evidence-supported explanation wins.
+  const found =
+       candidate(normEol, 'EOL_MISMATCH', 'the line endings differ (CRLF vs LF)')
+    ?? candidate(stripIndent, 'INDENTATION_MISMATCH', 'the leading indentation differs')
+    ?? candidate(collapseWs, 'WHITESPACE_MISMATCH', 'the whitespace differs')
+    ?? candidate((s) => s.replace(/\s+/g, ''), 'WHITESPACE_MISMATCH', 'the whitespace differs');
+
+  if (!found) {
+    // Is any part of it present at all? Distinguishes "wrong region" from "wrong context".
+    const probe = old.split('\n').map(l => l.trim()).filter(l => l.length > 8);
+    const hits = probe.filter(l => src.replace(/\s+/g, '').includes(l.replace(/\s+/g, ''))).length;
+    if (probe.length && hits === 0)
+      return `old_string not found in ${path} — none of its lines appear in this file at all. `
+           + `Check the path, or read the file to locate the correct region.`;
+    if (probe.length && hits < probe.length)
+      return `old_string not found in ${path} — ${hits} of ${probe.length} lines appear, but not `
+           + `as one contiguous block. The surrounding context differs; read the region and copy it verbatim.`;
+    return `old_string not found in ${path}. Read the file and copy the target text verbatim.`;
+  }
+
+  const shown = found.lines.map(showWs).join('\n');
+  const last = found.line + found.lines.length - 1;
+  let out = `old_string not found in ${path} — it matches at line ${found.line} except that `
+          + `${found.hint} (${found.kind}).\n`
+          + `Lines ${found.line}-${last} contain exactly (→=tab, ·=space):\n`
+          + `${shown}\n`
+          + `Copy that text verbatim as old_string, converting → back to tab and · back to space.`;
+  if (Buffer.byteLength(out) > DIAG_MAX_BYTES)
+    out = out.slice(0, DIAG_MAX_BYTES) + '\n…[diagnostic truncated]';
+  return out;
+}
+
 /**
  * Read a file as numbered lines, windowed by `offset`/`limit`, and self-describing at the edges.
  *
@@ -150,7 +218,8 @@ export function makeTools(sandbox) {
       run: ({ path, old_string, new_string }) => {
         const cur = sandbox.read(path);
         const n = cur.split(old_string).length - 1;
-        if (n === 0) throw new Error(`old_string not found in ${path}`);
+        // The tool stays EXACT. A no-match modifies nothing; only the ERROR gets richer.
+        if (n === 0) throw new Error(diagnoseEditMiss(path, cur, old_string));
         if (n > 1)   throw new Error(`old_string is ambiguous in ${path} (${n} matches) — include more context`);
         sandbox.write(path, cur.replace(old_string, new_string));
         return `edited ${path}`;

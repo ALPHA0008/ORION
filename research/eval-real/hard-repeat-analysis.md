@@ -36,7 +36,7 @@ samples a "stable" label means *consistent across three runs*, not a population 
 | `camel-numbers-identifier` | 3 | 1 | 33% | HIGH_VARIANCE | 212,233 | 32.7 | 0.46 | no_progress 1, budget 1 |
 | `slug-decamelize-acronym` | 3 | 1 | 33% | HIGH_VARIANCE | 42,631 | 13.7 | 0.50 | no_progress 2 |
 | `ansi-brightness-bit` | 3 | 0 | **0%** | STABLE_FAILURE | 162,912 | 25.7 | 0.40 | no_progress 2, budget 1 |
-| `plimit-active-count` | 3 | 0 | **0%** | STABLE_FAILURE | 28,726 | 11.3 | 0.47 | no_progress 3 |
+| `plimit-active-count` | **6** | **2** | **33%** | **HIGH_VARIANCE** | 28,726 | 11.3 | 0.47 | no_progress 4 |
 | `slug-lowercase-option` | 3 | 0 | **0%** | STABLE_FAILURE | 305,231 | 40.0 | 0.50 | budget_exhausted 3 |
 | `camel-preserve-consecutive` | 3 | 0 | **0%** | STABLE_FAILURE | ~320,000 | 40.0 | — | max_turns 3 |
 
@@ -147,6 +147,28 @@ burns its no-progress budget on variants.
 - 33.3% carries a wide interval at this sample size; it should not be quoted as a precise figure.
 - All phase-1 limitations still hold: injected defects, five small JavaScript libraries, no
   historical tasks, no cross-model or cross-harness evidence.
+
+## Correction — `plimit-active-count` is HIGH_VARIANCE, not STABLE_FAILURE
+
+A second batch of 3 repeats (recovered after the original per-task files were deleted) returned
+**2/3 PASS**, against the first batch's 0/3. Combined: **2/6 ≈ 33% → HIGH_VARIANCE.**
+
+The phase-2 label was wrong, and it was wrong for the reason n=3 is explicitly caveated above: a
+0/3 sample from a ~33% task is unremarkable. The classification table is corrected accordingly, and
+the STABLE_FAILURE count drops from 3 to 2.
+
+**This strengthens rather than weakens the G-03a finding.** Both recovered runs hit the *same*
+`old_string not found` error 3–4 times and still passed:
+
+| run | outcome | model calls | `old_string not found` |
+|---|---|---:|---:|
+| batch2 #0 | **PASS** | 13 | 3 |
+| batch2 #1 | **PASS** | 17 | 4 |
+| batch2 #2 | FAIL | 11 | 5 |
+
+The error is not what decides the outcome — **recovery from it is.** Identical starting state,
+identical tool, identical failure message; the passing runs found a byte-exact string and the
+failing one did not. That is precisely the variance a diagnostic is hypothesised to remove.
 
 ## Raw data note
 
