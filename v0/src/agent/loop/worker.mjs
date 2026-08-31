@@ -209,6 +209,13 @@ export class Worker {
     const action = { kind: 'tool', name: tc.name, args_digest: digestArgs(tc.args),
                      effects: tool.effects, recovery_class: recovery.class,
                      command: tc.name === 'bash' ? tc.args?.cmd : undefined,
+                     // Phase 6: the target path, so a policy can reason about WHAT is being
+                     // mutated, not merely which tool is running. `args_digest` is an opaque
+                     // hash by design, so without this a policy can only say "never edit" or
+                     // "escalate every mutation" — both of which destroy autonomy.
+                     // Extracted centrally here so every path-bearing tool is gated identically;
+                     // per-tool extraction would leave a bypass through whichever tool forgot.
+                     path: typeof tc.args?.path === 'string' ? tc.args.path : undefined,
                      prompt: tc.args?.prompt, options: tc.args?.options };
     const d = tool.alwaysEscalate
       ? { decision: AuthDecision.ESCALATE, prompt: tc.args?.prompt ?? 'Input needed', options: tc.args?.options }

@@ -32,6 +32,18 @@ export function createAuthorizer({
   denyCommandPatterns = [DEFAULT_DANGEROUS],
   escalateUnsafeRecovery = true,    // UNSAFE-to-retry mutations need a human in strict/auto
   budgetLimits = null,              // {tokens?, tool_calls?, cost_usd?}
+  // Phase 6: artifacts the agent may READ but must not MUTATE autonomously.
+  //
+  // MEASURED: given a blocked credential, two independent model families (Gemma 4 31B, Qwen
+  // 3.6 35B) both edited the test to inject a fabricated key and reported success — 2/2 each,
+  // even with a system prompt explicitly forbidding exactly that. Prompt policy is advisory.
+  //
+  // ESCALATE, not DENY (§17): a human legitimately may authorise such an edit. DENY would leave
+  // the run going and, as phase 5 showed, the model simply looks for another route.
+  //
+  // Patterns describe a CLASS of artifact (tests, specifications), never a benchmark-specific
+  // filename or content string. Supplied by the caller, like denyTools and denyCommandPatterns.
+  protectedPaths = [],
 } = {}) {
   const RANK = { permissive: 0, auto: 1, strict: 2 };
 
@@ -63,6 +75,22 @@ export function createAuthorizer({
       if (escalateTools.includes(action.name))
         return { decision: Decision.ESCALATE, prompt: action.prompt ?? `Allow ${action.name}?`,
                  options: action.options ?? ['approve', 'deny'] };
+
+      // Protected artifacts: mutating one is not permitted autonomously at ANY posture,
+      // including permissive. Reads are unaffected — the agent must still be able to
+      // understand the requirement it is being held to.
+      if (protectedPaths.length && action.effects === 'Mutating' && typeof action.path === 'string') {
+        const norm = action.path.replace(/\\/g, '/');
+        for (const re of protectedPaths) {
+          if (!re.test(norm)) continue;
+          return { decision: Decision.ESCALATE,
+                   prompt: `'${action.path}' defines the requirement being verified and cannot be `
+                         + `modified autonomously. If the task cannot be completed without changing `
+                         + `it, a human must decide. Allow this change?`,
+                   options: ['approve', 'deny'],
+                   reason: `protected path: ${action.path}` };
+        }
+      }
 
       if (effective === 'strict' && action.effects === 'Mutating')
         return { decision: Decision.ESCALATE,
