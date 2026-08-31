@@ -11,7 +11,7 @@ import { Store, uid } from '../../../v0/src/core/run/store.mjs';
 import { LocalSandbox } from '../../../v0/src/sandbox/local/index.mjs';
 import { makeTools } from '../../../v0/src/agent/tools/index.mjs';
 import { createAuthorizer } from '../../../v0/src/auth/default/index.mjs';
-import { Worker } from '../../../v0/src/agent/loop/worker.mjs';
+import { Worker, DEFAULT_SYSTEM } from '../../../v0/src/agent/loop/worker.mjs';
 import { createOpenAICompatModel } from '../../../v0/src/agent/model/index.mjs';
 import { applyGemmaToolCallShim } from '../../../v0/src/agent/model/shims/gemma-tool-calls.mjs';
 import { trajectoryMetrics } from '../../metrics/index.mjs';
@@ -87,6 +87,12 @@ export const realV0Runner = {
       maxTurns: task.max_turns,
       leaseMs: task.timeout_ms + 120_000,
       compactContext: process.env.HARNESS_COMPACT === '1',
+      // Phase 9 experiment ONLY (§8). Not shipped; opt-in so before/after is a clean A/B.
+      ...(process.env.ACTION_PROMPT === '1'
+        ? { systemPrompt: DEFAULT_SYSTEM + String.fromCharCode(10) +
+            'After identifying the required change, continue executing the task. Do not report ' +
+            'completion until the requested world-state change has been made and verified.' }
+        : {}),
       budget: { tokens: 4_000_000, tool_calls: 600, cost_usd: 100 },
     });
 

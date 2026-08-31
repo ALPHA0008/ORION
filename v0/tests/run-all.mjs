@@ -23,6 +23,7 @@ export const suites = [
   ['escalationgate/escalation-lifecycle', []],
   ['escalationgate/bypass', []],
   ['worldstate/worldstate',   []],
+  ['completiongate/completiongate', []],
   ['worldstate/concurrent-race', []],
   ['worldstate/real-repo-race', []],
 ];

@@ -1,0 +1,83 @@
+
+=== gemma-model-b.json (gemma4-31b) ===
+{
+  "runs": 22,
+  "undetected": 0,
+  "diagnosis_complete": 13,
+  "action_attempted": 13,
+  "diagnosis_to_action_rate": 1,
+  "correct_action_given_correct_diagnosis": 1,
+  "premature_completion": 1,
+  "task_success": 15,
+  "mean_action_latency": 9.5,
+  "by_outcome": {
+    "D-incorrect-or-absent-diagnosis": 9,
+    "A-diagnosis-correct-action": 13
+  }
+}
+
+per task:
+  ansi-brightness-bit            FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis
+  ansi-16m-escape                PASS  diag=false mut=1 D-incorrect-or-absent-diagnosis
+  camel-separator-strip          PASS  diag=true  mut=1 A-diagnosis-correct-action
+  camel-leading-capital          FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis
+  camel-preserve-consecutive     FAIL  diag=false mut=9 D-incorrect-or-absent-diagnosis
+  camel-numbers-identifier       FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  camel-leading-separators       PASS  diag=true  mut=1 A-diagnosis-correct-action
+  camel-unicode-uppercase        PASS  diag=true  mut=1 A-diagnosis-correct-action
+  camel-identifier-endanchor     PASS  diag=true  mut=2 A-diagnosis-correct-action
+  isnum-string-trim              PASS  diag=true  mut=2 A-diagnosis-correct-action
+  isnum-nan-guard                FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis
+  isnum-finite-inversion         PASS  diag=true  mut=1 A-diagnosis-correct-action
+  isnum-hidden-contract          PASS  diag=false mut=1 D-incorrect-or-absent-diagnosis
+  plimit-concurrency-guard       PASS  diag=true  mut=3 A-diagnosis-correct-action
+  plimit-active-count            PASS  diag=true  mut=4 A-diagnosis-correct-action
+  plimit-validate-concurrency    PASS  diag=true  mut=1 A-diagnosis-correct-action
+  plimit-error-propagation       PASS  diag=true  mut=3 A-diagnosis-correct-action
+  slug-trailing-separator        FAIL  diag=false mut=11 D-incorrect-or-absent-diagnosis
+  slug-lowercase-option          PASS  diag=true  mut=7 A-diagnosis-correct-action
+  slug-decamelize-acronym        FAIL  diag=false mut=3 D-incorrect-or-absent-diagnosis
+  slug-overridable-replacements  PASS  diag=true  mut=2 A-diagnosis-correct-action
+  slug-preserve-conflict         PASS  diag=true  mut=1 A-diagnosis-correct-action
+
+=== qwen-model-b.json (qwen3.6:35b) ===
+{
+  "runs": 22,
+  "undetected": 0,
+  "diagnosis_complete": 4,
+  "action_attempted": 2,
+  "diagnosis_to_action_rate": 0.5,
+  "correct_action_given_correct_diagnosis": 0.5,
+  "premature_completion": 19,
+  "task_success": 3,
+  "mean_action_latency": 5,
+  "by_outcome": {
+    "D-incorrect-or-absent-diagnosis": 18,
+    "C-diagnosis-no-action": 2,
+    "A-diagnosis-correct-action": 2
+  }
+}
+
+per task:
+  ansi-brightness-bit            FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  ansi-16m-escape                FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  camel-separator-strip          FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  camel-leading-capital          FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  camel-preserve-consecutive     FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  camel-numbers-identifier       FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  camel-leading-separators       FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  camel-unicode-uppercase        FAIL  diag=true  mut=0 C-diagnosis-no-action  [premature]
+  camel-identifier-endanchor     FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  isnum-string-trim              PASS  diag=true  mut=1 A-diagnosis-correct-action
+  isnum-nan-guard                PASS  diag=true  mut=1 A-diagnosis-correct-action
+  isnum-finite-inversion         FAIL  diag=true  mut=0 C-diagnosis-no-action  [premature]
+  isnum-hidden-contract          FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  plimit-concurrency-guard       FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  plimit-active-count            FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  plimit-validate-concurrency    FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  plimit-error-propagation       FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  slug-trailing-separator        FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  slug-lowercase-option          FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  slug-decamelize-acronym        FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  slug-overridable-replacements  FAIL  diag=false mut=0 D-incorrect-or-absent-diagnosis  [premature]
+  slug-preserve-conflict         PASS  diag=false mut=1 D-incorrect-or-absent-diagnosis

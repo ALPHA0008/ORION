@@ -1,0 +1,720 @@
+{
+  "label": "da-prompt-qwen",
+  "runner": "harness-v0",
+  "model": "qwen3.6:35b",
+  "endpoint_kind": "openai-compatible",
+  "compaction": "none",
+  "at": "2026-08-31T10:14:46.125Z",
+  "node": "v24.18.0",
+  "repositories": {
+    "is-number": {
+      "url": "https://github.com/jonschlinkert/is-number.git",
+      "commit": "98e8ff1da1a89f93d1397a24d7413ed15421c139",
+      "test_command": "npx mocha"
+    },
+    "slugify": {
+      "url": "https://github.com/sindresorhus/slugify.git",
+      "commit": "7c318bd1aa4b4affab29761f15a9604323fe2a3b",
+      "test_command": "npx ava"
+    },
+    "p-limit": {
+      "url": "https://github.com/sindresorhus/p-limit.git",
+      "commit": "df476048d023ff868cd45b35ee47f5fb0ca2b25a",
+      "test_command": "npx ava"
+    },
+    "ansi-styles": {
+      "url": "https://github.com/chalk/ansi-styles.git",
+      "commit": "c1c3dd4e017a2938807aaff0d361f46d086aeab7",
+      "test_command": "npx ava"
+    },
+    "camelcase": {
+      "url": "https://github.com/sindresorhus/camelcase.git",
+      "commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "test_command": "npx ava"
+    }
+  },
+  "aggregate": {
+    "tasks_total": 7,
+    "tasks_scored": 7,
+    "infra_failures": 0,
+    "passed": 1,
+    "failed": 6,
+    "timeouts": 0,
+    "success_rate": 14.3,
+    "by_difficulty": {
+      "easy": {
+        "total": 1,
+        "pass": 0,
+        "rate": 0
+      },
+      "medium": {
+        "total": 3,
+        "pass": 0,
+        "rate": 0
+      },
+      "hard": {
+        "total": 3,
+        "pass": 1,
+        "rate": 33.3
+      }
+    },
+    "by_category": {
+      "bug_fix": {
+        "total": 7,
+        "pass": 1,
+        "rate": 14.3
+      },
+      "single_file": {
+        "total": 2,
+        "pass": 0,
+        "rate": 0
+      },
+      "test_interpretation": {
+        "total": 1,
+        "pass": 0,
+        "rate": 0
+      },
+      "regex": {
+        "total": 5,
+        "pass": 1,
+        "rate": 20
+      },
+      "debugging": {
+        "total": 3,
+        "pass": 1,
+        "rate": 33.3
+      },
+      "multi_read": {
+        "total": 1,
+        "pass": 0,
+        "rate": 0
+      },
+      "option_handling": {
+        "total": 1,
+        "pass": 0,
+        "rate": 0
+      },
+      "edge_case": {
+        "total": 3,
+        "pass": 1,
+        "rate": 33.3
+      },
+      "unicode": {
+        "total": 1,
+        "pass": 0,
+        "rate": 0
+      }
+    },
+    "avg_wall_ms": 54433,
+    "p50_wall_ms": 53565,
+    "p95_wall_ms": 86705,
+    "model_calls_per_success": 7,
+    "tool_calls_per_success": 7,
+    "tokens_per_success": 14286,
+    "cost_per_success": 0,
+    "total_input_tokens": 125039,
+    "total_output_tokens": 5882,
+    "total_cost_usd": 0,
+    "avg_duplicate_rate": 0,
+    "avg_tool_success_rate": 0.65,
+    "total_degraded": 0,
+    "total_escalations": 0,
+    "runs_with_recovery": 0
+  },
+  "results": [
+    {
+      "task_id": "camel-separator-strip",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "camelcase",
+      "base_commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "difficulty": "easy",
+      "categories": [
+        "bug_fix",
+        "single_file",
+        "test_interpretation"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "\n\r\n  camelCase with preserveConsecutiveUppercase option\r\n\r\n  test.js:161\r\n\r\n   160:   t.is(camelCase(['---_', '--', '', '-_- '], {preserveConsecutiveUpperc…\n   161:   t.is(camelCase('foo BAR?', {preserveConsecutiveUppercase: true}), 'fo…\n   162:   t.is(camelCase('foo BAR!', {preserveConsecutiveUppercase: true}), 'fo…\r\n\r\n  Difference (- actual, + expected):\n\n  - 'foo BAR?'\n  + 'fooBAR?'\r\n\r\n  › file:///test.js:161:4\r\n\r\n\r\n\r\n  camelCase with both pascalCase and preserveConsecutiveUppercase option\r\n\r\n  test.js:194\r\n\r\n   193:   t.is(camelCase(['---_', '--', '', '-_- '], {pascalCase: true, preserv…\n   194:   t.is(camelCase('foo BAR?', {pascalCase: true, preserveConsecutiveUppe…\n   195:   t.is(camelCase('foo BAR!', {pascalCase: true, preserveConsecutiveUppe…\r\n\r\n  Difference (- actual, + expected):\n\n  - 'Foo BAR?'\n  + 'FooBAR?'\r\n\r\n  › file:///test.js:194:4\r\n\r\n\r\n\r\n  edge cases: extreme inputs\r\n\r\n  test.js:404\r\n\r\n   403:   // Mixed repeated separators              \n   404:   t.is(camelCase('_-. _-. _-.foo'), '_foo');\n   405:                                             \r\n\r\n  Difference (- actual, + expected):\n\n  - '_ _-. Foo'\n  + '_foo'\r\n\r\n  › file:///test.js:404:4\r\n\r\n  ─\r\n\r\n  5 tests failed\r\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 64,
+        "turns": 1,
+        "model_calls": 8,
+        "model_failures": 0,
+        "tool_calls": 9,
+        "tool_succeeded": 5,
+        "tool_failed": 4,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 0.556,
+        "failure_density": 0.0625,
+        "tools_used": {
+          "bash": {
+            "started": 5,
+            "succeeded": 3,
+            "failed": 2
+          },
+          "read": {
+            "started": 4,
+            "succeeded": 2,
+            "failed": 2
+          }
+        },
+        "files_touched": 4,
+        "file_list": [
+          "/tmp/harness-real-eval/work/camelcase-camel-separator-strip-26640-0/index.js",
+          "/tmp/harness-real-eval/work/camelcase-camel-separator-strip-26640-0/test.js",
+          "index.js",
+          "test.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 2,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 9,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 0,
+        "degraded_subsystems": [],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 18,
+        "messages_hot": 18,
+        "messages_dropped": 0,
+        "projection_bytes": 9683,
+        "input_tokens": 15800,
+        "output_tokens": 775,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 53565,
+        "model_ms": 47819,
+        "tool_ms": 5704,
+        "other_ms": 42,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": "no_edits_made",
+      "explain": "Run run_0fa683147e\n  task: The test suite fails. Run `npx ava` to see which cases break, then fix the source. Do not edit tests…\n────────────────────────────────────────────────────────────────\n   1  10:08:10  · run created (scope personal:local)\n   3  10:08:10  ▸ task: The test suite fails. Run `npx ava` to see which cases break, then fix the source. Do not …\n   6  10:08:28  🧠 wants 1 tool call: bash 860→68tok\n   9  10:08:28  · bash {\"cmd\":\"npx ava 2>&1\"}\n  10  10:08:32  ✕ bash failed: command failed (exit 1): ✘ [fail]: camelCase ✘ [fail]: camelCase with …\n  13  10:08:39  🧠 wants 1 tool call: bash 1491→163tok\n  16  10:08:39  · bash {\"cmd\":\"ls /testbed/\"}\n  17  10:08:39  ✕ bash failed: command failed (exit 2): ls: cannot access '/testbed/': No such file o…\n  20  10:08:41  🧠 wants 1 tool call: bash 1564→40tok\n  23  10:08:41  · bash {\"cmd\":\"ls /\"}\n  24  10:08:41  ✓ bash → bin cmd dev etc git-bash.exe git-cmd.exe LICENSE.txt mingw64 proc Rele…\n  27  10:08:43  🧠 wants 1 tool call: bash 1675→38tok\n  30  10:08:43  · bash {\"cmd\":\"pwd && ls\"}\n  31  10:08:44  ✓ bash → /tmp/harness-real-eval/work/camelcase-camel-separator-strip-26640-0 in…\n  34  10:08:47  🧠 wants 2 tool calls: read, read 1770→115tok\n  37  10:08:47  · read {\"path\":\"/tmp/harness-real-eval/work/camelcase-camel-separator-strip-2…\n  38  10:08:47  ✕ read failed: path escapes sandbox: /tmp/harness-real-eval/work/camelcase-camel-sepa…\n  41  10:08:47  · read {\"path\":\"/tmp/harness-real-eval/work/camelcase-camel-separator-strip-2…\n  42  10:08:47  ✕ read failed: path escapes sandbox: /tmp/harness-real-eval/work/camelcase-camel-sepa…\n  45  10:08:49  🧠 wants 1 tool call: bash 1958→51tok\n  48  10:08:49  · bash {\"cmd\":\"ls -la\"}\n  49  10:08:50  ✓ bash → total 68 drwxr-xr-x 1 abhijith.p 1049089 0 Aug 31 15:38 . drwxr-xr-x 1…\n  52  10:08:54  🧠 wants 2 tool calls: read, read 2618→68tok\n  55  10:08:54  · read {\"path\":\"index.js\"}\n  56  10:08:54  ✓ read → 1|const UPPERCASE = /[\\p{Lu}]/u; 2|const LOWERCASE = /[\\p{Ll}]/u; 3|co…\n  59  10:08:54  · read {\"path\":\"test.js\"}\n  60  10:08:54  ✓ read → 1|import test from 'ava'; 2|import camelCase from './index.js'; 3| 4|t…\n  63  10:09:04  🧠 \"\" 3864→232tok\n  64  10:09:04  ✓ completed — model_finished"
+    },
+    {
+      "task_id": "camel-leading-capital",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "camelcase",
+      "base_commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "single_file",
+        "regex",
+        "debugging"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": ": camelCase with preserveConsecutiveUppercase option\r\n  ✔ camelCase with both pascalCase and preserveConsecutiveUppercase option\r\n  ✔ camelCase with locale option\r\n  ✔ camelCase with disabled locale\r\n  ✔ number handling follows Google Style Guide\r\n  ✔ camelCase with capitalizeAfterNumber option\r\n  ✔ capitalizeAfterNumber edge cases\r\n  ✔ case preservation after numbers (capitalizeAfterNumber: false)\r\n  ✔ preserve leading underscores and dollar signs\r\n  ✔ edge cases: emoji and unicode\r\n  ✔ edge cases: combined options\r\n  ✔ edge cases: numbers\r\n  ✔ edge cases: locale with capitalizeAfterNumber\r\n  ✔ edge cases: special characters\r\n  ✔ edge cases: array input\r\n  ✔ edge cases: uppercase transitions\r\n  ✔ edge cases: extreme inputs\r\n  ✔ invalid input\r\n  ─\r\n\r\n  camelCase with preserveConsecutiveUppercase option\r\n\r\n  test.js:152\r\n\r\n   151:   t.is(camelCase('fooBaR', {preserveConsecutiveUppercase: true}), 'fooB…\n   152:   t.is(camelCase('FOÈ-BAR', {preserveConsecutiveUppercase: true}), 'FOÈ…\n   153:   t.is(camelCase(['foo', 'BAR'], {preserveConsecutiveUppercase: true}),…\r\n\r\n  Difference (- actual, + expected):\n\n  - 'fOÈBAR'\n  + 'FOÈBAR'\r\n\r\n  › file:///test.js:152:4\r\n\r\n  ─\r\n\r\n  1 test failed\r\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 70,
+        "turns": 1,
+        "model_calls": 10,
+        "model_failures": 0,
+        "tool_calls": 9,
+        "tool_succeeded": 6,
+        "tool_failed": 3,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 0.667,
+        "failure_density": 0.0429,
+        "tools_used": {
+          "bash": {
+            "started": 4,
+            "succeeded": 2,
+            "failed": 2
+          },
+          "read": {
+            "started": 5,
+            "succeeded": 4,
+            "failed": 1
+          }
+        },
+        "files_touched": 3,
+        "file_list": [
+          "/tmp/harness-real-eval/work/camelcase-camel-leading-capital-26640-1/test.js",
+          "test.js",
+          "index.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 2,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 9,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 0,
+        "degraded_subsystems": [],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 20,
+        "messages_hot": 20,
+        "messages_dropped": 0,
+        "projection_bytes": 11491,
+        "input_tokens": 21109,
+        "output_tokens": 942,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 55127,
+        "model_ms": 50876,
+        "tool_ms": 4217,
+        "other_ms": 34,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": "no_edits_made",
+      "explain": "Run run_d365074c49\n  task: `npx ava` reports failures around capitalisation handling. Find the defect and fix it. The tests exp…\n────────────────────────────────────────────────────────────────\n   1  10:09:06  · run created (scope personal:local)\n   3  10:09:06  ▸ task: `npx ava` reports failures around capitalisation handling. Find the defect and fix it. The…\n   6  10:09:10  🧠 wants 1 tool call: bash 864→82tok\n   9  10:09:10  · bash {\"cmd\":\"npx ava 2>&1\"}\n  10  10:09:13  ✕ bash failed: command failed (exit 1): ✔ camelCase ✔ camelCase with pascalCase optio…\n  13  10:09:17  🧠 wants 1 tool call: bash 1285→141tok\n  16  10:09:17  · bash {\"cmd\":\"ls /testbed/\"}\n  17  10:09:18  ✕ bash failed: command failed (exit 2): ls: cannot access '/testbed/': No such file o…\n  20  10:09:20  🧠 wants 1 tool call: bash 1358→37tok\n  23  10:09:20  · bash {\"cmd\":\"ls /\"}\n  24  10:09:20  ✓ bash → bin cmd dev etc git-bash.exe git-cmd.exe LICENSE.txt mingw64 proc Rele…\n  27  10:09:22  🧠 wants 1 tool call: bash 1469→38tok\n  30  10:09:22  · bash {\"cmd\":\"pwd && ls\"}\n  31  10:09:23  ✓ bash → /tmp/harness-real-eval/work/camelcase-camel-leading-capital-26640-1 in…\n  34  10:09:25  🧠 wants 1 tool call: read 1563→99tok\n  37  10:09:25  · read {\"path\":\"/tmp/harness-real-eval/work/camelcase-camel-leading-capital-2…\n  38  10:09:25  ✕ read failed: path escapes sandbox: /tmp/harness-real-eval/work/camelcase-camel-lead…\n  41  10:09:28  🧠 wants 1 tool call: read 1688→73tok\n  44  10:09:28  · read {\"path\":\"test.js\",\"offset\":145,\"limit\":20}\n  45  10:09:28  ✓ read → [test.js: lines 145-164 of 443] 145|}); 146| 147|test('camelCase with …\n  48  10:09:34  🧠 wants 1 tool call: read 2338→153tok\n  51  10:09:34  · read {\"path\":\"index.js\"}\n  52  10:09:34  ✓ read → 1|const UPPERCASE = /[\\p{Lu}]/u; 2|const LOWERCASE = /[\\p{Ll}]/u; 3|co…\n  55  10:09:38  🧠 wants 1 tool call: read 2906→55tok\n  58  10:09:38  · read {\"offset\":30,\"path\":\"index.js\"}\n  59  10:09:38  ✓ read → [index.js: lines 30-71 of 224] 30| // FooBar → Foo-Bar (insert separat…\n  62  10:09:46  🧠 wants 1 tool call: read 3563→244tok\n  65  10:09:46  · read {\"offset\":72,\"path\":\"index.js\"}\n  66  10:09:46  ✓ read → [index.js: lines 72-109 of 224] 72| const character = characters[index…\n  69  10:10:01  🧠 \"\" 4075→20tok\n  70  10:10:01  ✓ completed — model_finished"
+    },
+    {
+      "task_id": "camel-preserve-consecutive",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "camelcase",
+      "base_commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "difficulty": "hard",
+      "categories": [
+        "bug_fix",
+        "multi_read",
+        "option_handling",
+        "debugging"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "reme inputs\r\n  ✔ invalid input\r\n  ─\r\n\r\n  camelCase\r\n\r\n  test.js:34\r\n\r\n   33:   t.is(camelCase('fooBarBaz-bazzy'), 'fooBarBazBazzy');\n   34:   t.is(camelCase('FBBazzy'), 'fbBazzy');               \n   35:   t.is(camelCase('F'), 'f');                           \r\n\r\n  Difference (- actual, + expected):\n\n  - 'fbbazzy'\n  + 'fbBazzy'\r\n\r\n  › file:///test.js:34:4\r\n\r\n\r\n\r\n  camelCase with pascalCase option\r\n\r\n  test.js:107\r\n\r\n   106:   t.is(camelCase('fooBarBaz-bazzy', {pascalCase: true}), 'FooBarBazBazz…\n   107:   t.is(camelCase('FBBazzy', {pascalCase: true}), 'FbBazzy');            \n   108:   t.is(camelCase('F', {pascalCase: true}), 'F');                        \r\n\r\n  Difference (- actual, + expected):\n\n  - 'Fbbazzy'\n  + 'FbBazzy'\r\n\r\n  › file:///test.js:107:4\r\n\r\n\r\n\r\n  camelCase with preserveConsecutiveUppercase option\r\n\r\n  test.js:176\r\n\r\n   175:   t.is(camelCase('桑德_在这里。', {preserveConsecutiveUppercase: true})…      \n   176:   t.is(camelCase('IDs', {preserveConsecutiveUppercase: true}), 'iDs');  \n   177:   t.is(camelCase('FooIDs', {preserveConsecutiveUppercase: true}), 'fooI…\r\n\r\n  Difference (- actual, + expected):\n\n  - 'IDs'\n  + 'iDs'\r\n\r\n  › file:///test.js:176:4\r\n\r\n  ─\r\n\r\n  3 tests failed\r\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 69,
+        "turns": 1,
+        "model_calls": 7,
+        "model_failures": 0,
+        "tool_calls": 11,
+        "tool_succeeded": 7,
+        "tool_failed": 4,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 0.636,
+        "failure_density": 0.058,
+        "tools_used": {
+          "bash": {
+            "started": 3,
+            "succeeded": 2,
+            "failed": 1
+          },
+          "read": {
+            "started": 8,
+            "succeeded": 5,
+            "failed": 3
+          }
+        },
+        "files_touched": 6,
+        "file_list": [
+          "/tmp/harness-real-eval/work/camelcase-camel-preserve-consecutive-26640-2/index.js",
+          "/tmp/harness-real-eval/work/camelcase-camel-preserve-consecutive-26640-2/test.js",
+          "/tmp/harness-real-eval/work/camelcase-camel-preserve-consecutive-26640-2/package.json",
+          "./index.js",
+          "./test.js",
+          "./package.json"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 11,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 0,
+        "degraded_subsystems": [],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 19,
+        "messages_hot": 19,
+        "messages_dropped": 0,
+        "projection_bytes": 12791,
+        "input_tokens": 17010,
+        "output_tokens": 617,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 57608,
+        "model_ms": 55933,
+        "tool_ms": 1640,
+        "other_ms": 35,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": "no_edits_made",
+      "explain": "Run run_969ece5e71\n  task: The `preserveConsecutiveUppercase` option no longer behaves correctly and `npx ava` fails. Investiga…\n────────────────────────────────────────────────────────────────\n   1  10:10:03  · run created (scope personal:local)\n   3  10:10:03  ▸ task: The `preserveConsecutiveUppercase` option no longer behaves correctly and `npx ava` fails.…\n   6  10:10:09  🧠 wants 2 tool calls: bash, bash 874→144tok\n   9  10:10:09  · bash {\"cmd\":\"find /workspace -type f -name \\\"*.js\\\" -o -name \\\"*.ts\\\" -o -n…\n  10  10:10:10  ✓ bash → \n  13  10:10:10  · bash {\"cmd\":\"ls -la /workspace\"}\n  14  10:10:11  ✕ bash failed: command failed (exit 2): ls: cannot access '/workspace': No such file …\n  17  10:10:13  🧠 wants 1 tool call: bash 1004→49tok\n  20  10:10:13  · bash {\"cmd\":\"pwd && ls -la\"}\n  21  10:10:13  ✓ bash → /tmp/harness-real-eval/work/camelcase-camel-preserve-consecutive-26640…\n  24  10:10:20  🧠 wants 3 tool calls: read, read, read 1691→173tok\n  27  10:10:20  · read {\"path\":\"/tmp/harness-real-eval/work/camelcase-camel-preserve-consecut…\n  28  10:10:20  ✕ read failed: path escapes sandbox: /tmp/harness-real-eval/work/camelcase-camel-pres…\n  31  10:10:20  · read {\"path\":\"/tmp/harness-real-eval/work/camelcase-camel-preserve-consecut…\n  32  10:10:20  ✕ read failed: path escapes sandbox: /tmp/harness-real-eval/work/camelcase-camel-pres…\n  35  10:10:20  · read {\"path\":\"/tmp/harness-real-eval/work/camelcase-camel-preserve-consecut…\n  36  10:10:20  ✕ read failed: path escapes sandbox: /tmp/harness-real-eval/work/camelcase-camel-pres…\n  39  10:10:23  🧠 wants 3 tool calls: read, read, read 1973→95tok\n  42  10:10:23  · read {\"path\":\"./index.js\"}\n  43  10:10:23  ✓ read → 1|const UPPERCASE = /[\\p{Lu}]/u; 2|const LOWERCASE = /[\\p{Ll}]/u; 3|co…\n  46  10:10:23  · read {\"path\":\"./test.js\"}\n  47  10:10:23  ✓ read → 1|import test from 'ava'; 2|import camelCase from './index.js'; 3| 4|t…\n  50  10:10:23  · read {\"path\":\"./package.json\"}\n  51  10:10:23  ✓ read → 1|{ 2| \"name\": \"camelcase\", 3| \"version\": \"9.0.0\", 4| \"description\": \"…\n  54  10:10:32  🧠 wants 1 tool call: read 3810→67tok\n  57  10:10:32  · read {\"path\":\"./index.js\",\"offset\":30}\n  58  10:10:32  ✓ read → [./index.js: lines 30-71 of 224] 30| // FooBar → Foo-Bar (insert separ…\n  61  10:10:45  🧠 wants 1 tool call: read 3595→57tok\n  64  10:10:45  · read {\"path\":\"./index.js\",\"offset\":72}\n  65  10:10:45  ✓ read → [./index.js: lines 72-109 of 224] 72| const character = characters[ind…\n  68  10:11:00  🧠 \"\" 4063→32tok\n  69  10:11:00  ✓ completed — model_finished"
+    },
+    {
+      "task_id": "camel-numbers-identifier",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "camelcase",
+      "base_commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "difficulty": "hard",
+      "categories": [
+        "bug_fix",
+        "regex",
+        "edge_case"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "izeAfterNumber edge cases\r\n  ✔ case preservation after numbers (capitalizeAfterNumber: false)\r\n  ✔ preserve leading underscores and dollar signs\r\n  ✔ edge cases: emoji and unicode\r\n  ✔ edge cases: combined options\r\n  ✔ edge cases: numbers\r\n  ✔ edge cases: locale with capitalizeAfterNumber\r\n  ✔ edge cases: special characters\r\n  ✔ edge cases: array input\r\n  ✔ edge cases: uppercase transitions\r\n  ✔ edge cases: extreme inputs\r\n  ✔ invalid input\r\n  ─\r\n\r\n  camelCase\r\n\r\n  test.js:65\r\n\r\n   64:   t.is(camelCase('Hello1World'), 'hello1World');  \n   65:   t.is(camelCase('Hello11World'), 'hello11World');\n   66:   t.is(camelCase('hello1world'), 'hello1World');  \r\n\r\n  Difference (- actual, + expected):\n\n  - 'hello11world'\n  + 'hello11World'\r\n\r\n  › file:///test.js:65:4\r\n\r\n\r\n\r\n  camelCase with pascalCase option\r\n\r\n  test.js:131\r\n\r\n   130:   t.is(camelCase('Hello1World', {pascalCase: true}), 'Hello1World');  \n   131:   t.is(camelCase('Hello11World', {pascalCase: true}), 'Hello11World');\n   132:   t.is(camelCase('hello1world', {pascalCase: true}), 'Hello1World');  \r\n\r\n  Difference (- actual, + expected):\n\n  - 'Hello11world'\n  + 'Hello11World'\r\n\r\n  › file:///test.js:131:4\r\n\r\n  ─\r\n\r\n  2 tests failed\r\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 98,
+        "turns": 1,
+        "model_calls": 10,
+        "model_failures": 0,
+        "tool_calls": 16,
+        "tool_succeeded": 10,
+        "tool_failed": 6,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 0.625,
+        "failure_density": 0.0612,
+        "tools_used": {
+          "bash": {
+            "started": 11,
+            "succeeded": 8,
+            "failed": 3
+          },
+          "read": {
+            "started": 5,
+            "succeeded": 2,
+            "failed": 3
+          }
+        },
+        "files_touched": 5,
+        "file_list": [
+          "/tmp/fx-STRING_UTILS-1787892893827/package.json",
+          "/tmp/harness-real-eval/work/camelcase-camel-numbers-identifier-26640-3/index.js",
+          "/tmp/harness-real-eval/work/camelcase-camel-numbers-identifier-26640-3/test.js",
+          "./index.js",
+          "./test.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 2,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 16,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 0,
+        "degraded_subsystems": [],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 27,
+        "messages_hot": 27,
+        "messages_dropped": 0,
+        "projection_bytes": 11777,
+        "input_tokens": 24038,
+        "output_tokens": 958,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 86705,
+        "model_ms": 51030,
+        "tool_ms": 35627,
+        "other_ms": 48,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": "no_edits_made",
+      "explain": "Run run_163b67e321\n  task: Strings containing digits are no longer cased correctly; `npx ava` fails. Locate the cause and fix i…\n────────────────────────────────────────────────────────────────\n   1  10:11:02  · run created (scope personal:local)\n   3  10:11:02  ▸ task: Strings containing digits are no longer cased correctly; `npx ava` fails. Locate the cause…\n   6  10:11:07  🧠 wants 2 tool calls: bash, bash 861→122tok\n   9  10:11:07  · bash {\"cmd\":\"find /testbed -type f -name \\\"*.js\\\" -o -name \\\"*.ts\\\" -o -nam…\n  10  10:11:08  ✓ bash → \n  13  10:11:08  · bash {\"cmd\":\"cat /testbed/package.json 2>/dev/null || echo \\\"No package.jso…\n  14  10:11:08  ✓ bash → No package.json found\n  17  10:11:10  🧠 wants 1 tool call: bash 986→45tok\n  20  10:11:10  · bash {\"cmd\":\"ls -la /testbed/\"}\n  21  10:11:11  ✕ bash failed: command failed (exit 2): ls: cannot access '/testbed/': No such file o…\n  24  10:11:12  🧠 wants 1 tool call: bash 1061→39tok\n  27  10:11:12  · bash {\"cmd\":\"ls -la /\"}\n  28  10:11:13  ✓ bash → total 9725 drwxr-xr-x 1 abhijith.p 1049089 0 Aug 4 10:58 . drwxr-xr-x …\n  31  10:11:18  🧠 wants 2 tool calls: bash, bash 1881→92tok\n  34  10:11:18  · bash {\"cmd\":\"ls -la /tmp/\"}\n  35  10:11:23  ✕ bash failed: command produced more than 262144 bytes and was aborted — redirect out…\n  38  10:11:23  · bash {\"cmd\":\"find / -name \\\"package.json\\\" -maxdepth 4 2>/dev/null | head -…\n  39  10:11:35  ✓ bash → /tmp/fx-BROKEN_DEPS-1787892895264/package.json /tmp/fx-CALC_LIB-178789…\n  42  10:11:39  🧠 wants 2 tool calls: bash, bash 2328→125tok\n  45  10:11:39  · bash {\"cmd\":\"find /tmp -name \\\"ava.config*\\\" -o -name \\\"*.test.js\\\" -o -nam…\n  46  10:11:54  ✕ bash failed: command timed out after 15000ms and was killed\n  49  10:11:54  · bash {\"cmd\":\"ls /tmp/fx-STRING_UTILS-1787892893827/\"}\n  50  10:11:55  ✓ bash → package.json SPEC.md src test\n  53  10:12:00  🧠 wants 2 tool calls: read, bash 2486→162tok\n  56  10:12:00  · read {\"path\":\"/tmp/fx-STRING_UTILS-1787892893827/package.json\"}\n  57  10:12:00  ✕ read failed: path escapes sandbox: /tmp/fx-STRING_UTILS-1787892893827/package.json\n  60  10:12:00  · bash {\"cmd\":\"ls -la /tmp/fx-STRING_UTILS-1787892893827/src/ /tmp/fx-STRING_…\n  61  10:12:00  ✓ bash → /tmp/fx-STRING_UTILS-1787892893827/src/: total 1 drwxr-xr-x 1 abhijith…\n  64  10:12:04  🧠 wants 2 tool calls: bash, bash 2934→84tok\n  67  10:12:04  · bash {\"cmd\":\"pwd\"}\n  68  10:12:04  ✓ bash → /tmp/harness-real-eval/work/camelcase-camel-numbers-identifier-26640-3\n  71  10:12:04  · bash {\"cmd\":\"ls -la\"}\n  72  10:12:05  ✓ bash → total 68 drwxr-xr-x 1 abhijith.p 1049089 0 Aug 31 15:41 . drwxr-xr-x 1…\n  75  10:12:10  🧠 wants 2 tool calls: read, read 3649→133tok\n  78  10:12:10  · read {\"path\":\"/tmp/harness-real-eval/work/camelcase-camel-numbers-identifie…\n  79  10:12:10  ✕ read failed: path escapes sandbox: /tmp/harness-real-eval/work/camelcase-camel-numb…\n  82  10:12:10  · read {\"path\":\"/tmp/harness-real-eval/work/camelcase-camel-numbers-identifie…\n  83  10:12:10  ✕ read failed: path escapes sandbox: /tmp/harness-real-eval/work/camelcase-camel-numb…\n  86  10:12:13  🧠 wants 2 tool calls: read, read 3841→72tok\n  89  10:12:13  · read {\"path\":\"./index.js\"}\n  90  10:12:13  ✓ read → 1|const UPPERCASE = /[\\p{Lu}]/u; 2|const LOWERCASE = /[\\p{Ll}]/u; 3|co…\n  93  10:12:13  · read {\"path\":\"./test.js\"}\n  94  10:12:13  ✓ read → 1|import test from 'ava'; 2|import camelCase from './index.js'; 3| 4|t…\n  97  10:12:29  🧠 \"\" 4011→84tok\n  98  10:12:29  ✓ completed — model_finished"
+    },
+    {
+      "task_id": "camel-leading-separators",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "camelcase",
+      "base_commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "regex",
+        "edge_case"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": " 'foo_@#Bar'\r\n\r\n  › file:///test.js:376:4\r\n\r\n\r\n\r\n  edge cases: array input\r\n\r\n  test.js:381\r\n\r\n   380:   // Array with leading prefixes                 \n   381:   t.is(camelCase(['_foo', '$bar']), '_foo-$bar');\n   382:                                                  \r\n\r\n  Difference (- actual, + expected):\n\n  - '_foo$bar'\n  + '_foo-$bar'\r\n\r\n  › file:///test.js:381:4\r\n\r\n\r\n\r\n  edge cases: uppercase transitions\r\n\r\n  test.js:390\r\n\r\n   389:   // Multiple rapid transitions         \n   390:   t.is(camelCase('aAbBcC'), 'aAbBcC');  \n   391:   t.is(camelCase('a1A2B3C'), 'a1A2B3C');\r\n\r\n  Difference (- actual, + expected):\n\n  - 'aabBcC'\n  + 'aAbBcC'\r\n\r\n  › file:///test.js:390:4\r\n\r\n\r\n\r\n  edge cases: extreme inputs\r\n\r\n  test.js:401\r\n\r\n   400:   const longPrefix = '_'.repeat(50);                                    \n   401:   t.is(camelCase(longPrefix + 'foo' + longPrefix + 'bar'), longPrefix +…\n   402:                                                                         \r\n\r\n  Difference (- actual, + expected):\n\n  - '__________________________________________________foobar'\n  + '__________________________________________________fooBar'\r\n\r\n  › file:///test.js:401:4\r\n\r\n  ─\r\n\r\n  15 tests failed\r\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 61,
+        "turns": 1,
+        "model_calls": 7,
+        "model_failures": 0,
+        "tool_calls": 9,
+        "tool_succeeded": 6,
+        "tool_failed": 3,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 0.667,
+        "failure_density": 0.0492,
+        "tools_used": {
+          "bash": {
+            "started": 7,
+            "succeeded": 6,
+            "failed": 1
+          },
+          "read": {
+            "started": 2,
+            "succeeded": 0,
+            "failed": 2
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "/tmp/harness-real-eval/work/camelcase-camel-leading-separators-26640-4/index.js",
+          "/tmp/harness-real-eval/work/camelcase-camel-leading-separators-26640-4/test.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 1,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 9,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 0,
+        "degraded_subsystems": [],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 17,
+        "messages_hot": 17,
+        "messages_dropped": 0,
+        "projection_bytes": 10840,
+        "input_tokens": 14014,
+        "output_tokens": 626,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 35557,
+        "model_ms": 29929,
+        "tool_ms": 5597,
+        "other_ms": 31,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": "no_edits_made",
+      "explain": "Run run_dfcad20aaa\n  task: Input with leading separators (for example `--foo-bar`) is no longer handled correctly and `npx ava`…\n────────────────────────────────────────────────────────────────\n   1  10:12:32  · run created (scope personal:local)\n   3  10:12:32  ▸ task: Input with leading separators (for example `--foo-bar`) is no longer handled correctly and…\n   6  10:12:37  🧠 wants 2 tool calls: bash, bash 869→125tok\n   9  10:12:37  · bash {\"cmd\":\"find /workspace -type f -name \\\"*.js\\\" -o -name \\\"*.ts\\\" -o -n…\n  10  10:12:37  ✓ bash → \n  13  10:12:37  · bash {\"cmd\":\"cat /workspace/package.json 2>/dev/null || echo \\\"No package.j…\n  14  10:12:38  ✓ bash → No package.json found\n  17  10:12:40  🧠 wants 1 tool call: bash 992→49tok\n  20  10:12:40  · bash {\"cmd\":\"ls -la /workspace/\"}\n  21  10:12:41  ✕ bash failed: command failed (exit 2): ls: cannot access '/workspace/': No such file…\n  24  10:12:42  🧠 wants 1 tool call: bash 1065→40tok\n  27  10:12:42  · bash {\"cmd\":\"pwd && ls -la\"}\n  28  10:12:43  ✓ bash → /tmp/harness-real-eval/work/camelcase-camel-leading-separators-26640-4…\n  31  10:12:48  🧠 wants 2 tool calls: read, read 1752→132tok\n  34  10:12:48  · read {\"path\":\"/tmp/harness-real-eval/work/camelcase-camel-leading-separator…\n  35  10:12:48  ✕ read failed: path escapes sandbox: /tmp/harness-real-eval/work/camelcase-camel-lead…\n  38  10:12:48  · read {\"path\":\"/tmp/harness-real-eval/work/camelcase-camel-leading-separator…\n  39  10:12:48  ✕ read failed: path escapes sandbox: /tmp/harness-real-eval/work/camelcase-camel-lead…\n  42  10:12:51  🧠 wants 2 tool calls: bash, bash 1944→73tok\n  45  10:12:51  · bash {\"cmd\":\"cat index.js\"}\n  46  10:12:52  ✓ bash → const UPPERCASE = /[\\p{Lu}]/u; const LOWERCASE = /[\\p{Ll}]/u; const LE…\n  49  10:12:52  · bash {\"cmd\":\"cat test.js\"}\n  50  10:12:52  ✓ bash → import test from 'ava'; import camelCase from './index.js'; test('came…\n  53  10:13:00  🧠 wants 1 tool call: bash 3373→130tok\n  56  10:13:00  · bash {\"cmd\":\"npx ava 2>&1 | head -80\"}\n  57  10:13:03  ✓ bash → ✘ [fail]: camelCase ✘ [fail]: camelCase with pascalCase option ✘ [fail…\n  60  10:13:08  🧠 \"\" 4019→77tok\n  61  10:13:08  ✓ completed — model_finished"
+    },
+    {
+      "task_id": "camel-unicode-uppercase",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "camelcase",
+      "base_commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "regex",
+        "unicode"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx ava failed",
+      "evidence": "reserveConsecutiveUppercase option\r\n  ✔ camelCase with both pascalCase and preserveConsecutiveUppercase option\r\n  ✔ camelCase with locale option\r\n  ✔ camelCase with disabled locale\r\n  ✔ number handling follows Google Style Guide\r\n  ✔ camelCase with capitalizeAfterNumber option\r\n  ✔ capitalizeAfterNumber edge cases\r\n  ✔ case preservation after numbers (capitalizeAfterNumber: false)\r\n  ✔ preserve leading underscores and dollar signs\r\n  ✔ edge cases: emoji and unicode\r\n  ✔ edge cases: combined options\r\n  ✔ edge cases: numbers\r\n  ✔ edge cases: locale with capitalizeAfterNumber\r\n  ✔ edge cases: special characters\r\n  ✔ edge cases: array input\r\n  ✔ edge cases: uppercase transitions\r\n  ✔ edge cases: extreme inputs\r\n  ✔ invalid input\r\n  ─\r\n\r\n  camelCase with pascalCase option\r\n\r\n  test.js:139\r\n\r\n   138:   t.is(camelCase('h1W', {pascalCase: true}), 'H1W');                    \n   139:   t.is(camelCase('РозовыйПушистыйЕдинороги', {pascalCase: true}), 'Розо…\n   140:   t.is(camelCase('розовый_пушистый-единороги', {pascalCase: true}), 'Ро…\r\n\r\n  Difference (- actual, + expected):\n\n  - 'Розовыйпушистыйединороги'\n  + 'РозовыйПушистыйЕдинороги'\r\n\r\n  › file:///test.js:139:4\r\n\r\n  ─\r\n\r\n  1 test failed\r\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 68,
+        "turns": 1,
+        "model_calls": 8,
+        "model_failures": 0,
+        "tool_calls": 10,
+        "tool_succeeded": 7,
+        "tool_failed": 3,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 0.7,
+        "failure_density": 0.0441,
+        "tools_used": {
+          "bash": {
+            "started": 3,
+            "succeeded": 2,
+            "failed": 1
+          },
+          "read": {
+            "started": 7,
+            "succeeded": 5,
+            "failed": 2
+          }
+        },
+        "files_touched": 4,
+        "file_list": [
+          "/tmp/harness-real-eval/work/camelcase-camel-unicode-uppercase-26640-5/index.js",
+          "/tmp/harness-real-eval/work/camelcase-camel-unicode-uppercase-26640-5/test.js",
+          "index.js",
+          "test.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 10,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 0,
+        "degraded_subsystems": [],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 19,
+        "messages_hot": 19,
+        "messages_dropped": 0,
+        "projection_bytes": 12766,
+        "input_tokens": 19903,
+        "output_tokens": 843,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 50824,
+        "model_ms": 49165,
+        "tool_ms": 1628,
+        "other_ms": 31,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": "no_edits_made",
+      "explain": "Run run_1a3960d09d\n  task: Non-ASCII uppercase letters are no longer recognised, so `npx ava` fails on international input. Loc…\n────────────────────────────────────────────────────────────────\n   1  10:13:10  · run created (scope personal:local)\n   3  10:13:10  ▸ task: Non-ASCII uppercase letters are no longer recognised, so `npx ava` fails on international …\n   6  10:13:15  🧠 wants 2 tool calls: bash, bash 865→147tok\n   9  10:13:15  · bash {\"cmd\":\"find /workspace -type f -name \\\"*.js\\\" -o -name \\\"*.ts\\\" -o -n…\n  10  10:13:15  ✓ bash → \n  13  10:13:15  · bash {\"cmd\":\"ls -la /workspace\"}\n  14  10:13:16  ✕ bash failed: command failed (exit 2): ls: cannot access '/workspace': No such file …\n  17  10:13:18  🧠 wants 1 tool call: bash 995→45tok\n  20  10:13:18  · bash {\"cmd\":\"pwd && ls -la\"}\n  21  10:13:19  ✓ bash → /tmp/harness-real-eval/work/camelcase-camel-unicode-uppercase-26640-5 …\n  24  10:13:24  🧠 wants 2 tool calls: read, read 1681→120tok\n  27  10:13:24  · read {\"path\":\"/tmp/harness-real-eval/work/camelcase-camel-unicode-uppercase…\n  28  10:13:24  ✕ read failed: path escapes sandbox: /tmp/harness-real-eval/work/camelcase-camel-unic…\n  31  10:13:24  · read {\"path\":\"/tmp/harness-real-eval/work/camelcase-camel-unicode-uppercase…\n  32  10:13:24  ✕ read failed: path escapes sandbox: /tmp/harness-real-eval/work/camelcase-camel-unic…\n  35  10:13:27  🧠 wants 2 tool calls: read, read 1869→74tok\n  38  10:13:27  · read {\"path\":\"index.js\"}\n  39  10:13:27  ✓ read → 1|const UPPERCASE = /[A-Z]/u; 2|const LOWERCASE = /[\\p{Ll}]/u; 3|const…\n  42  10:13:27  · read {\"path\":\"test.js\"}\n  43  10:13:27  ✓ read → 1|import test from 'ava'; 2|import camelCase from './index.js'; 3| 4|t…\n  46  10:13:37  🧠 wants 1 tool call: read 3112→216tok\n  49  10:13:37  · read {\"path\":\"index.js\",\"offset\":30}\n  50  10:13:37  ✓ read → [index.js: lines 30-71 of 224] 30| // FooBar → Foo-Bar (insert separat…\n  53  10:13:44  🧠 wants 1 tool call: read 3769→180tok\n  56  10:13:44  · read {\"offset\":72,\"path\":\"index.js\"}\n  57  10:13:44  ✓ read → [index.js: lines 72-109 of 224] 72| const character = characters[index…\n  60  10:13:57  🧠 wants 1 tool call: read 3520→57tok\n  63  10:13:57  · read {\"offset\":110,\"path\":\"index.js\"}\n  64  10:13:57  ✓ read → [index.js: lines 110-143 of 224] 110|Two-pass strategy prevents confli…\n  67  10:14:00  🧠 \"\" 4092→4tok\n  68  10:14:00  ✓ completed — model_finished"
+    },
+    {
+      "task_id": "camel-identifier-endanchor",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "camelcase",
+      "base_commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "difficulty": "hard",
+      "categories": [
+        "bug_fix",
+        "regex",
+        "edge_case",
+        "debugging"
+      ],
+      "outcome": "PASS",
+      "detail": "npx ava passed",
+      "evidence": "\r\n  ✔ camelCase\r\n  ✔ camelCase with pascalCase option\r\n  ✔ camelCase with preserveConsecutiveUppercase option\r\n  ✔ camelCase with both pascalCase and preserveConsecutiveUppercase option\r\n  ✔ camelCase with locale option\r\n  ✔ camelCase with disabled locale\r\n  ✔ number handling follows Google Style Guide\r\n  ✔ camelCase with capitalizeAfterNumber option\r\n  ✔ capitalizeAfterNumber edge cases\r\n  ✔ case preservation after numbers (capitalizeAfterNumber: false)\r\n  ✔ preserve leading underscores and dollar signs\r\n  ✔ edge cases: emoji and unicode\r\n  ✔ edge cases: combined options\r\n  ✔ edge cases: numbers\r\n  ✔ edge cases: locale with capitalizeAfterNumber\r\n  ✔ edge cases: special characters\r\n  ✔ edge cases: array input\r\n  ✔ edge cases: uppercase transitions\r\n  ✔ edge cases: extreme inputs\r\n  ✔ invalid input\r\n  ─\r\n\r\n  20 tests passed\r\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "The fix is verified — all 20 tests pass now.\n\n**Summary:** The `IDENTIFIER` regex on line 8 was missing the `|$` alternative that the explanatory comment (lines 6-7) described. This prevented matching when a separator or digit run reached the end of the string. Changed:\n\n```js\nconst IDENTIFIER = /([\\p{Alpha}\\p{N}_])/u;\n```\n\nto:\n\n```js\nconst IDENTIFIER = /([\\p{Alpha}\\p{N}_]|$)/u;\n```",
+      "metrics": {
+        "events": 53,
+        "turns": 1,
+        "model_calls": 7,
+        "model_failures": 0,
+        "tool_calls": 7,
+        "tool_succeeded": 5,
+        "tool_failed": 2,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 0.714,
+        "failure_density": 0.0377,
+        "tools_used": {
+          "bash": {
+            "started": 4,
+            "succeeded": 3,
+            "failed": 1
+          },
+          "read": {
+            "started": 2,
+            "succeeded": 1,
+            "failed": 1
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "/tmp/harness-real-eval/work/camelcase-camel-identifier-endanchor-26640-6/index.js",
+          "index.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 7,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 0,
+        "degraded_subsystems": [],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 15,
+        "messages_hot": 15,
+        "messages_dropped": 0,
+        "projection_bytes": 7770,
+        "input_tokens": 13165,
+        "output_tokens": 1121,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 41645,
+        "model_ms": 37418,
+        "tool_ms": 4200,
+        "other_ms": 27,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": null,
+      "explain": "Run run_a429be8b3a\n  task: `npx ava` fails on inputs where a separator or digit run reaches the end of the string. The identifi…\n────────────────────────────────────────────────────────────────\n   1  10:14:02  · run created (scope personal:local)\n   3  10:14:02  ▸ task: `npx ava` fails on inputs where a separator or digit run reaches the end of the string. Th…\n   6  10:14:08  🧠 wants 2 tool calls: bash, bash 873→152tok\n   9  10:14:08  · bash {\"cmd\":\"find /workspace -type f -name \\\"*.js\\\" -o -name \\\"*.ts\\\" | hea…\n  10  10:14:09  ✓ bash → \n  13  10:14:09  · bash {\"cmd\":\"ls /workspace\"}\n  14  10:14:09  ✕ bash failed: command failed (exit 2): ls: cannot access '/workspace': No such file …\n  17  10:14:11  🧠 wants 1 tool call: bash 994→52tok\n  20  10:14:11  · bash {\"cmd\":\"pwd && ls -la\"}\n  21  10:14:12  ✓ bash → /tmp/harness-real-eval/work/camelcase-camel-identifier-endanchor-26640…\n  24  10:14:17  🧠 wants 1 tool call: read 1681→80tok\n  27  10:14:17  · read {\"path\":\"/tmp/harness-real-eval/work/camelcase-camel-identifier-endanc…\n  28  10:14:17  ✕ read failed: path escapes sandbox: /tmp/harness-real-eval/work/camelcase-camel-iden…\n  31  10:14:19  🧠 wants 1 tool call: read 1783→46tok\n  34  10:14:19  · read {\"path\":\"index.js\"}\n  35  10:14:19  ✓ read → 1|const UPPERCASE = /[\\p{Lu}]/u; 2|const LOWERCASE = /[\\p{Ll}]/u; 3|co…\n  38  10:14:29  🧠 wants 1 tool call: edit 2357→392tok\n  41  10:14:29  · edit {\"path\":\"index.js\",\"old_string\":\"const IDENTIFIER = /([\\\\p{Alpha}\\\\p{N…\n  42  10:14:29  ✓ edit → edited index.js\n  45  10:14:35  🧠 wants 1 tool call: bash 2608→181tok\n  48  10:14:35  · bash {\"cmd\":\"npx ava 2>&1 | tail -30\"}\n  49  10:14:37  ✓ bash → ✔ camelCase ✔ camelCase with pascalCase option ✔ camelCase with preser…\n  52  10:14:44  🧠 \"The fix is verified — all 20 tests pass now. **Summary:** The `IDENTIFIER` regex…\" 2869→218tok\n  53  10:14:44  ✓ completed — model_finished: \"The fix is verified — all 20 tests pass now. **Summary:** Th…\""
+    }
+  ]
+}
