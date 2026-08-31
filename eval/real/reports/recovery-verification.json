@@ -1,0 +1,47 @@
+{
+  "at": "2026-08-31T05:16:10.775Z",
+  "phase": "phase4-recovery-verification",
+  "commit": "5ac4d7a",
+  "suites": {
+    "worldstate/worldstate": {
+      "exit": 0,
+      "passed": 19,
+      "failed": 0,
+      "output": "world states: H0=abe3d4bd H1=5fe2a20a H2=eead315f\n\n── edit: what can verify() see? ──\n  ok   edit S0 (never applied) -> not-applied\n  ok     decision REISSUE (correct — nothing happened)\n  ok   edit S1 (applied) -> applied\n  ok     decision SKIP (correct — do not redo it)\n       edit S2 (applied then changed) -> verify()='applied' decision='skip'\n  ok   edit S2 is NOT misreported as not-applied\n  ok     decision is not a blind REISSUE\n       edit revert-to-original -> verify()='not-applied' (indistinguishable from never-applied)\n  ok   revert-to-original is genuinely indistinguishable from never-applied\n  ok   equivalent-content change reports applied\n       correct by content-addressing: the world matches the intended post-state\n\n── write: what can verify() see? ──\n  ok   write S0 (never applied) -> not-applied\n  ok   write S1 (applied) -> applied\n       write S2 (applied then changed) -> verify()='not-applied' decision='reissue'\n  ok   write MISCLASSIFIES applied-then-changed as not-applied (defect, measured)\n  ok     and decideRecovery therefore chooses REISSUE\n       a reissue here overwrites the later change — see concurrent-race.test.mjs for the end-to-end proof\n\n── why edit and write differ ──\n       same world (S2): edit says 'applied', write says 'not-applied'\n  ok   edit and write disagree on the SAME world state\n       edit checks the PRE-state (old_string absent => it ran). write checks only the POST-state.\n\n── information-theoretic limit ──\n  ok   write cannot distinguish History A from History B\n       both report 'not-applied' — the durable history and world state are identical in both\n       edit with old text absent: 'applied'   with old text restored: 'not-applied'\n  ok   edit loses its witness when the old text is restored\n       => even edit is only as strong as the persistence of its precondition\n\n── does an uncertain mutation ever get silently retried? ──\n  ok   UNSAFE without verify() escalates\n  ok   verify() that throws escalates\n       SAFE_RETRY + unknown -> reissue (verify() unknown, but SAFE_RETRY is safe to re-issue)\n  ok   unknown + SAFE_RETRY currently reissues\n  ok   unknown + UNSAFE escalates\n\nworldstate: 19 passed, 0 failed\n"
+    },
+    "worldstate/concurrent-race": {
+      "exit": 0,
+      "passed": 13,
+      "failed": 0,
+      "output": "concurrent-race (real process kills)\n  ok   edit child was alive when the parent killed it\n  ok     effect landed on disk\n       edit + unrelated concurrent change -> verify()='applied' decision='skip'\n  ok   edit does NOT reissue over the concurrent change\n  ok     concurrent change survives\n       edit + same-region concurrent change -> verify()='unknown' decision='reissue'\n  ok   same-region change yields unknown (not a false not-applied)\n       decision on unknown is 'reissue' — safe here only because edit self-rejects\n  ok     reissue of an already-applied edit self-rejects\n  ok     world is untouched by the reissue\n  ok     the concurrent same-region change survives\n  ok   write child was alive when the parent killed it\n  ok     effect landed on disk\n       write + concurrent change -> verify()='not-applied' decision='reissue'\n  ok   write reports not-applied for an applied-then-changed world\n  ok     and decideRecovery chooses REISSUE\n  ok     REISSUE silently destroys the concurrent change (measured, not fixed)\n       this is a LOST UPDATE: a real effect was redone over a legitimate later change\n\nconcurrent-race: 13 passed, 0 failed\n"
+    },
+    "worldstate/real-repo-race": {
+      "exit": 0,
+      "passed": 10,
+      "failed": 0,
+      "output": "real-repo-race — p-limit@df476048/index.js (3315 bytes)\n  ok   adversarial mutation anchors in the real pinned source\n  ok   agent write landed\n  ok   concurrent actor changed the file\n       real-repo write race -> verify()='not-applied' decision='reissue'\n  ok   verify() reports not-applied for an APPLIED effect\n  ok     decision is REISSUE\n  ok     the concurrent change is DESTROYED on real repository bytes\n       world_state_correctness = FAIL even though a task verifier would report PASS\n  ok     the file is still the semantically correct fix (task would PASS)\n       task_success and recovery_correctness disagree — they must be reported separately\n       real-repo edit race  -> verify()='applied' decision='skip'\n  ok   edit correctly reports applied on the same race\n  ok     decision is SKIP\n  ok     the concurrent change SURVIVES\n\nreal-repo-race: 10 passed, 0 failed\n"
+    },
+    "writerecovery/writerecovery": {
+      "exit": 0,
+      "passed": 14,
+      "failed": 0,
+      "output": "  ok   write declares SAFE_RETRY\n  ok   write has a content-addressed precondition\n  ok   write exposes verify()\n  ok   Case 1 (never written) -> not-applied\n  ok   Case 2 (completed) -> applied\n  ok   Case 3 (partial) -> not-applied (retry is safe)\n  ok     retry after a partial write converges to applied\n  ok   Case 4 (changed underneath) -> not-applied\n  ok     retry silently discards the concurrent change (measured, not fixed)\n  ok   edit declares SELF_VERIFYING\n  ok   edit before applying -> not-applied\n  ok   edit after applying -> applied\n  ok   edit replay is self-rejecting (precondition consumed)\n  ok   unreadable target -> unknown (not a false not-applied)\n\nwriterecovery: 14 passed, 0 failed\n"
+    }
+  },
+  "misclassification": {
+    "edit": {
+      "events": 6,
+      "wrong": 0
+    },
+    "write": {
+      "events": 6,
+      "wrong": 1,
+      "kind": "false not-applied -> destructive reissue"
+    }
+  },
+  "invariants": {
+    "stale_worker_cannot_write": "holds",
+    "uncertain_never_silently_retried": "VIOLATED by write",
+    "task_success_hides_regression": "demonstrated"
+  }
+}
