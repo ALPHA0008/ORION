@@ -37,7 +37,7 @@
       "group": "Phase D — crash matrix (real SIGKILL at each loop position)",
       "test": "orphans produce an explicit recovery decision",
       "pass": true,
-      "detail": "write:SAFE_RETRY->skip(applied) | grep:READ_ONLY->reissue"
+      "detail": "write:SELF_VERIFYING->skip(applied) | grep:READ_ONLY->reissue"
     }
   ]
 }

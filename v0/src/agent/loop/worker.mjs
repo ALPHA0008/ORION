@@ -237,7 +237,18 @@ export class Worker {
 
     this.#append(runId, 'tool.authorized', { tool_call_id: tcid, name: tc.name });
     this.#hook('after:tool.authorized', { runId, tcid });
-    this.#append(runId, 'tool.started', { tool_call_id: tcid, name: tc.name, args: tc.args });
+
+    // ADR-011: capture a trusted PRE-STATE WITNESS before the effect.
+    //
+    // It must be folded into `args` BEFORE `tool.started` is appended, because after a crash
+    // `#reconcile` rebuilds recovery from `pend.args` — which is exactly what `tool.started`
+    // recorded. Evidence held anywhere else is destroyed by the crash it exists to survive.
+    //
+    // The runtime computes it (the bytes are on disk and readable here); the model is never
+    // asked for a correctness-critical hash. Tools without `captureWitness` are untouched.
+    const args = tool.captureWitness ? tool.captureWitness(tc.args) : tc.args;
+
+    this.#append(runId, 'tool.started', { tool_call_id: tcid, name: tc.name, args });
     this.#hook('after:tool.started', { runId, tcid });
 
     // Last safe point before an external effect. Expiry after this check is an
@@ -246,7 +257,7 @@ export class Worker {
     this.#hook('before:tool.effect', { runId, tcid });
 
     let out = null, failed = null;
-    try { out = await tool.run(tc.args); } catch (e) { failed = e; }
+    try { out = await tool.run(args); } catch (e) { failed = e; }
     this.#hook('after:tool.effect', { runId, tcid });    // <- the crash window
 
     const recorded = failed

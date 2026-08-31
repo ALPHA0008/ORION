@@ -9,6 +9,9 @@ const sha = (s) => crypto.createHash('sha256').update(String(s)).digest('hex').s
 /** Distinguish "genuinely absent" from "could not be read". Only the former is evidence. */
 const isMissing = (e) => e?.code === 'ENOENT' || /ENOENT|no such file/i.test(String(e?.message ?? ''));
 
+/** Pre-state witness sentinel for "the file did not exist" — distinct from any real hash. */
+export const ABSENT = 'absent:no-such-file';
+
 // Budget for one page of `read`. Deliberately below MSG_CLAMP (2,000 B) so a full page plus its
 // footer survives the projection clamp intact — a page that gets clamped would reintroduce the
 // exact invisible-tail problem this paging exists to solve.
@@ -179,21 +182,82 @@ export function makeTools(sandbox) {
 
     write: {
       description: 'Write the FULL content of a file (creates or replaces).',
+      // `expected_pre_sha` is declared so the schema accepts it, but is deliberately NOT
+      // described to the model: the runtime injects it (ADR-011). The model-facing contract
+      // remains write(path, content) and no model is asked for a correctness-critical hash.
       schema: { type: 'object', required: ['path', 'content'],
-        properties: { path: { type: 'string' }, content: { type: 'string' } } },
+        properties: { path: { type: 'string' }, content: { type: 'string' },
+                      expected_pre_sha: { type: 'string' } } },
       effects: 'Mutating',
-      // Whole-content write is naturally idempotent, and cheap to verify by hashing.
-      recovery: ({ path, content }) => ({
-        class: RecoveryClass.SAFE_RETRY,
-        precondition: sha(content),
+
+      // ADR-011: capture a trusted PRE-STATE WITNESS (the runtime computes it, never the model).
+      // The worker folds this into `args` before appending `tool.started`, so it is durable and
+      // available to `#reconcile` after a crash.
+      captureWitness: (args) => {
+        if (args?.expected_pre_sha !== undefined) return args;   // already witnessed
+        let pre;
+        try { pre = sha(sandbox.read(args.path)); }
+        catch (e) { pre = isMissing(e) ? ABSENT : null; }        // null = could not observe
+        return pre === null ? args : { ...args, expected_pre_sha: pre };
+      },
+
+      // WHY THIS EXISTS (measured, phase 4):
+      // Post-state-only verification collapses two different worlds onto one answer —
+      // "never applied" and "applied, then a third party changed the file" both look like
+      // `not-applied`, so SAFE_RETRY reissued and silently destroyed the concurrent change.
+      // Reproduced with a real SIGKILL and on real pinned repository bytes.
+      //
+      // `edit` never had this problem because its precondition is the PRE-state. This gives
+      // `write` the equivalent evidence.
+      recovery: ({ path, content, expected_pre_sha }) => ({
+        // The class follows the evidence actually carried, not the operation's name.
+        // SAFE_RETRY asserts f(f(x)) == f(x) "for these args" — true in isolation, false with a
+        // concurrent writer. With a witness the retry is only ever issued when the pre-state is
+        // verified intact, which is precisely SELF_VERIFYING.
+        class: expected_pre_sha === undefined ? RecoveryClass.SAFE_RETRY : RecoveryClass.SELF_VERIFYING,
+        precondition: expected_pre_sha ?? sha(content),
+        // A whole-file write is NOT self-rejecting on replay the way `edit` is: re-applying it
+        // overwrites whatever moved the file. So an unknown outcome must escalate rather than
+        // ride the class's AUTO_REISSUE membership (ADR-011).
+        escalateOnUnknown: expected_pre_sha !== undefined,
         verify: () => {
-          // Only "the file is not there" proves the write did not land. A permission
-          // error, EISDIR or an I/O error proves nothing — those are 'unknown'.
-          try { return sandbox.read(path) === content ? 'applied' : 'not-applied'; }
-          catch (e) { return isMissing(e) ? 'not-applied' : 'unknown'; }
+          let cur;
+          try { cur = sandbox.read(path); }
+          catch (e) {
+            if (!isMissing(e)) return 'unknown';        // I/O error proves nothing
+            // File absent: the write cannot have landed. If it was absent beforehand too, the
+            // world is exactly what the caller expected, so a retry is safe.
+            if (expected_pre_sha === undefined || expected_pre_sha === ABSENT) return 'not-applied';
+            return 'unknown';                           // it existed before and is gone now
+          }
+          // Applied is checked first: if the content matches the target the effect is present,
+          // whatever the pre-state was (this also covers a third party producing the same bytes).
+          if (cur === content) return 'applied';
+          if (expected_pre_sha === undefined) return 'not-applied';   // legacy, unwitnessed
+          // Pre-state intact => the effect never landed and the world is untouched: safe retry.
+          if (sha(cur) === expected_pre_sha) return 'not-applied';
+          // Neither the expected pre-state nor the target: the world moved for a reason we
+          // cannot attribute. Do NOT guess, and above all do not overwrite it.
+          return 'unknown';
         },
       }),
-      run: ({ path, content }) => { sandbox.write(path, content); return `wrote ${path} (${content.length} bytes)`; },
+
+      run: ({ path, content, expected_pre_sha }) => {
+        // Pre-effect conflict detection (distinct from post-crash verification): if the file
+        // changed between witness capture and now, the caller's intent no longer applies.
+        if (expected_pre_sha !== undefined) {
+          let cur;
+          try { cur = sha(sandbox.read(path)); }
+          catch (e) { cur = isMissing(e) ? ABSENT : null; }
+          if (cur !== null && cur !== expected_pre_sha)
+            throw new Error(
+              `${path} changed since it was read (expected ${String(expected_pre_sha).slice(0, 12)}, `
+              + `found ${String(cur).slice(0, 12)}). Re-read the file and reapply your change so the `
+              + `other edit is not lost.`);
+        }
+        sandbox.write(path, content);
+        return `wrote ${path} (${content.length} bytes)`;
+      },
     },
 
     edit: {
@@ -252,8 +316,23 @@ export function makeTools(sandbox) {
 export function toolDefinitions(tools) {
   return Object.entries(tools).map(([name, t]) => ({
     type: 'function',
-    function: { name, description: t.description, parameters: t.schema },
+    function: { name, description: t.description, parameters: stripInternal(t.schema) },
   }));
+}
+
+/**
+ * Hide runtime-injected properties from the model (ADR-011).
+ *
+ * `expected_pre_sha` is validated like any other argument, but the model must never be asked to
+ * supply it: a correctness-critical hash produced by an LLM would be untrustworthy, and a
+ * silently wrong or omitted one would weaken the guarantee without any signal.
+ */
+const INTERNAL_ARGS = new Set(['expected_pre_sha']);
+function stripInternal(schema) {
+  if (!schema?.properties) return schema;
+  const properties = Object.fromEntries(
+    Object.entries(schema.properties).filter(([k]) => !INTERNAL_ARGS.has(k)));
+  return { ...schema, properties };
 }
 
 /** Minimal argument validation — enough to turn a bad model call into a clean tool.failed. */

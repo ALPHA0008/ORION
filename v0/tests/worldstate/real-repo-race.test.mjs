@@ -111,6 +111,37 @@ const FIXED = SRC;
   ok('  the concurrent change SURVIVES', sandbox.read('index.js').includes('REVISION = 2'));
 }
 
+// -- ADR-011: the SAME real-repository race, WITH a pre-state witness -----
+{
+  sandbox.write('index.js', BROKEN);
+  const args = tools.write.captureWitness({ path: 'index.js', content: FIXED });
+
+  tools.write.run(args);                       // effect lands
+  ok('witnessed agent write landed', sandbox.read('index.js') === FIXED);
+
+  // crash before the durable success event, then a concurrent actor changes the file
+  const CONCURRENT = FIXED.replace(
+    'export default function pLimit(concurrency) {',
+    'export const REVISION = 2;' + String.fromCharCode(10) + String.fromCharCode(10) +
+    'export default function pLimit(concurrency) {');
+  sandbox.write('index.js', CONCURRENT);
+
+  const rec = tools.write.recovery(args);
+  const v = rec.verify();
+  const d = decideRecovery(rec);
+  note(`real-repo witnessed write -> verify()='${v}' decision='${d.decision}'`);
+
+  ok('verify() is UNKNOWN on real repository bytes', v === 'unknown', v);
+  ok('  decision is ESCALATE', d.decision === Decision.ESCALATE, d.decision);
+
+  if (d.decision === Decision.REISSUE) tools.write.run(args);
+  const after = sandbox.read('index.js');
+  ok('  world_state_correctness = PASS (concurrent change survives)',
+     after.includes('REVISION = 2'), 'lost update still occurs');
+  note('recovery_correctness = PASS and world_state_correctness = PASS');
+}
+
+
 fs.rmSync(dir, { recursive: true, force: true });
 console.log(`\nreal-repo-race: ${pass} passed, ${fail} failed`);
 if (fail) process.exit(1);

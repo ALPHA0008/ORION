@@ -40,6 +40,19 @@ export function decideRecovery(recovery) {
     if (v === 'applied')     return { decision: Decision.SKIP,     class: cls, verified: v, reason: 'verify(): effect already applied' };
     if (v === 'not-applied') return { decision: Decision.REISSUE,  class: cls, verified: v, reason: 'verify(): effect not applied' };
     // 'unknown' falls through to class-based reasoning
+    // ADR-011: the class alone does NOT license a re-issue under uncertainty.
+    //
+    // `AUTO_REISSUE` membership was standing in for a safety proof it does not actually
+    // establish. For `edit` a re-issue IS harmless: its precondition is consumed, so the replay
+    // self-rejects and the world is untouched (measured, phase 4). For `write` the same decision
+    // re-applies the effect and silently destroys whatever changed the file — a lost update,
+    // reproduced with a real SIGKILL and on real repository bytes.
+    //
+    // So an operation may declare that an unknown outcome must not be retried. Nothing else
+    // changes: no new recovery state, no new decision, no class renaming.
+    if (rec.escalateOnUnknown)
+      return { decision: Decision.ESCALATE, class: cls, verified: v,
+               reason: `verify() unknown and re-issuing ${cls} could overwrite a concurrent change` };
     if (AUTO_REISSUE.has(cls))
       return { decision: Decision.REISSUE, class: cls, verified: v, reason: `verify() unknown, but ${cls} is safe to re-issue` };
     return { decision: Decision.ESCALATE, class: cls, verified: v, reason: `verify() unknown and ${cls} is not safe to re-issue` };

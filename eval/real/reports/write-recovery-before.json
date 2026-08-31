@@ -1,0 +1,17 @@
+{
+  "phase": "phase4-baseline",
+  "write": {
+    "misclassification": "1/6",
+    "false_not_applied": 1,
+    "false_applied": 0,
+    "unknown": "1/6",
+    "silent_overwrite": 1,
+    "lost_updates": 1,
+    "recovery_correctness": "5/6",
+    "pre_effect_conflict_detection": false
+  },
+  "edit": {
+    "misclassification": "0/6",
+    "silent_overwrite": 0
+  }
+}

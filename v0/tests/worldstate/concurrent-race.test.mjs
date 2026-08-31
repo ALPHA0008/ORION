@@ -157,6 +157,38 @@ console.log('concurrent-race (real process kills)');
   note('this is a LOST UPDATE: a real effect was redone over a legitimate later change');
 }
 
+// -- ADR-011: the SAME race, now WITH a pre-state witness -----------------
+{
+  const dir = fs.mkdtempSync(path.join(root, 'w2-'));
+  const sandbox = new LocalSandbox(dir);
+  const tools = makeTools(sandbox);
+  sandbox.write('f.js', S0);
+  const file = path.join(dir, 'f.js');
+
+  // The worker captures the witness BEFORE the effect, exactly as Worker.#invokeTool does.
+  const args = tools.write.captureWitness({ path: 'f.js', content: S1 });
+
+  const { aliveBefore } = await crashAfterMutation(file, 'write');
+  ok('witnessed: child was alive when the parent killed it', aliveBefore);
+  ok('  effect landed on disk', fs.readFileSync(file, 'utf8') === S1);
+
+  const concurrent = S1 + '\nexport const VERSION = 2;\n';
+  fs.writeFileSync(file, concurrent);
+
+  const rec = tools.write.recovery(args);
+  const v = rec.verify();
+  const d = decideRecovery(rec);
+  note(`witnessed write + concurrent change -> verify()='${v}' decision='${d.decision}'`);
+
+  ok('  verify() is UNKNOWN, not a false not-applied', v === 'unknown', v);
+  ok('  decision is ESCALATE, not REISSUE', d.decision === Decision.ESCALATE, d.decision);
+
+  if (d.decision === Decision.REISSUE) tools.write.run(args);
+  ok('  THE CONCURRENT CHANGE SURVIVES', fs.readFileSync(file, 'utf8').includes('VERSION = 2'),
+     'lost update still occurs');
+  note('the phase-4 lost update no longer happens');
+}
+
 fs.rmSync(root, { recursive: true, force: true });
 console.log(`\nconcurrent-race: ${pass} passed, ${fail} failed`);
 if (fail) process.exit(1);

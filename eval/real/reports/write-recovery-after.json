@@ -1,0 +1,30 @@
+{
+  "phase": "phase7-write-pre-state-witness",
+  "write": {
+    "misclassification": "0/6",
+    "false_not_applied": 0,
+    "false_applied": 0,
+    "unknown": "2/6",
+    "silent_overwrite": 0,
+    "lost_updates": 0,
+    "recovery_correctness": "6/6",
+    "pre_effect_conflict_detection": true
+  },
+  "edit": {
+    "misclassification": "0/6",
+    "silent_overwrite": 0,
+    "note": "unchanged"
+  },
+  "suites": {
+    "writewitness": 26,
+    "concurrent_race": 18,
+    "real_repo_race": 14,
+    "total": 536,
+    "failed": 0
+  },
+  "overhead_pct": {
+    "1KB": 8,
+    "64KB": 4,
+    "512KB": 2
+  }
+}

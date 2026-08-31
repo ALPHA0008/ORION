@@ -17,6 +17,7 @@ export const suites = [
   ['readpaging/readpaging', []],
   ['editdiag/editdiag',     []],
   ['writerecovery/writerecovery', []],
+  ['writewitness/writewitness', []],
   ['escalationgate/escalationgate', []],
   ['escalationgate/escalation-lifecycle', []],
   ['escalationgate/bypass', []],
