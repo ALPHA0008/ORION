@@ -17,6 +17,26 @@ export const ABSENT = 'absent:no-such-file';
 // exact invisible-tail problem this paging exists to solve.
 const READ_PAGE_BYTES = 1_500;
 
+// ── read fidelity (ADR-012) ──────────────────────────────────────────────────
+//
+// The line-number separator was a TAB, which MERGED with source indentation:
+//
+//   file    : "\t\treturn 1;"        (2 tabs)
+//   rendered: "3\t\t\treturn 1;"     (a run of 3 — separator + 2)
+//
+// A model copying the visible indentation emitted one tab too many, so every `edit` on a
+// tab-indented file failed with `old_string not found`. Measured A/B (phase 3): TAB separator
+// 2/10 correct with 48 not-found; pipe separator 10/10 with 0. This caused a false diagnosis that
+// the `edit` primitive was weak — it was not; the representation was corrupting the bytes.
+//
+// The delimiter must be a character that CANNOT occur as leading whitespace, so the boundary
+// between the number and the content is unambiguous by construction rather than by convention.
+// Content after it is the source line byte-for-byte, so it can be copied straight into
+// `edit(old_string, …)` — escaping (`\t`) or markers (`[TAB]`) would be reconstructable but would
+// require the model to decode a convention first, and would themselves be ambiguous for a file
+// that literally contains those characters.
+const LINE_NO_SEP = '|';
+
 // ── edit diagnostics (capability experiment 02) ──────────────────────────────
 //
 // MEASURED: 62 `old_string not found` errors across 18 real-repository runs; ZERO ambiguity
@@ -117,7 +137,7 @@ function readPaged(sandbox, path, offset, limit) {
   const out = [];
   let bytes = 0, i = start;
   for (; i <= total && out.length < maxLines; i++) {
-    const line = `${String(i).padStart(width)}\t${lines[i - 1]}`;
+    const line = `${String(i).padStart(width)}${LINE_NO_SEP}${lines[i - 1]}`;
     // Always emit at least one line, even if that single line exceeds the page budget;
     // otherwise a file with one very long line could never be read at all.
     if (bytes + line.length > READ_PAGE_BYTES && out.length > 0) break;

@@ -53,7 +53,7 @@ sandbox.write('oneline.js', 'y'.repeat(9000));
     if (++guard > 200) break;                       // never loop forever in a test
     const page = read({ path: 'big.js', offset });
     for (const line of page.split('\n')) {
-      const m = /^\s*(\d+)\t(.*)$/.exec(line);
+      const m = /^\s*(\d+)\|(.*)$/.exec(line);
       if (m) seen[Number(m[1]) - 1] = m[2];
     }
     const next = /offset=(\d+)/.exec(page);
@@ -85,7 +85,7 @@ sandbox.write('oneline.js', 'y'.repeat(9000));
 // ── 6. explicit limit is honoured ───────────────────────────────────────
 {
   const page = read({ path: 'big.js', offset: 10, limit: 3 });
-  const nums = [...page.matchAll(/^\s*(\d+)\t/gm)].map(m => Number(m[1]));
+  const nums = [...page.matchAll(/^\s*(\d+)\|/gm)].map(m => Number(m[1]));
   ok('limit returns exactly that many lines', nums.length === 3, JSON.stringify(nums));
   ok('offset positions the window', nums[0] === 10, JSON.stringify(nums));
 }
@@ -97,7 +97,7 @@ sandbox.write('oneline.js', 'y'.repeat(9000));
   try { read({ path: 'oneline.js' }); } catch { threw = true; }
   ok('a single over-long line still returns', !threw);
   ok('over-long single line is not silently empty', read({ path: 'oneline.js' }).includes('yyy'));
-  ok('offset 0 is clamped to the first line', /^\s*1\t/m.test(read({ path: 'big.js', offset: 0 })));
+  ok('offset 0 is clamped to the first line', /^\s*1\|/m.test(read({ path: 'big.js', offset: 0 })));
 }
 
 // ── 8. line numbers must not leak into edits ────────────────────────────
@@ -108,7 +108,7 @@ sandbox.write('oneline.js', 'y'.repeat(9000));
   ok('edit still matches raw content after paged read',
      sandbox.read('edit-me.js').includes('const B = 3;'));
   ok('no line-number prefix written into the file',
-     !/^\s*\d+\t/m.test(sandbox.read('edit-me.js')));
+     !/^\s*\d+\|/m.test(sandbox.read('edit-me.js')));
 }
 
 // ── 9. the sandbox's own hard truncation stays visible on every page ────

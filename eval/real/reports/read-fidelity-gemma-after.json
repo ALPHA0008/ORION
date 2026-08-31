@@ -1,0 +1,191 @@
+{
+  "model": "gemma4-31b",
+  "at": "2026-08-31T09:17:50.814Z",
+  "repeats": 2,
+  "results": [
+    {
+      "interface": "A",
+      "case": "easy-unique-spaces",
+      "difficulty": "easy",
+      "repeat": 0,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 868,
+      "output_tokens": 46
+    },
+    {
+      "interface": "A",
+      "case": "easy-unique-spaces",
+      "difficulty": "easy",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 868,
+      "output_tokens": 47
+    },
+    {
+      "interface": "A",
+      "case": "easy-unique-tabs",
+      "difficulty": "easy",
+      "repeat": 0,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 894,
+      "output_tokens": 46
+    },
+    {
+      "interface": "A",
+      "case": "easy-unique-tabs",
+      "difficulty": "easy",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 894,
+      "output_tokens": 46
+    },
+    {
+      "interface": "A",
+      "case": "hard-tabs-multiline",
+      "difficulty": "hard",
+      "repeat": 0,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 919,
+      "output_tokens": 81
+    },
+    {
+      "interface": "A",
+      "case": "hard-tabs-multiline",
+      "difficulty": "hard",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 919,
+      "output_tokens": 64
+    },
+    {
+      "interface": "A",
+      "case": "hard-repeated-regions",
+      "difficulty": "hard",
+      "repeat": 0,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 3,
+      "used": [
+        "edit:ambiguous",
+        "edit:ambiguous",
+        "edit"
+      ],
+      "edit_attempts": 3,
+      "edit_failures": 2,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 2173,
+      "output_tokens": 233
+    },
+    {
+      "interface": "A",
+      "case": "hard-repeated-regions",
+      "difficulty": "hard",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 3,
+      "used": [
+        "edit:ambiguous",
+        "edit:ambiguous",
+        "edit"
+      ],
+      "edit_attempts": 3,
+      "edit_failures": 2,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 2173,
+      "output_tokens": 235
+    },
+    {
+      "interface": "A",
+      "case": "hard-long-file",
+      "difficulty": "hard",
+      "repeat": 0,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 2575,
+      "output_tokens": 52
+    },
+    {
+      "interface": "A",
+      "case": "hard-long-file",
+      "difficulty": "hard",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 2575,
+      "output_tokens": 52
+    }
+  ]
+}

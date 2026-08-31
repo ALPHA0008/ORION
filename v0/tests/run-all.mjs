@@ -15,6 +15,7 @@ export const suites = [
   ['security/security',     []],
   ['compaction/compaction', []],
   ['readpaging/readpaging', []],
+  ['readfidelity/readfidelity', []],
   ['editdiag/editdiag',     []],
   ['writerecovery/writerecovery', []],
   ['writewitness/writewitness', []],

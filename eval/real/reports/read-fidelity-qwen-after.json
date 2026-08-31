@@ -1,0 +1,195 @@
+{
+  "model": "qwen3.6:35b",
+  "at": "2026-08-31T09:23:50.482Z",
+  "repeats": 2,
+  "results": [
+    {
+      "interface": "A",
+      "case": "easy-unique-spaces",
+      "difficulty": "easy",
+      "repeat": 0,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 1310,
+      "output_tokens": 221
+    },
+    {
+      "interface": "A",
+      "case": "easy-unique-spaces",
+      "difficulty": "easy",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 1310,
+      "output_tokens": 221
+    },
+    {
+      "interface": "A",
+      "case": "easy-unique-tabs",
+      "difficulty": "easy",
+      "repeat": 0,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 2,
+      "used": [
+        "edit",
+        "edit:not_found"
+      ],
+      "edit_attempts": 2,
+      "edit_failures": 1,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 2103,
+      "output_tokens": 351
+    },
+    {
+      "interface": "A",
+      "case": "easy-unique-tabs",
+      "difficulty": "easy",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 2,
+      "used": [
+        "edit",
+        "edit:not_found"
+      ],
+      "edit_attempts": 2,
+      "edit_failures": 1,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 2103,
+      "output_tokens": 351
+    },
+    {
+      "interface": "A",
+      "case": "hard-tabs-multiline",
+      "difficulty": "hard",
+      "repeat": 0,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 2,
+      "used": [
+        "edit",
+        "edit:not_found"
+      ],
+      "edit_attempts": 2,
+      "edit_failures": 1,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 2172,
+      "output_tokens": 437
+    },
+    {
+      "interface": "A",
+      "case": "hard-tabs-multiline",
+      "difficulty": "hard",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 2,
+      "used": [
+        "edit",
+        "edit:not_found"
+      ],
+      "edit_attempts": 2,
+      "edit_failures": 1,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 2172,
+      "output_tokens": 437
+    },
+    {
+      "interface": "A",
+      "case": "hard-repeated-regions",
+      "difficulty": "hard",
+      "repeat": 0,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 2,
+      "used": [
+        "edit:ambiguous",
+        "edit"
+      ],
+      "edit_attempts": 2,
+      "edit_failures": 1,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 2148,
+      "output_tokens": 931
+    },
+    {
+      "interface": "A",
+      "case": "hard-repeated-regions",
+      "difficulty": "hard",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 2,
+      "used": [
+        "edit:ambiguous",
+        "edit"
+      ],
+      "edit_attempts": 2,
+      "edit_failures": 1,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 2148,
+      "output_tokens": 931
+    },
+    {
+      "interface": "A",
+      "case": "hard-long-file",
+      "difficulty": "hard",
+      "repeat": 0,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 2,
+      "used": [
+        "edit",
+        "edit:not_found"
+      ],
+      "edit_attempts": 2,
+      "edit_failures": 1,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 4188,
+      "output_tokens": 439
+    },
+    {
+      "interface": "A",
+      "case": "hard-long-file",
+      "difficulty": "hard",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 2,
+      "used": [
+        "edit",
+        "edit:not_found"
+      ],
+      "edit_attempts": 2,
+      "edit_failures": 1,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 4188,
+      "output_tokens": 439
+    }
+  ]
+}
