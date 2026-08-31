@@ -1,0 +1,451 @@
+{
+  "label": "cc-qwen-isnum",
+  "runner": "harness-v0",
+  "model": "qwen3.6:35b",
+  "endpoint_kind": "openai-compatible",
+  "compaction": "none",
+  "at": "2026-08-31T12:08:37.674Z",
+  "node": "v24.18.0",
+  "repositories": {
+    "is-number": {
+      "url": "https://github.com/jonschlinkert/is-number.git",
+      "commit": "98e8ff1da1a89f93d1397a24d7413ed15421c139",
+      "test_command": "npx mocha"
+    },
+    "slugify": {
+      "url": "https://github.com/sindresorhus/slugify.git",
+      "commit": "7c318bd1aa4b4affab29761f15a9604323fe2a3b",
+      "test_command": "npx ava"
+    },
+    "p-limit": {
+      "url": "https://github.com/sindresorhus/p-limit.git",
+      "commit": "df476048d023ff868cd45b35ee47f5fb0ca2b25a",
+      "test_command": "npx ava"
+    },
+    "ansi-styles": {
+      "url": "https://github.com/chalk/ansi-styles.git",
+      "commit": "c1c3dd4e017a2938807aaff0d361f46d086aeab7",
+      "test_command": "npx ava"
+    },
+    "camelcase": {
+      "url": "https://github.com/sindresorhus/camelcase.git",
+      "commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "test_command": "npx ava"
+    }
+  },
+  "aggregate": {
+    "tasks_total": 4,
+    "tasks_scored": 4,
+    "infra_failures": 0,
+    "passed": 2,
+    "failed": 2,
+    "timeouts": 0,
+    "success_rate": 50,
+    "by_difficulty": {
+      "easy": {
+        "total": 2,
+        "pass": 1,
+        "rate": 50
+      },
+      "medium": {
+        "total": 2,
+        "pass": 1,
+        "rate": 50
+      }
+    },
+    "by_category": {
+      "bug_fix": {
+        "total": 4,
+        "pass": 2,
+        "rate": 50
+      },
+      "single_file": {
+        "total": 4,
+        "pass": 2,
+        "rate": 50
+      },
+      "test_interpretation": {
+        "total": 1,
+        "pass": 1,
+        "rate": 100
+      },
+      "edge_case": {
+        "total": 1,
+        "pass": 0,
+        "rate": 0
+      },
+      "debugging": {
+        "total": 1,
+        "pass": 1,
+        "rate": 100
+      },
+      "specification": {
+        "total": 1,
+        "pass": 0,
+        "rate": 0
+      }
+    },
+    "avg_wall_ms": 56518.75,
+    "p50_wall_ms": 60828,
+    "p95_wall_ms": 64826,
+    "model_calls_per_success": 6.5,
+    "tool_calls_per_success": 6,
+    "tokens_per_success": 16862,
+    "cost_per_success": 0,
+    "total_input_tokens": 64913,
+    "total_output_tokens": 4857,
+    "total_cost_usd": 0,
+    "avg_duplicate_rate": 0,
+    "avg_tool_success_rate": 0.73,
+    "total_degraded": 2,
+    "total_escalations": 0,
+    "runs_with_recovery": 0
+  },
+  "results": [
+    {
+      "task_id": "isnum-string-trim",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "is-number",
+      "base_commit": "98e8ff1da1a89f93d1397a24d7413ed15421c139",
+      "difficulty": "easy",
+      "categories": [
+        "bug_fix",
+        "single_file",
+        "test_interpretation"
+      ],
+      "outcome": "PASS",
+      "detail": "npx mocha passed",
+      "evidence": " a number\n    √ \"\" should not be a number\n    √ \"\" should not be a number\n    √ \"3a\" should not be a number\n    √ \"abc\" should not be a number\n    √ \"false\" should not be a number\n    √ \"null\" should not be a number\n    √ \"true\" should not be a number\n    √ \"undefined\" should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ {} should not be a number\n    √ [1,2,3] should not be a number\n    √ [1] should not be a number\n    √ [] should not be a number\n    √ true should not be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-31T12:05:48.036Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (5ms)\n\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "All 111 tests pass now. The defect was in `index.js`: the string check only verified `num !== ''`, but whitespace-only strings like `\"   \"` and `\"\\r\\n\\t\"` would pass that check and then be coerced to `0` by the `+` operator, which is a finite number. Adding `.trim() !== ''` ensures whitespace-only strings are correctly rejected as not being numbers.",
+      "metrics": {
+        "events": 49,
+        "turns": 1,
+        "model_calls": 7,
+        "model_failures": 0,
+        "tool_calls": 6,
+        "tool_succeeded": 4,
+        "tool_failed": 2,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 0.667,
+        "failure_density": 0.0408,
+        "tools_used": {
+          "bash": {
+            "started": 4,
+            "succeeded": 2,
+            "failed": 2
+          },
+          "read": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "index.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 2,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 6,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 0,
+        "degraded_subsystems": [],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 14,
+        "messages_hot": 14,
+        "messages_dropped": 0,
+        "projection_bytes": 8641,
+        "input_tokens": 16472,
+        "output_tokens": 1053,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 60736,
+        "model_ms": 52465,
+        "tool_ms": 7148,
+        "other_ms": 1123,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": null,
+      "explain": "Run run_d6bf244d09\n  task: The test suite fails. Run `npx mocha` to see the failures, find the defect in the source and fix it …\n────────────────────────────────────────────────────────────────\n   1  12:04:46  · run created (scope personal:local)\n   3  12:04:46  ▸ task: The test suite fails. Run `npx mocha` to see the failures, find the defect in the source a…\n   6  12:05:05  🧠 wants 1 tool call: bash 843→74tok\n   9  12:05:05  · bash {\"cmd\":\"npx mocha 2>&1\"}\n  10  12:05:07  ✕ bash failed: command failed (exit 2): is a number √ 255 should be a number √ 5000 s…\n  13  12:05:13  🧠 wants 1 tool call: bash 1712→99tok\n  16  12:05:13  · bash {\"cmd\":\"npx mocha 2>&1 | tail -80\"}\n  17  12:05:15  ✓ bash → √ \"0.0e-5\" should be a number √ \"0.0E5\" should be a number √ 0 should …\n  20  12:05:21  🧠 wants 1 tool call: bash 2471→135tok\n  23  12:05:21  · bash {\"cmd\":\"ls *.js 2>/dev/null; ls src/*.js 2>/dev/null\"}\n  24  12:05:22  ✕ bash failed: command failed (exit 2): index.js test.js\n  27  12:05:25  🧠 wants 1 tool call: read 2548→112tok\n  30  12:05:25  · read {\"path\":\"index.js\"}\n  31  12:05:25  ✓ read → 1|/*! 2| * is-number <https://github.com/jonschlinkert/is-number> 3| *…\n  34  12:05:31  🧠 wants 1 tool call: edit 2774→198tok\n  37  12:05:31  · edit {\"path\":\"index.js\",\"old_string\":\" if (typeof num === 'string' && num !…\n  38  12:05:31  ✓ edit → edited index.js\n  41  12:05:38  🧠 wants 1 tool call: bash 2988→261tok\n  44  12:05:38  · bash {\"cmd\":\"npx mocha 2>&1 | tail -10\"}\n  45  12:05:40  ✓ bash → √ undefined should not be a number √ null should not be a number √ \"20…\n  48  12:05:45  🧠 \"All 111 tests pass now. The defect was in `index.js`: the string check only veri…\" 3136→174tok\n  49  12:05:47  ✓ completed — model_finished: \"All 111 tests pass now. The defect was in `index.js`: the st…\""
+    },
+    {
+      "task_id": "isnum-nan-guard",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "is-number",
+      "base_commit": "98e8ff1da1a89f93d1397a24d7413ed15421c139",
+      "difficulty": "easy",
+      "categories": [
+        "bug_fix",
+        "single_file",
+        "edge_case"
+      ],
+      "outcome": "FAIL",
+      "detail": "npx mocha failed",
+      "evidence": "imers:504:21)\n\n  10) is not a number null should not be a number:\n\n      AssertionError [ERR_ASSERTION]: expected \"NaN\" to not be a number\n      + expected - actual\n\n      -false\n      +true\n      \n      at Context.<anonymous> (test.js:150:7)\n      at process.processImmediate (node:internal/timers:504:21)\n\n  11) is not a number null should not be a number:\n\n      AssertionError [ERR_ASSERTION]: expected \"Infinity\" to not be a number\n      + expected - actual\n\n      -false\n      +true\n      \n      at Context.<anonymous> (test.js:150:7)\n      at process.processImmediate (node:internal/timers:504:21)\n\n  12) is not a number null should not be a number:\n\n      AssertionError [ERR_ASSERTION]: expected \"-Infinity\" to not be a number\n      + expected - actual\n\n      -false\n      +true\n      \n      at Context.<anonymous> (test.js:150:7)\n      at process.processImmediate (node:internal/timers:504:21)\n\n  13) is not a number null should not be a number:\n\n      AssertionError [ERR_ASSERTION]: expected \"NaN\" to not be a number\n      + expected - actual\n\n      -false\n      +true\n      \n      at Context.<anonymous> (test.js:150:7)\n      at process.processImmediate (node:internal/timers:504:21)\n\n\n\n",
+      "agent_status": "failed",
+      "agent_reason": "finished_without_change",
+      "run_error": null,
+      "final_message": "The failing tests show that `NaN`, `Infinity`, and `-Infinity` are expected to NOT be numbers (return `false`), but the current implementation returns `true` because they have type `'number'`. I need to exclude these special numeric values.",
+      "metrics": {
+        "events": 48,
+        "turns": 2,
+        "model_calls": 6,
+        "model_failures": 0,
+        "tool_calls": 6,
+        "tool_succeeded": 5,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 0.833,
+        "failure_density": 0.0208,
+        "tools_used": {
+          "bash": {
+            "started": 3,
+            "succeeded": 2,
+            "failed": 1
+          },
+          "read": {
+            "started": 3,
+            "succeeded": 3,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "./index.js",
+          "./test.js"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 1,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 6,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 1,
+        "degraded_subsystems": [
+          "completion_contract"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 14,
+        "messages_hot": 14,
+        "messages_dropped": 0,
+        "projection_bytes": 10733,
+        "input_tokens": 15491,
+        "output_tokens": 1537,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 64826,
+        "model_ms": 57912,
+        "tool_ms": 4774,
+        "other_ms": 2140,
+        "status": "failed",
+        "exit_reason": "finished_without_change"
+      },
+      "failure_class": "no_edits_made",
+      "explain": "Run run_b770d92e8e\n  task: Running `npx mocha` shows failing assertions. Diagnose and fix the source so every test passes. Do n…\n────────────────────────────────────────────────────────────────\n   1  12:05:48  · run created (scope personal:local)\n   3  12:05:48  ▸ task: Running `npx mocha` shows failing assertions. Diagnose and fix the source so every test pa…\n   6  12:05:52  🧠 wants 1 tool call: bash 832→85tok\n   9  12:05:52  · bash {\"cmd\":\"npx mocha 2>&1\"}\n  10  12:05:54  ✕ bash failed: command failed (exit 13): is a number √ 255 should be a number √ 5000 …\n  13  12:06:00  🧠 wants 2 tool calls: bash, bash 1698→115tok\n  16  12:06:00  · bash {\"cmd\":\"npx mocha 2>&1 | tail -80\"}\n  17  12:06:02  ✓ bash → 7) is not a number null should not be a number: AssertionError [ERR_AS…\n  20  12:06:02  · bash {\"cmd\":\"ls *.js test* 2>/dev/null; find . -name \\\"*.js\\\" -not -path \\\"…\n  21  12:06:02  ✓ bash → index.js test.js test.js ./benchmark/fixtures.js ./benchmark/index.js …\n  24  12:06:07  🧠 wants 2 tool calls: read, read 2423→71tok\n  27  12:06:07  · read {\"path\":\"./index.js\"}\n  28  12:06:07  ✓ read → 1|/*! 2| * is-number <https://github.com/jonschlinkert/is-number> 3| *…\n  31  12:06:07  · read {\"path\":\"./test.js\"}\n  32  12:06:07  ✓ read → 1|/*! 2| * is-number <https://github.com/jonschlinkert/is-number> 3| *…\n  35  12:06:13  🧠 wants 1 tool call: read 3551→65tok\n  38  12:06:13  · read {\"path\":\"./test.js\",\"offset\":79}\n  39  12:06:13  ✓ read → [./test.js: lines 79-153 of 153] 79| Number.MAX_VALUE, 80| Number.MIN_…\n  42  12:06:38  🧠 \"\" 3476→618tok\n  43  12:06:39  ⚠ DEGRADED [completion_contract] model stopped before the declared objective was satisfied; granting on…\n  44  12:06:39  ▸ task: The task is not finished: the required change has not been made. Continue working, using t…\n  47  12:06:52  🧠 \"The failing tests show that `NaN`, `Infinity`, and `-Infinity` are expected to N…\" 3511→583tok\n  48  12:06:53  ✕ failed — finished_without_change"
+    },
+    {
+      "task_id": "isnum-finite-inversion",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "is-number",
+      "base_commit": "98e8ff1da1a89f93d1397a24d7413ed15421c139",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "single_file",
+        "debugging"
+      ],
+      "outcome": "PASS",
+      "detail": "npx mocha passed",
+      "evidence": " a number\n    √ \"\" should not be a number\n    √ \"\" should not be a number\n    √ \"3a\" should not be a number\n    √ \"abc\" should not be a number\n    √ \"false\" should not be a number\n    √ \"null\" should not be a number\n    √ \"true\" should not be a number\n    √ \"undefined\" should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ {} should not be a number\n    √ [1,2,3] should not be a number\n    √ [1] should not be a number\n    √ [] should not be a number\n    √ true should not be a number\n    √ false should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ null should not be a number\n    √ \"2026-08-31T12:07:35.279Z\" should not be a number\n    √ null should not be a number\n    √ undefined should not be a number\n    √ {} should not be a number\n\n\n  111 passing (5ms)\n\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 46,
+        "turns": 1,
+        "model_calls": 6,
+        "model_failures": 0,
+        "tool_calls": 6,
+        "tool_succeeded": 5,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 0.833,
+        "failure_density": 0.0217,
+        "tools_used": {
+          "bash": {
+            "started": 3,
+            "succeeded": 2,
+            "failed": 1
+          },
+          "read": {
+            "started": 2,
+            "succeeded": 2,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "index.js",
+          "test.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 6,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 0,
+        "degraded_subsystems": [],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 13,
+        "messages_hot": 13,
+        "messages_dropped": 0,
+        "projection_bytes": 9072,
+        "input_tokens": 15303,
+        "output_tokens": 895,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 39685,
+        "model_ms": 33894,
+        "tool_ms": 4707,
+        "other_ms": 1084,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": null,
+      "explain": "Run run_6441bf3716\n  task: A recent change broke numeric-string handling: `npx mocha` fails. Locate the root cause and repair i…\n────────────────────────────────────────────────────────────────\n   1  12:06:54  · run created (scope personal:local)\n   3  12:06:54  ▸ task: A recent change broke numeric-string handling: `npx mocha` fails. Locate the root cause an…\n   6  12:06:58  🧠 wants 1 tool call: bash 839→95tok\n   9  12:06:58  · bash {\"cmd\":\"npx mocha 2>&1 | head -100\"}\n  10  12:07:00  ✓ bash → is a number √ 255 should be a number √ 5000 should be a number √ 0 sho…\n  13  12:07:06  🧠 wants 1 tool call: bash 1885→80tok\n  16  12:07:06  · bash {\"cmd\":\"npx mocha 2>&1 | tail -60\"}\n  17  12:07:08  ✓ bash → at Context.<anonymous> (test.js:150:7) at process.processImmediate (no…\n  20  12:07:13  🧠 wants 1 tool call: bash 2410→124tok\n  23  12:07:13  · bash {\"cmd\":\"ls -la *.js 2>/dev/null; ls -la src/*.js 2>/dev/null\"}\n  24  12:07:13  ✕ bash failed: command failed (exit 2): -rw-r--r-- 1 abhijith.p 1049089 412 Aug 31 17…\n  27  12:07:16  🧠 wants 2 tool calls: read, read 2563→68tok\n  30  12:07:16  · read {\"path\":\"index.js\"}\n  31  12:07:16  ✓ read → 1|/*! 2| * is-number <https://github.com/jonschlinkert/is-number> 3| *…\n  34  12:07:16  · read {\"path\":\"test.js\"}\n  35  12:07:16  ✓ read → 1|/*! 2| * is-number <https://github.com/jonschlinkert/is-number> 3| *…\n  38  12:07:27  🧠 wants 1 tool call: edit 3695→345tok\n  41  12:07:27  · edit {\"path\":\"index.js\",\"old_string\":\" return Number.isFinite ? !Number.isF…\n  42  12:07:27  ✓ edit → edited index.js\n  45  12:07:33  🧠 \"\" 3911→183tok\n  46  12:07:34  ✓ completed — model_finished"
+    },
+    {
+      "task_id": "isnum-hidden-contract",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "is-number",
+      "base_commit": "98e8ff1da1a89f93d1397a24d7413ed15421c139",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "single_file",
+        "specification"
+      ],
+      "outcome": "FAIL",
+      "detail": "failed: repo_suite, hidden:contract.test.cjs",
+      "evidence": "n Aug 31 2026 17:38:37 GMT+0530 (India Standard Time)\" to not be a number\n      + expected - actual\n\n      -false\n      +true\n      \n      at Context.<anonymous> (test.js:150:7)\n      at process.processImmediate (node:internal/timers:504:21)\n\n  30) is not a number {} should not be a number:\n\n      AssertionError [ERR_ASSERTION]: expected \"[object Object]\" to not be a number\n      + expected - actual\n\n      -false\n      +true\n      \n      at Context.<anonymous> (test.js:150:7)\n      at process.processImmediate (node:internal/timers:504:21)\n\n\n\n\n---\n[FAIL] hidden:contract.test.cjs\nnode:assert:152\r\n  throw new AssertionError(obj);\r\n  ^\r\n\r\nAssertionError [ERR_ASSERTION]: should reject NaN\r\n\r\ntrue !== false\r\n\r\n    at Object.<anonymous> (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\harness-real-eval\\work\\is-number-isnum-hidden-contract-24248-3\\__hidden__\\contract.test.cjs:9:10)\r\n    at Module._compile (node:internal/modules/cjs/loader:1871:14)\r\n    at Object..js (node:internal/modules/cjs/loader:2002:10)\r\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\r\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\r\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\r\n    at node:internal/main/run_main_module:33:47 {\r\n  generatedMessage: false,\r\n  code: 'ERR_ASSERTION',\r\n  actual: true,\r\n  expected: false,\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v24.18.0\r\n",
+      "agent_status": "failed",
+      "agent_reason": "finished_without_change",
+      "run_error": null,
+      "final_message": "",
+      "metrics": {
+        "events": 70,
+        "turns": 2,
+        "model_calls": 8,
+        "model_failures": 0,
+        "tool_calls": 10,
+        "tool_succeeded": 6,
+        "tool_failed": 4,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 0.6,
+        "failure_density": 0.0571,
+        "tools_used": {
+          "bash": {
+            "started": 3,
+            "succeeded": 2,
+            "failed": 1
+          },
+          "read": {
+            "started": 7,
+            "succeeded": 4,
+            "failed": 3
+          }
+        },
+        "files_touched": 6,
+        "file_list": [
+          "/tmp/harness-real-eval/work/is-number-isnum-hidden-contract-24248-3/index.js",
+          "/tmp/harness-real-eval/work/is-number-isnum-hidden-contract-24248-3/test.js",
+          "/tmp/harness-real-eval/work/is-number-isnum-hidden-contract-24248-3/package.json",
+          "index.js",
+          "test.js",
+          "package.json"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 10,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 1,
+        "degraded_subsystems": [
+          "completion_contract"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 20,
+        "messages_hot": 20,
+        "messages_dropped": 0,
+        "projection_bytes": 10366,
+        "input_tokens": 17647,
+        "output_tokens": 1372,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 60828,
+        "model_ms": 57012,
+        "tool_ms": 1645,
+        "other_ms": 2171,
+        "status": "failed",
+        "exit_reason": "finished_without_change"
+      },
+      "failure_class": "no_edits_made",
+      "explain": "Run run_c96165de81\n  task: The exported function must return `true` only for values that represent finite numbers: finite numbe…\n────────────────────────────────────────────────────────────────\n   1  12:07:35  · run created (scope personal:local)\n   3  12:07:35  ▸ task: The exported function must return `true` only for values that represent finite numbers: fi…\n   6  12:07:40  🧠 wants 1 tool call: bash 893→78tok\n   9  12:07:40  · bash {\"cmd\":\"find /workspace -type f -name \\\"*.js\\\" | head -20\"}\n  10  12:07:40  ✓ bash → \n  13  12:07:42  🧠 wants 1 tool call: bash 950→33tok\n  16  12:07:42  · bash {\"cmd\":\"ls -la /workspace/\"}\n  17  12:07:42  ✕ bash failed: command failed (exit 2): ls: cannot access '/workspace/': No such file…\n  20  12:07:44  🧠 wants 1 tool call: bash 1023→40tok\n  23  12:07:44  · bash {\"cmd\":\"pwd && ls -la\"}\n  24  12:07:45  ✓ bash → /tmp/harness-real-eval/work/is-number-isnum-hidden-contract-24248-3 to…\n  27  12:07:51  🧠 wants 3 tool calls: read, read, read 1745→154tok\n  30  12:07:51  · read {\"path\":\"/tmp/harness-real-eval/work/is-number-isnum-hidden-contract-2…\n  31  12:07:51  ✕ read failed: path escapes sandbox: /tmp/harness-real-eval/work/is-number-isnum-hidd…\n  34  12:07:51  · read {\"path\":\"/tmp/harness-real-eval/work/is-number-isnum-hidden-contract-2…\n  35  12:07:51  ✕ read failed: path escapes sandbox: /tmp/harness-real-eval/work/is-number-isnum-hidd…\n  38  12:07:51  · read {\"path\":\"/tmp/harness-real-eval/work/is-number-isnum-hidden-contract-2…\n  39  12:07:51  ✕ read failed: path escapes sandbox: /tmp/harness-real-eval/work/is-number-isnum-hidd…\n  42  12:07:54  🧠 wants 3 tool calls: read, read, read 2015→95tok\n  45  12:07:54  · read {\"path\":\"index.js\"}\n  46  12:07:54  ✓ read → 1|'use strict'; 2| 3|module.exports = function(num) { 4| if (typeof nu…\n  49  12:07:54  · read {\"path\":\"test.js\"}\n  50  12:07:54  ✓ read → 1|/*! 2| * is-number <https://github.com/jonschlinkert/is-number> 3| *…\n  53  12:07:54  · read {\"path\":\"package.json\"}\n  54  12:07:54  ✓ read → 1|{ 2| \"name\": \"is-number\", 3| \"description\": \"Returns true if a numbe…\n  57  12:08:02  🧠 wants 1 tool call: read 3746→58tok\n  60  12:08:02  · read {\"path\":\"test.js\",\"offset\":79}\n  61  12:08:02  ✓ read → [test.js: lines 79-153 of 153] 79| Number.MAX_VALUE, 80| Number.MIN_VA…\n  64  12:08:25  🧠 \"\" 3620→475tok\n  65  12:08:26  ⚠ DEGRADED [completion_contract] model stopped before the declared objective was satisfied; granting on…\n  66  12:08:26  ▸ task: The task is not finished: the required change has not been made. Continue working, using t…\n  69  12:08:35  🧠 \"\" 3655→439tok\n  70  12:08:36  ✕ failed — finished_without_change"
+    }
+  ]
+}

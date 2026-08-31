@@ -28,6 +28,9 @@ export function emptyState(runId) {
     message_count: 0,
     dropped_message_count: 0,
     elided_message_count: 0,
+    // ADR-013: continuations granted by the completion contract. Derived from the event log
+    // so a crash cannot buy an extra one and replay/fork reconstruct the same decision.
+    continuation_count: 0,
     // --- open items only (naturally bounded) ---
     pending_tool_calls: {},
     open_human_requests: {},
@@ -72,6 +75,9 @@ export function applyEvent(s, e) {
     case 'run.failed':        s.status = 'failed'; s.exit_reason = p.reason ?? 'failed'; break;
 
     case 'turn.started':
+      // A continuation is a turn the RUNTIME injected, not the user. It is identified by the
+      // contract marker recorded alongside it (see worker.mjs) rather than by parsing prose.
+      if (p.continuation) s.continuation_count = (s.continuation_count ?? 0) + 1;
       s.budget.turns++;
       push({ role: 'user', content: p.input ?? '' });
       break;

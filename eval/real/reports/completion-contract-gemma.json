@@ -1,0 +1,468 @@
+{
+  "label": "cc-gemma",
+  "runner": "harness-v0",
+  "model": "gemma4-31b",
+  "endpoint_kind": "openai-compatible",
+  "compaction": "none",
+  "at": "2026-08-31T11:56:30.335Z",
+  "node": "v24.18.0",
+  "repositories": {
+    "is-number": {
+      "url": "https://github.com/jonschlinkert/is-number.git",
+      "commit": "98e8ff1da1a89f93d1397a24d7413ed15421c139",
+      "test_command": "npx mocha"
+    },
+    "slugify": {
+      "url": "https://github.com/sindresorhus/slugify.git",
+      "commit": "7c318bd1aa4b4affab29761f15a9604323fe2a3b",
+      "test_command": "npx ava"
+    },
+    "p-limit": {
+      "url": "https://github.com/sindresorhus/p-limit.git",
+      "commit": "df476048d023ff868cd45b35ee47f5fb0ca2b25a",
+      "test_command": "npx ava"
+    },
+    "ansi-styles": {
+      "url": "https://github.com/chalk/ansi-styles.git",
+      "commit": "c1c3dd4e017a2938807aaff0d361f46d086aeab7",
+      "test_command": "npx ava"
+    },
+    "camelcase": {
+      "url": "https://github.com/sindresorhus/camelcase.git",
+      "commit": "3146708d5ffcd91a8cbc483e4a2585a39545da48",
+      "test_command": "npx ava"
+    }
+  },
+  "aggregate": {
+    "tasks_total": 4,
+    "tasks_scored": 4,
+    "infra_failures": 0,
+    "passed": 4,
+    "failed": 0,
+    "timeouts": 0,
+    "success_rate": 100,
+    "by_difficulty": {
+      "medium": {
+        "total": 1,
+        "pass": 1,
+        "rate": 100
+      },
+      "hard": {
+        "total": 2,
+        "pass": 2,
+        "rate": 100
+      },
+      "easy": {
+        "total": 1,
+        "pass": 1,
+        "rate": 100
+      }
+    },
+    "by_category": {
+      "bug_fix": {
+        "total": 4,
+        "pass": 4,
+        "rate": 100
+      },
+      "async": {
+        "total": 3,
+        "pass": 3,
+        "rate": 100
+      },
+      "concurrency": {
+        "total": 2,
+        "pass": 2,
+        "rate": 100
+      },
+      "debugging": {
+        "total": 2,
+        "pass": 2,
+        "rate": 100
+      },
+      "validation": {
+        "total": 1,
+        "pass": 1,
+        "rate": 100
+      },
+      "error_handling": {
+        "total": 2,
+        "pass": 2,
+        "rate": 100
+      }
+    },
+    "avg_wall_ms": 29619.75,
+    "p50_wall_ms": 34067,
+    "p95_wall_ms": 37358,
+    "model_calls_per_success": 10.25,
+    "tool_calls_per_success": 9.25,
+    "tokens_per_success": 28461,
+    "cost_per_success": 0,
+    "total_input_tokens": 111934,
+    "total_output_tokens": 1908,
+    "total_cost_usd": 0,
+    "avg_duplicate_rate": 0.18,
+    "avg_tool_success_rate": 0.84,
+    "total_degraded": 41,
+    "total_escalations": 0,
+    "runs_with_recovery": 0
+  },
+  "results": [
+    {
+      "task_id": "plimit-concurrency-guard",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "p-limit",
+      "base_commit": "df476048d023ff868cd45b35ee47f5fb0ca2b25a",
+      "difficulty": "medium",
+      "categories": [
+        "bug_fix",
+        "async",
+        "concurrency"
+      ],
+      "outcome": "PASS",
+      "detail": "npx ava passed",
+      "evidence": "\r\n  ✔ throws on invalid concurrency argument\r\n  ✔ clearQueue\r\n  ✔ accepts additional arguments\r\n  ✔ continues after sync throw\r\n  ✔ runs all tasks asynchronously\r\n  ✔ non-promise returning function\r\n  ✔ map accepts an iterable (set)\r\n  ✔ map accepts an iterable (array iterator)\r\n  ✔ map\r\n  ✔ propagates async execution context properly\r\n  ✔ shared context with a limited provider helper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (114ms)\r\n  ✔ accepts options object (113ms)\r\n  ✔ does not ignore errors (129ms)\r\n  ✔ change concurrency to bigger value (165ms)\r\n  ✔ change concurrency to smaller value (215ms)\r\n  ✔ concurrency: 1 (617ms)\r\n  ✔ limitFunction() (2.4s)\r\n  ✔ concurrency: 4 (2.5s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  22 tests passed\r\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "The defect was in the `resumeNext` function in `index.js`. The condition `activeCount <= concurrency` allowed the number of active tasks to exceed the specified concurrency limit by one. Specifically, if `activeCount` was equal to `concurrency`, it would still enter the block, increment `activeCount` to `concurrency + 1`, and start another task.\n\nI changed the condition to `activeCount < concurren",
+      "metrics": {
+        "events": 96,
+        "turns": 1,
+        "model_calls": 12,
+        "model_failures": 0,
+        "tool_calls": 11,
+        "tool_succeeded": 9,
+        "tool_failed": 2,
+        "tool_denied": 0,
+        "duplicate_action_count": 3,
+        "duplicate_action_rate": 0.273,
+        "tool_success_rate": 0.818,
+        "failure_density": 0.0208,
+        "tools_used": {
+          "bash": {
+            "started": 4,
+            "succeeded": 2,
+            "failed": 2
+          },
+          "read": {
+            "started": 6,
+            "succeeded": 6,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "index.js",
+          "test.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 2,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 11,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 12,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 24,
+        "messages_hot": 24,
+        "messages_dropped": 0,
+        "projection_bytes": 19428,
+        "input_tokens": 37825,
+        "output_tokens": 476,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 34067,
+        "model_ms": 11093,
+        "tool_ms": 18402,
+        "other_ms": 4572,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": null,
+      "explain": "Run run_98d6718a96\n  task: `npx ava` fails: the concurrency limit is not being respected. Read the queue logic and fix the defe…\n────────────────────────────────────────────────────────────────\n   1  11:54:12  · run created (scope personal:local)\n   3  11:54:12  ▸ task: `npx ava` fails: the concurrency limit is not being respected. Read the queue logic and fi…\n   6  11:54:13  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  11:54:13  🧠 wants 1 tool call: bash 564→15tok\n  10  11:54:13  · bash {\"cmd\":\"ls -R\"}\n  11  11:54:13  ✓ bash → .: benchmark.js index.d.ts index.js index.test-d.ts license node_modul…\n  14  11:54:14  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  11:54:14  🧠 wants 1 tool call: bash 642→19tok\n  18  11:54:14  · bash {\"cmd\":\"npx ava\"}\n  19  11:54:20  ✕ bash failed: command failed (exit 1): ✔ throws on invalid concurrency argument ✔ cl…\n  22  11:54:21  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  11:54:21  🧠 wants 1 tool call: read 1155→19tok\n  26  11:54:21  · read {\"path\":\"index.js\"}\n  27  11:54:21  ✓ read → 1|import Queue from 'yocto-queue'; 2| 3|export default function pLimit…\n  30  11:54:21  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  11:54:21  🧠 wants 1 tool call: read 1740→24tok\n  34  11:54:21  · read {\"path\":\"index.js\",\"offset\":50}\n  35  11:54:21  ✓ read → [index.js: lines 50-98 of 127] 50| const enqueue = (function_, resolve…\n  38  11:54:22  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  39  11:54:22  🧠 wants 1 tool call: read 2380→20tok\n  42  11:54:22  · read {\"offset\":99,\"path\":\"index.js\"}\n  43  11:54:22  ✓ read → [index.js: lines 99-127 of 127] 99| // eslint-disable-next-line no-unm…\n  46  11:54:22  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  11:54:22  🧠 wants 1 tool call: read 2774→19tok\n  50  11:54:22  · read {\"path\":\"test.js\"}\n  51  11:54:22  ✓ read → 1|import process from 'node:process'; 2|import {AsyncLocalStorage} fro…\n  54  11:54:23  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  55  11:54:23  🧠 wants 1 tool call: read 3488→21tok\n  58  11:54:23  · read {\"offset\":330,\"path\":\"test.js\"}\n  59  11:54:23  ✓ read → [test.js: lines 330-377 of 377] 330| limit(async () => { 331| ++runnin…\n  62  11:54:23  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  63  11:54:23  🧠 wants 1 tool call: bash 4142→19tok\n  66  11:54:23  · bash {\"cmd\":\"npx ava\"}\n  67  11:54:29  ✕ bash failed: command failed (exit 1): ✔ throws on invalid concurrency argument ✔ cl…\n  70  11:54:29  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  71  11:54:29  🧠 wants 1 tool call: read 4655→19tok\n  74  11:54:29  · read {\"path\":\"index.js\"}\n  75  11:54:29  ✓ read → 1|import Queue from 'yocto-queue'; 2| 3|export default function pLimit…\n  78  11:54:32  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  79  11:54:32  🧠 wants 1 tool call: edit 5240→129tok\n  82  11:54:32  · edit {\"new_string\":\"\\t\\t// Process the next queued function if we're under …\n  83  11:54:32  ✓ edit → edited index.js\n  86  11:54:33  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  87  11:54:33  🧠 wants 1 tool call: bash 5379→15tok\n  90  11:54:33  · bash {\"cmd\":\"npx ava\"}\n  91  11:54:38  ✓ bash → ✔ throws on invalid concurrency argument ✔ clearQueue ✔ accepts additi…\n  94  11:54:42  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  95  11:54:42  🧠 \"The defect was in the `resumeNext` function in `index.js`. The condition `active…\" 5666→157tok\n  96  11:54:46  ✓ completed — model_finished: \"The defect was in the `resumeNext` function in `index.js`. T…\""
+    },
+    {
+      "task_id": "plimit-active-count",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "p-limit",
+      "base_commit": "df476048d023ff868cd45b35ee47f5fb0ca2b25a",
+      "difficulty": "hard",
+      "categories": [
+        "bug_fix",
+        "async",
+        "concurrency",
+        "debugging"
+      ],
+      "outcome": "PASS",
+      "detail": "npx ava passed",
+      "evidence": "\r\n  ✔ throws on invalid concurrency argument\r\n  ✔ clearQueue\r\n  ✔ accepts additional arguments\r\n  ✔ continues after sync throw\r\n  ✔ runs all tasks asynchronously\r\n  ✔ non-promise returning function\r\n  ✔ map accepts an iterable (set)\r\n  ✔ map accepts an iterable (array iterator)\r\n  ✔ map\r\n  ✔ propagates async execution context properly\r\n  ✔ shared context with a limited provider helper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (109ms)\r\n  ✔ accepts options object (125ms)\r\n  ✔ does not ignore errors (125ms)\r\n  ✔ change concurrency to bigger value (178ms)\r\n  ✔ change concurrency to smaller value (243ms)\r\n  ✔ concurrency: 1 (644ms)\r\n  ✔ concurrency: 4 (2.4s)\r\n  ✔ limitFunction() (2.5s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  22 tests passed\r\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "The root cause of the issue was a bug in the `next` function within `index.js`, where `activeCount` was being decremented by 0 (`activeCount -= 0`) instead of 1. This prevented the active task counter from ever decreasing, causing the concurrency limit to be reached quickly and subsequent queued tasks to stall indefinitely.\n\nI have fixed this by changing `activeCount -= 0` to `activeCount--`.\n\n```",
+      "metrics": {
+        "events": 64,
+        "turns": 1,
+        "model_calls": 8,
+        "model_failures": 0,
+        "tool_calls": 7,
+        "tool_succeeded": 6,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 1,
+        "duplicate_action_rate": 0.143,
+        "tool_success_rate": 0.857,
+        "failure_density": 0.0156,
+        "tools_used": {
+          "bash": {
+            "started": 3,
+            "succeeded": 2,
+            "failed": 1
+          },
+          "read": {
+            "started": 3,
+            "succeeded": 3,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "index.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 7,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 8,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 16,
+        "messages_hot": 16,
+        "messages_dropped": 0,
+        "projection_bytes": 12284,
+        "input_tokens": 15583,
+        "output_tokens": 331,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 21687,
+        "model_ms": 7555,
+        "tool_ms": 9562,
+        "other_ms": 4570,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": null,
+      "explain": "Run run_46a2455f29\n  task: The active-task counter is not maintained correctly, so queued work stalls or over-runs and `npx ava…\n────────────────────────────────────────────────────────────────\n   1  11:54:51  · run created (scope personal:local)\n   3  11:54:51  ▸ task: The active-task counter is not maintained correctly, so queued work stalls or over-runs an…\n   6  11:54:52  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  11:54:52  🧠 wants 1 tool call: bash 573→15tok\n  10  11:54:52  · bash {\"cmd\":\"ls -R\"}\n  11  11:54:52  ✓ bash → .: benchmark.js index.d.ts index.js index.test-d.ts license node_modul…\n  14  11:54:52  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  11:54:52  🧠 wants 1 tool call: bash 651→19tok\n  18  11:54:52  · bash {\"cmd\":\"npx ava\"}\n  19  11:54:56  ✕ bash failed: command failed (exit 1): ✔ throws on invalid concurrency argument ✔ cl…\n  22  11:54:57  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  11:54:57  🧠 wants 1 tool call: read 1203→19tok\n  26  11:54:57  · read {\"path\":\"index.js\"}\n  27  11:54:57  ✓ read → 1|import Queue from 'yocto-queue'; 2| 3|export default function pLimit…\n  30  11:54:57  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  31  11:54:57  🧠 wants 1 tool call: read 1791→24tok\n  34  11:54:57  · read {\"path\":\"index.js\",\"offset\":50}\n  35  11:54:57  ✓ read → [index.js: lines 50-98 of 127] 50| const enqueue = (function_, resolve…\n  38  11:54:58  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  39  11:54:58  🧠 wants 1 tool call: read 2431→20tok\n  42  11:54:58  · read {\"offset\":99,\"path\":\"index.js\"}\n  43  11:54:58  ✓ read → [index.js: lines 99-127 of 127] 99| // eslint-disable-next-line no-unm…\n  46  11:54:59  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  11:54:59  🧠 wants 1 tool call: edit 2825→76tok\n  50  11:54:59  · edit {\"new_string\":\"\\tconst next = () => {\\n\\t\\tactiveCount--;\\n\\t\\tresumeN…\n  51  11:54:59  ✓ edit → edited index.js\n  54  11:55:00  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  55  11:55:00  🧠 wants 1 tool call: bash 2911→19tok\n  58  11:55:00  · bash {\"cmd\":\"npx ava\"}\n  59  11:55:05  ✓ bash → ✔ throws on invalid concurrency argument ✔ clearQueue ✔ accepts additi…\n  62  11:55:08  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  63  11:55:08  🧠 \"The root cause of the issue was a bug in the `next` function within `index.js`, …\" 3198→139tok\n  64  11:55:13  ✓ completed — model_finished: \"The root cause of the issue was a bug in the `next` function…\""
+    },
+    {
+      "task_id": "plimit-validate-concurrency",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "p-limit",
+      "base_commit": "df476048d023ff868cd45b35ee47f5fb0ca2b25a",
+      "difficulty": "easy",
+      "categories": [
+        "bug_fix",
+        "validation",
+        "error_handling"
+      ],
+      "outcome": "PASS",
+      "detail": "npx ava passed",
+      "evidence": "\r\n  ✔ throws on invalid concurrency argument\r\n  ✔ clearQueue\r\n  ✔ accepts additional arguments\r\n  ✔ continues after sync throw\r\n  ✔ runs all tasks asynchronously\r\n  ✔ non-promise returning function\r\n  ✔ map accepts an iterable (set)\r\n  ✔ map accepts an iterable (array iterator)\r\n  ✔ map\r\n  ✔ propagates async execution context properly\r\n  ✔ shared context with a limited provider helper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (115ms)\r\n  ✔ does not ignore errors (116ms)\r\n  ✔ accepts options object (117ms)\r\n  ✔ change concurrency to bigger value (167ms)\r\n  ✔ change concurrency to smaller value (230ms)\r\n  ✔ concurrency: 1 (646ms)\r\n  ✔ limitFunction() (2.3s)\r\n  ✔ concurrency: 4 (2.5s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  22 tests passed\r\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "The issue was that the `validateConcurrency` function was only being called when `concurrency` was exactly `-1` during the initial call to `pLimit`. This meant that other invalid values (like `0`, `1.2`, `undefined`, etc.) were not being rejected, causing the tests to fail.\n\nI restored the validation by calling `validateConcurrency(concurrency)` unconditionally after handling the options object.\n\n",
+      "metrics": {
+        "events": 80,
+        "turns": 1,
+        "model_calls": 10,
+        "model_failures": 0,
+        "tool_calls": 9,
+        "tool_succeeded": 8,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 1,
+        "duplicate_action_rate": 0.111,
+        "tool_success_rate": 0.889,
+        "failure_density": 0.0125,
+        "tools_used": {
+          "bash": {
+            "started": 3,
+            "succeeded": 2,
+            "failed": 1
+          },
+          "read": {
+            "started": 5,
+            "succeeded": 5,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "index.js",
+          "test.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 9,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 10,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 20,
+        "messages_hot": 20,
+        "messages_dropped": 0,
+        "projection_bytes": 15955,
+        "input_tokens": 26103,
+        "output_tokens": 410,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 25367,
+        "model_ms": 9285,
+        "tool_ms": 11510,
+        "other_ms": 4572,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": null,
+      "explain": "Run run_f584514ed2\n  task: Invalid concurrency values are no longer rejected and `npx ava` fails. Restore the validation so bad…\n────────────────────────────────────────────────────────────────\n   1  11:55:18  · run created (scope personal:local)\n   3  11:55:18  ▸ task: Invalid concurrency values are no longer rejected and `npx ava` fails. Restore the validat…\n   6  11:55:18  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  11:55:18  🧠 wants 1 tool call: bash 567→27tok\n  10  11:55:18  · bash {\"cmd\":\"find . -maxdepth 3 -not -path '*/.*'\"}\n  11  11:55:19  ✓ bash → . ./benchmark.js ./index.d.ts ./index.js ./index.test-d.ts ./license .…\n  14  11:55:19  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  11:55:19  🧠 wants 1 tool call: read 667→19tok\n  18  11:55:19  · read {\"path\":\"index.js\"}\n  19  11:55:19  ✓ read → 1|import Queue from 'yocto-queue'; 2| 3|export default function pLimit…\n  22  11:55:20  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  11:55:20  🧠 wants 1 tool call: read 1260→24tok\n  26  11:55:20  · read {\"path\":\"index.js\",\"offset\":50}\n  27  11:55:20  ✓ read → [index.js: lines 50-98 of 127] 50| const enqueue = (function_, resolve…\n  30  11:55:20  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  31  11:55:20  🧠 wants 1 tool call: read 1900→20tok\n  34  11:55:20  · read {\"offset\":99,\"path\":\"index.js\"}\n  35  11:55:20  ✓ read → [index.js: lines 99-127 of 127] 99| // eslint-disable-next-line no-unm…\n  38  11:55:21  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  11:55:21  🧠 wants 1 tool call: bash 2294→19tok\n  42  11:55:21  · bash {\"cmd\":\"npx ava\"}\n  43  11:55:26  ✕ bash failed: command failed (exit 1): ✘ [fail]: throws on invalid concurrency argum…\n  46  11:55:27  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  11:55:27  🧠 wants 1 tool call: read 2697→19tok\n  50  11:55:27  · read {\"path\":\"test.js\"}\n  51  11:55:27  ✓ read → 1|import process from 'node:process'; 2|import {AsyncLocalStorage} fro…\n  54  11:55:27  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  55  11:55:27  🧠 wants 1 tool call: read 3411→21tok\n  58  11:55:27  · read {\"offset\":290,\"path\":\"test.js\"}\n  59  11:55:27  ✓ read → [test.js: lines 290-359 of 377] 290| 291| t.deepEqual(await Promise.al…\n  62  11:55:30  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  63  11:55:30  🧠 wants 1 tool call: edit 4258→113tok\n  66  11:55:30  · edit {\"new_string\":\"\\tif (typeof concurrency === 'object') {\\n\\t\\t({concurr…\n  67  11:55:30  ✓ edit → edited index.js\n  70  11:55:30  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  71  11:55:30  🧠 wants 1 tool call: bash 4381→15tok\n  74  11:55:30  · bash {\"cmd\":\"npx ava\"}\n  75  11:55:36  ✓ bash → ✔ throws on invalid concurrency argument ✔ clearQueue ✔ accepts additi…\n  78  11:55:38  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  79  11:55:38  🧠 \"The issue was that the `validateConcurrency` function was only being called when…\" 4668→133tok\n  80  11:55:43  ✓ completed — model_finished: \"The issue was that the `validateConcurrency` function was on…\""
+    },
+    {
+      "task_id": "plimit-error-propagation",
+      "repeat": 0,
+      "runner": "harness-v0",
+      "repository": "p-limit",
+      "base_commit": "df476048d023ff868cd45b35ee47f5fb0ca2b25a",
+      "difficulty": "hard",
+      "categories": [
+        "bug_fix",
+        "async",
+        "error_handling",
+        "debugging"
+      ],
+      "outcome": "PASS",
+      "detail": "npx ava passed",
+      "evidence": "\r\n  ✔ throws on invalid concurrency argument\r\n  ✔ clearQueue\r\n  ✔ accepts additional arguments\r\n  ✔ continues after sync throw\r\n  ✔ runs all tasks asynchronously\r\n  ✔ non-promise returning function\r\n  ✔ map accepts an iterable (set)\r\n  ✔ map accepts an iterable (array iterator)\r\n  ✔ map\r\n  ✔ propagates async execution context properly\r\n  ✔ shared context with a limited provider helper\r\n  ✔ map passes index and preserves order with concurrency\r\n  ✔ map works when detached from the limit\r\n  ✔ clearQueue rejects pending promises when enabled (112ms)\r\n  ✔ does not ignore errors (129ms)\r\n  ✔ accepts options object (128ms)\r\n  ✔ change concurrency to bigger value (186ms)\r\n  ✔ change concurrency to smaller value (251ms)\r\n  ✔ concurrency: 1 (621ms)\r\n  ✔ concurrency: 4 (2.4s)\r\n  ✔ limitFunction() (2.5s)\r\n  ✔ activeCount and pendingCount properties (3s)\r\n  ─\r\n\r\n  22 tests passed\r\n",
+      "agent_status": "completed",
+      "agent_reason": "model_finished",
+      "run_error": null,
+      "final_message": "The issue was in the `run` function within `index.js`. The code was explicitly catching errors and resolving the promise with `undefined` when a task failed:\n\n```javascript\n// Resolve immediately with the promise (don't wait for completion)\nresolve(result.catch(() => undefined));\n```\n\nThis prevented the rejection from reaching the caller, causing the `does not ignore errors` test to fail because `",
+      "metrics": {
+        "events": 88,
+        "turns": 1,
+        "model_calls": 11,
+        "model_failures": 0,
+        "tool_calls": 10,
+        "tool_succeeded": 8,
+        "tool_failed": 2,
+        "tool_denied": 0,
+        "duplicate_action_count": 2,
+        "duplicate_action_rate": 0.2,
+        "tool_success_rate": 0.8,
+        "failure_density": 0.0227,
+        "tools_used": {
+          "bash": {
+            "started": 4,
+            "succeeded": 2,
+            "failed": 2
+          },
+          "read": {
+            "started": 5,
+            "succeeded": 5,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "test.js",
+          "index.js"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 2,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 10,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 11,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 22,
+        "messages_hot": 22,
+        "messages_dropped": 0,
+        "projection_bytes": 19234,
+        "input_tokens": 32423,
+        "output_tokens": 691,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 37358,
+        "model_ms": 15550,
+        "tool_ms": 17228,
+        "other_ms": 4580,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "failure_class": null,
+      "explain": "Run run_c5ccddd2aa\n  task: When a limited function rejects, the rejection must still reach the caller while the queue keeps dra…\n────────────────────────────────────────────────────────────────\n   1  11:55:48  · run created (scope personal:local)\n   3  11:55:48  ▸ task: When a limited function rejects, the rejection must still reach the caller while the queue…\n   6  11:55:48  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n   7  11:55:48  🧠 wants 1 tool call: bash 573→15tok\n  10  11:55:48  · bash {\"cmd\":\"ls -R\"}\n  11  11:55:49  ✓ bash → .: benchmark.js index.d.ts index.js index.test-d.ts license node_modul…\n  14  11:55:49  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  15  11:55:49  🧠 wants 1 tool call: bash 651→19tok\n  18  11:55:49  · bash {\"cmd\":\"npx ava\"}\n  19  11:55:55  ✕ bash failed: command failed (exit 1): ✔ throws on invalid concurrency argument ✔ cl…\n  22  11:55:56  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  23  11:55:56  🧠 wants 1 tool call: read 1058→19tok\n  26  11:55:56  · read {\"path\":\"test.js\"}\n  27  11:55:56  ✓ read → 1|import process from 'node:process'; 2|import {AsyncLocalStorage} fro…\n  30  11:55:56  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  31  11:55:56  🧠 wants 1 tool call: read 1772→21tok\n  34  11:55:56  · read {\"path\":\"test.js\",\"offset\":120}\n  35  11:55:56  ✓ read → [test.js: lines 120-177 of 377] 120| const error = new Error('🦄'); 12…\n  38  11:55:57  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  39  11:55:57  🧠 wants 1 tool call: read 2554→19tok\n  42  11:55:57  · read {\"path\":\"index.js\"}\n  43  11:55:57  ✓ read → 1|import Queue from 'yocto-queue'; 2| 3|export default function pLimit…\n  46  11:55:57  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  47  11:55:57  🧠 wants 1 tool call: read 3144→24tok\n  50  11:55:57  · read {\"offset\":49,\"path\":\"index.js\"}\n  51  11:55:57  ✓ read → [index.js: lines 49-98 of 127] 49| 50| const enqueue = (function_, res…\n  54  11:55:58  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  55  11:55:58  🧠 wants 1 tool call: read 3789→20tok\n  58  11:55:58  · read {\"offset\":99,\"path\":\"index.js\"}\n  59  11:55:58  ✓ read → [index.js: lines 99-127 of 127] 99| // eslint-disable-next-line no-unm…\n  62  11:55:58  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  63  11:55:58  🧠 wants 1 tool call: bash 4183→19tok\n  66  11:55:58  · bash {\"cmd\":\"npx ava\"}\n  67  11:56:04  ✕ bash failed: command failed (exit 1): ✔ throws on invalid concurrency argument ✔ cl…\n  70  11:56:10  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers+gemma-native-…\n  71  11:56:10  🧠 wants 1 tool call: edit 4590→311tok\n  74  11:56:10  · edit {\"new_string\":\"\\tconst run = async (function_, resolve, arguments_) =>…\n  75  11:56:10  ✓ edit → edited index.js\n  78  11:56:11  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-native-tool-calls\n  79  11:56:11  🧠 wants 1 tool call: bash 4911→15tok\n  82  11:56:11  · bash {\"cmd\":\"npx ava\"}\n  83  11:56:16  ✓ bash → ✔ throws on invalid concurrency argument ✔ clearQueue ✔ accepts additi…\n  86  11:56:21  ⚠ DEGRADED [model_adapter] provider response required a shim: gemma-channel-markers\n  87  11:56:21  🧠 \"The issue was in the `run` function within `index.js`. The code was explicitly c…\" 5198→209tok\n  88  11:56:25  ✓ completed — model_finished: \"The issue was in the `run` function within `index.js`. The c…\""
+    }
+  ]
+}

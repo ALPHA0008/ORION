@@ -18,6 +18,9 @@ export const ExitReason = Object.freeze({
   LEASE_LOST: 'lease_lost',
   MODEL_FAILED: 'model_failed',
   MODEL_UNAVAILABLE: 'model_unavailable',
+  // ADR-013: the model stopped, but the run's declared objective was not satisfied.
+  // Distinct from a crash and from a lost lease — the run simply did not finish its work.
+  FINISHED_WITHOUT_CHANGE: 'finished_without_change',
 });
 
 export class Worker {
@@ -35,11 +38,13 @@ export class Worker {
     budget = { tokens: 500_000, tool_calls: 200, cost_usd: 5 },
     systemPrompt = DEFAULT_SYSTEM,
     compactContext = false,        // opt-in: elide superseded tool results (see compact.mjs)
+    completionContract = null,     // ADR-013: { requires_world_change, objectiveSatisfied() }
     hooks = {},                    // { beforeAppend(marker, ctx) } — crash injection in tests
   } = {}) {
     Object.assign(this, { store, sandbox, model, tools, authorize, workerId, leaseMs,
       snapshotEvery, maxTurns, maxRepeatedCalls, maxTurnsWithoutProgress,
-      maxConsecutiveModelFailures, budget, systemPrompt, compactContext, hooks });
+      maxConsecutiveModelFailures, budget, systemPrompt, compactContext,
+      completionContract, hooks });
   }
 
   #hook(marker, ctx = {}) { this.hooks.beforeAppend?.(marker, ctx); }
@@ -163,6 +168,41 @@ export class Worker {
       this.#hook('after:model.responded', { runId });
 
       if (resp.finish || !resp.tool_calls?.length) {
+        // ADR-013: STOPPING IS NOT COMPLETING.
+        //
+        // Measured (phase 9): 12 of 22 Qwen runs ended with a response carrying no tool calls
+        // AND no text — one while still paging a 224-line file at line 144 — and the loop
+        // recorded `completed`. Gemma: 0 of 66 across three reports. The evaluator scored every
+        // one of those runs FAIL, so it is the RUNTIME's own record that was wrong.
+        //
+        // Only a run whose task DECLARED that it changes the world is checked. With no contract
+        // the behaviour below is byte-identical to before, so prose-only analysis still completes.
+        const contract = this.completionContract;
+        if (contract?.requires_world_change) {
+          let satisfied = true;
+          try { satisfied = contract.objectiveSatisfied() !== false; }
+          catch { satisfied = true; }   // a broken predicate must not fabricate an incomplete run
+
+          if (!satisfied) {
+            // Bounded continuation: exactly ONE extra turn per run, counted from the durable
+            // event log (not memory) so a crash cannot buy a second one, and so replay and fork
+            // reconstruct the same decision.
+            const used = project(S, runId).continuation_count ?? 0;
+            if (used < 1) {
+              if (this.#append(runId, 'degraded', { subsystem: 'completion_contract',
+                    reason: 'model stopped before the declared objective was satisfied; '
+                          + 'granting one continuation' }) === null) return this.#leaseLost();
+              if (this.#append(runId, 'turn.started', {
+                    continuation: true,
+                    input: 'The task is not finished: the required change has not been made. '
+                         + 'Continue working, using the tools, until it is.' }) === null)
+                return this.#leaseLost();
+              continue;
+            }
+            return this.#stop(runId, leaseToken, 'failed', ExitReason.FINISHED_WITHOUT_CHANGE,
+                              { result: resp.content ?? '' });
+          }
+        }
         return this.#stop(runId, leaseToken, 'completed', ExitReason.MODEL_FINISHED, { result: resp.content ?? '' });
       }
 

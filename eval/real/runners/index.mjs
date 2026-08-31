@@ -5,6 +5,7 @@
 // and does not modify it.
 
 import fs from 'node:fs';
+import { execSync } from 'node:child_process';
 import path from 'node:path';
 import os from 'node:os';
 import { Store, uid } from '../../../v0/src/core/run/store.mjs';
@@ -87,6 +88,21 @@ export const realV0Runner = {
       maxTurns: task.max_turns,
       leaseMs: task.timeout_ms + 120_000,
       compactContext: process.env.HARNESS_COMPACT === '1',
+      // ADR-013: the declared completion contract. Every real task in this benchmark requires a
+      // world-state change, and each carries a DETERMINISTIC check (its own test command) — no
+      // LLM judge. The runtime does not decide what correctness means; it asks the predicate the
+      // task handed it. Opt-in so before/after is a clean A/B.
+      ...(process.env.COMPLETION_CONTRACT === '1'
+        ? { completionContract: {
+              requires_world_change: true,
+              objectiveSatisfied: () => {
+                try { execSync(repo.test_command, { cwd: dir, stdio: 'ignore', timeout: 120_000,
+                                                    env: { ...process.env, CI: '1' } });
+                      return true; }
+                catch { return false; }
+              },
+            } }
+        : {}),
       // Phase 9 experiment ONLY (§8). Not shipped; opt-in so before/after is a clean A/B.
       ...(process.env.ACTION_PROMPT === '1'
         ? { systemPrompt: DEFAULT_SYSTEM + String.fromCharCode(10) +

@@ -223,7 +223,7 @@
       "group": "Test 6d — timeout aborts and is retried",
       "test": "the timeout actually fired (took > 400ms)",
       "pass": true,
-      "detail": "1142ms"
+      "detail": "1161ms"
     },
     {
       "group": "Test 6e — 4xx is NOT retried (permanent)",
@@ -283,13 +283,13 @@
       "group": "Test 7 — context pressure: hot projection stays bounded, nothing silently lost",
       "test": "projection respects the WINDOW x MSG_CLAMP ceiling",
       "pass": true,
-      "detail": "peak 89473B <= ceiling 96800B"
+      "detail": "peak 89496B <= ceiling 96800B"
     },
     {
       "group": "Test 7 — context pressure: hot projection stays bounded, nothing silently lost",
       "test": "projection PLATEAUS once the window saturates",
       "pass": true,
-      "detail": "89469B -> 85382B over the last 40% of the run (0.954x)"
+      "detail": "89492B -> 85405B over the last 40% of the run (0.954x)"
     },
     {
       "group": "Test 7 — context pressure: hot projection stays bounded, nothing silently lost",

@@ -24,6 +24,7 @@ export const suites = [
   ['escalationgate/bypass', []],
   ['worldstate/worldstate',   []],
   ['completiongate/completiongate', []],
+  ['completioncontract/completioncontract', []],
   ['worldstate/concurrent-race', []],
   ['worldstate/real-repo-race', []],
 ];
