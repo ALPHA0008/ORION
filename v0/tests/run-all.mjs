@@ -16,6 +16,7 @@ export const suites = [
   ['compaction/compaction', []],
   ['readpaging/readpaging', []],
   ['editdiag/editdiag',     []],
+  ['writerecovery/writerecovery', []],
 ];
 
 /** A required suite is healthy only with a normal exit and an explicit summary. */

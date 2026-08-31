@@ -1,0 +1,628 @@
+{
+  "model": "gemma4-31b",
+  "at": "2026-08-31T04:51:13.406Z",
+  "repeats": 2,
+  "results": [
+    {
+      "interface": "A",
+      "case": "easy-unique-spaces",
+      "difficulty": "easy",
+      "repeat": 0,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 858,
+      "output_tokens": 48
+    },
+    {
+      "interface": "A",
+      "case": "easy-unique-spaces",
+      "difficulty": "easy",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 858,
+      "output_tokens": 48
+    },
+    {
+      "interface": "A",
+      "case": "easy-unique-tabs",
+      "difficulty": "easy",
+      "repeat": 0,
+      "correct": false,
+      "intact": true,
+      "tool_calls": 6,
+      "used": [
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found"
+      ],
+      "edit_attempts": 6,
+      "edit_failures": 6,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 3241,
+      "output_tokens": 260
+    },
+    {
+      "interface": "A",
+      "case": "easy-unique-tabs",
+      "difficulty": "easy",
+      "repeat": 1,
+      "correct": false,
+      "intact": true,
+      "tool_calls": 6,
+      "used": [
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found"
+      ],
+      "edit_attempts": 6,
+      "edit_failures": 6,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 3241,
+      "output_tokens": 260
+    },
+    {
+      "interface": "A",
+      "case": "hard-tabs-multiline",
+      "difficulty": "hard",
+      "repeat": 0,
+      "correct": false,
+      "intact": true,
+      "tool_calls": 6,
+      "used": [
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found"
+      ],
+      "edit_attempts": 6,
+      "edit_failures": 6,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 3574,
+      "output_tokens": 386
+    },
+    {
+      "interface": "A",
+      "case": "hard-tabs-multiline",
+      "difficulty": "hard",
+      "repeat": 1,
+      "correct": false,
+      "intact": true,
+      "tool_calls": 6,
+      "used": [
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found"
+      ],
+      "edit_attempts": 6,
+      "edit_failures": 6,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 3574,
+      "output_tokens": 386
+    },
+    {
+      "interface": "A",
+      "case": "hard-repeated-regions",
+      "difficulty": "hard",
+      "repeat": 0,
+      "correct": false,
+      "intact": true,
+      "tool_calls": 6,
+      "used": [
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found"
+      ],
+      "edit_attempts": 6,
+      "edit_failures": 6,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 3676,
+      "output_tokens": 479
+    },
+    {
+      "interface": "A",
+      "case": "hard-repeated-regions",
+      "difficulty": "hard",
+      "repeat": 1,
+      "correct": false,
+      "intact": true,
+      "tool_calls": 6,
+      "used": [
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found"
+      ],
+      "edit_attempts": 6,
+      "edit_failures": 6,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 3676,
+      "output_tokens": 479
+    },
+    {
+      "interface": "A",
+      "case": "hard-long-file",
+      "difficulty": "hard",
+      "repeat": 0,
+      "correct": false,
+      "intact": true,
+      "tool_calls": 6,
+      "used": [
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found"
+      ],
+      "edit_attempts": 6,
+      "edit_failures": 6,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 8044,
+      "output_tokens": 302
+    },
+    {
+      "interface": "A",
+      "case": "hard-long-file",
+      "difficulty": "hard",
+      "repeat": 1,
+      "correct": false,
+      "intact": true,
+      "tool_calls": 6,
+      "used": [
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found",
+        "edit:not_found"
+      ],
+      "edit_attempts": 6,
+      "edit_failures": 6,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 8044,
+      "output_tokens": 302
+    },
+    {
+      "interface": "C",
+      "case": "easy-unique-spaces",
+      "difficulty": "easy",
+      "repeat": 0,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit_range"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 947,
+      "output_tokens": 49
+    },
+    {
+      "interface": "C",
+      "case": "easy-unique-spaces",
+      "difficulty": "easy",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit_range"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 947,
+      "output_tokens": 48
+    },
+    {
+      "interface": "C",
+      "case": "easy-unique-tabs",
+      "difficulty": "easy",
+      "repeat": 0,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 6,
+      "used": [
+        "edit_range",
+        "edit_range",
+        "edit_range",
+        "edit_range",
+        "edit_range",
+        "edit_range"
+      ],
+      "edit_attempts": 6,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 3684,
+      "output_tokens": 327
+    },
+    {
+      "interface": "C",
+      "case": "easy-unique-tabs",
+      "difficulty": "easy",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit_range"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 921,
+      "output_tokens": 75
+    },
+    {
+      "interface": "C",
+      "case": "hard-tabs-multiline",
+      "difficulty": "hard",
+      "repeat": 0,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit_range"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 932,
+      "output_tokens": 55
+    },
+    {
+      "interface": "C",
+      "case": "hard-tabs-multiline",
+      "difficulty": "hard",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit_range"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 932,
+      "output_tokens": 57
+    },
+    {
+      "interface": "C",
+      "case": "hard-repeated-regions",
+      "difficulty": "hard",
+      "repeat": 0,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit_range"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 933,
+      "output_tokens": 50
+    },
+    {
+      "interface": "C",
+      "case": "hard-repeated-regions",
+      "difficulty": "hard",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit_range"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 933,
+      "output_tokens": 50
+    },
+    {
+      "interface": "C",
+      "case": "hard-long-file",
+      "difficulty": "hard",
+      "repeat": 0,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit_range"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 2498,
+      "output_tokens": 59
+    },
+    {
+      "interface": "C",
+      "case": "hard-long-file",
+      "difficulty": "hard",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "edit_range"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 2498,
+      "output_tokens": 917
+    },
+    {
+      "interface": "B",
+      "case": "easy-unique-spaces",
+      "difficulty": "easy",
+      "repeat": 0,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "patch"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 866,
+      "output_tokens": 81
+    },
+    {
+      "interface": "B",
+      "case": "easy-unique-spaces",
+      "difficulty": "easy",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 1,
+      "used": [
+        "patch"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 0,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 849,
+      "output_tokens": 89
+    },
+    {
+      "interface": "B",
+      "case": "easy-unique-tabs",
+      "difficulty": "easy",
+      "repeat": 0,
+      "correct": false,
+      "intact": true,
+      "tool_calls": 6,
+      "used": [
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch"
+      ],
+      "edit_attempts": 6,
+      "edit_failures": 6,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 3538,
+      "output_tokens": 437
+    },
+    {
+      "interface": "B",
+      "case": "easy-unique-tabs",
+      "difficulty": "easy",
+      "repeat": 1,
+      "correct": false,
+      "intact": true,
+      "tool_calls": 6,
+      "used": [
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch"
+      ],
+      "edit_attempts": 6,
+      "edit_failures": 6,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 3548,
+      "output_tokens": 442
+    },
+    {
+      "interface": "B",
+      "case": "hard-tabs-multiline",
+      "difficulty": "hard",
+      "repeat": 0,
+      "correct": false,
+      "intact": true,
+      "tool_calls": 6,
+      "used": [
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch"
+      ],
+      "edit_attempts": 6,
+      "edit_failures": 6,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 3855,
+      "output_tokens": 544
+    },
+    {
+      "interface": "B",
+      "case": "hard-tabs-multiline",
+      "difficulty": "hard",
+      "repeat": 1,
+      "correct": true,
+      "intact": true,
+      "tool_calls": 2,
+      "used": [
+        "patch:context_mismatch",
+        "write"
+      ],
+      "edit_attempts": 1,
+      "edit_failures": 1,
+      "writes": 1,
+      "write_bytes": 342,
+      "input_tokens": 1555,
+      "output_tokens": 282
+    },
+    {
+      "interface": "B",
+      "case": "hard-repeated-regions",
+      "difficulty": "hard",
+      "repeat": 0,
+      "correct": false,
+      "intact": true,
+      "tool_calls": 6,
+      "used": [
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch"
+      ],
+      "edit_attempts": 6,
+      "edit_failures": 6,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 3691,
+      "output_tokens": 467
+    },
+    {
+      "interface": "B",
+      "case": "hard-repeated-regions",
+      "difficulty": "hard",
+      "repeat": 1,
+      "correct": false,
+      "intact": true,
+      "tool_calls": 6,
+      "used": [
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch"
+      ],
+      "edit_attempts": 6,
+      "edit_failures": 6,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 3694,
+      "output_tokens": 470
+    },
+    {
+      "interface": "B",
+      "case": "hard-long-file",
+      "difficulty": "hard",
+      "repeat": 0,
+      "correct": false,
+      "intact": true,
+      "tool_calls": 6,
+      "used": [
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch"
+      ],
+      "edit_attempts": 6,
+      "edit_failures": 6,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 8412,
+      "output_tokens": 482
+    },
+    {
+      "interface": "B",
+      "case": "hard-long-file",
+      "difficulty": "hard",
+      "repeat": 1,
+      "correct": false,
+      "intact": true,
+      "tool_calls": 6,
+      "used": [
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch",
+        "patch:context_mismatch"
+      ],
+      "edit_attempts": 6,
+      "edit_failures": 6,
+      "writes": 0,
+      "write_bytes": 0,
+      "input_tokens": 8680,
+      "output_tokens": 614
+    }
+  ]
+}
