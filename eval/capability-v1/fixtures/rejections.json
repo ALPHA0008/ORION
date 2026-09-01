@@ -1,0 +1,118 @@
+{
+  "at": "2026-09-01T08:17:59.483Z",
+  "count": 16,
+  "rejected": [
+    {
+      "task_id": "pallets__flask-4992",
+      "repository": "pallets/flask",
+      "python": "3.9",
+      "stage": "preflight-positive",
+      "detail": "test passes WITHOUT the fix"
+    },
+    {
+      "task_id": "psf__requests-1963",
+      "repository": "psf/requests",
+      "python": "3.9",
+      "stage": "install",
+      "detail": "Command failed: uv pip install --python \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\psf__requests-1963-py3.9\\Scripts\\python.exe\" --exclude-newer 2014-03-15T17:42:11Z --exclude-newer-package atomicwrites=2026-09-01  -q setuptools wheel\nerror: Failed to install: wheel-0.22.0-py2.py3-n"
+    },
+    {
+      "task_id": "psf__requests-2148",
+      "repository": "psf/requests",
+      "python": "3.9",
+      "stage": "preflight-positive",
+      "detail": "test passes WITHOUT the fix"
+    },
+    {
+      "task_id": "psf__requests-2317",
+      "repository": "psf/requests",
+      "python": "3.9",
+      "stage": "preflight-positive",
+      "detail": "test passes WITHOUT the fix"
+    },
+    {
+      "task_id": "psf__requests-2674",
+      "repository": "psf/requests",
+      "python": "3.9",
+      "stage": "preflight-positive",
+      "detail": "test passes WITHOUT the fix"
+    },
+    {
+      "task_id": "psf__requests-863",
+      "repository": "psf/requests",
+      "python": "3.9",
+      "stage": "install",
+      "detail": "Command failed: uv pip install --python \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\psf__requests-863-py3.9\\Scripts\\python.exe\" --exclude-newer 2012-09-20T15:48:00Z --exclude-newer-package atomicwrites=2026-09-01  -q setuptools wheel\n  × Failed to download and build `distribute==0.6"
+    },
+    {
+      "task_id": "pylint-dev__pylint-7080",
+      "repository": "pylint-dev/pylint",
+      "python": "3.9",
+      "stage": "oracle-negative",
+      "detail": "RunTC::test_ignore_path_recursive_current_dir (no name 'C:\\\\Users\\\\abhijith.p\\\\AppData\\\\Local\\\\Temp\\\\capability-v1\\\\work\\\\pylint-dev__pylint-7080\\\\tests\\\\test_self.py::TestRunTC::test_ignore_path_recursive_current_dir' in any of [<Module tests/test_self.py>]) "
+    },
+    {
+      "task_id": "pylint-dev__pylint-7114",
+      "repository": "pylint-dev/pylint",
+      "python": "3.9",
+      "stage": "install",
+      "detail": "Command failed: uv pip install --python \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\pylint-dev__pylint-7114-py3.9\\Scripts\\python.exe\" --exclude-newer 2022-07-03T04:36:40Z --exclude-newer-package atomicwrites=2026-09-01 --no-build-isolation -q -e .\n  × No solution found when resolvin"
+    },
+    {
+      "task_id": "pytest-dev__pytest-5103",
+      "repository": "pytest-dev/pytest",
+      "python": "3.9",
+      "stage": "oracle-negative",
+      "detail": "ne 22, in add_ini_option parser.addini( File \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\pytest-dev__pytest-5103\\src\\_pytest\\config\\argparsing.py\", line 130, in addini assert type in (None, \"pathlist\", \"args\", \"linelist\", \"bool\") AssertionError "
+    },
+    {
+      "task_id": "pytest-dev__pytest-5221",
+      "repository": "pytest-dev/pytest",
+      "python": "3.9",
+      "stage": "oracle-negative",
+      "detail": "ne 22, in add_ini_option parser.addini( File \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\pytest-dev__pytest-5221\\src\\_pytest\\config\\argparsing.py\", line 130, in addini assert type in (None, \"pathlist\", \"args\", \"linelist\", \"bool\") AssertionError "
+    },
+    {
+      "task_id": "pytest-dev__pytest-5227",
+      "repository": "pytest-dev/pytest",
+      "python": "3.9",
+      "stage": "oracle-negative",
+      "detail": "ne 22, in add_ini_option parser.addini( File \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\pytest-dev__pytest-5227\\src\\_pytest\\config\\argparsing.py\", line 130, in addini assert type in (None, \"pathlist\", \"args\", \"linelist\", \"bool\") AssertionError "
+    },
+    {
+      "task_id": "pytest-dev__pytest-5413",
+      "repository": "pytest-dev/pytest",
+      "python": "3.9",
+      "stage": "oracle-negative",
+      "detail": "ibutions File \"C:\\Users\\abhijith.p\\AppData\\Roaming\\uv\\python\\cpython-3.9-windows-x86_64-none\\lib\\importlib\\metadata.py\", line 505, in find_distributions found = cls._search_paths(context.name, context.path) AttributeError: 'str' object has no attribute 'name' "
+    },
+    {
+      "task_id": "pytest-dev__pytest-5495",
+      "repository": "pytest-dev/pytest",
+      "python": "3.9",
+      "stage": "install",
+      "detail": "Command failed: uv pip install --python \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\pytest-dev__pytest-5495-py3.9\\Scripts\\python.exe\" --exclude-newer 2019-06-25T23:41:16Z --exclude-newer-package atomicwrites=2026-09-01 --no-build-isolation -q -e .\n  × Failed to build `pytest @\n  │ f"
+    },
+    {
+      "task_id": "pytest-dev__pytest-5692",
+      "repository": "pytest-dev/pytest",
+      "python": "3.9",
+      "stage": "oracle-negative",
+      "detail": "ibutions File \"C:\\Users\\abhijith.p\\AppData\\Roaming\\uv\\python\\cpython-3.9-windows-x86_64-none\\lib\\importlib\\metadata.py\", line 505, in find_distributions found = cls._search_paths(context.name, context.path) AttributeError: 'str' object has no attribute 'name' "
+    },
+    {
+      "task_id": "pytest-dev__pytest-7168",
+      "repository": "pytest-dev/pytest",
+      "python": "3.9",
+      "stage": "preflight-positive",
+      "detail": "test passes WITHOUT the fix"
+    },
+    {
+      "task_id": "pytest-dev__pytest-8906",
+      "repository": "pytest-dev/pytest",
+      "python": "3.9",
+      "stage": "oracle-negative",
+      "detail": "sertion import rewrite File \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\pytest-dev__pytest-8906\\src\\_pytest\\assertion\\rewrite.py\", line 32, in <module> from _pytest._version import version ModuleNotFoundError: No module named '_pytest._version' "
+    }
+  ]
+}
