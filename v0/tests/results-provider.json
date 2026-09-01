@@ -223,7 +223,7 @@
       "group": "Test 6d — timeout aborts and is retried",
       "test": "the timeout actually fired (took > 400ms)",
       "pass": true,
-      "detail": "1161ms"
+      "detail": "1173ms"
     },
     {
       "group": "Test 6e — 4xx is NOT retried (permanent)",
