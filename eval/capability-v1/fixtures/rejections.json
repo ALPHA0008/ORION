@@ -1,6 +1,6 @@
 {
-  "at": "2026-09-01T08:17:59.483Z",
-  "count": 16,
+  "at": "2026-09-01T08:38:22.639Z",
+  "count": 15,
   "rejected": [
     {
       "task_id": "pallets__flask-4992",
@@ -45,62 +45,6 @@
       "detail": "Command failed: uv pip install --python \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\psf__requests-863-py3.9\\Scripts\\python.exe\" --exclude-newer 2012-09-20T15:48:00Z --exclude-newer-package atomicwrites=2026-09-01  -q setuptools wheel\n  × Failed to download and build `distribute==0.6"
     },
     {
-      "task_id": "pylint-dev__pylint-7080",
-      "repository": "pylint-dev/pylint",
-      "python": "3.9",
-      "stage": "oracle-negative",
-      "detail": "RunTC::test_ignore_path_recursive_current_dir (no name 'C:\\\\Users\\\\abhijith.p\\\\AppData\\\\Local\\\\Temp\\\\capability-v1\\\\work\\\\pylint-dev__pylint-7080\\\\tests\\\\test_self.py::TestRunTC::test_ignore_path_recursive_current_dir' in any of [<Module tests/test_self.py>]) "
-    },
-    {
-      "task_id": "pylint-dev__pylint-7114",
-      "repository": "pylint-dev/pylint",
-      "python": "3.9",
-      "stage": "install",
-      "detail": "Command failed: uv pip install --python \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\pylint-dev__pylint-7114-py3.9\\Scripts\\python.exe\" --exclude-newer 2022-07-03T04:36:40Z --exclude-newer-package atomicwrites=2026-09-01 --no-build-isolation -q -e .\n  × No solution found when resolvin"
-    },
-    {
-      "task_id": "pytest-dev__pytest-5103",
-      "repository": "pytest-dev/pytest",
-      "python": "3.9",
-      "stage": "oracle-negative",
-      "detail": "ne 22, in add_ini_option parser.addini( File \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\pytest-dev__pytest-5103\\src\\_pytest\\config\\argparsing.py\", line 130, in addini assert type in (None, \"pathlist\", \"args\", \"linelist\", \"bool\") AssertionError "
-    },
-    {
-      "task_id": "pytest-dev__pytest-5221",
-      "repository": "pytest-dev/pytest",
-      "python": "3.9",
-      "stage": "oracle-negative",
-      "detail": "ne 22, in add_ini_option parser.addini( File \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\pytest-dev__pytest-5221\\src\\_pytest\\config\\argparsing.py\", line 130, in addini assert type in (None, \"pathlist\", \"args\", \"linelist\", \"bool\") AssertionError "
-    },
-    {
-      "task_id": "pytest-dev__pytest-5227",
-      "repository": "pytest-dev/pytest",
-      "python": "3.9",
-      "stage": "oracle-negative",
-      "detail": "ne 22, in add_ini_option parser.addini( File \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\pytest-dev__pytest-5227\\src\\_pytest\\config\\argparsing.py\", line 130, in addini assert type in (None, \"pathlist\", \"args\", \"linelist\", \"bool\") AssertionError "
-    },
-    {
-      "task_id": "pytest-dev__pytest-5413",
-      "repository": "pytest-dev/pytest",
-      "python": "3.9",
-      "stage": "oracle-negative",
-      "detail": "ibutions File \"C:\\Users\\abhijith.p\\AppData\\Roaming\\uv\\python\\cpython-3.9-windows-x86_64-none\\lib\\importlib\\metadata.py\", line 505, in find_distributions found = cls._search_paths(context.name, context.path) AttributeError: 'str' object has no attribute 'name' "
-    },
-    {
-      "task_id": "pytest-dev__pytest-5495",
-      "repository": "pytest-dev/pytest",
-      "python": "3.9",
-      "stage": "install",
-      "detail": "Command failed: uv pip install --python \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\pytest-dev__pytest-5495-py3.9\\Scripts\\python.exe\" --exclude-newer 2019-06-25T23:41:16Z --exclude-newer-package atomicwrites=2026-09-01 --no-build-isolation -q -e .\n  × Failed to build `pytest @\n  │ f"
-    },
-    {
-      "task_id": "pytest-dev__pytest-5692",
-      "repository": "pytest-dev/pytest",
-      "python": "3.9",
-      "stage": "oracle-negative",
-      "detail": "ibutions File \"C:\\Users\\abhijith.p\\AppData\\Roaming\\uv\\python\\cpython-3.9-windows-x86_64-none\\lib\\importlib\\metadata.py\", line 505, in find_distributions found = cls._search_paths(context.name, context.path) AttributeError: 'str' object has no attribute 'name' "
-    },
-    {
       "task_id": "pytest-dev__pytest-7168",
       "repository": "pytest-dev/pytest",
       "python": "3.9",
@@ -108,11 +52,84 @@
       "detail": "test passes WITHOUT the fix"
     },
     {
-      "task_id": "pytest-dev__pytest-8906",
-      "repository": "pytest-dev/pytest",
-      "python": "3.9",
+      "task_id": "pylint-dev__pylint-7080",
+      "repository": "pylint-dev/pylint",
+      "base_commit": "3c5eca2ded3dd2b59ebaf23eb289453b5d2930f0",
+      "python": "3.8",
+      "status": "rejected",
       "stage": "oracle-negative",
-      "detail": "sertion import rewrite File \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\pytest-dev__pytest-8906\\src\\_pytest\\assertion\\rewrite.py\", line 32, in <module> from _pytest._version import version ModuleNotFoundError: No module named '_pytest._version' "
+      "reason": "ENVIRONMENT_UNREPRODUCIBLE",
+      "evidence": "RunTC::test_ignore_path_recursive_current_dir (no name 'C:\\\\Users\\\\abhijith.p\\\\AppData\\\\Local\\\\Temp\\\\capability-v1\\\\work\\\\pylint-dev__pylint-7080\\\\tests\\\\test_self.py::TestRunTC::test_ignore_path_recursive_current_dir' in any of [<Module tests/test_self.py>]) "
+    },
+    {
+      "task_id": "pylint-dev__pylint-7114",
+      "repository": "pylint-dev/pylint",
+      "base_commit": "397c1703e8ae6349d33f7b99f45b2ccaf581e666",
+      "python": "3.8",
+      "status": "rejected",
+      "stage": "install",
+      "reason": "DEPENDENCY_UNRESOLVABLE",
+      "evidence": "Command failed: uv pip install --python \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\pylint-dev__pylint-7114-py3.8\\Scripts\\python.exe\" --exclude-newer 2022-07-03T04:36:40Z --exclude-newer-package atomicwrites=2026-09-01 --no-build-isolation -q -e .\n  × No solution found when resolving dependencies:\n  ╰─▶ Because only astroid<=2.11.6 is available and pylint==2.15.0a0 depends\n      o"
+    },
+    {
+      "task_id": "pytest-dev__pytest-5103",
+      "repository": "pytest-dev/pytest",
+      "base_commit": "10ca84ffc56c2dd2d9dc4bd71b7b898e083500cd",
+      "python": "3.8",
+      "status": "rejected",
+      "stage": "oracle-negative",
+      "reason": "BASELINE_NOT_REPRODUCIBLE",
+      "evidence": "ne 22, in add_ini_option parser.addini( File \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\pytest-dev__pytest-5103\\src\\_pytest\\config\\argparsing.py\", line 130, in addini assert type in (None, \"pathlist\", \"args\", \"linelist\", \"bool\") AssertionError "
+    },
+    {
+      "task_id": "pytest-dev__pytest-5221",
+      "repository": "pytest-dev/pytest",
+      "base_commit": "4a2fdce62b73944030cff9b3e52862868ca9584d",
+      "python": "3.8",
+      "status": "rejected",
+      "stage": "oracle-negative",
+      "reason": "BASELINE_NOT_REPRODUCIBLE",
+      "evidence": "ne 22, in add_ini_option parser.addini( File \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\pytest-dev__pytest-5221\\src\\_pytest\\config\\argparsing.py\", line 130, in addini assert type in (None, \"pathlist\", \"args\", \"linelist\", \"bool\") AssertionError "
+    },
+    {
+      "task_id": "pytest-dev__pytest-5227",
+      "repository": "pytest-dev/pytest",
+      "base_commit": "2051e30b9b596e944524ccb787ed20f9f5be93e3",
+      "python": "3.8",
+      "status": "rejected",
+      "stage": "oracle-negative",
+      "reason": "BASELINE_NOT_REPRODUCIBLE",
+      "evidence": "ne 22, in add_ini_option parser.addini( File \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\pytest-dev__pytest-5227\\src\\_pytest\\config\\argparsing.py\", line 130, in addini assert type in (None, \"pathlist\", \"args\", \"linelist\", \"bool\") AssertionError "
+    },
+    {
+      "task_id": "pytest-dev__pytest-5413",
+      "repository": "pytest-dev/pytest",
+      "base_commit": "450d2646233c670654744d3d24330b69895bb9d2",
+      "python": "3.8",
+      "status": "rejected",
+      "stage": "install",
+      "reason": "DEPENDENCY_UNRESOLVABLE",
+      "evidence": "Command failed: uv pip install --python \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\pytest-dev__pytest-5413-py3.8\\Scripts\\python.exe\" --exclude-newer 2019-06-06T15:21:20Z --exclude-newer-package atomicwrites=2026-09-01 --no-build-isolation -q -e .\n  × Failed to build `pytest @\n  │ file:///C:/Users/abhijith.p/AppData/Local/Temp/capability-v1/work/pytest-dev__pytest-5413`\n  ├─▶ The "
+    },
+    {
+      "task_id": "pytest-dev__pytest-5495",
+      "repository": "pytest-dev/pytest",
+      "base_commit": "1aefb24b37c30fba8fd79a744829ca16e252f340",
+      "python": "3.8",
+      "status": "rejected",
+      "stage": "install",
+      "reason": "DEPENDENCY_UNRESOLVABLE",
+      "evidence": "Command failed: uv pip install --python \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\pytest-dev__pytest-5495-py3.8\\Scripts\\python.exe\" --exclude-newer 2019-06-25T23:41:16Z --exclude-newer-package atomicwrites=2026-09-01 --no-build-isolation -q -e .\n  × Failed to build `pytest @\n  │ file:///C:/Users/abhijith.p/AppData/Local/Temp/capability-v1/work/pytest-dev__pytest-5495`\n  ├─▶ The "
+    },
+    {
+      "task_id": "pytest-dev__pytest-5692",
+      "repository": "pytest-dev/pytest",
+      "base_commit": "29e336bd9bf87eaef8e2683196ee1975f1ad4088",
+      "python": "3.8",
+      "status": "rejected",
+      "stage": "install",
+      "reason": "DEPENDENCY_UNRESOLVABLE",
+      "evidence": "Command failed: uv pip install --python \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\pytest-dev__pytest-5692-py3.8\\Scripts\\python.exe\" --exclude-newer 2019-08-03T14:15:04Z --exclude-newer-package atomicwrites=2026-09-01 --no-build-isolation -q -e .\n  × Failed to build `pytest @\n  │ file:///C:/Users/abhijith.p/AppData/Local/Temp/capability-v1/work/pytest-dev__pytest-5692`\n  ├─▶ The "
     }
   ]
 }

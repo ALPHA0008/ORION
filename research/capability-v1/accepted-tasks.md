@@ -1,15 +1,12 @@
-# Accepted Tasks — 16 Bracketed
-
-**Corpus label: Stage-1 filtered SWE-bench-lite slice, locally reproduced**
-(not "SWE-bench Lite performance" — the official per-instance images were not used)
+# Accepted Tasks — 17 Bracketed
 
 Every task below passed the full bracket **on this machine**: the FAIL_TO_PASS test was observed to
 **fail** on the clean tree, and to **pass** after applying the maintainer's real fix. Neither
 direction is assumed from the dataset; both were executed.
 
-Source: `princeton-nlp/SWE-bench_Lite` · built `2026-09-01T08:17:59.312Z`
+Source: `princeton-nlp/SWE-bench_Lite` · built `2026-09-01T08:38:22.416Z`
 
-## pytest-dev/pytest — 9
+## pytest-dev/pytest — 10
 
 | task | py | verified test | issue |
 |---|---|---|---|
@@ -21,6 +18,7 @@ Source: `princeton-nlp/SWE-bench_Lite` · built `2026-09-01T08:17:59.312Z`
 | `pytest-dev__pytest-7432` | 3.9 | `testing/test_skipping.py::TestXFail::test_xfail_run_with_skip_mark[test_input1-expected1]` | skipping: --runxfail breaks pytest.mark.skip location reporting pytest… |
 | `pytest-dev__pytest-7490` | 3.9 | `testing/test_skipping.py::TestXFail::test_dynamic_xfail_set_during_runtest_failed` | Pytest 6: Dynamically adding xfail marker in test no longer ignores fa… |
 | `pytest-dev__pytest-8365` | 3.9 | `testing/test_tmpdir.py::test_tmp_path_factory_handles_invalid_dir_characters` | tmpdir creation fails when the username contains illegal characters fo… |
+| `pytest-dev__pytest-8906` | 3.8 | `testing/test_skipping.py::test_module_level_skip_error` | Improve handling of skip for module level This is potentially about up… |
 | `pytest-dev__pytest-9359` | 3.9 | `testing/code/test_source.py::test_decorator` | Error message prints extra code line when using assert in python3.9 <!… |
 
 ## pylint-dev/pylint — 4

@@ -23,6 +23,7 @@ import { Worker } from '../../v0/src/agent/loop/worker.mjs';
 import { createOpenAICompatModel } from '../../v0/src/agent/model/index.mjs';
 import { applyGemmaToolCallShim } from '../../v0/src/agent/model/shims/gemma-tool-calls.mjs';
 import { trajectoryMetrics } from '../metrics/index.mjs';
+import { verifyTask, resetTask, restoreOracle, pytest } from './verify.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(os.tmpdir(), 'capability-v1');
@@ -30,75 +31,11 @@ const QUIET = { stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8' };
 const git = (args, opts = {}) => execFileSync('git', args, { ...QUIET, timeout: 300_000, ...opts });
 
 // ── deterministic verification ───────────────────────────────────────────────
-
-/** Files the test_patch touches. These are the oracle; the agent must not be able to edit them. */
-function testPatchFiles(diffText) {
-  return [...diffText.matchAll(/^diff --git a\/(\S+) b\/\S+/gm)].map(m => m[1]);
-}
-
-/**
- * Restore the oracle before judging.
- *
- * The agent can freely edit test files during its run -- and an agent that deletes the failing test
- * would otherwise score as a success. So every file the test_patch touches is reset to the base
- * commit and the test_patch is re-applied, discarding whatever the agent did to it. Only then does
- * the verdict get taken. This is the same guard the official SWE-bench evaluation applies.
- */
-function restoreOracle(dir, task) {
-  for (const f of testPatchFiles(task.test_patch)) {
-    try { git(['-C', dir, 'checkout', '-f', task.base_commit, '--', f]); }
-    catch { /* the file may not exist at base -- test_patch will create it */ }
-  }
-  const p = path.join(dir, '.__verify.diff');
-  fs.writeFileSync(p, task.test_patch.endsWith('\n') ? task.test_patch : task.test_patch + '\n', 'utf8');
-  git(['-C', dir, 'apply', '--whitespace=nowarn', p]);
-  fs.rmSync(p, { force: true });
-}
-
-function pytest(py, dir, nodeIds, timeout = 600_000) {
-  const ids = nodeIds.map(n => `"${n}"`).join(' ');
-  try {
-    const out = execSync(`"${py}" -m pytest ${ids} -q -p no:cacheprovider`,
-      { cwd: dir, ...QUIET, timeout, env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' } });
-    return { passed: true, output: String(out).slice(-1200) };
-  } catch (e) {
-    return { passed: false, output: (String(e.stdout ?? '') + String(e.stderr ?? '')).slice(-1200) };
-  }
-}
-
-// P2P lists run to the hundreds. A capped sample keeps a full sweep affordable; the cap is recorded
-// in the artifact so the claim stays exactly as strong as the evidence.
-const P2P_CAP = 25;
-
-function verify(dir, task) {
-  restoreOracle(dir, task);
-  const f2p = pytest(task.python_exe, dir, [task.verified_test]);
-  const p2pIds = (task.pass_to_pass ?? []).slice(0, P2P_CAP);
-  const p2p = p2pIds.length ? pytest(task.python_exe, dir, p2pIds) : { passed: true, output: 'none declared' };
-  return {
-    fail_to_pass_now_passes: f2p.passed,
-    pass_to_pass_still_passes: p2p.passed,
-    pass_to_pass_checked: p2pIds.length,
-    task_success: f2p.passed && p2p.passed,     // BOTH. A fix that breaks the suite is not a fix.
-    f2p_output: f2p.output, p2p_output: p2p.output,
-  };
-}
+//
+// The verifier lives in ONE module shared with the anti-gaming bracket (§7). If the attack harness
+// verified through its own copy it would be proving a defence production does not have.
 
 // ── environment ──────────────────────────────────────────────────────────────
-
-/**
- * Reset the task tree to its pre-fix state, reusing the venv bracketing already proved.
- *
- * `git clean -fd` deliberately omits `-x`: the editable install's .egg-info/.egg-link are
- * gitignored build artifacts, and removing them would break the venv that bracketing validated.
- */
-function resetTree(task) {
-  const dir = task.work_dir;
-  if (!fs.existsSync(path.join(dir, '.git'))) throw new Error(`no tree at ${dir}; re-run bracketing`);
-  git(['-C', dir, 'checkout', '-f', '--detach', task.base_commit]);
-  git(['-C', dir, 'clean', '-fd']);
-  return dir;
-}
 
 // ── model ────────────────────────────────────────────────────────────────────
 
@@ -144,7 +81,7 @@ const TASK_TIMEOUT_MS = Number(process.env.TASK_TIMEOUT_MS ?? 900_000);
 export async function runTask(task, model) {
   const started = new Date().toISOString();
   let dir;
-  try { dir = resetTree(task); }
+  try { dir = resetTask(task); }
   catch (e) { return { task_id: task.task_id, started, outcome: 'INFRA', infra: String(e.message).slice(0, 300) }; }
 
   // Preflight is re-checked at RUN time, not trusted from bracketing. If the task is already
@@ -196,7 +133,7 @@ export async function runTask(task, model) {
 
   // The verdict is taken AFTER the agent stops, from the world, by the verifier.
   let v;
-  try { v = verify(dir, task); }
+  try { v = verifyTask(task); }
   catch (e) { v = { task_success: false, verifier_error: String(e.message).slice(0, 300) }; }
 
   const diff = (() => { try { return git(['-C', dir, 'diff', '--stat', task.base_commit]).trim(); }

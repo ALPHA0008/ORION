@@ -123,6 +123,10 @@ function buildRequires(dir) {
 
 const TODAY = new Date().toISOString().slice(0, 10);
 
+// §3 kill-criteria. A candidate that cannot be bracketed inside this ceiling is recorded as
+// unreproducible and abandoned -- a perfect sweep is not worth the phase it would consume.
+const CANDIDATE_CEILING_MS = Number(process.env.CANDIDATE_CEILING_MS ?? 480_000);
+
 /**
  * Repair holes in the reconstructed dependency universe.
  *
@@ -196,6 +200,36 @@ function applyPatch(dir, diffText, name) {
   git(['-C', dir, 'apply', '--whitespace=nowarn', f]);
 }
 
+/**
+ * Map a bracket stage plus its evidence onto the §6 rejection vocabulary.
+ *
+ * The stage says WHERE it failed; the category says WHAT KIND of failure it is, which is what
+ * decides whether the corpus is limited by task quality or by our ability to reproduce an
+ * environment. Those imply completely different next steps, so both are recorded.
+ */
+function categorise(stage, detail = '') {
+  const d = String(detail);
+  if (stage === 'mirror') return 'REPOSITORY_UNAVAILABLE';
+  if (stage === 'commit-unreachable') return 'REPOSITORY_UNAVAILABLE';
+  if (stage === 'no-test') return 'TASK_NOT_OBSERVABLE';
+  if (stage === 'preflight-positive') return 'TASK_TOO_TRIVIAL';   // already satisfied on a clean tree
+  if (stage === 'venv' || stage === 'checkout') return 'ENVIRONMENT_UNREPRODUCIBLE';
+  if (stage === 'install')
+    return /No solution found|Failed to (download and )?build|resolv/i.test(d)
+      ? 'DEPENDENCY_UNRESOLVABLE' : 'ENVIRONMENT_UNREPRODUCIBLE';
+  if (stage === 'test-patch') return 'BASELINE_NOT_REPRODUCIBLE';
+  if (stage === 'gold-patch') return 'BASELINE_NOT_REPRODUCIBLE';
+  if (stage === 'oracle-negative') {
+    // An import/collection error is the environment failing to reconstruct, not the maintainer's
+    // fix being wrong. A clean assertion failure is the oracle genuinely not holding here.
+    if (/ModuleNotFoundError|ImportError|AttributeError|no name .* in any of|PluginValidationError/i.test(d))
+      return 'ENVIRONMENT_UNREPRODUCIBLE';
+    return 'BASELINE_NOT_REPRODUCIBLE';
+  }
+  if (stage === 'timebox') return 'ENVIRONMENT_UNREPRODUCIBLE';
+  return 'OTHER';
+}
+
 // ── main ─────────────────────────────────────────────────────────────────────
 const data = JSON.parse(fs.readFileSync(path.join(FIX, 'swebench-lite-candidates.json'), 'utf8'));
 const only = process.env.ONLY_REPO;
@@ -216,8 +250,10 @@ for (const c of cands) {
   const t0 = Date.now();
   const label = c.task_id.padEnd(28);
   const reject = (stage, detail) => {
-    rejected.push({ task_id: c.task_id, repository: c.repository, python: PYVER, stage, detail: String(detail).slice(0, 300) });
-    console.log(`  REJECT ${label} ${stage.padEnd(20)} ${String(detail).slice(0, 44)}`);
+    rejected.push({ task_id: c.task_id, repository: c.repository, base_commit: c.base_commit,
+                    python: PYVER, status: 'rejected', stage, reason: categorise(stage, detail),
+                    evidence: String(detail).slice(0, 400) });
+    console.log(`  REJECT ${label} ${categorise(stage, detail).padEnd(28)} ${stage}`);
     // A rejected task keeps nothing: its tree and its interpreter are both discarded, so a long
     // bracketing sweep does not accumulate gigabytes of dead environments.
     if (process.env.KEEP) return;   // diagnostics: keep the evidence when investigating a rejection
@@ -244,6 +280,7 @@ for (const c of cands) {
   // construction -- except for the pytest repo itself, where naming pytest as a dependency would
   // collide with the editable install of the package under test.
   const installArgs = '-e .';
+  const overBudget = () => Date.now() - t0 > CANDIDATE_CEILING_MS;
   let lifted = [];
   try {
     lifted = pipInstall(py, dir, installArgs, c.created_at);
@@ -253,6 +290,8 @@ for (const c of cands) {
       execSync(`uv pip install --python "${py}" -q "pytest<8"`, { cwd: dir, ...QUIET, timeout: 900_000 });
   }
   catch (e) { reject('install', e.message); continue; }
+
+  if (overBudget()) { reject('timebox', `exceeded ${CANDIDATE_CEILING_MS / 1000}s ceiling during provisioning`); continue; }
 
   try { applyPatch(dir, c.test_patch, 'tp'); }
   catch (e) { reject('test-patch', e.message); continue; }
@@ -273,7 +312,7 @@ for (const c of cands) {
   if (!pos.passed) { reject('oracle-negative', pos.output.replace(/\s+/g, ' ').slice(-260)); continue; }
 
   const secs = ((Date.now() - t0) / 1000).toFixed(0);
-  accepted.push({ ...c, verified_test: test, python: PYVER, venv: venvDir(c.task_id),
+  accepted.push({ ...c, status: 'accepted', reason: 'BRACKETED', verified_test: test, python: PYVER, venv: venvDir(c.task_id),
                   install_args: installArgs, exclude_newer: c.created_at, exclude_newer_lifted: lifted, pytest_version: pytestVersion(py, dir), bracket_seconds: Number(secs) });
   console.log(`  ACCEPT ${label} preflight=FAIL oracle=PASS  ${secs}s`);
 }

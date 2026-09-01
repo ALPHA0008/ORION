@@ -20,8 +20,13 @@ were not used; environments were reconstructed locally on a Windows host.
 | `eval/capability-v1/report-corpus.mjs` | generates accepted/rejected docs from the data |
 | `eval/capability-v1/run-baseline.mjs` | V0 runtime consumed **unchanged** (Rule 9) |
 | `eval/capability-v1/classify.mjs` | failure classes + first-wrong-turn, from the event log |
-| `eval/capability-v1/fixtures/bracket-results.json` | 32 candidates, 16 accepted / 16 rejected |
-| `eval/capability-v1/tasks/` | 16 accepted task files + `corpus.json` |
+| `eval/capability-v1/fixtures/bracket-results.json` | 32 candidates, **17 accepted / 15 rejected**, every rejection in the §6 category vocabulary |
+| `eval/capability-v1/tasks/` | 17 accepted task files + `corpus.json` + **`frozen-corpus.json`** |
+| `eval/capability-v1/verify.mjs` | ONE verifier, shared by the runner and the attack harness |
+| `eval/capability-v1/repro-sweep.mjs` + `reports/repro-sweep.json` | **17/17** two-sided through the production verifier |
+| `eval/capability-v1/anti-gaming.mjs` + `reports/anti-gaming.json` | **25/25 attacks defended** (5 attacks x 5 tasks) |
+| `eval/capability-v1/freeze-corpus.mjs` | freeze gate; refuses unverified tasks |
+| `corpus-diversity.md` · `frozen-corpus.md` | §10 concentration analysis; §11-12 frozen manifest |
 | `corpus-research.md` · `corpus-selection.md` · `corpus-schema.md` · `corpus-methodology.md` | adoption rationale and method |
 | `infrastructure-validation.md` | how the measuring instrument was checked |
 | `accepted-tasks.md` · `rejected-tasks.md` | generated from `bracket-results.json` |
@@ -37,13 +42,7 @@ were not used; environments were reconstructed locally on a Windows host.
 
 ## WHAT IS IN PROGRESS
 
-- **Candidate sweep is not final.** 16 accepted, 16 rejected. Several rejections are still
-  suspected to be *our* defects rather than task defects — notably three `pytest` tasks failing an
-  `addini` assertion and one failing `_pytest._version`, which is the signature of a defect already
-  found and fixed once. A bounded retry on an era-appropriate interpreter (3.8) was in flight when
-  this stage was re-scoped.
-- **Rejection reasons are not yet in the §6 category vocabulary.** They are currently raw stage
-  names (`install`, `oracle-negative`, `preflight-positive`) plus evidence text.
+Nothing. The corpus-admission half of Stage 1B is finished; the measurement half has not started.
 
 ## WHAT IS NOT YET DONE
 
@@ -51,7 +50,6 @@ Nothing below exists. No claim anywhere in this repository may assume any of it.
 
 | missing artifact | consequence |
 |---|---|
-| `frozen-corpus.md` | corpus is **not frozen**; no run may treat it as fixed |
 | `baseline-lock.md` | benchmark configuration is **not frozen** |
 | `baseline.md` | no baseline record |
 | `gemma-baseline.md` (as a *baseline*) | endpoint verified only; **zero tasks run** |
@@ -60,10 +58,10 @@ Nothing below exists. No claim anywhere in this repository may assume any of it.
 | `failure-taxonomy.md` · `failure-table.md` · `trajectory-analysis.md` | no trajectories exist to analyse |
 | `capability-profile.md` · `bottleneck-ranking.md` · `summary.md` | downstream of a baseline that has not run |
 | `eval/capability-v1/runs/` · `reports/` | empty |
-| anti-gaming bracket (§7) | delete-test / skip-test defences designed but **not executed** |
-| reproducibility sweep (§13) | not run |
 | smoke test (§14) | not run |
 
 ## The one-sentence status
 
-**The instrument is built and partially calibrated; nothing has been measured with it yet.**
+**The instrument is built, calibrated and frozen; nothing has been measured with it yet.**
+
+Corpus `CAPABILITY_V1_STAGE1` · sha256 `0a9a279d48a491da…` · **17 tasks** · runtime `6e4d5325d7`.
