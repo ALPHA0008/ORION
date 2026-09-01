@@ -32,7 +32,7 @@ function loadEvents(r) {
  * before the one that opened the right file and edited it wrongly. Reporting the LAST symptom
  * instead would attribute nearly everything to "editing".
  */
-function diagnose(r, ev) {
+function diagnose(r, ev, worldChanged = false) {
   const started = ev.filter(e => e.type === 'tool.started');
   const succeeded = ev.filter(e => e.type === 'tool.succeeded');
   // The path lives on tool.started; tool.succeeded carries only the result. Joining on
@@ -42,6 +42,15 @@ function diagnose(r, ev) {
     ?.payload?.args?.path
     ?? (String(e.payload.result ?? '').match(/^wrote (\S+)/) ?? [])[1] ?? '';
 
+  // The agent mutates the world through TWO channels, and only one is tool-mediated.
+  //
+  // 10 of 17 Gemma runs wrote files with bash heredocs / redirection / `sed -i` rather than the
+  // write/edit tools; 4 used bash exclusively. Counting only write/edit events therefore reports
+  // "ZERO mutations" for runs that demonstrably changed the tree. diff_stat (captured pre-verify,
+  // including untracked additions) is the authority on what the WORLD looks like; the event log is
+  // the authority on what the AGENT did. Both are needed, and neither alone is sufficient.
+  const bashWrote = started.some(e => e.payload.name === 'bash'
+    && /(^|[^>])>>?\s*\S+|<<\s*['\"]?EOF|sed -i|tee /.test(String(e.payload.args?.cmd ?? '')));
   const mutations = succeeded.filter(e => MUTATING.has(e.payload.name));
   // A NEW scratch file at the repo root -- reproduce_issue.py, repro/test_path_error.py -- is the
   // agent reproducing the bug, not fixing it. Counting those as "editing" attributed the failure to
@@ -68,7 +77,7 @@ function diagnose(r, ev) {
 
   // Never touched source: the divergence is that the agent never attempted the actual change.
   // Writing a reproduction script counts as investigation, not as attempting the fix.
-  if (srcMut.length === 0 && testMut.length === 0) {
+  if (srcMut.length === 0 && testMut.length === 0 && !worldChanged) {
     const reads = started.filter(e => ['read', 'grep'].includes(e.payload.name));
     const repro = scratchMut.length
       ? `; wrote ${scratchMut.length} reproduction script(s) but never edited source` : '';
@@ -89,6 +98,29 @@ function diagnose(r, ev) {
       mechanism: 'test interpretation',
       confidence: 'HIGH',
       note: 'oracle-restore discarded these edits, so the verdict is correct',
+    };
+  }
+
+  // The world changed only through bash. Distinguish "wrote scratch scripts and stopped" from
+  // "actually edited source via sed/redirection", because those are different mechanisms.
+  if (srcMut.length === 0 && testMut.length === 0 && worldChanged) {
+    const files = String(r.diff_stat ?? '').split(String.fromCharCode(10))
+      .map(l => l.split('|')[0].trim()).filter(Boolean);
+    // Guessing intent from the filename was wrong: pylint-7993 created apply_fix.py, test_fix.py
+    // and four more, all NEW files, and a name-based test called that "editing". The reliable
+    // signal is structural -- diff_stat marks created files "(new file)", and a run that only
+    // created files has modified no existing source whatever the files are called.
+    const lines = String(r.diff_stat ?? '').split(String.fromCharCode(10)).filter(l => l.trim());
+    const onlyNew = lines.length > 0 && lines.every(l => l.includes('(new file)'));
+    return {
+      divergence: onlyNew
+        ? `changed the tree only by creating scratch/reproduction files (${files.join(', ')}); source never edited; stopped with reason=${r.reason}`
+        : `edited via bash rather than the edit tool (${files.join(', ')}); FAIL_TO_PASS still fails`,
+      at: at(started.at(-1)),
+      mechanism: onlyNew ? 'premature termination' : 'editing',
+      confidence: 'MEDIUM',
+      note: 'file changes were made through bash, so the tool-level event log does not record them; '
+          + 'diff_stat is the authority here',
     };
   }
 
@@ -135,7 +167,7 @@ for (const [arm, data] of [['gemma', g], ['qwen', q]]) {
     // way. Failed calls the agent RECOVERED from are not the mechanism of anything.
     row[arm] = r.task_success
       ? { ...r, diag: { divergence: null, mechanism: 'PASS', confidence: 'HIGH' } }
-      : { ...r, diag: diagnose(r, loadEvents(r)) };
+      : { ...r, diag: diagnose(r, loadEvents(r), !!String(r.diff_stat || '').trim()) };
     byTask.set(r.task_id, row);
   }
 }

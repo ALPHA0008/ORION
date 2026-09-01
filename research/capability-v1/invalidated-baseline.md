@@ -1,4 +1,20 @@
-# Invalidated Baseline — No Interpreter on PATH
+# Invalidated Runs — Stage 1
+
+Two separate invalidations, from two unrelated causes. This file is the index; each has its own
+detail.
+
+| run | cause | classification | detail |
+|---|---|---|---|
+| Gemma 2/17 (pre-fix) + partial Qwen | no Python interpreter on `PATH` | **INFRASTRUCTURE** — ours | below |
+| Qwen 0/17 (post-fix, complete) | deterministic empty/truncated terminal completion | `QWEN_INTERACTION_MECHANISM_CONFIRMED` | `qwen-invalidation.md` |
+
+The two are unrelated and must not be conflated: the first was a defect in our environment
+provisioning, the second is a model/serving/harness interaction that survives a correct environment.
+Neither contributes to capability scoring.
+
+---
+
+## Invalidation 1 — No Interpreter on PATH
 
 **Corpus label: Stage-1 filtered SWE-bench-lite slice, locally reproduced.**
 

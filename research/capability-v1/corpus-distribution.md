@@ -1,11 +1,5 @@
 # Corpus Distribution (§16-17)
 
-> **NUMBERS WITHDRAWN — REGENERATION PENDING.** Every figure in this file was computed from the
-> Gemma run that has since been INVALIDATED (no Python interpreter on PATH; see
-> `invalidated-baseline.md`). Do not cite anything here. This file is regenerated from the
-> corrected baseline as soon as it completes.
-
-
 **Corpus label: Stage-1 filtered SWE-bench-lite slice, locally reproduced.**
 
 Corpus `CAPABILITY_V1_STAGE1` · sha256 `0a9a279d48a491dacdadfd71…` · **17 tasks**
@@ -25,21 +19,20 @@ Corpus `CAPABILITY_V1_STAGE1` · sha256 `0a9a279d48a491dacdadfd71…` · **17 ta
 
 | repository | tasks | failures | share of failures |
 |---|---|---|---|
-| pytest-dev/pytest | 10 | 8 | **53%** |
-| pylint-dev/pylint | 4 | 4 | **27%** |
-| pallets/flask | 2 | 2 | **13%** |
-| psf/requests | 1 | 1 | **7%** |
+| pytest-dev/pytest | 10 | 9 | **64%** |
+| pylint-dev/pylint | 4 | 3 | **21%** |
+| pallets/flask | 2 | 2 | **14%** |
+| psf/requests | 1 | 0 | **0%** |
 
-Largest single-repository share of failures: **53%**.
+Largest single-repository share of failures: **64%**.
 
 ### Mechanism generalisation — Gemma (§25 filter)
 
 | mechanism | failures | repositories | spread |
 |---|---|---|---|
-| `premature termination` | 8 | **4/4** | flask 2, requests 1, pylint 3, pytest 2 |
-| `context acquisition` | 4 | **1/4** | pytest 4 |
-| `editing` | 2 | **1/4** | pytest 2 |
-| `reasoning` | 1 | **1/4** | pylint 1 |
+| `premature termination` | 6 | **3/4** | flask 1, pylint 1, pytest 4 |
+| `editing` | 4 | **2/4** | flask 1, pytest 3 |
+| `context acquisition` | 4 | **2/4** | pylint 2, pytest 2 |
 
 ## Why dominance alone does not settle the question
 

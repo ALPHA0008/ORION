@@ -1,10 +1,5 @@
 # Gemma Baseline — Stage 1 Real-Code Baseline
 
-> **NUMBERS REFRESHED — CORRECTED BASELINE.** The first Gemma run was INVALIDATED (no Python
-> interpreter on PATH, see `invalidated-baseline.md`). This file now records the CORRECTED run,
-> which executes Python in every task. It supersedes both the original `46e5dbc` (2/17) and any
-> figure in the pre-invalidation draft.
-
 **Corpus label: Stage-1 filtered SWE-bench-lite slice, locally reproduced.**
 Not "SWE-bench Lite performance", not industry-level, not a competitive benchmark.
 
@@ -20,8 +15,7 @@ Not "SWE-bench Lite performance", not industry-level, not a competitive benchmar
 | server | vLLM · `172.20.7.22:8000` · context **32 768** |
 | tool calls | via `applyGemmaToolCallShim` — the model emits no native `tool_calls` |
 | configuration | `baseline-lock.md` — shipped defaults, maxTurns 40, 15 min timeout |
-| environment | each task venv on PATH, `python3.exe` present (the §?? fix) |
-| repeats | **1 per task** (§4) |
+| repeats | **1 per task** (§17) |
 | completed | 2026-09-01T10:06:14.474Z |
 
 ## Result
@@ -36,28 +30,24 @@ Not "SWE-bench Lite performance", not industry-level, not a competitive benchmar
 | wall-clock timeouts | **0** |
 | budget exhaustion | **0** |
 | model failures | 0 |
-| tool calls | 404 |
-| tool success rate | **79.7%** |
-| input tokens | 2 139 030 |
-| output tokens | 35 492 |
-| total wall time | ~1104 s |
+| model calls | 415 |
+| tool calls | 403 |
+| tool success rate | 79.9% |
+| input tokens | 21,39,030 |
+| output tokens | 35,492 |
+| total wall time | 1104 s |
 | escalations | 0 |
 | context compactions | 0 |
 | messages dropped by projection | 254 |
 
-## Correction effect — this is the honest baseline
+## The dominant observation
 
-The invalidated run reported 2/17 with `tool success 64.5%` and a "9 of 17 made zero
-mutations / premature termination" story. That story was the agent's **python hunt** (it had no
-interpreter, so every `python`/`python3` call failed and it eventually stopped). The corrected run:
+**4 of 17 runs made ZERO file mutations of any kind.** Counting runs whose only write was a
+new scratch reproduction script, the agent **never attempted the fix** on the large majority of
+failures.
 
-- **tool success 79.7%** — the hunt is gone; only genuine failures remain.
-- **3/17 passed** (was 2, and both of the new passes — `psf__requests-3362`,
-  `pylint-dev__pylint-5859` — now actually verify their fix by running code).
-- Zero-mutation runs fell to **8/17**, and several of the remainder now show real edits/tests.
-
-The corrected numbers are the evidence-bearing ones. The invalidated story is retained in
-`invalidated-baseline.md` and `runs/invalidated/` as a record of the misattribution, not as a result.
+This comes from the durable event log, not from the score. It survived two instrumentation
+corrections that had previously hidden it — see `infrastructure-validation.md`.
 
 ## Termination reasons
 
@@ -67,36 +57,42 @@ The corrected numbers are the evidence-bearing ones. The invalidated story is re
 | `no_progress` | 4 |
 | `max_turns` | 2 |
 
+11 run(s) **declared completion** with an unchanged world — exactly the condition ADR-013's
+declared completion contract detects, and it is **switched off** in this baseline by design
+(shipped defaults only, Rule 9).
+
 ## Per task
 
-| task | outcome | reason | bash-fail | source edited | wall |
+| task | outcome | reason | tools | source edited | wall |
 |---|---|---|---|---|---|
-| `pallets__flask-4045` | FAIL | `no_progress` | 1 | — | 43s |
-| `pallets__flask-5063` | FAIL | `model_finished` | 6 | cli.py, helpers.py, scaffold.py | ~ |
-| `psf__requests-3362` | **PASS** | `model_finished` | 0 | models.py | ~ |
-| `pylint-dev__pylint-5859` | **PASS** | `model_finished` | 5 | misc.py | ~ |
-| `pylint-dev__pylint-6506` | FAIL | `model_finished` | 11 | — | ~ |
-| `pylint-dev__pylint-7228` | FAIL | `model_finished` | 2 | name_checker/checker.py | ~ |
-| `pylint-dev__pylint-7993` | FAIL | `model_finished` | 9 | reporters/text.py (24-line diff) | ~ |
-| `pytest-dev__pytest-11143` | FAIL | `no_progress` | 6 | — (diff from repro) | ~ |
-| `pytest-dev__pytest-11148` | FAIL | `model_finished` | 4 | — | ~ |
-| `pytest-dev__pytest-6116` | FAIL | `no_progress` | 0 | — | ~ |
-| `pytest-dev__pytest-7220` | FAIL | `max_turns` | 6 | 4 edits, 2 writes | ~ |
-| `pytest-dev__pytest-7373` | **PASS** | `model_finished` | 0 | mark/evaluate.py (3+17-) | 23s |
-| `pytest-dev__pytest-7432` | FAIL | `model_finished` | 0 | 6 edits, 1 write in skipping.py | ~ |
-| `pytest-dev__pytest-7490` | FAIL | `no_progress` | 7 | 1 write, 1 test run | ~ |
-| `pytest-dev__pytest-8365` | FAIL | `model_finished` | 2 | tmpdir.py (12+1-) | ~ |
-| `pytest-dev__pytest-8906` | FAIL | `model_finished` | 2 | python.py (4+2-) | ~ |
-| `pytest-dev__pytest-9359` | FAIL | `max_turns` | 16 | — | ~ |
+| `pallets__flask-4045` | FAIL | `no_progress` | 36 | — | 43s |
+| `pallets__flask-5063` | FAIL | `model_finished` | 20 | src/flask/cli.py, reproduce_issue.py, test_routes_cli.py | 139s |
+| `psf__requests-3362` | **PASS** | `model_finished` | 24 | requests/utils.py, reproduce_issue.py | 75s |
+| `pylint-dev__pylint-5859` | **PASS** | `model_finished` | 17 | pylint/checkers/misc.py, repro.py | 68s |
+| `pylint-dev__pylint-6506` | FAIL | `model_finished` | 31 | — | 83s |
+| `pylint-dev__pylint-7228` | FAIL | `model_finished` | 5 | reproduce_issue.py | 13s |
+| `pylint-dev__pylint-7993` | FAIL | `model_finished` | 33 | apply_fix.py, reproduce_issue.py, test_fix.py, test_formatter.py, test_issue.py, test_template.py | 165s |
+| `pytest-dev__pytest-11143` | FAIL | `no_progress` | 13 | reproduce_issue.py | 29s |
+| `pytest-dev__pytest-11148` | FAIL | `model_finished` | 24 | — | 33s |
+| `pytest-dev__pytest-6116` | FAIL | `no_progress` | 5 | — | 4s |
+| `pytest-dev__pytest-7220` | FAIL | `max_turns` | 40 | reproduce_issue.py | 93s |
+| `pytest-dev__pytest-7373` | **PASS** | `model_finished` | 11 | src/_pytest/mark/evaluate.py | 45s |
+| `pytest-dev__pytest-7432` | FAIL | `model_finished` | 28 | src/_pytest/skipping.py, repro.py | 67s |
+| `pytest-dev__pytest-7490` | FAIL | `no_progress` | 31 | reproduce_issue.py | 66s |
+| `pytest-dev__pytest-8365` | FAIL | `model_finished` | 15 | src/_pytest/tmpdir.py, reproduce_issue.py | 48s |
+| `pytest-dev__pytest-8906` | FAIL | `model_finished` | 30 | src/_pytest/python.py, reproduction.py | 62s |
+| `pytest-dev__pytest-9359` | FAIL | `max_turns` | 40 | reproduction.py | 71s |
 
 ## Variance — read before quoting any number
 
 **No stable/high-variance label is assigned to any task**, because this is n=1 (§4). The V0
 `STABLE_SUCCESS` / `HIGH_VARIANCE` labels were defined at n=3 and do not transfer to a single run.
 
-Where a repeat does exist, variance is real and *behavioural*, not just scalar:
-`pallets__flask-4045` PASSED in an earlier smoke run (editing `src/flask/blueprints.py`) and has
-FAILED in both baselines. See `variance-note.md`.
+Variance was observed to be *behavioural*, not merely scalar — two runs of the same task under
+an identical corpus hash and configuration differed in which files they touched, not just in
+pass/fail. Those particular observations came from the pre-fix environment and are recorded in
+`variance-note.md` and `invalidated-baseline.md`; they are cited as a reason for caution, NOT as
+measurements of this baseline. No repeat has yet been run against the corrected environment.
 
 **"17.6%" means: this model passed 3 of 17 Stage-1 task instances under this
 configuration, on one run each.** It is not a measurement of capability (§18).
