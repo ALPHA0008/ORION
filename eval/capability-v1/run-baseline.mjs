@@ -160,8 +160,19 @@ export async function runTask(task, model) {
 
 if (import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}` ||
     process.argv[1]?.endsWith('run-baseline.mjs')) {
-  const tasksFile = process.env.TASKS ?? path.join(HERE, 'tasks', 'corpus.json');
-  const tasks = JSON.parse(fs.readFileSync(tasksFile, 'utf8')).tasks;
+  // Runs are taken against the FROZEN manifest, never against the mutable working corpus, so a
+  // result is always attributable to a specific corpus_sha256. The frozen manifest deliberately
+  // omits machine-local paths (venv, worktree), so those are rejoined here from the working corpus
+  // by task_id -- the definition is frozen, the machine paths are not part of it.
+  const frozen = JSON.parse(fs.readFileSync(path.join(HERE, 'tasks', 'frozen-corpus.json'), 'utf8'));
+  const local = new Map(JSON.parse(fs.readFileSync(path.join(HERE, 'tasks', 'corpus.json'), 'utf8'))
+    .tasks.map(t => [t.task_id, t]));
+  const tasks = frozen.tasks.map(t => {
+    const l = local.get(t.task_id);
+    if (!l) throw new Error(`frozen task ${t.task_id} has no local environment; re-run bracketing`);
+    return { ...t, python_exe: l.python_exe, venv: l.venv, work_dir: l.work_dir };
+  });
+  console.log(`corpus ${frozen.corpus_version} sha256=${frozen.corpus_sha256.slice(0, 16)}... (${tasks.length} tasks)`);
   const only = process.env.ONLY ? new Set(process.env.ONLY.split(',')) : null;
   const limit = Number(process.env.LIMIT ?? 0);
 
@@ -185,7 +196,10 @@ if (import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}` ||
     results.push(r);
     const mark = r.task_success ? 'PASS' : (r.outcome ?? (r.timed_out ? 'TIMEOUT' : 'FAIL'));
     console.log(`${String(mark).padEnd(8)} ${r.reason ?? r.infra ?? ''} ${r.wall_ms ? (r.wall_ms / 1000).toFixed(0) + 's' : ''}`);
-    fs.writeFileSync(outFile, JSON.stringify({ model: process.env.HARNESS_MODEL, at: new Date().toISOString(), results }, null, 2));
+    fs.writeFileSync(outFile, JSON.stringify({ model: process.env.HARNESS_MODEL,
+      corpus_version: frozen.corpus_version, corpus_sha256: frozen.corpus_sha256,
+      runtime_commit: frozen.runtime_commit, max_turns: MAX_TURNS, task_timeout_ms: TASK_TIMEOUT_MS,
+      at: new Date().toISOString(), results }, null, 2));
   }
 
   const pass = results.filter(r => r.task_success).length;
