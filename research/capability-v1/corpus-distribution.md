@@ -1,5 +1,11 @@
 # Corpus Distribution (§16-17)
 
+> **NUMBERS WITHDRAWN — REGENERATION PENDING.** Every figure in this file was computed from the
+> Gemma run that has since been INVALIDATED (no Python interpreter on PATH; see
+> `invalidated-baseline.md`). Do not cite anything here. This file is regenerated from the
+> corrected baseline as soon as it completes.
+
+
 **Corpus label: Stage-1 filtered SWE-bench-lite slice, locally reproduced.**
 
 Corpus `CAPABILITY_V1_STAGE1` · sha256 `0a9a279d48a491dacdadfd71…` · **17 tasks**

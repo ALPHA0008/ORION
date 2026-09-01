@@ -34,7 +34,10 @@ const sum = (k) => rs.reduce((a, r) => a + (M(r)[k] || 0), 0);
 const arm = ARM[LABEL] ?? { title: `${LABEL} Baseline`, model: LABEL, server: '(unrecorded)', toolcalls: '(unrecorded)' };
 
 const passed = rs.filter(r => r.task_success).length;
-const zeroMut = rs.filter(r => (r.agent_mutation_count || 0) === 0).length;
+// Derived from diff_stat, which is now captured before verification and includes untracked
+// additions -- NOT from the agent_mutations backfill, which only ever existed on the invalidated
+// run. Two fields claiming to measure the same thing is how this stage got misled twice.
+const zeroMut = rs.filter(r => !String(r.diff_stat || '').trim()).length;
 const timeouts = rs.filter(r => r.timed_out).length;
 const infra = rs.filter(r => r.outcome === 'INFRA' || r.run_error || r.verifier_error).length;
 const reasons = {};
@@ -94,7 +97,8 @@ if (reasons.model_finished)
 
 L.push('## Per task', '', '| task | outcome | reason | tools | source edited | wall |', '|---|---|---|---|---|---|');
 for (const r of rs) {
-  const files = (r.agent_mutations ?? []).map(m => m.path);
+  const files = String(r.diff_stat || '').split(String.fromCharCode(10))
+    .map(l => l.split('|')[0].trim()).filter(l => l && !/^\d+ files? changed/.test(l));
   L.push(`| ${B}${r.task_id}${B} | ${r.task_success ? '**PASS**' : 'FAIL'} | ${B}${r.reason ?? r.outcome}${B} | `
     + `${M(r).tool_calls || 0} | ${files.length ? files.join(', ') : '—'} | ${Math.round((r.wall_ms || 0) / 1000)}s |`);
 }
@@ -103,10 +107,11 @@ L.push('');
 L.push('## Variance — read before quoting any number', '');
 L.push('**No stable/high-variance label is assigned to any task**, because this is n=1 (§4). The V0');
 L.push(`${B}STABLE_SUCCESS${B} / ${B}HIGH_VARIANCE${B} labels were defined at n=3 and do not transfer to a single run.`, '');
-L.push('Where a repeat does exist, variance is real and *behavioural*, not just scalar:');
-L.push(`${B}pallets__flask-4045${B} PASSED in the §14 smoke run (editing ${B}src/flask/blueprints.py${B}) and FAILED in`);
-L.push('this baseline having never touched source — same corpus hash, same configuration, same model.');
-L.push('See `variance-note.md`.', '');
+L.push('Variance was observed to be *behavioural*, not merely scalar — two runs of the same task under');
+L.push('an identical corpus hash and configuration differed in which files they touched, not just in');
+L.push('pass/fail. Those particular observations came from the pre-fix environment and are recorded in');
+L.push('`variance-note.md` and `invalidated-baseline.md`; they are cited as a reason for caution, NOT as');
+L.push('measurements of this baseline. No repeat has yet been run against the corrected environment.', '');
 L.push(`**"${(100 * passed / rs.length).toFixed(1)}%" means: this model passed ${passed} of ${rs.length} Stage-1 task instances under this`);
 L.push('configuration, on one run each.** It is not a measurement of capability (§18).', '');
 

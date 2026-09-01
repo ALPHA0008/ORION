@@ -1,5 +1,11 @@
 # Gemma Baseline — Stage 1 Real-Code Baseline
 
+> **NUMBERS WITHDRAWN — REGENERATION PENDING.** Every figure in this file was computed from the
+> Gemma run that has since been INVALIDATED (no Python interpreter on PATH; see
+> `invalidated-baseline.md`). Do not cite anything here. This file is regenerated from the
+> corrected baseline as soon as it completes.
+
+
 **Corpus label: Stage-1 filtered SWE-bench-lite slice, locally reproduced.**
 Not "SWE-bench Lite performance", not industry-level, not a competitive benchmark.
 

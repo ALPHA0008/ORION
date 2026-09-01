@@ -1,5 +1,12 @@
 # Variance Note — Read Before Any Single-Run Number
 
+> **SCOPE CORRECTION.** The specific `flask-4045` observation below comes from the **invalidated**
+> pre-fix environment, in which no Python interpreter was on `PATH` (see `invalidated-baseline.md`).
+> Some of that run-to-run difference may therefore be the agent flailing against a broken shell
+> rather than intrinsic sampling variance. The *methodological* rules this file imposes still stand
+> — they are the right rules under n=1 regardless — but the numbers below are **not** evidence about
+> the corrected baseline, and no repeat has yet been run against the fixed environment.
+
 **Corpus label: Stage-1 filtered SWE-bench-lite slice, locally reproduced.**
 
 ## The observation
