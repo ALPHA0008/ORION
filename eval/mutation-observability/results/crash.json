@@ -1,0 +1,66 @@
+{
+  "at": "2026-09-01T12:37:05.211Z",
+  "command": "cat > target.py <<'EOF'\nCHANGED\nEOF",
+  "bash": [
+    {
+      "point": "before effect",
+      "world": "file unchanged",
+      "note": "the command never ran",
+      "recovery_class": "UNSAFE",
+      "has_verify": false,
+      "decision": "escalate",
+      "reason": "UNSAFE with no verify() — cannot determine whether the effect landed",
+      "can_classify": "no -- UNKNOWN",
+      "safe": true
+    },
+    {
+      "point": "after effect, before tool.succeeded",
+      "world": "file CHANGED",
+      "note": "the dangerous window -- the effect landed but nothing recorded it",
+      "recovery_class": "UNSAFE",
+      "has_verify": false,
+      "decision": "escalate",
+      "reason": "UNSAFE with no verify() — cannot determine whether the effect landed",
+      "can_classify": "no -- UNKNOWN",
+      "safe": true
+    },
+    {
+      "point": "after tool.succeeded event",
+      "world": "file CHANGED",
+      "note": "the log already says it succeeded; #reconcile has nothing pending",
+      "recovery_class": "UNSAFE",
+      "has_verify": false,
+      "decision": "escalate",
+      "reason": "UNSAFE with no verify() — cannot determine whether the effect landed",
+      "can_classify": "no -- UNKNOWN",
+      "safe": true
+    },
+    {
+      "point": "after effect, log write itself lost",
+      "world": "file CHANGED",
+      "note": "indistinguishable from \"before effect\" using args alone",
+      "recovery_class": "UNSAFE",
+      "has_verify": false,
+      "decision": "escalate",
+      "reason": "UNSAFE with no verify() — cannot determine whether the effect landed",
+      "can_classify": "no -- UNKNOWN",
+      "safe": true
+    }
+  ],
+  "bash_verdict": "BASH_RECOVERY_UNCERTAIN_BUT_SAFE",
+  "write_contrast": {
+    "before_effect": {
+      "verified": "not-applied",
+      "decision": "reissue"
+    },
+    "after_effect": {
+      "verified": "applied",
+      "decision": "skip"
+    },
+    "applied_then_changed": {
+      "verified": "unknown",
+      "decision": "escalate",
+      "reason": "verify() unknown and re-issuing SELF_VERIFYING could overwrite a concurrent change"
+    }
+  }
+}

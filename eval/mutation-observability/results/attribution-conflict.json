@@ -1,0 +1,70 @@
+{
+  "at": "2026-09-01T12:36:02.917Z",
+  "attribution": {
+    "calls": [
+      {
+        "tool_call_id": "tc_1",
+        "cmd": "echo A1 > a.py",
+        "payload_keys_started": [
+          "tool_call_id",
+          "name",
+          "args"
+        ],
+        "payload_keys_succeeded": [
+          "tool_call_id",
+          "name",
+          "result"
+        ],
+        "names_files": false
+      },
+      {
+        "tool_call_id": "tc_2",
+        "cmd": "echo NOOP_READ",
+        "payload_keys_started": [
+          "tool_call_id",
+          "name",
+          "args"
+        ],
+        "payload_keys_succeeded": [
+          "tool_call_id",
+          "name",
+          "result"
+        ],
+        "names_files": false
+      },
+      {
+        "tool_call_id": "tc_3",
+        "cmd": "echo B1 > b.py",
+        "payload_keys_started": [
+          "tool_call_id",
+          "name",
+          "args"
+        ],
+        "payload_keys_succeeded": [
+          "tool_call_id",
+          "name",
+          "result"
+        ],
+        "names_files": false
+      }
+    ],
+    "final_diff": "M a.py\n M b.py\n?? .probe.db\n?? .probe.db-shm\n?? .probe.db-wal",
+    "per_call_attribution": "ABSENT"
+  },
+  "conflict": {
+    "bash": {
+      "captures_witness": false,
+      "refused": false,
+      "error": null,
+      "final_content": "AGENT",
+      "third_party_change_preserved": false
+    },
+    "write": {
+      "captures_witness": true,
+      "refused": true,
+      "error": "a.py changed since it was read (expected 123d98c79967, found bd325426bdfd). Re-read the file and rea",
+      "final_content": "THIRD_PARTY",
+      "third_party_change_preserved": true
+    }
+  }
+}
