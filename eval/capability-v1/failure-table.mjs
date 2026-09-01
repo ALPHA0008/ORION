@@ -84,7 +84,12 @@ function diagnose(r, ev, worldChanged = false) {
     return {
       divergence: `${started.length} tool calls, ${reads.length} read/grep, ZERO source edits${repro}; stopped with reason=${r.reason}`,
       at: at((scratchMut.at(-1) ?? started.at(-1))),
-      mechanism: reads.length >= 3 ? 'premature termination' : 'context acquisition',
+      // Two genuinely different mechanisms hide under "never edited source", and they imply
+      // opposite interventions. `model_finished` = the agent BELIEVED IT WAS DONE while the world
+      // was unchanged. `no_progress` / `max_turns` = the runtime had to stop it, typically
+      // mid-loop. Collapsing them into one "premature termination" bucket would have pointed the
+      // first V1 intervention at whichever happened to be larger.
+      mechanism: /model_finished/.test(r.reason ?? '') ? 'termination' : 'long-horizon execution',
       confidence: 'HIGH',
       note: scratchMut.length ? 'reproduced the bug, then stopped without fixing it' : undefined,
     };
@@ -117,7 +122,9 @@ function diagnose(r, ev, worldChanged = false) {
         ? `changed the tree only by creating scratch/reproduction files (${files.join(', ')}); source never edited; stopped with reason=${r.reason}`
         : `edited via bash rather than the edit tool (${files.join(', ')}); FAIL_TO_PASS still fails`,
       at: at(started.at(-1)),
-      mechanism: onlyNew ? 'premature termination' : 'editing',
+      mechanism: onlyNew
+        ? (/model_finished/.test(r.reason ?? '') ? 'termination' : 'long-horizon execution')
+        : 'editing',
       confidence: 'MEDIUM',
       note: 'file changes were made through bash, so the tool-level event log does not record them; '
           + 'diff_stat is the authority here',

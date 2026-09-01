@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-01T12:15:15.779Z",
+  "at": "2026-09-01T12:17:10.724Z",
   "corpus_version": "CAPABILITY_V1_STAGE1",
   "corpus_sha256": "0a9a279d48a491dacdadfd714c2c588bfb8a79adb4d536680241f1ebcf8300bb",
   "rows": [
@@ -99,7 +99,7 @@
         "diag": {
           "divergence": "36 tool calls, 18 read/grep, ZERO source edits; stopped with reason=no_progress",
           "at": "09:47:08",
-          "mechanism": "premature termination",
+          "mechanism": "long-horizon execution",
           "confidence": "HIGH"
         }
       },
@@ -505,7 +505,7 @@
         "diag": {
           "divergence": "31 tool calls, 11 read/grep, ZERO source edits; stopped with reason=model_finished",
           "at": "09:53:22",
-          "mechanism": "premature termination",
+          "mechanism": "termination",
           "confidence": "HIGH"
         }
       },
@@ -593,7 +593,7 @@
         "diag": {
           "divergence": "changed the tree only by creating scratch/reproduction files (reproduce_issue.py); source never edited; stopped with reason=model_finished",
           "at": "09:53:54",
-          "mechanism": "premature termination",
+          "mechanism": "termination",
           "confidence": "MEDIUM",
           "note": "file changes were made through bash, so the tool-level event log does not record them; diff_stat is the authority here"
         }
@@ -682,7 +682,7 @@
         "diag": {
           "divergence": "changed the tree only by creating scratch/reproduction files (apply_fix.py, reproduce_issue.py, test_fix.py, test_formatter.py, test_issue.py, test_template.py); source never edited; stopped with reason=model_finished",
           "at": "09:56:37",
-          "mechanism": "premature termination",
+          "mechanism": "termination",
           "confidence": "MEDIUM",
           "note": "file changes were made through bash, so the tool-level event log does not record them; diff_stat is the authority here"
         }
@@ -771,7 +771,7 @@
         "diag": {
           "divergence": "changed the tree only by creating scratch/reproduction files (reproduce_issue.py); source never edited; stopped with reason=no_progress",
           "at": "09:57:22",
-          "mechanism": "premature termination",
+          "mechanism": "long-horizon execution",
           "confidence": "MEDIUM",
           "note": "file changes were made through bash, so the tool-level event log does not record them; diff_stat is the authority here"
         }
@@ -875,7 +875,7 @@
         "diag": {
           "divergence": "24 tool calls, 9 read/grep, ZERO source edits; stopped with reason=model_finished",
           "at": "09:57:52",
-          "mechanism": "premature termination",
+          "mechanism": "termination",
           "confidence": "HIGH"
         }
       },
@@ -963,7 +963,7 @@
         "diag": {
           "divergence": "5 tool calls, 5 read/grep, ZERO source edits; stopped with reason=no_progress",
           "at": "09:58:06",
-          "mechanism": "premature termination",
+          "mechanism": "long-horizon execution",
           "confidence": "HIGH"
         }
       },
@@ -1070,7 +1070,7 @@
         "diag": {
           "divergence": "changed the tree only by creating scratch/reproduction files (reproduce_issue.py); source never edited; stopped with reason=max_turns",
           "at": "09:59:45",
-          "mechanism": "premature termination",
+          "mechanism": "long-horizon execution",
           "confidence": "MEDIUM",
           "note": "file changes were made through bash, so the tool-level event log does not record them; diff_stat is the authority here"
         }
@@ -1379,7 +1379,7 @@
         "diag": {
           "divergence": "changed the tree only by creating scratch/reproduction files (reproduce_issue.py); source never edited; stopped with reason=no_progress",
           "at": "10:02:54",
-          "mechanism": "premature termination",
+          "mechanism": "long-horizon execution",
           "confidence": "MEDIUM",
           "note": "file changes were made through bash, so the tool-level event log does not record them; diff_stat is the authority here"
         }
@@ -1692,7 +1692,7 @@
         "diag": {
           "divergence": "changed the tree only by creating scratch/reproduction files (reproduction.py); source never edited; stopped with reason=max_turns",
           "at": "10:06:11",
-          "mechanism": "premature termination",
+          "mechanism": "long-horizon execution",
           "confidence": "MEDIUM",
           "note": "file changes were made through bash, so the tool-level event log does not record them; diff_stat is the authority here"
         }

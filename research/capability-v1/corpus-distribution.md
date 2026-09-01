@@ -30,9 +30,9 @@ Largest single-repository share of failures: **64%**.
 
 | mechanism | failures | repositories | spread |
 |---|---|---|---|
-| `premature termination` | 6 | **3/4** | flask 1, pylint 1, pytest 4 |
+| `long-horizon execution` | 6 | **2/4** | flask 1, pytest 5 |
 | `editing` | 4 | **2/4** | flask 1, pytest 3 |
-| `context acquisition` | 4 | **2/4** | pylint 2, pytest 2 |
+| `termination` | 4 | **2/4** | pylint 3, pytest 1 |
 
 ## Why dominance alone does not settle the question
 
