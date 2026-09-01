@@ -137,8 +137,19 @@ export async function runTask(task, model) {
   // afterwards reports the test_patch rather than the agent's work. Read after verification, this
   // field claimed the agent had edited tests on runs whose trajectories show zero mutations. The
   // event log was right and the diff was lying; now they agree.
-  const diff = (() => { try { return git(['-C', dir, 'diff', '--stat', task.base_commit]).trim(); }
-                        catch { return ''; } })();
+  const diff = (() => {
+    try {
+      const tracked = git(['-C', dir, 'diff', '--stat', task.base_commit]).trim();
+      // `git diff` cannot see files the agent CREATED. Three Gemma runs wrote new reproduction
+      // scripts (reproduce_issue.py, repro/test_path_error.py) and were recorded as having changed
+      // nothing, which contradicted their own event logs. Untracked additions are agent work and
+      // are reported as such.
+      const untracked = git(['-C', dir, 'ls-files', '--others', '--exclude-standard']).trim();
+      const NL = String.fromCharCode(10);
+      const extra = untracked ? untracked.split(NL).filter(Boolean).map(f => ` ${f} | (new file)`) : [];
+      return [tracked, ...extra].filter(Boolean).join(NL);
+    } catch { return ''; }
+  })();
 
   // The verdict is taken AFTER the agent stops, from the world, by the verifier.
   let v;

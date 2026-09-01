@@ -35,9 +35,23 @@ function loadEvents(r) {
 function diagnose(r, ev) {
   const started = ev.filter(e => e.type === 'tool.started');
   const succeeded = ev.filter(e => e.type === 'tool.succeeded');
+  // The path lives on tool.started; tool.succeeded carries only the result. Joining on
+  // tool_call_id recovers it -- without this every mutation looked pathless and fell through the
+  // source/test split silently.
+  const pathOf = (e) => started.find(x => x.payload.tool_call_id === e.payload.tool_call_id)
+    ?.payload?.args?.path
+    ?? (String(e.payload.result ?? '').match(/^wrote (\S+)/) ?? [])[1] ?? '';
+
   const mutations = succeeded.filter(e => MUTATING.has(e.payload.name));
-  const srcMut = mutations.filter(e => !isTestPath(e.payload.args?.path));
-  const testMut = mutations.filter(e => isTestPath(e.payload.args?.path));
+  // A NEW scratch file at the repo root -- reproduce_issue.py, repro/test_path_error.py -- is the
+  // agent reproducing the bug, not fixing it. Counting those as "editing" attributed the failure to
+  // a wrong edit when the agent had never touched the source at all. That inverts the diagnosis:
+  // the divergence is that it stopped after reproducing.
+  const isScratch = (p) => /(^|[\/])(reproduce|repro|scratch|test_repro)[^\/]*\.py$/i.test(p)
+                        || /(^|[\/])repro[\/]/i.test(p);
+  const srcMut = mutations.filter(e => { const p = pathOf(e); return p && !isTestPath(p) && !isScratch(p); });
+  const testMut = mutations.filter(e => isTestPath(pathOf(e)) && !isScratch(pathOf(e)));
+  const scratchMut = mutations.filter(e => isScratch(pathOf(e)));
   const failedCalls = ev.filter(e => e.type === 'tool.failed');
   const at = (e) => e ? new Date(e.at).toISOString().slice(11, 19) : null;
 
@@ -53,13 +67,17 @@ function diagnose(r, ev) {
              note: 'deployment-attributable unless trajectory shows genuine looping (§19)' };
 
   // Never touched source: the divergence is that the agent never attempted the actual change.
-  if (mutations.length === 0) {
+  // Writing a reproduction script counts as investigation, not as attempting the fix.
+  if (srcMut.length === 0 && testMut.length === 0) {
     const reads = started.filter(e => ['read', 'grep'].includes(e.payload.name));
+    const repro = scratchMut.length
+      ? `; wrote ${scratchMut.length} reproduction script(s) but never edited source` : '';
     return {
-      divergence: `${started.length} tool calls, ${reads.length} read/grep, ZERO mutations; stopped with reason=${r.reason}`,
-      at: at(started.at(-1)),
+      divergence: `${started.length} tool calls, ${reads.length} read/grep, ZERO source edits${repro}; stopped with reason=${r.reason}`,
+      at: at((scratchMut.at(-1) ?? started.at(-1))),
       mechanism: reads.length >= 3 ? 'premature termination' : 'context acquisition',
       confidence: 'HIGH',
+      note: scratchMut.length ? 'reproduced the bug, then stopped without fixing it' : undefined,
     };
   }
 
@@ -77,7 +95,7 @@ function diagnose(r, ev) {
   // Source was edited but the target test still fails: a wrong edit, or the wrong file.
   if (r.fail_to_pass_now_passes === false) {
     return {
-      divergence: `edited ${srcMut.map(e => e.payload.args?.path).filter(Boolean).join(', ') || 'source'}; FAIL_TO_PASS still fails`,
+      divergence: `edited ${[...new Set(srcMut.map(pathOf))].filter(Boolean).join(', ') || 'source'}; FAIL_TO_PASS still fails`,
       at: at(srcMut[0]),
       mechanism: 'editing',
       confidence: 'HIGH',

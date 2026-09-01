@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-01T09:07:34.045Z",
+  "at": "2026-09-01T09:40:15.429Z",
   "corpus_version": "CAPABILITY_V1_STAGE1",
   "corpus_sha256": "0a9a279d48a491dacdadfd714c2c588bfb8a79adb4d536680241f1ebcf8300bb",
   "rows": [
@@ -9,14 +9,14 @@
       "gemma": {
         "task_id": "pallets__flask-4045",
         "repository": "pallets/flask",
-        "started": "2026-09-01T08:57:34.991Z",
+        "started": "2026-09-01T09:09:22.319Z",
         "model": "gemma4-31b",
-        "run_id": "run_a426540091",
-        "status": "completed",
-        "reason": "model_finished",
+        "run_id": "run_7fdca4f88d",
+        "status": "failed",
+        "reason": "no_progress",
         "timed_out": false,
         "run_error": null,
-        "wall_ms": 36696,
+        "wall_ms": 22665,
         "fail_to_pass_now_passes": false,
         "pass_to_pass_still_passes": true,
         "pass_to_pass_checked": 25,
@@ -26,37 +26,40 @@
         "task_success": false,
         "f2p_output": "F                                                                        [100%]\r\n================================== FAILURES ===================================\r\n________________________ test_dotted_name_not_allowed _________________________\r\n\r\napp = <Flask 'flask_test'>, client = <FlaskClient <Flask 'flask_test'>>\r\n\r\n    def test_dotted_name_not_allowed(app, client):\r\n        with pytest.raises(ValueError):\r\n>           flask.Blueprint(\"app.ui\", __name__)\r\nE           Failed: DID NOT RAISE <class 'ValueError'>\r\n\r\ntests\\test_blueprints.py:256: Failed\r\n=========================== short test summary info ===========================\r\nFAILED tests/test_blueprints.py::test_dotted_name_not_allowed - Failed: DID N...\r\n1 failed in 0.09s\r\n",
         "p2p_output": ".........................                                                [100%]\r\n25 passed in 0.10s\r\n",
-        "diff_stat": "tests/test_basic.py      |  6 ++--\n tests/test_blueprints.py | 88 +++++++-----------------------------------------\n 2 files changed, 15 insertions(+), 79 deletions(-)",
+        "diff_stat": "",
         "metrics": {
-          "events": 248,
+          "events": 157,
           "turns": 1,
-          "model_calls": 31,
+          "model_calls": 19,
           "model_failures": 0,
-          "tool_calls": 30,
-          "tool_succeeded": 30,
-          "tool_failed": 0,
+          "tool_calls": 19,
+          "tool_succeeded": 10,
+          "tool_failed": 9,
           "tool_denied": 0,
-          "duplicate_action_count": 1,
-          "duplicate_action_rate": 0.033,
-          "tool_success_rate": 1,
-          "failure_density": 0,
+          "duplicate_action_count": 0,
+          "duplicate_action_rate": 0,
+          "tool_success_rate": 0.526,
+          "failure_density": 0.0573,
           "tools_used": {
             "grep": {
-              "started": 11,
-              "succeeded": 11,
+              "started": 4,
+              "succeeded": 4,
               "failed": 0
             },
             "read": {
-              "started": 19,
-              "succeeded": 19,
+              "started": 5,
+              "succeeded": 5,
               "failed": 0
+            },
+            "bash": {
+              "started": 10,
+              "succeeded": 1,
+              "failed": 9
             }
           },
-          "files_touched": 3,
+          "files_touched": 1,
           "file_list": [
-            "src/flask/blueprints.py",
-            "src/flask/app.py",
-            "src/flask/scaffold.py"
+            "src/flask/blueprints.py"
           ],
           "edits": 0,
           "writes": 0,
@@ -64,36 +67,38 @@
           "failed_test_runs": 0,
           "recovery_decisions": 0,
           "recovery_by_decision": {},
-          "recovered_from_tool_failure": false,
-          "authorization_events": 30,
+          "recovered_from_tool_failure": true,
+          "authorization_events": 19,
           "escalations": 0,
           "human_requests": 0,
-          "degraded": 31,
+          "degraded": 19,
           "degraded_subsystems": [
             "model_adapter"
           ],
           "context_compactions": 0,
           "messages_elided": 0,
           "compaction_bytes_saved": 0,
-          "messages_total": 62,
-          "messages_hot": 40,
-          "messages_dropped": 22,
-          "projection_bytes": 35211,
-          "input_tokens": 165104,
-          "output_tokens": 1084,
+          "messages_total": 39,
+          "messages_hot": 39,
+          "messages_dropped": 0,
+          "projection_bytes": 18747,
+          "input_tokens": 68889,
+          "output_tokens": 551,
           "cache_read_tokens": 0,
           "cost_usd": 0,
-          "wall_ms": 36696,
-          "model_ms": 35283,
-          "tool_ms": 1325,
-          "other_ms": 88,
-          "status": "completed",
-          "exit_reason": "model_finished"
+          "wall_ms": 22665,
+          "model_ms": 16660,
+          "tool_ms": 5940,
+          "other_ms": 65,
+          "status": "failed",
+          "exit_reason": "no_progress"
         },
-        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pallets__flask-4045-1788253058438.db",
+        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pallets__flask-4045-1788253765297.db",
+        "agent_mutations": [],
+        "agent_mutation_count": 0,
         "diag": {
-          "divergence": "30 tool calls, 30 read/grep, ZERO mutations; stopped with reason=model_finished",
-          "at": "08:58:05",
+          "divergence": "19 tool calls, 9 read/grep, ZERO source edits; stopped with reason=no_progress",
+          "at": "09:09:47",
           "mechanism": "premature termination",
           "confidence": "HIGH"
         }
@@ -106,14 +111,14 @@
       "gemma": {
         "task_id": "pallets__flask-5063",
         "repository": "pallets/flask",
-        "started": "2026-09-01T08:58:17.757Z",
+        "started": "2026-09-01T09:09:50.549Z",
         "model": "gemma4-31b",
-        "run_id": "run_28668ed4a5",
-        "status": "completed",
-        "reason": "model_finished",
+        "run_id": "run_0daf8a4f31",
+        "status": "failed",
+        "reason": "max_turns",
         "timed_out": false,
         "run_error": null,
-        "wall_ms": 80700,
+        "wall_ms": 135671,
         "fail_to_pass_now_passes": false,
         "pass_to_pass_still_passes": true,
         "pass_to_pass_checked": 25,
@@ -121,87 +126,92 @@
         "pass_to_pass_unrunnable": 2,
         "pass_to_pass_uncollectable": 0,
         "task_success": false,
-        "f2p_output": "00%]\r\n================================== FAILURES ===================================\r\n__________________________ TestRoutes.test_subdomain __________________________\r\n\r\nself = <test_cli.TestRoutes object at 0x000001C8BDCE68E0>\r\nrunner = <click.testing.CliRunner object at 0x000001C8BDCE6FD0>\r\n\r\n    def test_subdomain(self, runner):\r\n        app = Flask(__name__, static_folder=None)\r\n        app.add_url_rule(\"/a\", subdomain=\"a\", endpoint=\"a\")\r\n        app.add_url_rule(\"/b\", subdomain=\"b\", endpoint=\"b\")\r\n        cli = FlaskGroup(create_app=lambda: app)\r\n        result = runner.invoke(cli, [\"routes\"])\r\n        assert result.exit_code == 0\r\n>       assert \"Subdomain\" in result.output\r\nE       AssertionError: assert 'Subdomain' in 'Endpoint  Methods  Rule\\n--------  -------  ----\\na         GET      /a\\nb         GET      /b\\n'\r\nE        +  where 'Endpoint  Methods  Rule\\n--------  -------  ----\\na         GET      /a\\nb         GET      /b\\n' = <Result okay>.output\r\n\r\ntests\\test_cli.py:495: AssertionError\r\n=========================== short test summary info ===========================\r\nFAILED tests/test_cli.py::TestRoutes::test_subdomain - AssertionError: assert...\r\n1 failed in 0.11s\r\n",
-        "p2p_output": ".........................                                                [100%]\r\n25 passed in 0.11s\r\n",
-        "diff_stat": "src/flask/cli.py  |  6 ++++--\n tests/test_cli.py | 51 ++++++++++++++++++++++++++++-----------------------\n 2 files changed, 32 insertions(+), 25 deletions(-)",
+        "f2p_output": "00%]\r\n================================== FAILURES ===================================\r\n__________________________ TestRoutes.test_subdomain __________________________\r\n\r\nself = <test_cli.TestRoutes object at 0x0000021C452778E0>\r\nrunner = <click.testing.CliRunner object at 0x0000021C45277FD0>\r\n\r\n    def test_subdomain(self, runner):\r\n        app = Flask(__name__, static_folder=None)\r\n        app.add_url_rule(\"/a\", subdomain=\"a\", endpoint=\"a\")\r\n        app.add_url_rule(\"/b\", subdomain=\"b\", endpoint=\"b\")\r\n        cli = FlaskGroup(create_app=lambda: app)\r\n        result = runner.invoke(cli, [\"routes\"])\r\n        assert result.exit_code == 0\r\n>       assert \"Subdomain\" in result.output\r\nE       AssertionError: assert 'Subdomain' in 'Endpoint  Methods  Rule\\n--------  -------  ----\\na         GET      /a\\nb         GET      /b\\n'\r\nE        +  where 'Endpoint  Methods  Rule\\n--------  -------  ----\\na         GET      /a\\nb         GET      /b\\n' = <Result okay>.output\r\n\r\ntests\\test_cli.py:495: AssertionError\r\n=========================== short test summary info ===========================\r\nFAILED tests/test_cli.py::TestRoutes::test_subdomain - AssertionError: assert...\r\n1 failed in 0.10s\r\n",
+        "p2p_output": ".........................                                                [100%]\r\n25 passed in 0.12s\r\n",
+        "diff_stat": "",
         "metrics": {
-          "events": 312,
+          "events": 324,
           "turns": 1,
-          "model_calls": 39,
+          "model_calls": 40,
           "model_failures": 0,
-          "tool_calls": 38,
-          "tool_succeeded": 25,
-          "tool_failed": 13,
+          "tool_calls": 40,
+          "tool_succeeded": 29,
+          "tool_failed": 11,
           "tool_denied": 0,
-          "duplicate_action_count": 4,
-          "duplicate_action_rate": 0.105,
-          "tool_success_rate": 0.658,
-          "failure_density": 0.0417,
+          "duplicate_action_count": 6,
+          "duplicate_action_rate": 0.15,
+          "tool_success_rate": 0.725,
+          "failure_density": 0.034,
           "tools_used": {
             "bash": {
-              "started": 23,
-              "succeeded": 12,
+              "started": 33,
+              "succeeded": 22,
               "failed": 11
-            },
-            "grep": {
-              "started": 4,
-              "succeeded": 4,
-              "failed": 0
             },
             "read": {
               "started": 6,
               "succeeded": 6,
               "failed": 0
             },
-            "edit": {
-              "started": 5,
-              "succeeded": 3,
-              "failed": 2
+            "write": {
+              "started": 1,
+              "succeeded": 1,
+              "failed": 0
             }
           },
-          "files_touched": 2,
+          "files_touched": 4,
           "file_list": [
-            "src/flask",
-            "src/flask/cli.py"
+            "src/flask/cli.py",
+            "reproduce_issue.py",
+            "src/flask/helpers.py",
+            "src/flask/scaffold.py"
           ],
-          "edits": 5,
-          "writes": 0,
-          "test_runs": 0,
+          "edits": 0,
+          "writes": 1,
+          "test_runs": 4,
           "failed_test_runs": 1,
           "recovery_decisions": 0,
           "recovery_by_decision": {},
           "recovered_from_tool_failure": true,
-          "authorization_events": 38,
+          "authorization_events": 40,
           "escalations": 0,
           "human_requests": 0,
-          "degraded": 39,
+          "degraded": 40,
           "degraded_subsystems": [
             "model_adapter"
           ],
           "context_compactions": 0,
           "messages_elided": 0,
           "compaction_bytes_saved": 0,
-          "messages_total": 78,
+          "messages_total": 81,
           "messages_hot": 40,
-          "messages_dropped": 38,
-          "projection_bytes": 20269,
-          "input_tokens": 198916,
-          "output_tokens": 2363,
+          "messages_dropped": 41,
+          "projection_bytes": 23051,
+          "input_tokens": 182614,
+          "output_tokens": 3016,
           "cache_read_tokens": 0,
           "cost_usd": 0,
-          "wall_ms": 80700,
-          "model_ms": 62965,
-          "tool_ms": 17625,
-          "other_ms": 110,
-          "status": "completed",
-          "exit_reason": "model_finished"
+          "wall_ms": 135671,
+          "model_ms": 114946,
+          "tool_ms": 20597,
+          "other_ms": 128,
+          "status": "failed",
+          "exit_reason": "max_turns"
         },
-        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pallets__flask-5063-1788253099315.db",
+        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pallets__flask-5063-1788253792054.db",
+        "agent_mutations": [
+          {
+            "path": "reproduce_issue.py",
+            "ops": 1
+          }
+        ],
+        "agent_mutation_count": 1,
         "diag": {
-          "divergence": "edited source; FAIL_TO_PASS still fails",
-          "at": "08:59:05",
-          "mechanism": "editing",
-          "confidence": "HIGH"
+          "divergence": "40 tool calls, 6 read/grep, ZERO source edits; wrote 1 reproduction script(s) but never edited source; stopped with reason=max_turns",
+          "at": "09:10:26",
+          "mechanism": "premature termination",
+          "confidence": "HIGH",
+          "note": "reproduced the bug, then stopped without fixing it"
         }
       },
       "differential": "SINGLE_ARM"
@@ -212,14 +222,14 @@
       "gemma": {
         "task_id": "psf__requests-3362",
         "repository": "psf/requests",
-        "started": "2026-09-01T08:59:42.204Z",
+        "started": "2026-09-01T09:12:09.929Z",
         "model": "gemma4-31b",
-        "run_id": "run_5ac72b42e0",
+        "run_id": "run_7ab234a90d",
         "status": "completed",
         "reason": "model_finished",
         "timed_out": false,
         "run_error": null,
-        "wall_ms": 44626,
+        "wall_ms": 100890,
         "fail_to_pass_now_passes": false,
         "pass_to_pass_still_passes": true,
         "pass_to_pass_checked": 25,
@@ -227,27 +237,27 @@
         "pass_to_pass_unrunnable": 1,
         "pass_to_pass_uncollectable": 0,
         "task_success": false,
-        "f2p_output": "r = requests.Response()\r\n        r.raw = io.BytesIO(b'the content')\r\n        r.encoding = None\r\n        chunks = r.iter_content(decode_unicode=True)\r\n>       assert all(isinstance(chunk, str) for chunk in chunks)\r\nE       assert False\r\nE        +  where False = all(<generator object TestRequests.test_response_decode_unicode.<locals>.<genexpr> at 0x0000022D9A03B5F0>)\r\n\r\ntests\\test_requests.py:988: AssertionError\r\n============================== warnings summary ===============================\r\nrequests\\packages\\urllib3\\_collections.py:2\r\nrequests\\packages\\urllib3\\_collections.py:2\r\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\psf__requests-3362\\requests\\packages\\urllib3\\_collections.py:2: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\r\n    from collections import Mapping, MutableMapping\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n=========================== short test summary info ===========================\r\nFAILED tests/test_requests.py::TestRequests::test_response_decode_unicode - a...\r\n1 failed, 2 warnings in 0.13s\r\n",
-        "p2p_output": ".........................                                                [100%]\r\n============================== warnings summary ===============================\r\nrequests\\packages\\urllib3\\_collections.py:2\r\nrequests\\packages\\urllib3\\_collections.py:2\r\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\psf__requests-3362\\requests\\packages\\urllib3\\_collections.py:2: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\r\n    from collections import Mapping, MutableMapping\r\n\r\ntests/test_requests.py::TestRequests::test_invalid_url[InvalidSchema-localhost:3128]\r\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\psf__requests-3362\\requests\\models.py:170: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\r\n    if isinstance(hook, collections.Callable):\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n25 passed, 3 warnings in 3.39s\r\n",
-        "diff_stat": "tests/test_requests.py | 7 +++++++\n 1 file changed, 7 insertions(+)",
+        "f2p_output": "r = requests.Response()\r\n        r.raw = io.BytesIO(b'the content')\r\n        r.encoding = None\r\n        chunks = r.iter_content(decode_unicode=True)\r\n>       assert all(isinstance(chunk, str) for chunk in chunks)\r\nE       assert False\r\nE        +  where False = all(<generator object TestRequests.test_response_decode_unicode.<locals>.<genexpr> at 0x00000229679AB5F0>)\r\n\r\ntests\\test_requests.py:988: AssertionError\r\n============================== warnings summary ===============================\r\nrequests\\packages\\urllib3\\_collections.py:2\r\nrequests\\packages\\urllib3\\_collections.py:2\r\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\psf__requests-3362\\requests\\packages\\urllib3\\_collections.py:2: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\r\n    from collections import Mapping, MutableMapping\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n=========================== short test summary info ===========================\r\nFAILED tests/test_requests.py::TestRequests::test_response_decode_unicode - a...\r\n1 failed, 2 warnings in 0.12s\r\n",
+        "p2p_output": ".........................                                                [100%]\r\n============================== warnings summary ===============================\r\nrequests\\packages\\urllib3\\_collections.py:2\r\nrequests\\packages\\urllib3\\_collections.py:2\r\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\psf__requests-3362\\requests\\packages\\urllib3\\_collections.py:2: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\r\n    from collections import Mapping, MutableMapping\r\n\r\ntests/test_requests.py::TestRequests::test_invalid_url[InvalidSchema-localhost:3128]\r\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\psf__requests-3362\\requests\\models.py:170: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\r\n    if isinstance(hook, collections.Callable):\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n25 passed, 3 warnings in 3.38s\r\n",
+        "diff_stat": "",
         "metrics": {
-          "events": 255,
+          "events": 216,
           "turns": 1,
-          "model_calls": 32,
+          "model_calls": 27,
           "model_failures": 0,
-          "tool_calls": 31,
-          "tool_succeeded": 20,
-          "tool_failed": 11,
+          "tool_calls": 26,
+          "tool_succeeded": 17,
+          "tool_failed": 9,
           "tool_denied": 0,
-          "duplicate_action_count": 2,
-          "duplicate_action_rate": 0.065,
-          "tool_success_rate": 0.645,
-          "failure_density": 0.0431,
+          "duplicate_action_count": 3,
+          "duplicate_action_rate": 0.115,
+          "tool_success_rate": 0.654,
+          "failure_density": 0.0417,
           "tools_used": {
             "bash": {
-              "started": 22,
+              "started": 20,
               "succeeded": 11,
-              "failed": 11
+              "failed": 9
             },
             "grep": {
               "started": 1,
@@ -255,8 +265,8 @@
               "failed": 0
             },
             "read": {
-              "started": 8,
-              "succeeded": 8,
+              "started": 5,
+              "succeeded": 5,
               "failed": 0
             }
           },
@@ -272,35 +282,37 @@
           "recovery_decisions": 0,
           "recovery_by_decision": {},
           "recovered_from_tool_failure": true,
-          "authorization_events": 31,
+          "authorization_events": 26,
           "escalations": 0,
           "human_requests": 0,
-          "degraded": 31,
+          "degraded": 27,
           "degraded_subsystems": [
             "model_adapter"
           ],
           "context_compactions": 0,
           "messages_elided": 0,
           "compaction_bytes_saved": 0,
-          "messages_total": 64,
+          "messages_total": 54,
           "messages_hot": 40,
-          "messages_dropped": 24,
-          "projection_bytes": 15285,
-          "input_tokens": 135268,
-          "output_tokens": 1146,
+          "messages_dropped": 14,
+          "projection_bytes": 25569,
+          "input_tokens": 100754,
+          "output_tokens": 2922,
           "cache_read_tokens": 0,
           "cost_usd": 0,
-          "wall_ms": 44626,
-          "model_ms": 32074,
-          "tool_ms": 12455,
-          "other_ms": 97,
+          "wall_ms": 100890,
+          "model_ms": 88100,
+          "tool_ms": 12706,
+          "other_ms": 84,
           "status": "completed",
           "exit_reason": "model_finished"
         },
-        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\psf__requests-3362-1788253183518.db",
+        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\psf__requests-3362-1788253931144.db",
+        "agent_mutations": [],
+        "agent_mutation_count": 0,
         "diag": {
-          "divergence": "31 tool calls, 9 read/grep, ZERO mutations; stopped with reason=model_finished",
-          "at": "09:00:27",
+          "divergence": "26 tool calls, 6 read/grep, ZERO source edits; stopped with reason=model_finished",
+          "at": "09:12:57",
           "mechanism": "premature termination",
           "confidence": "HIGH"
         }
@@ -313,101 +325,94 @@
       "gemma": {
         "task_id": "pylint-dev__pylint-5859",
         "repository": "pylint-dev/pylint",
-        "started": "2026-09-01T09:00:33.214Z",
+        "started": "2026-09-01T09:13:57.272Z",
         "model": "gemma4-31b",
-        "run_id": "run_52cbf0880c",
-        "status": "completed",
-        "reason": "model_finished",
+        "run_id": "run_95e3e4bd27",
+        "status": "failed",
+        "reason": "max_turns",
         "timed_out": false,
         "run_error": null,
-        "wall_ms": 71752,
-        "fail_to_pass_now_passes": true,
+        "wall_ms": 144823,
+        "fail_to_pass_now_passes": false,
         "pass_to_pass_still_passes": true,
         "pass_to_pass_checked": 10,
         "pass_to_pass_declared": 10,
         "pass_to_pass_unrunnable": 0,
         "pass_to_pass_uncollectable": 0,
-        "task_success": true,
-        "f2p_output": ".                                                                        [100%]\r\n============================== warnings summary ===============================\r\n..\\..\\_venvs\\pylint-dev__pylint-5859-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:7\r\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\pylint-dev__pylint-5859-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:7: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html\r\n    import pkg_resources\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n1 passed, 1 warning in 0.01s\r\n",
+        "task_success": false,
+        "f2p_output": "line=None, end_col_offset=None)\r\nE         \r\nE         Got:\r\nE         No message.\r\nE         \r\nE       assert 1 == 0\r\nE        +  where 1 = len((MessageTest(msg_id='fixme', line=2, node=None, args='???', confidence=Confidence(name='UNDEFINED', description='Warning without any associated confidence level.'), col_offset=17, end_line=None, end_col_offset=None),))\r\nE        +  and   0 = len([])\r\n\r\npylint\\testutils\\checker_test_case.py:58: AssertionError\r\n============================== warnings summary ===============================\r\n..\\..\\_venvs\\pylint-dev__pylint-5859-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:7\r\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\pylint-dev__pylint-5859-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:7: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html\r\n    import pkg_resources\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n=========================== short test summary info ===========================\r\nFAILED tests/checkers/unittest_misc.py::TestFixme::test_non_alphanumeric_codetag\r\n1 failed, 1 warning in 0.08s\r\n",
         "p2p_output": "..........                                                               [100%]\r\n============================== warnings summary ===============================\r\n..\\..\\_venvs\\pylint-dev__pylint-5859-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:7\r\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\pylint-dev__pylint-5859-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:7: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html\r\n    import pkg_resources\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n10 passed, 1 warning in 0.02s\r\n",
-        "diff_stat": "pylint/checkers/misc.py         |  4 ++--\n tests/checkers/unittest_misc.py | 10 ++++++++++\n 2 files changed, 12 insertions(+), 2 deletions(-)",
+        "diff_stat": "",
         "metrics": {
-          "events": 120,
+          "events": 324,
           "turns": 1,
-          "model_calls": 15,
+          "model_calls": 40,
           "model_failures": 0,
-          "tool_calls": 14,
-          "tool_succeeded": 9,
-          "tool_failed": 5,
+          "tool_calls": 40,
+          "tool_succeeded": 22,
+          "tool_failed": 18,
           "tool_denied": 0,
-          "duplicate_action_count": 0,
-          "duplicate_action_rate": 0,
-          "tool_success_rate": 0.643,
-          "failure_density": 0.0417,
+          "duplicate_action_count": 8,
+          "duplicate_action_rate": 0.2,
+          "tool_success_rate": 0.55,
+          "failure_density": 0.0556,
           "tools_used": {
-            "grep": {
-              "started": 1,
-              "succeeded": 1,
-              "failed": 0
+            "bash": {
+              "started": 33,
+              "succeeded": 15,
+              "failed": 18
             },
             "read": {
-              "started": 4,
-              "succeeded": 4,
-              "failed": 0
-            },
-            "bash": {
-              "started": 8,
-              "succeeded": 3,
-              "failed": 5
-            },
-            "edit": {
-              "started": 1,
-              "succeeded": 1,
+              "started": 7,
+              "succeeded": 7,
               "failed": 0
             }
           },
-          "files_touched": 1,
+          "files_touched": 2,
           "file_list": [
-            "pylint/checkers/misc.py"
+            "pylint/checkers/misc.py",
+            "test_fixme.py"
           ],
-          "edits": 1,
+          "edits": 0,
           "writes": 0,
-          "test_runs": 1,
-          "failed_test_runs": 0,
+          "test_runs": 0,
+          "failed_test_runs": 6,
           "recovery_decisions": 0,
           "recovery_by_decision": {},
           "recovered_from_tool_failure": true,
-          "authorization_events": 14,
+          "authorization_events": 40,
           "escalations": 0,
           "human_requests": 0,
-          "degraded": 15,
+          "degraded": 40,
           "degraded_subsystems": [
             "model_adapter"
           ],
           "context_compactions": 0,
           "messages_elided": 0,
           "compaction_bytes_saved": 0,
-          "messages_total": 30,
-          "messages_hot": 30,
-          "messages_dropped": 0,
-          "projection_bytes": 23604,
-          "input_tokens": 61311,
-          "output_tokens": 2543,
+          "messages_total": 81,
+          "messages_hot": 40,
+          "messages_dropped": 41,
+          "projection_bytes": 25972,
+          "input_tokens": 245067,
+          "output_tokens": 1351,
           "cache_read_tokens": 0,
           "cost_usd": 0,
-          "wall_ms": 71752,
-          "model_ms": 62336,
-          "tool_ms": 9375,
-          "other_ms": 41,
-          "status": "completed",
-          "exit_reason": "model_finished"
+          "wall_ms": 144823,
+          "model_ms": 107019,
+          "tool_ms": 37667,
+          "other_ms": 137,
+          "status": "failed",
+          "exit_reason": "max_turns"
         },
-        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pylint-dev__pylint-5859-1788253235690.db",
+        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pylint-dev__pylint-5859-1788254039618.db",
+        "agent_mutations": [],
+        "agent_mutation_count": 0,
         "diag": {
-          "divergence": "5 failed tool calls",
-          "at": "09:01:07",
-          "mechanism": "tool argument construction",
-          "confidence": "MEDIUM"
+          "divergence": "40 tool calls, 7 read/grep, ZERO source edits; stopped with reason=max_turns",
+          "at": "09:16:23",
+          "mechanism": "premature termination",
+          "confidence": "HIGH"
         }
       },
       "differential": "SINGLE_ARM"
@@ -418,14 +423,14 @@
       "gemma": {
         "task_id": "pylint-dev__pylint-6506",
         "repository": "pylint-dev/pylint",
-        "started": "2026-09-01T09:01:50.603Z",
+        "started": "2026-09-01T09:16:29.369Z",
         "model": "gemma4-31b",
-        "run_id": "run_90ba26f8b8",
-        "status": "failed",
-        "reason": "max_turns",
+        "run_id": "run_e599949a94",
+        "status": "completed",
+        "reason": "model_finished",
         "timed_out": false,
         "run_error": null,
-        "wall_ms": 209115,
+        "wall_ms": 55688,
         "fail_to_pass_now_passes": false,
         "pass_to_pass_still_passes": true,
         "pass_to_pass_checked": 6,
@@ -433,31 +438,136 @@
         "pass_to_pass_unrunnable": 0,
         "pass_to_pass_uncollectable": 0,
         "task_success": false,
-        "f2p_output": "ecognized-option\", line=0, args=msg)\r\n>           raise _UnrecognizedOptionError(options=unrecognized_options)\r\nE           pylint.config.exceptions._UnrecognizedOptionError\r\n\r\npylint\\config\\config_initialization.py:85: _UnrecognizedOptionError\r\n---------------------------- Captured stdout call -----------------------------\r\n************* Module Command line\r\nCommand line:1:0: E0015: Unrecognized option found: unknown-option=yes (unrecognized-option)\r\n============================== warnings summary ===============================\r\n..\\..\\_venvs\\pylint-dev__pylint-6506-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:6\r\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\pylint-dev__pylint-6506-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:6: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html\r\n    import pkg_resources\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n=========================== short test summary info ===========================\r\nFAILED tests/config/test_config.py::test_unknown_option_name - pylint.config....\r\n1 failed, 1 warning in 0.24s\r\n",
-        "p2p_output": "......                                                                   [100%]\r\n============================== warnings summary ===============================\r\n..\\..\\_venvs\\pylint-dev__pylint-6506-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:6\r\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\pylint-dev__pylint-6506-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:6: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html\r\n    import pkg_resources\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n6 passed, 1 warning in 0.20s\r\n",
-        "diff_stat": "tests/config/test_config.py | 11 ++++++-----\n 1 file changed, 6 insertions(+), 5 deletions(-)",
+        "f2p_output": "ecognized-option\", line=0, args=msg)\r\n>           raise _UnrecognizedOptionError(options=unrecognized_options)\r\nE           pylint.config.exceptions._UnrecognizedOptionError\r\n\r\npylint\\config\\config_initialization.py:85: _UnrecognizedOptionError\r\n---------------------------- Captured stdout call -----------------------------\r\n************* Module Command line\r\nCommand line:1:0: E0015: Unrecognized option found: unknown-option=yes (unrecognized-option)\r\n============================== warnings summary ===============================\r\n..\\..\\_venvs\\pylint-dev__pylint-6506-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:6\r\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\pylint-dev__pylint-6506-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:6: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html\r\n    import pkg_resources\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n=========================== short test summary info ===========================\r\nFAILED tests/config/test_config.py::test_unknown_option_name - pylint.config....\r\n1 failed, 1 warning in 0.14s\r\n",
+        "p2p_output": "......                                                                   [100%]\r\n============================== warnings summary ===============================\r\n..\\..\\_venvs\\pylint-dev__pylint-6506-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:6\r\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\pylint-dev__pylint-6506-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:6: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html\r\n    import pkg_resources\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n6 passed, 1 warning in 0.19s\r\n",
+        "diff_stat": "",
+        "metrics": {
+          "events": 176,
+          "turns": 1,
+          "model_calls": 22,
+          "model_failures": 0,
+          "tool_calls": 21,
+          "tool_succeeded": 11,
+          "tool_failed": 10,
+          "tool_denied": 0,
+          "duplicate_action_count": 3,
+          "duplicate_action_rate": 0.143,
+          "tool_success_rate": 0.524,
+          "failure_density": 0.0568,
+          "tools_used": {
+            "bash": {
+              "started": 18,
+              "succeeded": 8,
+              "failed": 10
+            },
+            "read": {
+              "started": 3,
+              "succeeded": 3,
+              "failed": 0
+            }
+          },
+          "files_touched": 1,
+          "file_list": [
+            "pylint/config/config_initialization.py"
+          ],
+          "edits": 0,
+          "writes": 0,
+          "test_runs": 0,
+          "failed_test_runs": 0,
+          "recovery_decisions": 0,
+          "recovery_by_decision": {},
+          "recovered_from_tool_failure": true,
+          "authorization_events": 21,
+          "escalations": 0,
+          "human_requests": 0,
+          "degraded": 22,
+          "degraded_subsystems": [
+            "model_adapter"
+          ],
+          "context_compactions": 0,
+          "messages_elided": 0,
+          "compaction_bytes_saved": 0,
+          "messages_total": 44,
+          "messages_hot": 40,
+          "messages_dropped": 4,
+          "projection_bytes": 25404,
+          "input_tokens": 80335,
+          "output_tokens": 1016,
+          "cache_read_tokens": 0,
+          "cost_usd": 0,
+          "wall_ms": 55688,
+          "model_ms": 32688,
+          "tool_ms": 22931,
+          "other_ms": 69,
+          "status": "completed",
+          "exit_reason": "model_finished"
+        },
+        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pylint-dev__pylint-6506-1788254192037.db",
+        "agent_mutations": [],
+        "agent_mutation_count": 0,
+        "diag": {
+          "divergence": "21 tool calls, 3 read/grep, ZERO source edits; stopped with reason=model_finished",
+          "at": "09:17:18",
+          "mechanism": "premature termination",
+          "confidence": "HIGH"
+        }
+      },
+      "differential": "SINGLE_ARM"
+    },
+    {
+      "task_id": "pylint-dev__pylint-7228",
+      "repository": "pylint-dev/pylint",
+      "gemma": {
+        "task_id": "pylint-dev__pylint-7228",
+        "repository": "pylint-dev/pylint",
+        "started": "2026-09-01T09:17:31.720Z",
+        "model": "gemma4-31b",
+        "run_id": "run_4471b5d7d2",
+        "status": "failed",
+        "reason": "max_turns",
+        "timed_out": false,
+        "run_error": null,
+        "wall_ms": 134513,
+        "fail_to_pass_now_passes": false,
+        "pass_to_pass_still_passes": true,
+        "pass_to_pass_checked": 10,
+        "pass_to_pass_declared": 10,
+        "pass_to_pass_unrunnable": 0,
+        "pass_to_pass_uncollectable": 0,
+        "task_success": false,
+        "f2p_output": "ame))\r\n                except (KeyError, TypeError):\r\n                    raise source.error(\"undefined character name %r\" % charname,\r\n                                       len(charname) + len(r'\\N{}'))\r\n                return LITERAL, c\r\n            elif c in OCTDIGITS:\r\n                # octal escape (up to three digits)\r\n                escape += source.getwhile(2, OCTDIGITS)\r\n                c = int(escape[1:], 8)\r\n                if c > 0o377:\r\n                    raise source.error('octal escape value %s outside of '\r\n                                       'range 0-0o377' % escape, len(escape))\r\n                return LITERAL, c\r\n            elif c in DIGITS:\r\n                raise ValueError\r\n            if len(escape) == 2:\r\n                if c in ASCIILETTERS:\r\n>                   raise source.error('bad escape %s' % escape, len(escape))\r\nE                   re.error: bad escape \\p at position 1\r\n\r\n..\\..\\..\\..\\..\\Roaming\\uv\\python\\cpython-3.9-windows-x86_64-none\\lib\\sre_parse.py:350: error\r\n=========================== short test summary info ===========================\r\nFAILED tests/config/test_config.py::test_regex_error - re.error: bad escape \\...\r\n1 failed in 0.33s\r\n",
+        "p2p_output": "..........                                                               [100%]\r\n10 passed in 0.30s\r\n",
+        "diff_stat": "",
         "metrics": {
           "events": 324,
           "turns": 1,
           "model_calls": 40,
           "model_failures": 0,
           "tool_calls": 40,
-          "tool_succeeded": 25,
-          "tool_failed": 15,
+          "tool_succeeded": 24,
+          "tool_failed": 16,
           "tool_denied": 0,
-          "duplicate_action_count": 2,
-          "duplicate_action_rate": 0.05,
-          "tool_success_rate": 0.625,
-          "failure_density": 0.0463,
+          "duplicate_action_count": 6,
+          "duplicate_action_rate": 0.15,
+          "tool_success_rate": 0.6,
+          "failure_density": 0.0494,
           "tools_used": {
             "bash": {
-              "started": 40,
-              "succeeded": 25,
-              "failed": 15
+              "started": 34,
+              "succeeded": 18,
+              "failed": 16
+            },
+            "read": {
+              "started": 6,
+              "succeeded": 6,
+              "failed": 0
             }
           },
-          "files_touched": 0,
-          "file_list": [],
+          "files_touched": 2,
+          "file_list": [
+            "reproduce_issue.py",
+            "pylint/checkers/base/name_checker/checker.py"
+          ],
           "edits": 0,
           "writes": 0,
           "test_runs": 0,
@@ -478,22 +588,1191 @@
           "messages_total": 81,
           "messages_hot": 40,
           "messages_dropped": 41,
-          "projection_bytes": 30406,
-          "input_tokens": 201020,
-          "output_tokens": 1388,
+          "projection_bytes": 29602,
+          "input_tokens": 183953,
+          "output_tokens": 1249,
           "cache_read_tokens": 0,
           "cost_usd": 0,
-          "wall_ms": 209115,
-          "model_ms": 152426,
-          "tool_ms": 56541,
-          "other_ms": 148,
+          "wall_ms": 134513,
+          "model_ms": 92185,
+          "tool_ms": 42206,
+          "other_ms": 122,
           "status": "failed",
           "exit_reason": "max_turns"
         },
-        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pylint-dev__pylint-6506-1788253313196.db",
+        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pylint-dev__pylint-7228-1788254254572.db",
+        "agent_mutations": [],
+        "agent_mutation_count": 0,
         "diag": {
-          "divergence": "40 tool calls, 0 read/grep, ZERO mutations; stopped with reason=max_turns",
-          "at": "09:05:21",
+          "divergence": "40 tool calls, 6 read/grep, ZERO source edits; stopped with reason=max_turns",
+          "at": "09:19:48",
+          "mechanism": "premature termination",
+          "confidence": "HIGH"
+        }
+      },
+      "differential": "SINGLE_ARM"
+    },
+    {
+      "task_id": "pylint-dev__pylint-7993",
+      "repository": "pylint-dev/pylint",
+      "gemma": {
+        "task_id": "pylint-dev__pylint-7993",
+        "repository": "pylint-dev/pylint",
+        "started": "2026-09-01T09:19:53.928Z",
+        "model": "gemma4-31b",
+        "run_id": "run_6d7ba451b6",
+        "status": "completed",
+        "reason": "model_finished",
+        "timed_out": false,
+        "run_error": null,
+        "wall_ms": 131928,
+        "fail_to_pass_now_passes": true,
+        "pass_to_pass_still_passes": false,
+        "pass_to_pass_checked": 10,
+        "pass_to_pass_declared": 10,
+        "pass_to_pass_unrunnable": 0,
+        "pass_to_pass_uncollectable": 0,
+        "task_success": false,
+        "f2p_output": ".                                                                        [100%]\r\n1 passed in 0.03s\r\n",
+        "p2p_output": "t\\pylinter.py:1273: in _add_one_message\r\n    self.reporter.handle_message(\r\npylint\\reporters\\text.py:214: in handle_message\r\n    self.write_message(msg)\r\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\r\n\r\nself = <pylint.reporters.text.TextReporter object at 0x000002BE7E83E760>\r\nmsg = Message(msg_id='C0301', symbol='line-too-long', msg='Line too long (1/2)', C='C', category='convention', confidence=Co...e level.'), abspath='my_mod', path='my_mod', module='my_mod', obj='', line=1, column=0, end_line=None, end_column=None)\r\n\r\n    def write_message(self, msg: Message) -> None:\r\n        \"\"\"Convenience method to write a formatted message with class default\r\n        template.\r\n        \"\"\"\r\n        self_dict = asdict(msg)\r\n        for key in (\"end_line\", \"end_column\"):\r\n            self_dict[key] = self_dict[key] or \"\"\r\n    \r\n>       self.writeln(self._fixed_template.format(**self_dict))\r\nE       KeyError: 'a_second_new_option'\r\n\r\npylint\\reporters\\text.py:204: KeyError\r\n=========================== short test summary info ===========================\r\nFAILED tests/reporters/unittest_reporting.py::test_template_option_non_existing\r\n1 failed, 9 passed in 0.21s\r\n",
+        "diff_stat": "pylint/reporters/text.py | 24 ++++++++++++++++--------\n 1 file changed, 16 insertions(+), 8 deletions(-)",
+        "metrics": {
+          "events": 238,
+          "turns": 1,
+          "model_calls": 30,
+          "model_failures": 0,
+          "tool_calls": 28,
+          "tool_succeeded": 20,
+          "tool_failed": 9,
+          "tool_denied": 0,
+          "duplicate_action_count": 4,
+          "duplicate_action_rate": 0.143,
+          "tool_success_rate": 0.714,
+          "failure_density": 0.0378,
+          "tools_used": {
+            "bash": {
+              "started": 13,
+              "succeeded": 6,
+              "failed": 7
+            },
+            "read": {
+              "started": 11,
+              "succeeded": 10,
+              "failed": 2
+            },
+            "write": {
+              "started": 3,
+              "succeeded": 3,
+              "failed": 0
+            },
+            "edit": {
+              "started": 1,
+              "succeeded": 1,
+              "failed": 0
+            }
+          },
+          "files_touched": 5,
+          "file_list": [
+            "pylint/reporters/text.py",
+            "reproduce_issue.py",
+            "pylint/message.py",
+            "pylint/message/message.py",
+            "pylint/interfaces.py"
+          ],
+          "edits": 1,
+          "writes": 3,
+          "test_runs": 0,
+          "failed_test_runs": 1,
+          "recovery_decisions": 0,
+          "recovery_by_decision": {},
+          "recovered_from_tool_failure": true,
+          "authorization_events": 28,
+          "escalations": 0,
+          "human_requests": 0,
+          "degraded": 30,
+          "degraded_subsystems": [
+            "model_adapter"
+          ],
+          "context_compactions": 0,
+          "messages_elided": 0,
+          "compaction_bytes_saved": 0,
+          "messages_total": 60,
+          "messages_hot": 40,
+          "messages_dropped": 20,
+          "projection_bytes": 26566,
+          "input_tokens": 154613,
+          "output_tokens": 3477,
+          "cache_read_tokens": 0,
+          "cost_usd": 0,
+          "wall_ms": 131928,
+          "model_ms": 122667,
+          "tool_ms": 9170,
+          "other_ms": 91,
+          "status": "completed",
+          "exit_reason": "model_finished"
+        },
+        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pylint-dev__pylint-7993-1788254396646.db",
+        "agent_mutations": [
+          {
+            "path": "reproduce_issue.py",
+            "ops": 3
+          },
+          {
+            "path": "pylint/reporters/text.py",
+            "ops": 1
+          }
+        ],
+        "agent_mutation_count": 4,
+        "diag": {
+          "divergence": "FAIL_TO_PASS satisfied but PASS_TO_PASS regressed",
+          "at": "09:21:57",
+          "mechanism": "reasoning",
+          "confidence": "HIGH",
+          "note": "the fix was too broad -- a real capability failure, not a verifier artefact"
+        }
+      },
+      "differential": "SINGLE_ARM"
+    },
+    {
+      "task_id": "pytest-dev__pytest-11143",
+      "repository": "pytest-dev/pytest",
+      "gemma": {
+        "task_id": "pytest-dev__pytest-11143",
+        "repository": "pytest-dev/pytest",
+        "started": "2026-09-01T09:22:12.074Z",
+        "model": "gemma4-31b",
+        "run_id": "run_501432828c",
+        "status": "completed",
+        "reason": "model_finished",
+        "timed_out": false,
+        "run_error": null,
+        "wall_ms": 37721,
+        "fail_to_pass_now_passes": false,
+        "pass_to_pass_still_passes": true,
+        "pass_to_pass_checked": 25,
+        "pass_to_pass_declared": 114,
+        "pass_to_pass_unrunnable": 10,
+        "pass_to_pass_uncollectable": 0,
+        "task_success": false,
+        "f2p_output": "pability-v1\\work\\pytest-dev__pytest-11143\\src\\_pytest\\assertion\\rewrite.py:341: in _rewrite_test\r\n    rewrite_asserts(tree, source, strfn, config)\r\n..\\..\\..\\capability-v1\\work\\pytest-dev__pytest-11143\\src\\_pytest\\assertion\\rewrite.py:402: in rewrite_asserts\r\n    AssertionRewriter(module_path, config, source).run(mod)\r\n..\\..\\..\\capability-v1\\work\\pytest-dev__pytest-11143\\src\\_pytest\\assertion\\rewrite.py:681: in run\r\n    if self.is_rewrite_disabled(doc):\r\n..\\..\\..\\capability-v1\\work\\pytest-dev__pytest-11143\\src\\_pytest\\assertion\\rewrite.py:746: in is_rewrite_disabled\r\n    return \"PYTEST_DONT_REWRITE\" in docstring\r\nE   TypeError: argument of type 'int' is not iterable\r\n=========================== short test summary info ===========================\r\nERROR test_constant_not_picked_as_module_docstring.py - TypeError: argument o...\r\n!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\r\n============================== 1 error in 0.13s ===============================\r\n=========================== short test summary info ===========================\r\nFAILED testing/test_assertrewrite.py::TestIssue11140::test_constant_not_picked_as_module_docstring\r\n1 failed in 0.29s\r\n",
+        "p2p_output": ".........................                                                [100%]\r\n25 passed in 0.21s\r\n",
+        "diff_stat": "",
+        "metrics": {
+          "events": 136,
+          "turns": 1,
+          "model_calls": 17,
+          "model_failures": 0,
+          "tool_calls": 16,
+          "tool_succeeded": 12,
+          "tool_failed": 4,
+          "tool_denied": 0,
+          "duplicate_action_count": 0,
+          "duplicate_action_rate": 0,
+          "tool_success_rate": 0.75,
+          "failure_density": 0.0294,
+          "tools_used": {
+            "bash": {
+              "started": 15,
+              "succeeded": 11,
+              "failed": 4
+            },
+            "read": {
+              "started": 1,
+              "succeeded": 1,
+              "failed": 0
+            }
+          },
+          "files_touched": 1,
+          "file_list": [
+            "src/_pytest/assertion/rewrite.py"
+          ],
+          "edits": 0,
+          "writes": 0,
+          "test_runs": 0,
+          "failed_test_runs": 0,
+          "recovery_decisions": 0,
+          "recovery_by_decision": {},
+          "recovered_from_tool_failure": true,
+          "authorization_events": 16,
+          "escalations": 0,
+          "human_requests": 0,
+          "degraded": 17,
+          "degraded_subsystems": [
+            "model_adapter"
+          ],
+          "context_compactions": 0,
+          "messages_elided": 0,
+          "compaction_bytes_saved": 0,
+          "messages_total": 34,
+          "messages_hot": 34,
+          "messages_dropped": 0,
+          "projection_bytes": 20636,
+          "input_tokens": 62596,
+          "output_tokens": 1118,
+          "cache_read_tokens": 0,
+          "cost_usd": 0,
+          "wall_ms": 37721,
+          "model_ms": 28756,
+          "tool_ms": 8908,
+          "other_ms": 57,
+          "status": "completed",
+          "exit_reason": "model_finished"
+        },
+        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pytest-dev__pytest-11143-1788254533500.db",
+        "agent_mutations": [],
+        "agent_mutation_count": 0,
+        "diag": {
+          "divergence": "16 tool calls, 1 read/grep, ZERO source edits; stopped with reason=model_finished",
+          "at": "09:22:44",
+          "mechanism": "context acquisition",
+          "confidence": "HIGH"
+        }
+      },
+      "differential": "SINGLE_ARM"
+    },
+    {
+      "task_id": "pytest-dev__pytest-11148",
+      "repository": "pytest-dev/pytest",
+      "gemma": {
+        "task_id": "pytest-dev__pytest-11148",
+        "repository": "pytest-dev/pytest",
+        "started": "2026-09-01T09:22:53.371Z",
+        "model": "gemma4-31b",
+        "run_id": "run_3df2948d23",
+        "status": "failed",
+        "reason": "max_turns",
+        "timed_out": false,
+        "run_error": null,
+        "wall_ms": 52507,
+        "fail_to_pass_now_passes": false,
+        "pass_to_pass_still_passes": true,
+        "pass_to_pass_checked": 21,
+        "pass_to_pass_declared": 129,
+        "pass_to_pass_unrunnable": 1,
+        "pass_to_pass_uncollectable": 4,
+        "task_success": false,
+        "f2p_output": "pData/Local/Temp/pytest-of-abhijith.p/pytest-322/test_remembers_previous_import0')\r\n\r\n    def test_remembers_previous_imports(\r\n        self, simple_module: Path, tmp_path: Path\r\n    ) -> None:\r\n        \"\"\"`importlib` mode called remembers previous module (#10341, #10811).\"\"\"\r\n        module1 = import_path(simple_module, mode=\"importlib\", root=tmp_path)\r\n        module2 = import_path(simple_module, mode=\"importlib\", root=tmp_path)\r\n>       assert module1 is module2\r\nE       AssertionError: assert <module '_src.tests.mymod_test_remembers_previous_imports' from 'C:\\\\Users\\\\abhijith.p\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-abhijith.p\\\\pytest-322\\\\test_remembers_previous_import0\\\\_src\\\\tests\\\\mymod_test_remembers_previous_imports.py'> is <module '_src.tests.mymod_test_remembers_previous_imports' from 'C:\\\\Users\\\\abhijith.p\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-abhijith.p\\\\pytest-322\\\\test_remembers_previous_import0\\\\_src\\\\tests\\\\mymod_test_remembers_previous_imports.py'>\r\n\r\ntesting\\test_pathlib.py:315: AssertionError\r\n=========================== short test summary info ===========================\r\nFAILED testing/test_pathlib.py::TestImportPath::test_remembers_previous_imports\r\n1 failed in 0.14s\r\n",
+        "p2p_output": ".....................                                                    [100%]\r\n21 passed in 0.17s\r\n",
+        "diff_stat": "",
+        "metrics": {
+          "events": 324,
+          "turns": 1,
+          "model_calls": 40,
+          "model_failures": 0,
+          "tool_calls": 40,
+          "tool_succeeded": 20,
+          "tool_failed": 20,
+          "tool_denied": 0,
+          "duplicate_action_count": 29,
+          "duplicate_action_rate": 0.725,
+          "tool_success_rate": 0.5,
+          "failure_density": 0.0617,
+          "tools_used": {
+            "bash": {
+              "started": 36,
+              "succeeded": 16,
+              "failed": 20
+            },
+            "grep": {
+              "started": 4,
+              "succeeded": 4,
+              "failed": 0
+            }
+          },
+          "files_touched": 1,
+          "file_list": [
+            "src/pytest/"
+          ],
+          "edits": 0,
+          "writes": 0,
+          "test_runs": 0,
+          "failed_test_runs": 0,
+          "recovery_decisions": 0,
+          "recovery_by_decision": {},
+          "recovered_from_tool_failure": true,
+          "authorization_events": 40,
+          "escalations": 0,
+          "human_requests": 0,
+          "degraded": 40,
+          "degraded_subsystems": [
+            "model_adapter"
+          ],
+          "context_compactions": 0,
+          "messages_elided": 0,
+          "compaction_bytes_saved": 0,
+          "messages_total": 81,
+          "messages_hot": 40,
+          "messages_dropped": 41,
+          "projection_bytes": 7128,
+          "input_tokens": 93649,
+          "output_tokens": 1061,
+          "cache_read_tokens": 0,
+          "cost_usd": 0,
+          "wall_ms": 52507,
+          "model_ms": 32443,
+          "tool_ms": 19940,
+          "other_ms": 124,
+          "status": "failed",
+          "exit_reason": "max_turns"
+        },
+        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pytest-dev__pytest-11148-1788254574666.db",
+        "agent_mutations": [],
+        "agent_mutation_count": 0,
+        "diag": {
+          "divergence": "40 tool calls, 4 read/grep, ZERO source edits; stopped with reason=max_turns",
+          "at": "09:23:46",
+          "mechanism": "premature termination",
+          "confidence": "HIGH"
+        }
+      },
+      "differential": "SINGLE_ARM"
+    },
+    {
+      "task_id": "pytest-dev__pytest-6116",
+      "repository": "pytest-dev/pytest",
+      "gemma": {
+        "task_id": "pytest-dev__pytest-6116",
+        "repository": "pytest-dev/pytest",
+        "started": "2026-09-01T09:23:49.266Z",
+        "model": "gemma4-31b",
+        "run_id": "run_273909f219",
+        "status": "failed",
+        "reason": "no_progress",
+        "timed_out": false,
+        "run_error": null,
+        "wall_ms": 18640,
+        "fail_to_pass_now_passes": false,
+        "pass_to_pass_still_passes": true,
+        "pass_to_pass_checked": 25,
+        "pass_to_pass_declared": 69,
+        "pass_to_pass_unrunnable": 0,
+        "pass_to_pass_uncollectable": 0,
+        "task_success": false,
+        "f2p_output": "_are_seen(self, testdir):\r\n        testdir.makeconftest(\r\n            \"\"\"\r\n            import pytest\r\n            class MyModule(pytest.Module):\r\n                pass\r\n            def pytest_collect_file(path, parent):\r\n                if path.ext == \".py\":\r\n                    return MyModule(path, parent)\r\n        \"\"\"\r\n        )\r\n        testdir.mkdir(\"sub\")\r\n        testdir.makepyfile(\"def test_x(): pass\")\r\n        result = testdir.runpytest(\"--co\")\r\n>       result.stdout.fnmatch_lines([\"*MyModule*\", \"*test_x*\"])\r\nE       Failed: remains unmatched: '*MyModule*'\r\n\r\n..\\..\\..\\capability-v1\\work\\pytest-dev__pytest-6116\\testing\\test_collection.py:406: Failed\r\n---------------------------- Captured stderr call -----------------------------\r\nERROR: usage: pytest.py [options] [file_or_dir] [file_or_dir] [...]\r\npytest.py: error: unrecognized arguments: --co\r\n  inifile: None\r\n  rootdir: C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\pytest-of-abhijith.p\\pytest-325\\test_pytest_fs_collect_hooks_are_seen0\r\n\r\n=========================== short test summary info ===========================\r\nFAILED testing/test_collection.py::TestCustomConftests::test_pytest_fs_collect_hooks_are_seen\r\n1 failed in 0.16s\r\n",
+        "p2p_output": ".........................                                                [100%]\r\n25 passed in 2.32s\r\n",
+        "diff_stat": "",
+        "metrics": {
+          "events": 109,
+          "turns": 1,
+          "model_calls": 13,
+          "model_failures": 0,
+          "tool_calls": 13,
+          "tool_succeeded": 12,
+          "tool_failed": 1,
+          "tool_denied": 0,
+          "duplicate_action_count": 5,
+          "duplicate_action_rate": 0.385,
+          "tool_success_rate": 0.923,
+          "failure_density": 0.0092,
+          "tools_used": {
+            "grep": {
+              "started": 4,
+              "succeeded": 4,
+              "failed": 0
+            },
+            "bash": {
+              "started": 7,
+              "succeeded": 6,
+              "failed": 1
+            },
+            "read": {
+              "started": 2,
+              "succeeded": 2,
+              "failed": 0
+            }
+          },
+          "files_touched": 1,
+          "file_list": [
+            "src/_pytest/main.py"
+          ],
+          "edits": 0,
+          "writes": 0,
+          "test_runs": 0,
+          "failed_test_runs": 1,
+          "recovery_decisions": 0,
+          "recovery_by_decision": {},
+          "recovered_from_tool_failure": true,
+          "authorization_events": 13,
+          "escalations": 0,
+          "human_requests": 0,
+          "degraded": 13,
+          "degraded_subsystems": [
+            "model_adapter"
+          ],
+          "context_compactions": 0,
+          "messages_elided": 0,
+          "compaction_bytes_saved": 0,
+          "messages_total": 27,
+          "messages_hot": 27,
+          "messages_dropped": 0,
+          "projection_bytes": 16603,
+          "input_tokens": 43105,
+          "output_tokens": 323,
+          "cache_read_tokens": 0,
+          "cost_usd": 0,
+          "wall_ms": 18640,
+          "model_ms": 10891,
+          "tool_ms": 7704,
+          "other_ms": 45,
+          "status": "failed",
+          "exit_reason": "no_progress"
+        },
+        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pytest-dev__pytest-6116-1788254630431.db",
+        "agent_mutations": [],
+        "agent_mutation_count": 0,
+        "diag": {
+          "divergence": "13 tool calls, 6 read/grep, ZERO source edits; stopped with reason=no_progress",
+          "at": "09:24:08",
+          "mechanism": "premature termination",
+          "confidence": "HIGH"
+        }
+      },
+      "differential": "SINGLE_ARM"
+    },
+    {
+      "task_id": "pytest-dev__pytest-7220",
+      "repository": "pytest-dev/pytest",
+      "gemma": {
+        "task_id": "pytest-dev__pytest-7220",
+        "repository": "pytest-dev/pytest",
+        "started": "2026-09-01T09:24:13.097Z",
+        "model": "gemma4-31b",
+        "run_id": "run_e1af485d10",
+        "status": "failed",
+        "reason": "no_progress",
+        "timed_out": false,
+        "run_error": null,
+        "wall_ms": 60897,
+        "fail_to_pass_now_passes": false,
+        "pass_to_pass_still_passes": true,
+        "pass_to_pass_checked": 7,
+        "pass_to_pass_declared": 11,
+        "pass_to_pass_unrunnable": 4,
+        "pass_to_pass_uncollectable": 0,
+        "task_success": false,
+        "f2p_output": "------ Captured stdout call -----------------------------\r\n============================= test session starts =============================\r\nplatform win32 -- Python 3.9.25, pytest-5.4.1.dev380+g56bf819c2, py-1.8.1, pluggy-0.13.1\r\nrootdir: C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\pytest-of-abhijith.p\\pytest-328\\test_failure_with_changed_cwd0\r\ncollected 1 item\r\n\r\ntest_failure_with_changed_cwd.py F                                       [100%]\r\n\r\n================================== FAILURES ===================================\r\n____________________________ test_show_wrong_path _____________________________\r\n\r\nprivate_dir = 'ddd'\r\n\r\n    def test_show_wrong_path(private_dir):\r\n>       assert False\r\nE       assert False\r\n\r\n..\\test_failure_with_changed_cwd.py:14: AssertionError\r\n=========================== short test summary info ===========================\r\nFAILED test_failure_with_changed_cwd.py::test_show_wrong_path - assert False\r\n============================== 1 failed in 0.07s ==============================\r\n=========================== short test summary info ===========================\r\nFAILED testing/test_nodes.py::test_failure_with_changed_cwd - Failed: nomatch...\r\n1 failed in 0.14s\r\n",
+        "p2p_output": ".......                                                                  [100%]\r\n7 passed in 0.44s\r\n",
+        "diff_stat": "",
+        "metrics": {
+          "events": 93,
+          "turns": 1,
+          "model_calls": 11,
+          "model_failures": 0,
+          "tool_calls": 11,
+          "tool_succeeded": 3,
+          "tool_failed": 8,
+          "tool_denied": 0,
+          "duplicate_action_count": 1,
+          "duplicate_action_rate": 0.091,
+          "tool_success_rate": 0.273,
+          "failure_density": 0.086,
+          "tools_used": {
+            "bash": {
+              "started": 10,
+              "succeeded": 2,
+              "failed": 8
+            },
+            "write": {
+              "started": 1,
+              "succeeded": 1,
+              "failed": 0
+            }
+          },
+          "files_touched": 1,
+          "file_list": [
+            "repro/test_path_error.py"
+          ],
+          "edits": 0,
+          "writes": 1,
+          "test_runs": 0,
+          "failed_test_runs": 2,
+          "recovery_decisions": 0,
+          "recovery_by_decision": {},
+          "recovered_from_tool_failure": true,
+          "authorization_events": 11,
+          "escalations": 0,
+          "human_requests": 0,
+          "degraded": 11,
+          "degraded_subsystems": [
+            "model_adapter"
+          ],
+          "context_compactions": 0,
+          "messages_elided": 0,
+          "compaction_bytes_saved": 0,
+          "messages_total": 23,
+          "messages_hot": 23,
+          "messages_dropped": 0,
+          "projection_bytes": 12201,
+          "input_tokens": 24878,
+          "output_tokens": 411,
+          "cache_read_tokens": 0,
+          "cost_usd": 0,
+          "wall_ms": 60897,
+          "model_ms": 10502,
+          "tool_ms": 50358,
+          "other_ms": 37,
+          "status": "failed",
+          "exit_reason": "no_progress"
+        },
+        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pytest-dev__pytest-7220-1788254654247.db",
+        "agent_mutations": [
+          {
+            "path": "repro/test_path_error.py",
+            "ops": 1
+          }
+        ],
+        "agent_mutation_count": 1,
+        "diag": {
+          "divergence": "11 tool calls, 0 read/grep, ZERO source edits; wrote 1 reproduction script(s) but never edited source; stopped with reason=no_progress",
+          "at": "09:24:20",
+          "mechanism": "context acquisition",
+          "confidence": "HIGH",
+          "note": "reproduced the bug, then stopped without fixing it"
+        }
+      },
+      "differential": "SINGLE_ARM"
+    },
+    {
+      "task_id": "pytest-dev__pytest-7373",
+      "repository": "pytest-dev/pytest",
+      "gemma": {
+        "task_id": "pytest-dev__pytest-7373",
+        "repository": "pytest-dev/pytest",
+        "started": "2026-09-01T09:25:17.207Z",
+        "model": "gemma4-31b",
+        "run_id": "run_039f3be898",
+        "status": "completed",
+        "reason": "model_finished",
+        "timed_out": false,
+        "run_error": null,
+        "wall_ms": 22764,
+        "fail_to_pass_now_passes": true,
+        "pass_to_pass_still_passes": true,
+        "pass_to_pass_checked": 25,
+        "pass_to_pass_declared": 81,
+        "pass_to_pass_unrunnable": 14,
+        "pass_to_pass_uncollectable": 0,
+        "task_success": true,
+        "f2p_output": ".                                                                        [100%]\r\n1 passed in 0.19s\r\n",
+        "p2p_output": ".........................                                                [100%]\r\n25 passed in 0.78s\r\n",
+        "diff_stat": "src/_pytest/mark/evaluate.py | 20 +++-----------------\n 1 file changed, 3 insertions(+), 17 deletions(-)",
+        "metrics": {
+          "events": 88,
+          "turns": 1,
+          "model_calls": 11,
+          "model_failures": 0,
+          "tool_calls": 10,
+          "tool_succeeded": 8,
+          "tool_failed": 2,
+          "tool_denied": 0,
+          "duplicate_action_count": 2,
+          "duplicate_action_rate": 0.2,
+          "tool_success_rate": 0.8,
+          "failure_density": 0.0227,
+          "tools_used": {
+            "bash": {
+              "started": 1,
+              "succeeded": 1,
+              "failed": 0
+            },
+            "read": {
+              "started": 5,
+              "succeeded": 5,
+              "failed": 0
+            },
+            "edit": {
+              "started": 4,
+              "succeeded": 2,
+              "failed": 2
+            }
+          },
+          "files_touched": 1,
+          "file_list": [
+            "src/_pytest/mark/evaluate.py"
+          ],
+          "edits": 4,
+          "writes": 0,
+          "test_runs": 0,
+          "failed_test_runs": 0,
+          "recovery_decisions": 0,
+          "recovery_by_decision": {},
+          "recovered_from_tool_failure": true,
+          "authorization_events": 10,
+          "escalations": 0,
+          "human_requests": 0,
+          "degraded": 11,
+          "degraded_subsystems": [
+            "model_adapter"
+          ],
+          "context_compactions": 0,
+          "messages_elided": 0,
+          "compaction_bytes_saved": 0,
+          "messages_total": 22,
+          "messages_hot": 22,
+          "messages_dropped": 0,
+          "projection_bytes": 19563,
+          "input_tokens": 33117,
+          "output_tokens": 1012,
+          "cache_read_tokens": 0,
+          "cost_usd": 0,
+          "wall_ms": 22764,
+          "model_ms": 22133,
+          "tool_ms": 592,
+          "other_ms": 39,
+          "status": "completed",
+          "exit_reason": "model_finished"
+        },
+        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pytest-dev__pytest-7373-1788254718526.db",
+        "agent_mutations": [
+          {
+            "path": "src/_pytest/mark/evaluate.py",
+            "ops": 2
+          }
+        ],
+        "agent_mutation_count": 2,
+        "diag": {
+          "divergence": null,
+          "mechanism": "PASS",
+          "confidence": "HIGH"
+        }
+      },
+      "differential": "SINGLE_ARM"
+    },
+    {
+      "task_id": "pytest-dev__pytest-7432",
+      "repository": "pytest-dev/pytest",
+      "gemma": {
+        "task_id": "pytest-dev__pytest-7432",
+        "repository": "pytest-dev/pytest",
+        "started": "2026-09-01T09:25:43.905Z",
+        "model": "gemma4-31b",
+        "run_id": "run_ab8333fe06",
+        "status": "completed",
+        "reason": "model_finished",
+        "timed_out": false,
+        "run_error": null,
+        "wall_ms": 76824,
+        "fail_to_pass_now_passes": true,
+        "pass_to_pass_still_passes": true,
+        "pass_to_pass_checked": 25,
+        "pass_to_pass_declared": 77,
+        "pass_to_pass_unrunnable": 5,
+        "pass_to_pass_uncollectable": 0,
+        "task_success": true,
+        "f2p_output": ".                                                                        [100%]\r\n1 passed in 0.10s\r\n",
+        "p2p_output": ".........................                                                [100%]\r\n25 passed in 1.87s\r\n",
+        "diff_stat": "src/_pytest/skipping.py | 6 ++----\n 1 file changed, 2 insertions(+), 4 deletions(-)",
+        "metrics": {
+          "events": 166,
+          "turns": 1,
+          "model_calls": 21,
+          "model_failures": 0,
+          "tool_calls": 19,
+          "tool_succeeded": 16,
+          "tool_failed": 4,
+          "tool_denied": 0,
+          "duplicate_action_count": 3,
+          "duplicate_action_rate": 0.158,
+          "tool_success_rate": 0.842,
+          "failure_density": 0.0241,
+          "tools_used": {
+            "bash": {
+              "started": 12,
+              "succeeded": 9,
+              "failed": 3
+            },
+            "read": {
+              "started": 4,
+              "succeeded": 4,
+              "failed": 0
+            },
+            "write": {
+              "started": 1,
+              "succeeded": 1,
+              "failed": 0
+            },
+            "edit": {
+              "started": 2,
+              "succeeded": 2,
+              "failed": 1
+            }
+          },
+          "files_touched": 2,
+          "file_list": [
+            "src/_pytest/skipping.py",
+            "repro.py"
+          ],
+          "edits": 2,
+          "writes": 1,
+          "test_runs": 0,
+          "failed_test_runs": 1,
+          "recovery_decisions": 0,
+          "recovery_by_decision": {},
+          "recovered_from_tool_failure": true,
+          "authorization_events": 19,
+          "escalations": 0,
+          "human_requests": 0,
+          "degraded": 21,
+          "degraded_subsystems": [
+            "model_adapter"
+          ],
+          "context_compactions": 0,
+          "messages_elided": 0,
+          "compaction_bytes_saved": 0,
+          "messages_total": 42,
+          "messages_hot": 40,
+          "messages_dropped": 2,
+          "projection_bytes": 27071,
+          "input_tokens": 92084,
+          "output_tokens": 2967,
+          "cache_read_tokens": 0,
+          "cost_usd": 0,
+          "wall_ms": 76824,
+          "model_ms": 65322,
+          "tool_ms": 11439,
+          "other_ms": 63,
+          "status": "completed",
+          "exit_reason": "model_finished"
+        },
+        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pytest-dev__pytest-7432-1788254745111.db",
+        "agent_mutations": [
+          {
+            "path": "repro.py",
+            "ops": 1
+          },
+          {
+            "path": "src/_pytest/skipping.py",
+            "ops": 2
+          }
+        ],
+        "agent_mutation_count": 3,
+        "diag": {
+          "divergence": null,
+          "mechanism": "PASS",
+          "confidence": "HIGH"
+        }
+      },
+      "differential": "SINGLE_ARM"
+    },
+    {
+      "task_id": "pytest-dev__pytest-7490",
+      "repository": "pytest-dev/pytest",
+      "gemma": {
+        "task_id": "pytest-dev__pytest-7490",
+        "repository": "pytest-dev/pytest",
+        "started": "2026-09-01T09:27:05.655Z",
+        "model": "gemma4-31b",
+        "run_id": "run_7a5d1bf494",
+        "status": "failed",
+        "reason": "no_progress",
+        "timed_out": false,
+        "run_error": null,
+        "wall_ms": 17845,
+        "fail_to_pass_now_passes": false,
+        "pass_to_pass_still_passes": true,
+        "pass_to_pass_checked": 25,
+        "pass_to_pass_declared": 78,
+        "pass_to_pass_unrunnable": 5,
+        "pass_to_pass_uncollectable": 0,
+        "task_success": false,
+        "f2p_output": "=========================\r\nplatform win32 -- Python 3.9.25, pytest-6.0.0rc2.dev33+g7f7a36478, py-1.9.0, pluggy-0.13.1\r\nrootdir: C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\pytest-of-abhijith.p\\pytest-337\\test_dynamic_xfail_set_during_runtest_failed0\r\ncollected 1 item\r\n\r\ntest_dynamic_xfail_set_during_runtest_failed.py F                        [100%]\r\n\r\n================================== FAILURES ===================================\r\n__________________________________ test_this __________________________________\r\n\r\nrequest = <FixtureRequest for <Function test_this>>\r\n\r\n    def test_this(request):\r\n        request.node.add_marker(pytest.mark.xfail(reason=\"xfail\"))\r\n>       assert 0\r\nE       assert 0\r\n\r\ntest_dynamic_xfail_set_during_runtest_failed.py:4: AssertionError\r\n=========================== short test summary info ===========================\r\nFAILED test_dynamic_xfail_set_during_runtest_failed.py::test_this - assert 0\r\n============================== 1 failed in 0.05s ==============================\r\n=========================== short test summary info ===========================\r\nFAILED testing/test_skipping.py::TestXFail::test_dynamic_xfail_set_during_runtest_failed\r\n1 failed in 0.16s\r\n",
+        "p2p_output": ".........................                                                [100%]\r\n25 passed in 1.80s\r\n",
+        "diff_stat": "",
+        "metrics": {
+          "events": 93,
+          "turns": 1,
+          "model_calls": 11,
+          "model_failures": 0,
+          "tool_calls": 11,
+          "tool_succeeded": 5,
+          "tool_failed": 6,
+          "tool_denied": 0,
+          "duplicate_action_count": 2,
+          "duplicate_action_rate": 0.182,
+          "tool_success_rate": 0.455,
+          "failure_density": 0.0645,
+          "tools_used": {
+            "bash": {
+              "started": 9,
+              "succeeded": 3,
+              "failed": 6
+            },
+            "write": {
+              "started": 2,
+              "succeeded": 2,
+              "failed": 0
+            }
+          },
+          "files_touched": 1,
+          "file_list": [
+            "reproduce_issue.py"
+          ],
+          "edits": 0,
+          "writes": 2,
+          "test_runs": 0,
+          "failed_test_runs": 6,
+          "recovery_decisions": 0,
+          "recovery_by_decision": {},
+          "recovered_from_tool_failure": false,
+          "authorization_events": 11,
+          "escalations": 0,
+          "human_requests": 0,
+          "degraded": 11,
+          "degraded_subsystems": [
+            "model_adapter"
+          ],
+          "context_compactions": 0,
+          "messages_elided": 0,
+          "compaction_bytes_saved": 0,
+          "messages_total": 23,
+          "messages_hot": 23,
+          "messages_dropped": 0,
+          "projection_bytes": 14068,
+          "input_tokens": 25193,
+          "output_tokens": 411,
+          "cache_read_tokens": 0,
+          "cost_usd": 0,
+          "wall_ms": 17845,
+          "model_ms": 9065,
+          "tool_ms": 8739,
+          "other_ms": 41,
+          "status": "failed",
+          "exit_reason": "no_progress"
+        },
+        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pytest-dev__pytest-7490-1788254826863.db",
+        "agent_mutations": [
+          {
+            "path": "reproduce_issue.py",
+            "ops": 2
+          }
+        ],
+        "agent_mutation_count": 2,
+        "diag": {
+          "divergence": "11 tool calls, 0 read/grep, ZERO source edits; wrote 2 reproduction script(s) but never edited source; stopped with reason=no_progress",
+          "at": "09:27:15",
+          "mechanism": "context acquisition",
+          "confidence": "HIGH",
+          "note": "reproduced the bug, then stopped without fixing it"
+        }
+      },
+      "differential": "SINGLE_ARM"
+    },
+    {
+      "task_id": "pytest-dev__pytest-8365",
+      "repository": "pytest-dev/pytest",
+      "gemma": {
+        "task_id": "pytest-dev__pytest-8365",
+        "repository": "pytest-dev/pytest",
+        "started": "2026-09-01T09:27:28.557Z",
+        "model": "gemma4-31b",
+        "run_id": "run_bf0d415f9e",
+        "status": "failed",
+        "reason": "no_progress",
+        "timed_out": false,
+        "run_error": null,
+        "wall_ms": 63991,
+        "fail_to_pass_now_passes": false,
+        "pass_to_pass_still_passes": true,
+        "pass_to_pass_checked": 25,
+        "pass_to_pass_declared": 32,
+        "pass_to_pass_unrunnable": 0,
+        "pass_to_pass_uncollectable": 0,
+        "task_success": false,
+        "f2p_output": "st-0'))\r\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000021E87EA5610>\r\n\r\n    def test_tmp_path_factory_handles_invalid_dir_characters(\r\n        tmp_path_factory: TempPathFactory, monkeypatch: MonkeyPatch\r\n    ) -> None:\r\n        monkeypatch.setattr(\"getpass.getuser\", lambda: \"os/<:*?;>agnostic\")\r\n        # _basetemp / _given_basetemp are cached / set in parallel runs, patch them\r\n        monkeypatch.setattr(tmp_path_factory, \"_basetemp\", None)\r\n        monkeypatch.setattr(tmp_path_factory, \"_given_basetemp\", None)\r\n        p = tmp_path_factory.getbasetemp()\r\n>       assert \"pytest-of-unknown\" in str(p)\r\nE       AssertionError: assert 'pytest-of-unknown' in 'C:\\\\Users\\\\abhijith.p\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-os_____;_agnostic\\\\pytest-0'\r\nE        +  where 'C:\\\\Users\\\\abhijith.p\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-os_____;_agnostic\\\\pytest-0' = str(WindowsPath('C:/Users/abhijith.p/AppData/Local/Temp/pytest-of-os_____;_agnostic/pytest-0'))\r\n\r\ntesting\\test_tmpdir.py:459: AssertionError\r\n=========================== short test summary info ===========================\r\nFAILED testing/test_tmpdir.py::test_tmp_path_factory_handles_invalid_dir_characters\r\n1 failed in 0.28s\r\n",
+        "p2p_output": "..s.....s................                                                [100%]\r\n23 passed, 2 skipped in 1.14s\r\n",
+        "diff_stat": "src/_pytest/tmpdir.py | 13 ++++++++++++-\n 1 file changed, 12 insertions(+), 1 deletion(-)",
+        "metrics": {
+          "events": 229,
+          "turns": 1,
+          "model_calls": 28,
+          "model_failures": 0,
+          "tool_calls": 28,
+          "tool_succeeded": 23,
+          "tool_failed": 5,
+          "tool_denied": 0,
+          "duplicate_action_count": 4,
+          "duplicate_action_rate": 0.143,
+          "tool_success_rate": 0.821,
+          "failure_density": 0.0218,
+          "tools_used": {
+            "grep": {
+              "started": 1,
+              "succeeded": 1,
+              "failed": 0
+            },
+            "read": {
+              "started": 6,
+              "succeeded": 6,
+              "failed": 0
+            },
+            "bash": {
+              "started": 20,
+              "succeeded": 15,
+              "failed": 5
+            },
+            "edit": {
+              "started": 1,
+              "succeeded": 1,
+              "failed": 0
+            }
+          },
+          "files_touched": 1,
+          "file_list": [
+            "src/_pytest/tmpdir.py"
+          ],
+          "edits": 1,
+          "writes": 0,
+          "test_runs": 0,
+          "failed_test_runs": 0,
+          "recovery_decisions": 0,
+          "recovery_by_decision": {},
+          "recovered_from_tool_failure": true,
+          "authorization_events": 28,
+          "escalations": 0,
+          "human_requests": 0,
+          "degraded": 28,
+          "degraded_subsystems": [
+            "model_adapter"
+          ],
+          "context_compactions": 0,
+          "messages_elided": 0,
+          "compaction_bytes_saved": 0,
+          "messages_total": 57,
+          "messages_hot": 40,
+          "messages_dropped": 17,
+          "projection_bytes": 16479,
+          "input_tokens": 153284,
+          "output_tokens": 2041,
+          "cache_read_tokens": 0,
+          "cost_usd": 0,
+          "wall_ms": 63991,
+          "model_ms": 51414,
+          "tool_ms": 12465,
+          "other_ms": 112,
+          "status": "failed",
+          "exit_reason": "no_progress"
+        },
+        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pytest-dev__pytest-8365-1788254849703.db",
+        "agent_mutations": [
+          {
+            "path": "src/_pytest/tmpdir.py",
+            "ops": 1
+          }
+        ],
+        "agent_mutation_count": 1,
+        "diag": {
+          "divergence": "edited src/_pytest/tmpdir.py; FAIL_TO_PASS still fails",
+          "at": "09:27:58",
+          "mechanism": "editing",
+          "confidence": "HIGH"
+        }
+      },
+      "differential": "SINGLE_ARM"
+    },
+    {
+      "task_id": "pytest-dev__pytest-8906",
+      "repository": "pytest-dev/pytest",
+      "gemma": {
+        "task_id": "pytest-dev__pytest-8906",
+        "repository": "pytest-dev/pytest",
+        "started": "2026-09-01T09:28:36.837Z",
+        "model": "gemma4-31b",
+        "run_id": "run_af4ac44a6c",
+        "status": "failed",
+        "reason": "max_turns",
+        "timed_out": false,
+        "run_error": null,
+        "wall_ms": 72803,
+        "fail_to_pass_now_passes": false,
+        "pass_to_pass_still_passes": true,
+        "pass_to_pass_checked": 25,
+        "pass_to_pass_declared": 84,
+        "pass_to_pass_unrunnable": 5,
+        "pass_to_pass_uncollectable": 0,
+        "task_success": false,
+        "f2p_output": "ession starts =============================\r\nplatform win32 -- Python 3.8.20, pytest-7.0.0.dev36+g69356d20c, py-1.10.0, pluggy-0.13.1\r\nrootdir: C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\pytest-of-abhijith.p\\pytest-341\\test_module_level_skip_error0\r\ncollected 0 items / 1 error\r\n\r\n=================================== ERRORS ====================================\r\n______________ ERROR collecting test_module_level_skip_error.py _______________\r\nUsing pytest.skip outside of a test is not allowed. To decorate a test function, use the @pytest.mark.skip or @pytest.mark.skipif decorators instead. To skip the entire module from the module level, use pytest.skip(msg='...', allow_module_level=True) or `pytestmark = pytest.mark.{skip,skipif}`.\r\n=========================== short test summary info ===========================\r\nERROR test_module_level_skip_error.py\r\n!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\r\n============================== 1 error in 0.08s ===============================\r\n=========================== short test summary info ===========================\r\nFAILED testing/test_skipping.py::test_module_level_skip_error - Failed: nomat...\r\n1 failed in 0.13s\r\n",
+        "p2p_output": ".........................                                                [100%]\r\n25 passed in 1.76s\r\n",
+        "diff_stat": "src/_pytest/python.py | 6 ++++--\n 1 file changed, 4 insertions(+), 2 deletions(-)",
+        "metrics": {
+          "events": 324,
+          "turns": 1,
+          "model_calls": 40,
+          "model_failures": 0,
+          "tool_calls": 40,
+          "tool_succeeded": 29,
+          "tool_failed": 11,
+          "tool_denied": 0,
+          "duplicate_action_count": 8,
+          "duplicate_action_rate": 0.2,
+          "tool_success_rate": 0.725,
+          "failure_density": 0.034,
+          "tools_used": {
+            "grep": {
+              "started": 3,
+              "succeeded": 3,
+              "failed": 0
+            },
+            "read": {
+              "started": 9,
+              "succeeded": 9,
+              "failed": 0
+            },
+            "bash": {
+              "started": 27,
+              "succeeded": 16,
+              "failed": 11
+            },
+            "edit": {
+              "started": 1,
+              "succeeded": 1,
+              "failed": 0
+            }
+          },
+          "files_touched": 2,
+          "file_list": [
+            "src/_pytest/python.py",
+            "src/_pytest/outcomes.py"
+          ],
+          "edits": 1,
+          "writes": 0,
+          "test_runs": 8,
+          "failed_test_runs": 6,
+          "recovery_decisions": 0,
+          "recovery_by_decision": {},
+          "recovered_from_tool_failure": true,
+          "authorization_events": 40,
+          "escalations": 0,
+          "human_requests": 0,
+          "degraded": 40,
+          "degraded_subsystems": [
+            "model_adapter"
+          ],
+          "context_compactions": 0,
+          "messages_elided": 0,
+          "compaction_bytes_saved": 0,
+          "messages_total": 81,
+          "messages_hot": 40,
+          "messages_dropped": 41,
+          "projection_bytes": 14612,
+          "input_tokens": 199138,
+          "output_tokens": 1671,
+          "cache_read_tokens": 0,
+          "cost_usd": 0,
+          "wall_ms": 72803,
+          "model_ms": 48943,
+          "tool_ms": 23644,
+          "other_ms": 216,
+          "status": "failed",
+          "exit_reason": "max_turns"
+        },
+        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pytest-dev__pytest-8906-1788254918531.db",
+        "agent_mutations": [
+          {
+            "path": "src/_pytest/python.py",
+            "ops": 1
+          }
+        ],
+        "agent_mutation_count": 1,
+        "diag": {
+          "divergence": "edited src/_pytest/python.py; FAIL_TO_PASS still fails",
+          "at": "09:29:09",
+          "mechanism": "editing",
+          "confidence": "HIGH"
+        }
+      },
+      "differential": "SINGLE_ARM"
+    },
+    {
+      "task_id": "pytest-dev__pytest-9359",
+      "repository": "pytest-dev/pytest",
+      "gemma": {
+        "task_id": "pytest-dev__pytest-9359",
+        "repository": "pytest-dev/pytest",
+        "started": "2026-09-01T09:29:55.510Z",
+        "model": "gemma4-31b",
+        "run_id": "run_412f318315",
+        "status": "completed",
+        "reason": "model_finished",
+        "timed_out": false,
+        "run_error": null,
+        "wall_ms": 48306,
+        "fail_to_pass_now_passes": false,
+        "pass_to_pass_still_passes": true,
+        "pass_to_pass_checked": 25,
+        "pass_to_pass_declared": 54,
+        "pass_to_pass_unrunnable": 0,
+        "pass_to_pass_uncollectable": 0,
+        "task_success": false,
+        "f2p_output": "F                                                                        [100%]\r\n================================== FAILURES ===================================\r\n_______________________________ test_decorator ________________________________\r\n\r\n    def test_decorator() -> None:\r\n        s = \"\"\"\\\r\n    def foo(f):\r\n        pass\r\n    \r\n    @foo\r\n    def bar():\r\n        pass\r\n        \"\"\"\r\n        source = getstatement(3, s)\r\n>       assert \"@foo\" in str(source)\r\nE       AssertionError: assert '@foo' in '    pass'\r\nE        +  where '    pass' = str(<_pytest._code.source.Source object at 0x0000027979A45EB0>)\r\n\r\ntesting\\code\\test_source.py:631: AssertionError\r\n=========================== short test summary info ===========================\r\nFAILED testing/code/test_source.py::test_decorator - AssertionError: assert '...\r\n1 failed in 0.05s\r\n",
+        "p2p_output": ".........................                                                [100%]\r\n25 passed in 0.06s\r\n",
+        "diff_stat": "",
+        "metrics": {
+          "events": 216,
+          "turns": 1,
+          "model_calls": 27,
+          "model_failures": 0,
+          "tool_calls": 26,
+          "tool_succeeded": 15,
+          "tool_failed": 11,
+          "tool_denied": 0,
+          "duplicate_action_count": 7,
+          "duplicate_action_rate": 0.269,
+          "tool_success_rate": 0.577,
+          "failure_density": 0.0509,
+          "tools_used": {
+            "bash": {
+              "started": 25,
+              "succeeded": 14,
+              "failed": 11
+            },
+            "read": {
+              "started": 1,
+              "succeeded": 1,
+              "failed": 0
+            }
+          },
+          "files_touched": 1,
+          "file_list": [
+            "src/_pytest/assertion/rewrite.py"
+          ],
+          "edits": 0,
+          "writes": 0,
+          "test_runs": 0,
+          "failed_test_runs": 8,
+          "recovery_decisions": 0,
+          "recovery_by_decision": {},
+          "recovered_from_tool_failure": true,
+          "authorization_events": 26,
+          "escalations": 0,
+          "human_requests": 0,
+          "degraded": 27,
+          "degraded_subsystems": [
+            "model_adapter"
+          ],
+          "context_compactions": 0,
+          "messages_elided": 0,
+          "compaction_bytes_saved": 0,
+          "messages_total": 54,
+          "messages_hot": 40,
+          "messages_dropped": 14,
+          "projection_bytes": 23248,
+          "input_tokens": 84869,
+          "output_tokens": 1231,
+          "cache_read_tokens": 0,
+          "cost_usd": 0,
+          "wall_ms": 48306,
+          "model_ms": 30730,
+          "tool_ms": 17442,
+          "other_ms": 134,
+          "status": "completed",
+          "exit_reason": "model_finished"
+        },
+        "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pytest-dev__pytest-9359-1788254996640.db",
+        "agent_mutations": [],
+        "agent_mutation_count": 0,
+        "diag": {
+          "divergence": "26 tool calls, 1 read/grep, ZERO source edits; stopped with reason=model_finished",
+          "at": "09:30:35",
           "mechanism": "context acquisition",
           "confidence": "HIGH"
         }
