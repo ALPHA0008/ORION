@@ -131,13 +131,23 @@ export async function runTask(task, model) {
   let metrics = null;
   try { metrics = trajectoryMetrics(store, runId, { wallMs }); } catch { /* non-fatal */ }
 
+  // Capture the AGENT'S diff BEFORE verifying.
+  //
+  // verifyTask() restores the oracle, which legitimately rewrites the test files -- so a diff taken
+  // afterwards reports the test_patch rather than the agent's work. Read after verification, this
+  // field claimed the agent had edited tests on runs whose trajectories show zero mutations. The
+  // event log was right and the diff was lying; now they agree.
+  const diff = (() => { try { return git(['-C', dir, 'diff', '--stat', task.base_commit]).trim(); }
+                        catch { return ''; } })();
+
   // The verdict is taken AFTER the agent stops, from the world, by the verifier.
   let v;
   try { v = verifyTask(task); }
   catch (e) { v = { task_success: false, verifier_error: String(e.message).slice(0, 300) }; }
 
-  const diff = (() => { try { return git(['-C', dir, 'diff', '--stat', task.base_commit]).trim(); }
-                        catch { return ''; } })();
+  // Leave no state behind: the next run of this task must start from base_commit, not from
+  // whatever the oracle-restore left in the tree.
+  try { resetTask(task); } catch { /* best effort */ }
 
   try { store.close(); } catch { /* best effort */ }
 
