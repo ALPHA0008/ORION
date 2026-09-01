@@ -99,6 +99,20 @@ export async function runTask(task, model) {
   fs.mkdirSync(storeDir, { recursive: true });
   const dbPath = path.join(storeDir, `${task.task_id}-${Date.now()}.db`);
   const store = new Store(dbPath);
+  // PUT THE TASK'S INTERPRETER ON PATH.
+  //
+  // Without this the sandbox inherits a bare Windows shell in which `python` resolves to the
+  // Microsoft Store stub and `python3` does not exist at all. The agent is then asked to fix code
+  // it has no way to RUN: 8 of 17 Gemma runs burned turns on `which python` / `where python3` /
+  // `/usr/bin/env python3`, every attempt failing with "Python was not found", and 143 bash calls
+  // failed corpus-wide. That is an environment defect of OUR making, not agent incapability (§8),
+  // and scoring it as capability would have been the single largest misattribution in this stage.
+  //
+  // LocalSandbox reads process.env at exec time and exposes no env option, so PATH is set on the
+  // parent for the duration of the run rather than by touching v0/src (Rule 9).
+  const venvBin = path.dirname(task.python_exe);
+  const prevPath = process.env.PATH;
+  process.env.PATH = `${venvBin}${path.delimiter}${prevPath}`;
   const sandbox = new LocalSandbox(dir);
   const tools = makeTools(sandbox);
   // Permissive: this stage measures CAPABILITY, not the approval UX. Hard denials still apply.
@@ -160,6 +174,7 @@ export async function runTask(task, model) {
   // whatever the oracle-restore left in the tree.
   try { resetTask(task); } catch { /* best effort */ }
 
+  process.env.PATH = prevPath;   // never leak the task's interpreter into the next task
   try { store.close(); } catch { /* best effort */ }
 
   return {
