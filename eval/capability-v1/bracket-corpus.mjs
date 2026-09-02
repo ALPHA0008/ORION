@@ -264,6 +264,8 @@ function categorise(stage, detail = '') {
   if (stage === 'mirror') return 'REPOSITORY_UNAVAILABLE';
   if (stage === 'commit-unreachable') return 'REPOSITORY_UNAVAILABLE';
   if (stage === 'no-test') return 'TASK_NOT_OBSERVABLE';
+  // Prose where a test id belongs: there is no executable oracle, so nothing to verify.
+  if (stage === 'unaddressable-id') return 'TASK_NOT_OBSERVABLE';
   if (stage === 'preflight-positive') return 'TASK_TOO_TRIVIAL';   // already satisfied on a clean tree
   if (stage === 'venv' || stage === 'checkout') return 'ENVIRONMENT_UNREPRODUCIBLE';
   if (stage === 'install')
@@ -280,6 +282,21 @@ function categorise(stage, detail = '') {
   }
   if (stage === 'timebox') return 'ENVIRONMENT_UNREPRODUCIBLE';
   return 'OTHER';
+}
+
+/**
+ * Is this an id a test runner can actually be pointed at?
+ *
+ * Accepts: pytest node ids (`path/to/test.py::Class::test_x`), unittest print form
+ * (`test_x (a.b.C)`), and plain dotted paths (`a.b.C.test_x`). Rejects free prose.
+ */
+function addressableTestId(id) {
+  const s = String(id ?? '').trim();
+  if (!s || /\s{2,}/.test(s)) return false;
+  if (s.includes('::')) return true;                                  // pytest node id
+  if (/^\S+\s*\([\w.]+\)$/.test(s)) return true;                       // test_x (a.b.C)
+  if (/^[\w]+(\.[\w]+)+$/.test(s)) return true;                        // dotted path
+  return false;
 }
 
 // ── main ─────────────────────────────────────────────────────────────────────
@@ -356,6 +373,14 @@ for (const c of cands) {
 
   const test = c.fail_to_pass[0];
   if (!test) { reject('no-test', 'FAIL_TO_PASS empty'); continue; }
+
+  // Some SWE-bench instances record PROSE DOCSTRING SUMMARIES where a test id belongs -- e.g.
+  // django-15629's FAIL_TO_PASS is ["AlterField operation of db_collation on primary keys changes
+  // any FKs", ...]. No runner can address those, so the task has no executable oracle. 32 of 277
+  // Tranche-2 candidates are affected, so this is a systematic upstream metadata defect rather than
+  // a per-task accident. Detected BEFORE provisioning: rejecting it later as "the gold patch does
+  // not fix the bug" would blame the task for a missing id.
+  if (!addressableTestId(test)) { reject('unaddressable-id', `FAIL_TO_PASS is prose, not a test id: "${String(test).slice(0, 70)}"`); continue; }
 
   const neg = runTest(py, dir, test, 600_000, c.repository);
   if (neg.passed) { reject('preflight-positive', 'test passes WITHOUT the fix'); continue; }

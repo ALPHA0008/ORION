@@ -65,3 +65,20 @@ Nothing below exists. No claim anywhere in this repository may assume any of it.
 **The instrument is built, calibrated and frozen; nothing has been measured with it yet.**
 
 Corpus `CAPABILITY_V1_STAGE1` · sha256 `0a9a279d48a491da…` · **17 tasks** · runtime `6e4d5325d7`.
+
+
+---
+
+## Stage 1D / 1E milestone chain
+
+| commit | milestone |
+|---|---|
+| `39c0f7b` | Part A — bash mutation semantics: `BASH_MUTATION_ALLOWED_BUT_NOT_WITNESSED` (no `v0/src` change) |
+| `e4582f4` | Tranche-2 candidates from SWE-bench **Verified**; repeat runner with baseline guard |
+| `e6d4a41` | Tranche-2 probe 0/3 — two of three rejections were *our* defects |
+| `b55632f` | Part C — 8 tasks x n=3: only **2 of 8** mechanism-stable |
+| `6644764` | Django defects 4 and 5 — parenthesised ids, verdict on stderr |
+| **`ac61b69`** | **Stage-1E clean base** — post-repeat bottleneck analysis recorded |
+
+`ac61b69` is the base for all remaining Stage-1E work. The n=1 bottleneck ordering is superseded by
+the repeat study; see `bottleneck-ranking.md` and `repeatability.md`.
