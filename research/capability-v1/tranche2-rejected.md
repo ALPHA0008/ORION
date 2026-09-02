@@ -62,6 +62,62 @@ So `django__django-11532` is a **sound, fully reproducible, genuinely multi-file
 three separate defects in our harness away from being admitted, and each one independently produced
 a confident, wrong `BASELINE_NOT_REPRODUCIBLE`.
 
+## Defect 4 — Django test ids are parenthesised, not dotted
+
+SWE-bench stores Django ids exactly as unittest prints them:
+
+```
+test_non_ascii_dns_non_unicode_email (mail.tests.MailTests)
+```
+
+The class is in **parentheses**. A `classOf` helper that split on `.` produced
+`test_non_ascii_dns_non_unicode_email (mail`, which `runtests.py` then tried to import as a module:
+
+```
+ModuleNotFoundError: No module named 'test_non_ascii_dns_non_unicode_email (mail'
+```
+
+Fixed to accept both shapes (parenthesised and plain dotted), verified against four id forms.
+
+## Defect 5 — Django writes its verdict to stderr
+
+Even with the right runner, the right commit and the right id, every Django task still failed the
+oracle check. The strategy's `passed()` predicate searched the captured output for `OK` / `FAILED` —
+but Django's runner writes the verdict to **stderr**, while **stdout** carries only:
+
+```
+Testing against Django installed in '...\django'
+System check identified no issues (0 silenced).
+```
+
+The retained tail was therefore all banner and no verdict. Measured directly:
+
+| tree | exit code | stderr |
+|---|---|---|
+| clean | **1** | `FAILED (errors=1)` |
+| + gold patch | **0** | `OK` (45 tests) |
+
+The exit code is unambiguous and is what unittest guarantees, so the verdict now comes from it. The
+retained evidence is also concatenated **stderr-first**, so the verdict survives truncation.
+
+## The pattern in these five defects
+
+| # | defect | what it looked like |
+|---|---|---|
+| 1 | pytest given a Django id | `BASELINE_NOT_REPRODUCIBLE` |
+| 2 | date pin breaks Django's own metadata | `DEPENDENCY_UNRESOLVABLE` |
+| 3 | F2P test cannot run standalone | `BASELINE_NOT_REPRODUCIBLE` |
+| 4 | id class in parentheses, not dotted | `BASELINE_NOT_REPRODUCIBLE` |
+| 5 | verdict on stderr, evidence truncated to the banner | `BASELINE_NOT_REPRODUCIBLE` |
+
+**Five consecutive defects, and every one of them presented as "the maintainer's own fix does not
+work."** Only the manual bracket — clean tree FAILED, gold patch OK across 45 tests — established
+that the task was sound and kept the investigation going.
+
+This is the same lesson Stage 1 produced, now with a much higher count: **adopting a new repository
+family costs a new test-invocation contract**, and until that contract is right, every rejection
+from that family is uninformative about the tasks.
+
 ## Genuine rejection
 
 `pylint-dev__pylint-4551` — `pylint==2.9.0.dev1` requires an astroid newer than the era index

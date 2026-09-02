@@ -203,7 +203,12 @@ const TEST_STRATEGY = {
     cmd: (py, id) => `"${py}" runtests.py --settings=test_sqlite --parallel=1 "${classOf(id)}"`,
     cwd: (dir) => path.join(dir, 'tests'),
     // Django's runner reports OK / FAILED rather than pytest's exit-code conventions.
-    passed: (out, ok) => ok && /\bOK\b/.test(out) && !/FAILED/.test(out),
+    // Django's runner writes its verdict (OK / FAILED) to STDERR, while stdout carries only the
+    // "Testing against Django installed in ..." banner. Matching on a captured tail therefore read
+    // the banner and never the verdict, so every Django task failed the oracle check. The EXIT CODE
+    // is unambiguous and is what unittest guarantees: 0 = all passed, non-zero = failures/errors.
+    // Measured on a verified tree: clean -> exit 1 "FAILED (errors=1)", gold -> exit 0 "OK" (45 tests).
+    passed: (out, ok) => ok,
   },
 };
 /**
@@ -232,7 +237,9 @@ function runTest(py, dir, nodeId, timeout = 300_000, repo = null) {
     const out = String(execSync(cmd, opts));
     return { passed: s ? s.passed(out, true) : true, output: out.slice(-800) };
   } catch (e) {
-    const out = String(e.stdout ?? '') + String(e.stderr ?? '');
+    // stderr FIRST: django writes its verdict there, and a stdout-first concatenation pushed it
+    // out of the retained tail, leaving only the banner as evidence.
+    const out = String(e.stderr ?? '') + String(e.stdout ?? '');
     return { passed: s ? s.passed(out, false) : false, output: out.slice(-800) };
   }
 }

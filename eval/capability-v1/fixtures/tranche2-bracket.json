@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-02T07:06:24.841Z",
+  "at": "2026-09-02T07:15:30.489Z",
   "accepted": [],
   "rejected": [
     {
@@ -19,8 +19,8 @@
       "python": "3.9",
       "status": "rejected",
       "stage": "oracle-negative",
-      "reason": "ENVIRONMENT_UNREPRODUCIBLE",
-      "evidence": "y\", line 154, in loadTestsFromName module = __import__(module_name) ModuleNotFoundError: No module named 'test_non_ascii_dns_non_unicode_email (mail' ---------------------------------------------------------------------- Ran 1 test in 0.000s FAILED (errors=1) "
+      "reason": "BASELINE_NOT_REPRODUCIBLE",
+      "evidence": "Testing against Django installed in 'C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1-t2\\work\\django__django-11532\\django' System check identified no issues (0 silenced). "
     },
     {
       "task_id": "django__django-11138",
@@ -29,8 +29,8 @@
       "python": "3.9",
       "status": "rejected",
       "stage": "oracle-negative",
-      "reason": "ENVIRONMENT_UNREPRODUCIBLE",
-      "evidence": "r.py\", line 154, in loadTestsFromName module = __import__(module_name) ModuleNotFoundError: No module named 'test_query_convert_timezones (timezones' ---------------------------------------------------------------------- Ran 1 test in 0.000s FAILED (errors=1) "
+      "reason": "BASELINE_NOT_REPRODUCIBLE",
+      "evidence": "Testing against Django installed in 'C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1-t2\\work\\django__django-11138\\django' System check identified no issues (0 silenced). "
     },
     {
       "task_id": "django__django-13121",
@@ -39,8 +39,8 @@
       "python": "3.9",
       "status": "rejected",
       "stage": "oracle-negative",
-      "reason": "ENVIRONMENT_UNREPRODUCIBLE",
-      "evidence": "er.py\", line 154, in loadTestsFromName module = __import__(module_name) ModuleNotFoundError: No module named 'test_duration_expressions (expressions' ---------------------------------------------------------------------- Ran 1 test in 0.000s FAILED (errors=1) "
+      "reason": "BASELINE_NOT_REPRODUCIBLE",
+      "evidence": "Testing against Django installed in 'C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1-t2\\work\\django__django-13121\\django' System check identified no issues (0 silenced). "
     },
     {
       "task_id": "django__django-15629",
@@ -51,6 +51,16 @@
       "stage": "oracle-negative",
       "reason": "ENVIRONMENT_UNREPRODUCIBLE",
       "evidence": "FromName module = __import__(module_name) ModuleNotFoundError: No module named 'AlterField operation of db_collation on primary keys changes any FKs' ---------------------------------------------------------------------- Ran 1 test in 0.000s FAILED (errors=1) "
+    },
+    {
+      "task_id": "django__django-16263",
+      "repository": "django/django",
+      "base_commit": "321ecb40f4da842926e1bc07e11df4aabe53ca4b",
+      "python": "3.9",
+      "status": "rejected",
+      "stage": "oracle-negative",
+      "reason": "BASELINE_NOT_REPRODUCIBLE",
+      "evidence": "Testing against Django installed in 'C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1-t2\\work\\django__django-16263\\django' Found 4 test(s). System check identified no issues (0 silenced). "
     }
   ]
 }
