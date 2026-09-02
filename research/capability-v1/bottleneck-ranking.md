@@ -1,5 +1,10 @@
 # Bottleneck Ranking — Stage 1
 
+> **SUPERSEDED IN PART BY THE STAGE-1D REPEAT STUDY.** The ranking below was computed at **n=1**.
+> The 8 HIGH-confidence failures have since been re-run at n=3, and repeat support — which §30
+> requires — mostly does **not** hold. Read `repeatability.md` first; the section at the end of this
+> file records what changed and why the ordering below can no longer be used as written.
+
 **Corpus label: Stage-1 filtered SWE-bench-lite slice, locally reproduced.**
 Evidence base: **14 agent failures**, one valid model arm (Gemma), **n=1 per task**, 4 repositories.
 
@@ -114,3 +119,33 @@ the evidence to justify a confident single intervention.**
 
 That conclusion feeds directly into the interpretability gate, and it is the reason this stage does
 not end by picking a winner and building it.
+
+
+---
+
+# Post-repeat revision (Stage 1D)
+
+The repeat study measured what the n=1 ranking could only assume. Applying §30's standard — same
+mechanism + multiple tasks + multiple repositories + **repeat support** + trajectory evidence:
+
+| mechanism | n=1 rank | mechanism-stable across 3 runs | revised standing |
+|---|---|---|---|
+| `editing` | 3rd (4/14) | **2 tasks, 2 repos** (`pylint-6506`, `pytest-8906`), 11/24 runs overall | **strongest** |
+| `termination` | **1st** | 1 task, which also flips outcome | weakened |
+| `long-horizon execution` | 2nd (6/14, largest) | **none** | weakest |
+
+**The n=1 ranking inverted.** `termination` was ranked first on the clarity of `pylint-6506`'s
+trajectory; that trajectory is still real, but the mechanism is stable on exactly one task, and that
+task (`pytest-7432`) flips between PASS and FAIL across repeats. `long-horizon execution` was the
+largest bucket and is mechanism-stable on **no** task at all.
+
+`editing` is now the only mechanism with genuine repeat support — and it is the one the Stage-1
+ranking explicitly set aside as *"real, but not a harness problem"*, on the grounds that a wrong
+edit to the right file is more likely to need a better model than better scaffolding.
+
+That judgement has not been overturned by the repeat data; it has been **sharpened into the
+phase's uncomfortable conclusion**: the mechanism with the best evidence is the one least amenable
+to a harness intervention, and the mechanisms most amenable to one do not survive re-running the
+identical task.
+
+This is why Stage 1D does not end by selecting an intervention.
