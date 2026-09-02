@@ -28,7 +28,7 @@ function applyGold(task) {
   fs.rmSync(f, { force: true });
 }
 
-const corpus = JSON.parse(fs.readFileSync(path.join(HERE, 'tasks', 'corpus.json'), 'utf8'));
+const corpus = JSON.parse(fs.readFileSync(path.join(HERE, 'tasks', process.env.TASKS_SUBDIR ?? '.', 'corpus.json'), 'utf8'));
 const only = process.env.ONLY ? new Set(process.env.ONLY.split(',')) : null;
 const tasks = only ? corpus.tasks.filter(t => only.has(t.task_id)) : corpus.tasks;
 
@@ -70,7 +70,7 @@ for (const t of tasks) {
 
 const outDir = path.join(HERE, 'reports');
 fs.mkdirSync(outDir, { recursive: true });
-fs.writeFileSync(path.join(outDir, 'repro-sweep.json'),
+fs.writeFileSync(path.join(outDir, process.env.REPRO_NAME ?? 'repro-sweep.json'),
   JSON.stringify({ at: new Date().toISOString(), total: rows.length,
                    reproducible: rows.filter(r => r.reproducible).length, rows }, null, 2));
 

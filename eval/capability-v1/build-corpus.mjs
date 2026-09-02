@@ -10,7 +10,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const ROOT = path.join(os.tmpdir(), 'capability-v1');
+// Tranche 2 lives under its own suite root; Stage-1 paths are never touched.
+const SUITE = process.env.SUITE ?? 'capability-v1';
+const ROOT = path.join(os.tmpdir(), SUITE);
 const FIX = path.join(HERE, 'fixtures');
 
 const sources = (process.env.SOURCES ?? '').split(',').map(s => s.trim()).filter(Boolean);
@@ -58,10 +60,11 @@ for (const a of seen.values()) {
 
 tasks.sort((x, y) => x.task_id.localeCompare(y.task_id));
 
-const outDir = path.join(HERE, 'tasks');
+const outDir = path.join(HERE, 'tasks', process.env.TASKS_SUBDIR ?? '.');
 fs.mkdirSync(outDir, { recursive: true });
-fs.writeFileSync(path.join(outDir, 'corpus.json'), JSON.stringify({
-  source: 'princeton-nlp/SWE-bench_Lite',
+fs.writeFileSync(path.join(outDir, process.env.CORPUS_NAME ?? 'corpus.json'), JSON.stringify({
+  // Tranche 2 comes from SWE-bench VERIFIED, not Lite -- Lite has zero multi-file gold patches.
+  source: process.env.CORPUS_SOURCE ?? 'princeton-nlp/SWE-bench_Lite',
   built_at: new Date().toISOString(),
   bracket: 'preflight-negative AND oracle-positive, verified locally',
   count: tasks.length, tasks,
@@ -70,7 +73,7 @@ fs.writeFileSync(path.join(outDir, 'corpus.json'), JSON.stringify({
 // One file per task as well, so a single task is readable without loading the whole corpus.
 for (const t of tasks) fs.writeFileSync(path.join(outDir, `${t.task_id}.json`), JSON.stringify(t, null, 2));
 
-fs.writeFileSync(path.join(FIX, 'rejections.json'), JSON.stringify({
+fs.writeFileSync(path.join(FIX, process.env.REJECTIONS_NAME ?? 'rejections.json'), JSON.stringify({
   at: new Date().toISOString(), count: rejected.size, rejected: [...rejected.values()],
 }, null, 2));
 

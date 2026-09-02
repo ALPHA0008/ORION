@@ -52,6 +52,23 @@ const ATTACKS = {
       fs.writeFileSync(p, 'def test_ok():\n    assert True\n', 'utf8');
     }
   },
+  /**
+   * unittest equivalent of the pytest skip attack, for django tasks.
+   *
+   * `pytest.mark.skip` and a root `conftest.py` do nothing under `runtests.py`, so without this a
+   * django task would "defend" every attack simply because none of them applied -- a defence that
+   * never fires proves nothing. `unittest.skip` on the class is the real threat model there.
+   */
+  unittest_skip_class(dir, task) {
+    for (const f of testFiles(task.test_patch)) {
+      const p = path.join(dir, f);
+      if (!fs.existsSync(p)) continue;
+      const src = fs.readFileSync(p, 'utf8');
+      const NL = String.fromCharCode(10);
+      fs.writeFileSync(p, 'import unittest' + NL
+        + src.replace(/^(class\s+\w+)/gm, '@unittest.skip("gamed")' + NL + '$1'), 'utf8');
+    }
+  },
   /** Silence collection at the root via a conftest hook. */
   conftest_skip_hook(dir) {
     fs.writeFileSync(path.join(dir, 'conftest.py'),
@@ -61,7 +78,7 @@ const ATTACKS = {
 };
 
 // ── main ─────────────────────────────────────────────────────────────────────
-const corpus = JSON.parse(fs.readFileSync(path.join(HERE, 'tasks', 'corpus.json'), 'utf8'));
+const corpus = JSON.parse(fs.readFileSync(path.join(HERE, 'tasks', process.env.TASKS_SUBDIR ?? '.', 'corpus.json'), 'utf8'));
 const sample = Number(process.env.SAMPLE ?? 3);
 const tasks = corpus.tasks.slice(0, sample);
 
@@ -88,7 +105,7 @@ for (const task of tasks) {
 
 const outDir = path.join(HERE, 'reports');
 fs.mkdirSync(outDir, { recursive: true });
-fs.writeFileSync(path.join(outDir, 'anti-gaming.json'),
+fs.writeFileSync(path.join(outDir, process.env.ANTIGAMING_NAME ?? 'anti-gaming.json'),
   JSON.stringify({ at: new Date().toISOString(), attacks: Object.keys(ATTACKS),
                    tasks: tasks.map(t => t.task_id), breaches, rows }, null, 2));
 

@@ -97,12 +97,88 @@ export function resetTask(task) {
 }
 
 /**
+ * Is this a Django test id a runner can be pointed at, rather than a prose docstring?
+ *
+ * SWE-bench's django PASS_TO_PASS lists mix real ids with unittest DOCSTRING SUMMARIES --
+ * "A translated display value is coerced to str." sits beside
+ * "test_choices (model_fields.tests.ChoicesTests)". runtests.py tries to import the prose as a
+ * module and fails, which scored the maintainer's own fix as a P2P regression on 5 of 12 django
+ * tasks whose FAIL_TO_PASS had already PASSED. The pytest path already filters unaddressable ids;
+ * the django path must do the same or the two disagree about what is verifiable.
+ */
+const djangoAddressable = (id) => {
+  const t = String(id ?? '').trim();
+  if (!t) return false;
+  if (/^\S+\s*\([\w.]+\)$/.test(t)) return true;   // test_x (a.b.C)
+  if (/^[\w]+(\.[\w]+)+$/.test(t)) return true;     // dotted path
+  return false;
+};
+
+/**
+ * Django does not use pytest. It ships `tests/runtests.py`, names tests as unittest prints them
+ * (`test_x (a.b.C)`, class in PARENTHESES), writes its verdict to STDERR, and requires CLASS
+ * granularity because several of its tests depend on siblings having run first. All four were
+ * separately responsible for rejecting every Django task during Tranche-2 admission.
+ *
+ * The same contract is declared in eval/capability-v1/bracket-corpus.mjs and documented in
+ * research/capability-v1/repository-test-contract.md. It lives in BOTH because the bracket decides
+ * admission and this decides verdicts; if they disagreed, a task could be admitted on one runner
+ * and judged on another.
+ */
+const djangoClass = (id) => {
+  const t = String(id).trim();
+  const m = t.match(/^\s*(\S+)\s*\(([\w.]+)\)\s*$/);
+  if (m) return m[2];
+  const parts = t.split('.');
+  return parts.length > 1 && /^test/.test(parts.at(-1)) ? parts.slice(0, -1).join('.') : t;
+};
+
+/** Run Django tests via its own runner. Verdict comes from the EXIT CODE (unittest guarantees it). */
+function djangoRun(py, dir, ids, timeout = 900_000) {
+  const classes = [...new Set(ids.map(djangoClass))];
+  try {
+    const out = execFileSync(py, ['runtests.py', '--settings=test_sqlite', '--parallel=1', ...classes],
+      { cwd: path.join(dir, 'tests'), encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
+        timeout, maxBuffer: 64 * 1024 * 1024 });
+    return { passed: true, output: String(out).slice(-1200) };
+  } catch (e) {
+    // stderr FIRST: django's OK/FAILED lives there, stdout carries only a banner.
+    return { passed: false, output: (String(e.stderr ?? '') + String(e.stdout ?? '')).slice(-1200) };
+  }
+}
+
+const isDjango = (task) => task.repository === 'django/django';
+
+/**
  * The verdict. FAIL_TO_PASS must now pass AND PASS_TO_PASS must still pass -- a fix that satisfies
  * the target test by breaking the rest of the suite is not a fix.
  */
 export function verifyTask(task) {
   const dir = task.work_dir;
   restoreOracle(dir, task);
+
+  // Django path: its own runner, class granularity, capped P2P from the same declared list.
+  if (isDjango(task)) {
+    const f2pD = djangoRun(task.python_exe, dir, [task.verified_test]);
+    const declaredD = task.pass_to_pass ?? [];
+    const runnableD = declaredD.filter(djangoAddressable);
+    const p2pIdsD = runnableD.slice(0, P2P_CAP);
+    const p2pD = p2pIdsD.length
+      ? djangoRun(task.python_exe, dir, p2pIdsD)
+      : { passed: true, output: 'none addressable' };
+    return {
+      fail_to_pass_now_passes: f2pD.passed,
+      pass_to_pass_still_passes: p2pD.passed,
+      pass_to_pass_checked: p2pIdsD.length,
+      pass_to_pass_declared: declaredD.length,
+      // Counted, never silently dropped: coverage must stay exactly as strong as the evidence.
+      pass_to_pass_unrunnable: declaredD.length - runnableD.length,
+      pass_to_pass_uncollectable: 0,
+      task_success: f2pD.passed && p2pD.passed,
+      f2p_output: f2pD.output, p2p_output: p2pD.output,
+    };
+  }
+
   const f2p = pytest(task.python_exe, dir, [task.verified_test]);
   const declared = task.pass_to_pass ?? [];
   const runnable = addressableIds(runnableIds(declared));

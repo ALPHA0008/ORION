@@ -16,10 +16,13 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const CORPUS_VERSION = 'CAPABILITY_V1_STAGE1';
+// Tranche 2 gets its OWN identity. CAPABILITY_V1_STAGE1 is immutable and must never be
+// modified or replaced by this script.
+const CORPUS_VERSION = process.env.CORPUS_VERSION ?? 'CAPABILITY_V1_STAGE1';
 
-const corpus = JSON.parse(fs.readFileSync(path.join(HERE, 'tasks', 'corpus.json'), 'utf8'));
-const repro = JSON.parse(fs.readFileSync(path.join(HERE, 'reports', 'repro-sweep.json'), 'utf8'));
+const TASKS_SUBDIR = process.env.TASKS_SUBDIR ?? '.';
+const corpus = JSON.parse(fs.readFileSync(path.join(HERE, 'tasks', TASKS_SUBDIR, 'corpus.json'), 'utf8'));
+const repro = JSON.parse(fs.readFileSync(path.join(HERE, 'reports', process.env.REPRO_NAME ?? 'repro-sweep.json'), 'utf8'));
 
 // Refuse to freeze anything that has not two-sidedly reproduced through the production verifier.
 const reproOk = new Map(repro.rows.map(r => [r.task_id, r.reproducible]));
@@ -53,14 +56,15 @@ const manifest = {
   frozen_at: new Date().toISOString(),
   runtime_commit: runtimeCommit,
   source: corpus.source,
-  label: 'Stage-1 filtered SWE-bench-lite slice, locally reproduced',
+  // The label must name the ACTUAL source. Tranche 2 is a Verified multi-file slice, not Lite.
+  label: process.env.CORPUS_LABEL ?? 'Stage-1 filtered SWE-bench-lite slice, locally reproduced',
   count: tasks.length,
   bracket: 'preflight-negative AND oracle-positive, re-verified through the production verifier',
   verifier: 'pytest exit status; FAIL_TO_PASS must pass AND PASS_TO_PASS must not regress; no LLM judge',
   tasks,
 };
 
-fs.writeFileSync(path.join(HERE, 'tasks', 'frozen-corpus.json'), JSON.stringify(manifest, null, 2));
+fs.writeFileSync(path.join(HERE, 'tasks', TASKS_SUBDIR, 'frozen-corpus.json'), JSON.stringify(manifest, null, 2));
 console.log(`FROZEN ${CORPUS_VERSION}`);
 console.log(`  corpus_sha256   ${corpusSha}`);
 console.log(`  runtime_commit  ${runtimeCommit}`);
