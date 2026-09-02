@@ -1,5 +1,13 @@
 // Part C — repeatability study for the 8 HIGH-confidence failure tasks, n=3, Gemma.
 //
+// Model-B mode (Stage 1E): the same runner is used for the editing-family protocol with ONLY the
+// model changed (adapter parity is verified separately, see research/capability-v1/
+// model-b-editing-protocol.md). Two backward-compatible knobs:
+//   RUN_LABEL=<name>  output-artifact prefix, default "gemma4-31b" — so Model-B runs are never
+//                     labled as Gemma and never collide with the Gemma repeat artifacts.
+//   ONLY_IDS=a,b,c    restrict to a subset of TASKS (default: all 8).
+// Default behaviour is byte-for-byte as before.
+//
 // SAFETY: this NEVER writes runs/<label>.json. run-baseline.mjs defaults to that path and would
 // overwrite eval/capability-v1/runs/gemma4-31b.json — the valid Stage-1 baseline. Every repeat
 // goes to runs/repeats/ under a per-task, per-run label, and the runner asserts the baseline is
@@ -39,6 +47,10 @@ const TASKS = [
 ];
 
 const N = Number(process.env.REPEATS ?? 3);
+const RUN_LABEL = process.env.RUN_LABEL ?? 'gemma4-31b';
+const ONLY_IDS = process.env.ONLY_IDS
+  ? new Set(process.env.ONLY_IDS.split(',').map(s => s.trim()).filter(Boolean))
+  : null;
 const sha = (p) => crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
 
 const baselineSha = sha(BASELINE);
@@ -47,13 +59,19 @@ console.log(`baseline guard: ${path.basename(BASELINE)} sha256=${baselineSha.sli
 const frozen = JSON.parse(fs.readFileSync(path.join(HERE, 'tasks', 'frozen-corpus.json'), 'utf8'));
 const local = new Map(JSON.parse(fs.readFileSync(path.join(HERE, 'tasks', 'corpus.json'), 'utf8'))
   .tasks.map(t => [t.task_id, t]));
-const tasks = frozen.tasks.filter(t => TASKS.includes(t.task_id)).map(t => {
-  const l = local.get(t.task_id);
-  if (!l) throw new Error(`no local environment for ${t.task_id}`);
-  return { ...t, python_exe: l.python_exe, venv: l.venv, work_dir: l.work_dir };
-});
-if (tasks.length !== TASKS.length)
-  throw new Error(`expected ${TASKS.length} tasks in the frozen corpus, found ${tasks.length}`);
+const tasks = frozen.tasks.filter(t => TASKS.includes(t.task_id) && (!ONLY_IDS || ONLY_IDS.has(t.task_id)))
+  .map(t => {
+    const l = local.get(t.task_id);
+    if (!l) throw new Error(`no local environment for ${t.task_id}`);
+    return { ...t, python_exe: l.python_exe, venv: l.venv, work_dir: l.work_dir };
+  });
+const expected = ONLY_IDS ? ONLY_IDS.size : TASKS.length;
+if (tasks.length !== expected)
+  throw new Error(`expected ${expected} tasks, found ${tasks.length}`);
+if (ONLY_IDS) {
+  const missing = [...ONLY_IDS].filter(id => !TASKS.includes(id));
+  if (missing.length) throw new Error(`ONLY_IDS outside the 8-TASK set: ${missing.join(', ')}`);
+}
 
 fs.mkdirSync(OUTDIR, { recursive: true });
 
@@ -70,7 +88,7 @@ console.log('─'.repeat(96));
 
 for (const task of tasks) {
   for (let r = 1; r <= N; r++) {
-    const label = `gemma4-31b-${task.task_id}-r${r}`;
+    const label = `${RUN_LABEL}-${task.task_id}-r${r}`;
     const out = path.join(OUTDIR, `${label}.json`);
     if (fs.existsSync(out)) { console.log(`  skip (exists) ${label}`); continue; }
 

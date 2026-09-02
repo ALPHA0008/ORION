@@ -50,7 +50,14 @@ function mechanism(r, ev) {
 
 // ── gather ───────────────────────────────────────────────────────────────────
 const byTask = new Map();
-for (const f of fs.readdirSync(DIR).filter(f => f.endsWith('.json'))) {
+// RUN_LABEL selects which model's artifacts to analyse. Without it the classifier would glob the
+// Gemma and Model-B artifacts together and silently average two different models into one
+// "repeatability" table -- the arms must never be blended.
+const LABEL = process.env.RUN_LABEL ?? 'gemma4-31b';
+const files = fs.readdirSync(DIR)
+  .filter(f => f.endsWith('.json') && f.startsWith(LABEL + '-'));
+if (!files.length) { console.error(`no artifacts for label "${LABEL}" in ${DIR}`); process.exit(1); }
+for (const f of files) {
   const d = JSON.parse(fs.readFileSync(path.join(DIR, f), 'utf8'));
   const r = d.results[0];
   let ev = [];
@@ -90,7 +97,7 @@ for (const rec of byTask.values()) {
 
 const rows = [...byTask.values()].sort((a, b) => a.task_id.localeCompare(b.task_id));
 fs.mkdirSync(path.join(HERE, 'reports'), { recursive: true });
-fs.writeFileSync(path.join(HERE, 'reports', 'repeatability.json'),
+fs.writeFileSync(path.join(HERE, 'reports', process.env.REPEAT_REPORT ?? 'repeatability.json'),
   JSON.stringify({ at: new Date().toISOString(), n_required: N_REQUIRED, rows }, null, 2));
 
 // ── document ─────────────────────────────────────────────────────────────────
@@ -98,7 +105,7 @@ const complete = rows.filter(r => r.n >= N_REQUIRED);
 const L = [];
 L.push('# Repeatability — the 8 HIGH-confidence failure tasks', '');
 L.push('**Corpus label: Stage-1 filtered SWE-bench-lite slice, locally reproduced.**');
-L.push(`Corpus ${B}CAPABILITY_V1_STAGE1${B} · Gemma 4 31B · n=${N_REQUIRED} · nothing tuned between repeats.`, '');
+L.push(`Corpus ${B}CAPABILITY_V1_STAGE1${B} · model ${B}${LABEL}${B} · n=${N_REQUIRED} · nothing tuned between repeats.`, '');
 L.push('## Scope — what this does and does not measure', '');
 L.push('These 8 are the **HIGH-confidence failures only**: 2 long-horizon + 4 editing + 2 termination,');
 L.push('against a full Stage-1 distribution of **6 + 4 + 4**. The **6 MEDIUM-confidence failures remain');
@@ -137,7 +144,9 @@ else {
     L.push('support an intervention, and it is why outcome stability alone is not enough (§26).', '');
   }
 }
-fs.writeFileSync(path.join(DOCS, 'repeatability.md'), L.join('\n'));
+// REPEAT_DOC keeps each model's write-up in its own file. Without it a Model-B run overwrites the
+// Gemma repeatability document in place -- which happened once and was recovered from git.
+fs.writeFileSync(path.join(DOCS, process.env.REPEAT_DOC ?? 'repeatability.md'), L.join('\n'));
 
 console.log(`tasks: ${rows.length} · complete at n=${N_REQUIRED}: ${complete.length}`);
 for (const r of rows)

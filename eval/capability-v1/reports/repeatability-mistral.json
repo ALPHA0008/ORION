@@ -1,0 +1,186 @@
+{
+  "at": "2026-09-02T10:42:02.600Z",
+  "n_required": 3,
+  "rows": [
+    {
+      "task_id": "pallets__flask-5063",
+      "repository": "pallets/flask",
+      "runs": [
+        {
+          "repeat": 1,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 4,
+          "diff": ""
+        },
+        {
+          "repeat": 2,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 2,
+          "diff": ""
+        },
+        {
+          "repeat": 3,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 2,
+          "diff": ""
+        }
+      ],
+      "n": 3,
+      "label": "STABLE_FAILURE",
+      "mechanism_stable": true,
+      "mechanisms": [
+        "termination"
+      ]
+    },
+    {
+      "task_id": "pylint-dev__pylint-6506",
+      "repository": "pylint-dev/pylint",
+      "runs": [
+        {
+          "repeat": 1,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 3,
+          "diff": ""
+        },
+        {
+          "repeat": 2,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 3,
+          "diff": ""
+        },
+        {
+          "repeat": 3,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 3,
+          "diff": ""
+        }
+      ],
+      "n": 3,
+      "label": "STABLE_FAILURE",
+      "mechanism_stable": true,
+      "mechanisms": [
+        "termination"
+      ]
+    },
+    {
+      "task_id": "pytest-dev__pytest-7432",
+      "repository": "pytest-dev/pytest",
+      "runs": [
+        {
+          "repeat": 1,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 2,
+          "diff": ""
+        },
+        {
+          "repeat": 2,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 2,
+          "diff": ""
+        },
+        {
+          "repeat": 3,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 2,
+          "diff": ""
+        }
+      ],
+      "n": 3,
+      "label": "STABLE_FAILURE",
+      "mechanism_stable": true,
+      "mechanisms": [
+        "termination"
+      ]
+    },
+    {
+      "task_id": "pytest-dev__pytest-8365",
+      "repository": "pytest-dev/pytest",
+      "runs": [
+        {
+          "repeat": 1,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 1,
+          "diff": ""
+        },
+        {
+          "repeat": 2,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 2,
+          "diff": ""
+        },
+        {
+          "repeat": 3,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 2,
+          "diff": ""
+        }
+      ],
+      "n": 3,
+      "label": "STABLE_FAILURE",
+      "mechanism_stable": true,
+      "mechanisms": [
+        "termination"
+      ]
+    },
+    {
+      "task_id": "pytest-dev__pytest-8906",
+      "repository": "pytest-dev/pytest",
+      "runs": [
+        {
+          "repeat": 1,
+          "success": false,
+          "reason": "awaiting_human",
+          "mechanism": "long-horizon execution",
+          "tool_calls": 0,
+          "diff": ""
+        },
+        {
+          "repeat": 2,
+          "success": false,
+          "reason": "awaiting_human",
+          "mechanism": "long-horizon execution",
+          "tool_calls": 0,
+          "diff": ""
+        },
+        {
+          "repeat": 3,
+          "success": false,
+          "reason": "awaiting_human",
+          "mechanism": "long-horizon execution",
+          "tool_calls": 0,
+          "diff": ""
+        }
+      ],
+      "n": 3,
+      "label": "STABLE_FAILURE",
+      "mechanism_stable": true,
+      "mechanisms": [
+        "long-horizon execution"
+      ]
+    }
+  ]
+}
