@@ -1,0 +1,36 @@
+{
+  "at": "2026-09-02T06:53:31.854Z",
+  "accepted": [],
+  "rejected": [
+    {
+      "task_id": "django__django-11532",
+      "repository": "django/django",
+      "base_commit": "a5308514fb4bc5086c9a16a8a24a945eeebb073c",
+      "python": "3.9",
+      "status": "rejected",
+      "stage": "oracle-negative",
+      "reason": "BASELINE_NOT_REPRODUCIBLE",
+      "evidence": " no tests ran in 0.00s ERROR: file or directory not found: test_non_ascii_dns_non_unicode_email (mail.tests.MailTests) "
+    },
+    {
+      "task_id": "django__django-11138",
+      "repository": "django/django",
+      "base_commit": "c84b91b7603e488f7171fdff8f08368ef3d6b856",
+      "python": "3.9",
+      "status": "rejected",
+      "stage": "oracle-negative",
+      "reason": "BASELINE_NOT_REPRODUCIBLE",
+      "evidence": " no tests ran in 0.00s ERROR: file or directory not found: test_query_convert_timezones (timezones.tests.NewDatabaseTests) "
+    },
+    {
+      "task_id": "pylint-dev__pylint-4551",
+      "repository": "pylint-dev/pylint",
+      "base_commit": "99589b08de8c5a2c6cc61e13a37420a868c80599",
+      "python": "3.9",
+      "status": "rejected",
+      "stage": "install",
+      "reason": "DEPENDENCY_UNRESOLVABLE",
+      "evidence": "Command failed: uv pip install --python \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1-t2\\_venvs\\pylint-dev__pylint-4551-py3.9\\Scripts\\python.exe\" --exclude-newer 2021-06-07T15:14:31Z --exclude-newer-package atomicwrites=2026-09-02 --no-build-isolation -q -e .\n  × No solution found when resolving dependencies:\n  ╰─▶ Because only astroid<=2.5.7 is available and pylint==2.9.0.dev1 depends\n   "
+    }
+  ]
+}
