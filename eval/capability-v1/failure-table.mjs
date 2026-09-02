@@ -161,8 +161,9 @@ function diagnose(r, ev, worldChanged = false) {
 
 // ── main ─────────────────────────────────────────────────────────────────────
 const load = (f) => fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : null;
-const g = load(path.join(HERE, 'runs', (process.env.GEMMA ?? 'gemma4-31b') + '.json'));
-const q = load(path.join(HERE, 'runs', (process.env.QWEN ?? 'qwen3.6_35b') + '.json'));
+const RUNS_SUB = process.env.RUNS_SUBDIR ?? '.';
+const g = load(path.join(HERE, 'runs', RUNS_SUB, (process.env.GEMMA ?? 'gemma4-31b') + '.json'));
+const q = load(path.join(HERE, 'runs', RUNS_SUB, (process.env.QWEN ?? 'qwen3.6_35b') + '.json'));
 if (!g && !q) { console.error('no run files found'); process.exit(1); }
 
 const byTask = new Map();
@@ -201,7 +202,7 @@ for (const r of rows) r.differential = differential(r);
 
 const outDir = path.join(HERE, 'reports');
 fs.mkdirSync(outDir, { recursive: true });
-fs.writeFileSync(path.join(outDir, 'failure-table.json'), JSON.stringify({
+fs.writeFileSync(path.join(outDir, process.env.TABLE_NAME ?? 'failure-table.json'), JSON.stringify({
   at: new Date().toISOString(),
   corpus_version: g?.corpus_version ?? q?.corpus_version,
   corpus_sha256: g?.corpus_sha256 ?? q?.corpus_sha256,
