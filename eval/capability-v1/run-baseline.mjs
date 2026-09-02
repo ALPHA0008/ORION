@@ -23,7 +23,7 @@ import { Worker } from '../../v0/src/agent/loop/worker.mjs';
 import { createOpenAICompatModel } from '../../v0/src/agent/model/index.mjs';
 import { applyGemmaToolCallShim } from '../../v0/src/agent/model/shims/gemma-tool-calls.mjs';
 import { trajectoryMetrics } from '../metrics/index.mjs';
-import { verifyTask, resetTask, restoreOracle, pytest } from './verify.mjs';
+import { verifyTask, resetTask, restoreOracle, runOneTest } from './verify.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(os.tmpdir(), 'capability-v1');
@@ -87,7 +87,9 @@ export async function runTask(task, model) {
   // Preflight is re-checked at RUN time, not trusted from bracketing. If the task is already
   // satisfied before the agent starts, any later "pass" would be meaningless.
   restoreOracle(dir, task);
-  const pre = pytest(task.python_exe, dir, [task.verified_test], 300_000);
+  // Runner-agnostic: pytest for pytest repos, runtests.py for django. Probing a django task with
+  // pytest yields "not found", which would read as "already satisfied" and skip the task.
+  const pre = runOneTest(task, dir, task.verified_test, 600_000);
   git(['-C', dir, 'checkout', '-f', '--detach', task.base_commit]);
   git(['-C', dir, 'clean', '-fd']);
   if (pre.passed) {
@@ -160,7 +162,18 @@ export async function runTask(task, model) {
       // are reported as such.
       const untracked = git(['-C', dir, 'ls-files', '--others', '--exclude-standard']).trim();
       const NL = String.fromCharCode(10);
-      const extra = untracked ? untracked.split(NL).filter(Boolean).map(f => ` ${f} | (new file)`) : [];
+      // An agent that builds its own virtualenv inside the repo (django-10554 ran `python -m venv
+      // venv`) adds dozens of binaries that are NOT source changes. diff_stat is the authoritative
+      // mutation record used by the failure classifier, so counting those as edits would report the
+      // agent "changing 6 files" when it changed none -- the same class of false signal that made
+      // the pre-fix diff_stat lie about test-file edits.
+      const isToolingArtifact = (f) =>
+        /(^|[\/])(\.?venv|env|\.tox|node_modules|__pycache__|\.pytest_cache|\.mypy_cache)[\/]/i.test(f)
+        || /\.(pyc|pyo|egg-info)([\/]|$)/i.test(f);
+      const extra = untracked
+        ? untracked.split(NL).filter(Boolean).filter(f => !isToolingArtifact(f))
+            .map(f => ` ${f} | (new file)`)
+        : [];
       return [tracked, ...extra].filter(Boolean).join(NL);
     } catch { return ''; }
   })();
@@ -200,8 +213,11 @@ if (import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}` ||
   // result is always attributable to a specific corpus_sha256. The frozen manifest deliberately
   // omits machine-local paths (venv, worktree), so those are rejoined here from the working corpus
   // by task_id -- the definition is frozen, the machine paths are not part of it.
-  const frozen = JSON.parse(fs.readFileSync(path.join(HERE, 'tasks', 'frozen-corpus.json'), 'utf8'));
-  const local = new Map(JSON.parse(fs.readFileSync(path.join(HERE, 'tasks', 'corpus.json'), 'utf8'))
+  // TASKS_SUBDIR selects the corpus: '.' = CAPABILITY_V1_STAGE1, 'tranche2' = CAPABILITY_V1_TRANCHE2.
+  // Both are frozen and independent; a run always records which one it consumed.
+  const SUB = process.env.TASKS_SUBDIR ?? '.';
+  const frozen = JSON.parse(fs.readFileSync(path.join(HERE, 'tasks', SUB, 'frozen-corpus.json'), 'utf8'));
+  const local = new Map(JSON.parse(fs.readFileSync(path.join(HERE, 'tasks', SUB, 'corpus.json'), 'utf8'))
     .tasks.map(t => [t.task_id, t]));
   const tasks = frozen.tasks.map(t => {
     const l = local.get(t.task_id);
@@ -216,7 +232,8 @@ if (import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}` ||
   if (limit) sel = sel.slice(0, limit);
 
   const label = process.env.LABEL ?? (process.env.HARNESS_MODEL ?? 'model').replace(/[^\w.-]/g, '_');
-  const outFile = path.join(HERE, 'runs', `${label}.json`);
+  // Tranche-2 results go to runs/tranche2/, never beside the immutable Stage-1 baseline artifact.
+  const outFile = path.join(HERE, 'runs', process.env.RUNS_SUBDIR ?? '.', `${label}.json`);
   fs.mkdirSync(path.dirname(outFile), { recursive: true });
 
   const model = buildModel();

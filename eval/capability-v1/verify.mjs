@@ -150,6 +150,16 @@ function djangoRun(py, dir, ids, timeout = 900_000) {
 const isDjango = (task) => task.repository === 'django/django';
 
 /**
+ * Run ONE test id under the repository's own convention. Used for the run-time preflight, which
+ * must not assume pytest: a django task probed with pytest reports "file or directory not found",
+ * which the runner would read as "objective already satisfied" and skip the task entirely.
+ */
+export function runOneTest(task, dir, id, timeout = 600_000) {
+  return isDjango(task) ? djangoRun(task.python_exe, dir, [id], timeout)
+                        : pytest(task.python_exe, dir, [id], timeout);
+}
+
+/**
  * The verdict. FAIL_TO_PASS must now pass AND PASS_TO_PASS must still pass -- a fix that satisfies
  * the target test by breaking the rest of the suite is not a fix.
  */
