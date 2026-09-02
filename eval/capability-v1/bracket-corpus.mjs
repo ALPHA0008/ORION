@@ -183,14 +183,57 @@ function pytestVersion(py, dir) {
   catch (e) { return String((e.stdout ?? '') + (e.stderr ?? '')).match(/\d+\.\d+[\w.]*/)?.[0] ?? 'unknown'; }
 }
 
-/** Run one pytest node id; return { passed, output }. */
-function runTest(py, dir, nodeId, timeout = 300_000) {
+/**
+ * Per-repository test invocation.
+ *
+ * Assuming pytest everywhere was wrong. Django ships its own runner and uses dotted ids
+ * (`mail.tests.MailTests.test_x`); handing one to pytest yields "file or directory not found",
+ * which the bracket then recorded as `BASELINE_NOT_REPRODUCIBLE` -- i.e. "the maintainer's own fix
+ * does not work" -- for a task whose tests we had never actually run.
+ *
+ * Django ids are additionally run at CLASS granularity. `mail.tests.MailTests.test_non_ascii_dns_...`
+ * calls `delattr(DNS_NAME, '_fqdn')` and depends on an earlier test in its class having cached that
+ * attribute, so standalone it raises `AttributeError: _fqdn` even with the gold patch applied.
+ * Measured: clean tree -> FAILED (errors=1), gold patch -> OK across 45 tests. Running the class is
+ * what makes the oracle meaningful; running the method alone measures test isolation instead.
+ */
+const TEST_STRATEGY = {
+  'django/django': {
+    // `runtests.py` lives in tests/ and bootstraps its own settings.
+    cmd: (py, id) => `"${py}" runtests.py --settings=test_sqlite --parallel=1 "${classOf(id)}"`,
+    cwd: (dir) => path.join(dir, 'tests'),
+    // Django's runner reports OK / FAILED rather than pytest's exit-code conventions.
+    passed: (out, ok) => ok && /\bOK\b/.test(out) && !/FAILED/.test(out),
+  },
+};
+/**
+ * Reduce a Django test id to CLASS granularity, in the format `runtests.py` accepts.
+ *
+ * SWE-bench records Django ids as unittest prints them -- `test_x (mail.tests.MailTests)`, with the
+ * dotted path in PARENTHESES. An earlier version split on '.' and produced
+ * `test_non_ascii_dns_non_unicode_email (mail`, which runtests.py tried to import as a module.
+ * Both id shapes are handled: parenthesised, and plain dotted.
+ */
+const classOf = (id) => {
+  const s = String(id).trim();
+  const paren = s.match(/^\s*(\S+)\s*\(([^)]+)\)\s*$/);
+  if (paren) return paren[2].trim();          // `test_x (a.b.C)` -> `a.b.C`
+  const parts = s.split('.');
+  return parts.length > 1 && /^test/.test(parts.at(-1)) ? parts.slice(0, -1).join('.') : s;
+};
+
+/** Run one test id under the repository's own convention; return { passed, output }. */
+function runTest(py, dir, nodeId, timeout = 300_000, repo = null) {
+  const s = TEST_STRATEGY[repo];
+  const cmd = s ? s.cmd(py, nodeId) : `"${py}" -m pytest "${nodeId}" -x -q -p no:cacheprovider`;
+  const cwd = s ? s.cwd(dir) : dir;
+  const opts = { cwd, ...QUIET, timeout, env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' } };
   try {
-    const out = execSync(`"${py}" -m pytest "${nodeId}" -x -q -p no:cacheprovider`,
-      { cwd: dir, ...QUIET, timeout, env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' } });
-    return { passed: true, output: String(out).slice(-800) };
+    const out = String(execSync(cmd, opts));
+    return { passed: s ? s.passed(out, true) : true, output: out.slice(-800) };
   } catch (e) {
-    return { passed: false, output: (String(e.stdout ?? '') + String(e.stderr ?? '')).slice(-800) };
+    const out = String(e.stdout ?? '') + String(e.stderr ?? '');
+    return { passed: s ? s.passed(out, false) : false, output: out.slice(-800) };
   }
 }
 
@@ -285,10 +328,16 @@ for (const c of cands) {
   const overBudget = () => Date.now() - t0 > CANDIDATE_CEILING_MS;
   let lifted = [];
   try {
-    lifted = pipInstall(py, dir, installArgs, c.created_at);
+    // Django is pure Python with a near-empty runtime dependency set, and the era pin actively
+    // breaks it: `asgiref` has a yank-hole, and pinning further makes the project's own version
+    // metadata unsatisfiable ("only django==4.1.dev is available and you require django"). The pin
+    // exists to stop dependency drift breaking era code; with no dependencies to drift it buys
+    // nothing and costs reproducibility.
+    const NO_DATE_PIN = new Set(['django/django']);
+    lifted = pipInstall(py, dir, installArgs, NO_DATE_PIN.has(c.repository) ? null : c.created_at);
     // The repo under test IS pytest for one of these projects; naming pytest as a dependency there
     // would collide with the editable install of the package being tested.
-    if (c.repository !== 'pytest-dev/pytest')
+    if (c.repository !== 'pytest-dev/pytest' && !TEST_STRATEGY[c.repository])
       execSync(`uv pip install --python "${py}" -q "pytest<8"`, { cwd: dir, ...QUIET, timeout: 900_000 });
   }
   catch (e) { reject('install', e.message); continue; }
@@ -301,13 +350,13 @@ for (const c of cands) {
   const test = c.fail_to_pass[0];
   if (!test) { reject('no-test', 'FAIL_TO_PASS empty'); continue; }
 
-  const neg = runTest(py, dir, test);
+  const neg = runTest(py, dir, test, 600_000, c.repository);
   if (neg.passed) { reject('preflight-positive', 'test passes WITHOUT the fix'); continue; }
 
   try { applyPatch(dir, c.gold_patch, 'gold'); }
   catch (e) { reject('gold-patch', e.message); continue; }
 
-  const pos = runTest(py, dir, test);
+  const pos = runTest(py, dir, test, 600_000, c.repository);
   // Keep enough of the failure to diagnose it. A bare last line ("AssertionError") cannot
   // distinguish a genuine task defect from an environment artifact, and that distinction decides
   // whether the task is rejected honestly or rejected for a flaw in this script.

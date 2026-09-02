@@ -1,0 +1,106 @@
+{
+  "model": "gemma4-31b",
+  "corpus_version": "CAPABILITY_V1_STAGE1",
+  "corpus_sha256": "0a9a279d48a491dacdadfd714c2c588bfb8a79adb4d536680241f1ebcf8300bb",
+  "runtime_commit": "6e4d5325d788acbf2453af143b732e22c7e3ec25",
+  "repeat_index": 1,
+  "of": 1,
+  "at": "2026-09-02T06:44:29.104Z",
+  "results": [
+    {
+      "task_id": "pytest-dev__pytest-8906",
+      "repository": "pytest-dev/pytest",
+      "started": "2026-09-02T06:43:50.644Z",
+      "model": "gemma4-31b",
+      "run_id": "run_b6d20ebb8f",
+      "status": "completed",
+      "reason": "model_finished",
+      "timed_out": false,
+      "run_error": null,
+      "wall_ms": 31122,
+      "fail_to_pass_now_passes": false,
+      "pass_to_pass_still_passes": true,
+      "pass_to_pass_checked": 25,
+      "pass_to_pass_declared": 84,
+      "pass_to_pass_unrunnable": 5,
+      "pass_to_pass_uncollectable": 0,
+      "task_success": false,
+      "f2p_output": "======================= test session starts =============================\r\nplatform win32 -- Python 3.8.20, pytest-7.0.0.dev36+g69356d20c, py-1.10.0, pluggy-0.13.1\r\nrootdir: C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\pytest-of-abhijith.p\\pytest-418\\test_module_level_skip_error0\r\ncollected 0 items / 1 error\r\n\r\n=================================== ERRORS ====================================\r\n______________ ERROR collecting test_module_level_skip_error.py _______________\r\nUsing pytest.skip outside of a test is not allowed. To decorate a test function, use the @pytest.mark.skip or @pytest.mark.skipif decorators instead, and to skip a module use `pytestmark = pytest.mark.{skip,skipif}` or ``pytest.skip(msg, allow_module_level=True)``.\r\n=========================== short test summary info ===========================\r\nERROR test_module_level_skip_error.py\r\n!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\r\n============================== 1 error in 0.06s ===============================\r\n=========================== short test summary info ===========================\r\nFAILED testing/test_skipping.py::test_module_level_skip_error - Failed: nomat...\r\n1 failed in 0.13s\r\n",
+      "p2p_output": ".........................                                                [100%]\r\n25 passed in 1.89s\r\n",
+      "diff_stat": "src/_pytest/python.py | 3 ++-\n 1 file changed, 2 insertions(+), 1 deletion(-)\n reproduction.py | (new file)\n reproduction_test.py | (new file)\n test_module_skip.py | (new file)\n test_module_skip_correct.py | (new file)",
+      "metrics": {
+        "events": 127,
+        "turns": 1,
+        "model_calls": 16,
+        "model_failures": 0,
+        "tool_calls": 15,
+        "tool_succeeded": 12,
+        "tool_failed": 3,
+        "tool_denied": 0,
+        "duplicate_action_count": 1,
+        "duplicate_action_rate": 0.067,
+        "tool_success_rate": 0.8,
+        "failure_density": 0.0236,
+        "tools_used": {
+          "grep": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "read": {
+            "started": 6,
+            "succeeded": 6,
+            "failed": 0
+          },
+          "bash": {
+            "started": 7,
+            "succeeded": 4,
+            "failed": 3
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "src/_pytest/outcomes.py",
+          "src/_pytest/python.py"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 1,
+        "failed_test_runs": 3,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 15,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 15,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 32,
+        "messages_hot": 32,
+        "messages_dropped": 0,
+        "projection_bytes": 25538,
+        "input_tokens": 70051,
+        "output_tokens": 1111,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 31122,
+        "model_ms": 24320,
+        "tool_ms": 6763,
+        "other_ms": 39,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pytest-dev__pytest-8906-1788331433710.db"
+    }
+  ]
+}

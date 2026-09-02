@@ -1,0 +1,107 @@
+{
+  "model": "gemma4-31b",
+  "corpus_version": "CAPABILITY_V1_STAGE1",
+  "corpus_sha256": "0a9a279d48a491dacdadfd714c2c588bfb8a79adb4d536680241f1ebcf8300bb",
+  "runtime_commit": "6e4d5325d788acbf2453af143b732e22c7e3ec25",
+  "repeat_index": 1,
+  "of": 1,
+  "at": "2026-09-02T06:41:18.467Z",
+  "results": [
+    {
+      "task_id": "pytest-dev__pytest-11148",
+      "repository": "pytest-dev/pytest",
+      "started": "2026-09-02T06:39:24.731Z",
+      "model": "gemma4-31b",
+      "run_id": "run_8ac1e1fcc2",
+      "status": "completed",
+      "reason": "model_finished",
+      "timed_out": false,
+      "run_error": null,
+      "wall_ms": 109382,
+      "fail_to_pass_now_passes": false,
+      "pass_to_pass_still_passes": true,
+      "pass_to_pass_checked": 21,
+      "pass_to_pass_declared": 129,
+      "pass_to_pass_unrunnable": 1,
+      "pass_to_pass_uncollectable": 4,
+      "task_success": false,
+      "f2p_output": "pData/Local/Temp/pytest-of-abhijith.p/pytest-408/test_remembers_previous_import0')\r\n\r\n    def test_remembers_previous_imports(\r\n        self, simple_module: Path, tmp_path: Path\r\n    ) -> None:\r\n        \"\"\"`importlib` mode called remembers previous module (#10341, #10811).\"\"\"\r\n        module1 = import_path(simple_module, mode=\"importlib\", root=tmp_path)\r\n        module2 = import_path(simple_module, mode=\"importlib\", root=tmp_path)\r\n>       assert module1 is module2\r\nE       AssertionError: assert <module '_src.tests.mymod_test_remembers_previous_imports' from 'C:\\\\Users\\\\abhijith.p\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-abhijith.p\\\\pytest-408\\\\test_remembers_previous_import0\\\\_src\\\\tests\\\\mymod_test_remembers_previous_imports.py'> is <module '_src.tests.mymod_test_remembers_previous_imports' from 'C:\\\\Users\\\\abhijith.p\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-abhijith.p\\\\pytest-408\\\\test_remembers_previous_import0\\\\_src\\\\tests\\\\mymod_test_remembers_previous_imports.py'>\r\n\r\ntesting\\test_pathlib.py:315: AssertionError\r\n=========================== short test summary info ===========================\r\nFAILED testing/test_pathlib.py::TestImportPath::test_remembers_previous_imports\r\n1 failed in 0.29s\r\n",
+      "p2p_output": ".....................                                                    [100%]\r\n21 passed in 0.19s\r\n",
+      "diff_stat": "src/_pytest/pathlib.py | 2 +-\n 1 file changed, 1 insertion(+), 1 deletion(-)\n reproduce_importlib.py | (new file)",
+      "metrics": {
+        "events": 176,
+        "turns": 1,
+        "model_calls": 22,
+        "model_failures": 0,
+        "tool_calls": 21,
+        "tool_succeeded": 20,
+        "tool_failed": 1,
+        "tool_denied": 0,
+        "duplicate_action_count": 1,
+        "duplicate_action_rate": 0.048,
+        "tool_success_rate": 0.952,
+        "failure_density": 0.0057,
+        "tools_used": {
+          "bash": {
+            "started": 3,
+            "succeeded": 2,
+            "failed": 1
+          },
+          "grep": {
+            "started": 7,
+            "succeeded": 7,
+            "failed": 0
+          },
+          "read": {
+            "started": 10,
+            "succeeded": 10,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 3,
+        "file_list": [
+          "src/pytest",
+          "src/_pytest/python.py",
+          "src/_pytest/pathlib.py"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 1,
+        "failed_test_runs": 1,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": true,
+        "authorization_events": 21,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 22,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 44,
+        "messages_hot": 40,
+        "messages_dropped": 4,
+        "projection_bytes": 45348,
+        "input_tokens": 150756,
+        "output_tokens": 4455,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 109382,
+        "model_ms": 103961,
+        "tool_ms": 5363,
+        "other_ms": 58,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pytest-dev__pytest-11148-1788331166171.db"
+    }
+  ]
+}

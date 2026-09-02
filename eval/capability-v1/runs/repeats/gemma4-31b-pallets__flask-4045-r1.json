@@ -1,0 +1,106 @@
+{
+  "model": "gemma4-31b",
+  "corpus_version": "CAPABILITY_V1_STAGE1",
+  "corpus_sha256": "0a9a279d48a491dacdadfd714c2c588bfb8a79adb4d536680241f1ebcf8300bb",
+  "runtime_commit": "6e4d5325d788acbf2453af143b732e22c7e3ec25",
+  "repeat_index": 1,
+  "of": 1,
+  "at": "2026-09-02T06:38:11.297Z",
+  "results": [
+    {
+      "task_id": "pallets__flask-4045",
+      "repository": "pallets/flask",
+      "started": "2026-09-02T06:37:01.600Z",
+      "model": "gemma4-31b",
+      "run_id": "run_c9a2e54589",
+      "status": "completed",
+      "reason": "model_finished",
+      "timed_out": false,
+      "run_error": null,
+      "wall_ms": 62867,
+      "fail_to_pass_now_passes": true,
+      "pass_to_pass_still_passes": true,
+      "pass_to_pass_checked": 25,
+      "pass_to_pass_declared": 50,
+      "pass_to_pass_unrunnable": 0,
+      "pass_to_pass_uncollectable": 0,
+      "task_success": true,
+      "f2p_output": ".                                                                        [100%]\r\n1 passed in 0.04s\r\n",
+      "p2p_output": ".........................                                                [100%]\r\n25 passed in 0.10s\r\n",
+      "diff_stat": "src/flask/blueprints.py | 5 +++++\n 1 file changed, 5 insertions(+)",
+      "metrics": {
+        "events": 312,
+        "turns": 1,
+        "model_calls": 39,
+        "model_failures": 0,
+        "tool_calls": 38,
+        "tool_succeeded": 38,
+        "tool_failed": 0,
+        "tool_denied": 0,
+        "duplicate_action_count": 6,
+        "duplicate_action_rate": 0.158,
+        "tool_success_rate": 1,
+        "failure_density": 0,
+        "tools_used": {
+          "bash": {
+            "started": 15,
+            "succeeded": 15,
+            "failed": 0
+          },
+          "read": {
+            "started": 19,
+            "succeeded": 19,
+            "failed": 0
+          },
+          "grep": {
+            "started": 3,
+            "succeeded": 3,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "src/flask/blueprints.py",
+          "src/flask/app.py"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": false,
+        "authorization_events": 38,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 39,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 78,
+        "messages_hot": 40,
+        "messages_dropped": 38,
+        "projection_bytes": 22021,
+        "input_tokens": 190172,
+        "output_tokens": 2062,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 62867,
+        "model_ms": 55422,
+        "tool_ms": 7348,
+        "other_ms": 97,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pallets__flask-4045-1788331025395.db"
+    }
+  ]
+}

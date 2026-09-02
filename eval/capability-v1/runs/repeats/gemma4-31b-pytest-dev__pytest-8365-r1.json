@@ -1,0 +1,111 @@
+{
+  "model": "gemma4-31b",
+  "corpus_version": "CAPABILITY_V1_STAGE1",
+  "corpus_sha256": "0a9a279d48a491dacdadfd714c2c588bfb8a79adb4d536680241f1ebcf8300bb",
+  "runtime_commit": "6e4d5325d788acbf2453af143b732e22c7e3ec25",
+  "repeat_index": 1,
+  "of": 1,
+  "at": "2026-09-02T06:43:50.635Z",
+  "results": [
+    {
+      "task_id": "pytest-dev__pytest-8365",
+      "repository": "pytest-dev/pytest",
+      "started": "2026-09-02T06:42:19.810Z",
+      "model": "gemma4-31b",
+      "run_id": "run_5eec41c050",
+      "status": "completed",
+      "reason": "model_finished",
+      "timed_out": false,
+      "run_error": null,
+      "wall_ms": 87095,
+      "fail_to_pass_now_passes": false,
+      "pass_to_pass_still_passes": true,
+      "pass_to_pass_checked": 25,
+      "pass_to_pass_declared": 32,
+      "pass_to_pass_unrunnable": 0,
+      "pass_to_pass_uncollectable": 0,
+      "task_success": false,
+      "f2p_output": "st-2'))\r\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000016D883BEA30>\r\n\r\n    def test_tmp_path_factory_handles_invalid_dir_characters(\r\n        tmp_path_factory: TempPathFactory, monkeypatch: MonkeyPatch\r\n    ) -> None:\r\n        monkeypatch.setattr(\"getpass.getuser\", lambda: \"os/<:*?;>agnostic\")\r\n        # _basetemp / _given_basetemp are cached / set in parallel runs, patch them\r\n        monkeypatch.setattr(tmp_path_factory, \"_basetemp\", None)\r\n        monkeypatch.setattr(tmp_path_factory, \"_given_basetemp\", None)\r\n        p = tmp_path_factory.getbasetemp()\r\n>       assert \"pytest-of-unknown\" in str(p)\r\nE       AssertionError: assert 'pytest-of-unknown' in 'C:\\\\Users\\\\abhijith.p\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-os_____;_agnostic\\\\pytest-2'\r\nE        +  where 'C:\\\\Users\\\\abhijith.p\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-os_____;_agnostic\\\\pytest-2' = str(WindowsPath('C:/Users/abhijith.p/AppData/Local/Temp/pytest-of-os_____;_agnostic/pytest-2'))\r\n\r\ntesting\\test_tmpdir.py:459: AssertionError\r\n=========================== short test summary info ===========================\r\nFAILED testing/test_tmpdir.py::test_tmp_path_factory_handles_invalid_dir_characters\r\n1 failed in 0.07s\r\n",
+      "p2p_output": "..s.....s................                                                [100%]\r\n23 passed, 2 skipped in 0.89s\r\n",
+      "diff_stat": "src/_pytest/tmpdir.py | 9 ++++++++-\n 1 file changed, 8 insertions(+), 1 deletion(-)\n reproduce_issue.py | (new file)",
+      "metrics": {
+        "events": 288,
+        "turns": 1,
+        "model_calls": 36,
+        "model_failures": 0,
+        "tool_calls": 35,
+        "tool_succeeded": 35,
+        "tool_failed": 0,
+        "tool_denied": 0,
+        "duplicate_action_count": 15,
+        "duplicate_action_rate": 0.429,
+        "tool_success_rate": 1,
+        "failure_density": 0,
+        "tools_used": {
+          "grep": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "read": {
+            "started": 14,
+            "succeeded": 14,
+            "failed": 0
+          },
+          "bash": {
+            "started": 14,
+            "succeeded": 14,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "write": {
+            "started": 5,
+            "succeeded": 5,
+            "failed": 0
+          }
+        },
+        "files_touched": 2,
+        "file_list": [
+          "src/_pytest/tmpdir.py",
+          "reproduce_issue.py"
+        ],
+        "edits": 1,
+        "writes": 5,
+        "test_runs": 0,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": false,
+        "authorization_events": 35,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 36,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 72,
+        "messages_hot": 40,
+        "messages_dropped": 32,
+        "projection_bytes": 24693,
+        "input_tokens": 184101,
+        "output_tokens": 3090,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 87095,
+        "model_ms": 75811,
+        "tool_ms": 11179,
+        "other_ms": 105,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pytest-dev__pytest-8365-1788331341009.db"
+    }
+  ]
+}

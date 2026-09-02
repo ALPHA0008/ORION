@@ -1,0 +1,300 @@
+{
+  "at": "2026-09-02T07:07:34.644Z",
+  "n_required": 3,
+  "rows": [
+    {
+      "task_id": "pallets__flask-4045",
+      "repository": "pallets/flask",
+      "runs": [
+        {
+          "repeat": 1,
+          "success": true,
+          "reason": "model_finished",
+          "mechanism": "PASS",
+          "tool_calls": 38,
+          "diff": "src/flask/blueprints.py, 1 file changed, 5 insertions(+)"
+        },
+        {
+          "repeat": 2,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 37,
+          "diff": ""
+        },
+        {
+          "repeat": 3,
+          "success": false,
+          "reason": "no_progress",
+          "mechanism": "long-horizon execution",
+          "tool_calls": 13,
+          "diff": ""
+        }
+      ],
+      "n": 3,
+      "label": "HIGH_VARIANCE",
+      "mechanism_stable": false,
+      "mechanisms": [
+        "termination",
+        "long-horizon execution"
+      ]
+    },
+    {
+      "task_id": "pallets__flask-5063",
+      "repository": "pallets/flask",
+      "runs": [
+        {
+          "repeat": 1,
+          "success": false,
+          "reason": "no_progress",
+          "mechanism": "long-horizon execution",
+          "tool_calls": 19,
+          "diff": "reproduce_issue.py"
+        },
+        {
+          "repeat": 2,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 1,
+          "diff": ""
+        },
+        {
+          "repeat": 3,
+          "success": false,
+          "reason": "max_turns",
+          "mechanism": "editing",
+          "tool_calls": 40,
+          "diff": "src/flask/cli.py, 1 file changed, 5 insertions(+), 2 deletions(-), reproduce_issue.py"
+        }
+      ],
+      "n": 3,
+      "label": "STABLE_FAILURE",
+      "mechanism_stable": false,
+      "mechanisms": [
+        "long-horizon execution",
+        "termination",
+        "editing"
+      ]
+    },
+    {
+      "task_id": "pylint-dev__pylint-6506",
+      "repository": "pylint-dev/pylint",
+      "runs": [
+        {
+          "repeat": 1,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "editing",
+          "tool_calls": 17,
+          "diff": "pylint/config/config_initialization.py, 1 file changed, 2 insertions(+), 1 deletion(-), reproduce_issue.py"
+        },
+        {
+          "repeat": 2,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "editing",
+          "tool_calls": 17,
+          "diff": "pylint/config/config_initialization.py, 1 file changed, 2 insertions(+), 1 deletion(-), reproduce_issue.py"
+        },
+        {
+          "repeat": 3,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "editing",
+          "tool_calls": 25,
+          "diff": "pylint/config/config_initialization.py, 1 file changed, 2 insertions(+), 1 deletion(-), stderr.txt"
+        }
+      ],
+      "n": 3,
+      "label": "STABLE_FAILURE",
+      "mechanism_stable": true,
+      "mechanisms": [
+        "editing"
+      ]
+    },
+    {
+      "task_id": "pytest-dev__pytest-11148",
+      "repository": "pytest-dev/pytest",
+      "runs": [
+        {
+          "repeat": 1,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "editing",
+          "tool_calls": 21,
+          "diff": "src/_pytest/pathlib.py, 1 file changed, 1 insertion(+), 1 deletion(-), reproduce_importlib.py"
+        },
+        {
+          "repeat": 2,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 17,
+          "diff": ""
+        },
+        {
+          "repeat": 3,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 32,
+          "diff": ""
+        }
+      ],
+      "n": 3,
+      "label": "STABLE_FAILURE",
+      "mechanism_stable": false,
+      "mechanisms": [
+        "editing",
+        "termination"
+      ]
+    },
+    {
+      "task_id": "pytest-dev__pytest-6116",
+      "repository": "pytest-dev/pytest",
+      "runs": [
+        {
+          "repeat": 1,
+          "success": false,
+          "reason": "no_progress",
+          "mechanism": "long-horizon execution",
+          "tool_calls": 5,
+          "diff": ""
+        },
+        {
+          "repeat": 2,
+          "success": false,
+          "reason": "no_progress",
+          "mechanism": "long-horizon execution",
+          "tool_calls": 4,
+          "diff": ""
+        },
+        {
+          "repeat": 3,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "editing",
+          "tool_calls": 22,
+          "diff": "src/_pytest/main.py, 1 file changed, 1 insertion(+), 1 deletion(-)"
+        }
+      ],
+      "n": 3,
+      "label": "STABLE_FAILURE",
+      "mechanism_stable": false,
+      "mechanisms": [
+        "long-horizon execution",
+        "editing"
+      ]
+    },
+    {
+      "task_id": "pytest-dev__pytest-7432",
+      "repository": "pytest-dev/pytest",
+      "runs": [
+        {
+          "repeat": 1,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 5,
+          "diff": ""
+        },
+        {
+          "repeat": 2,
+          "success": true,
+          "reason": "model_finished",
+          "mechanism": "PASS",
+          "tool_calls": 11,
+          "diff": "src/_pytest/skipping.py, 1 file changed, 1 insertion(+), 1 deletion(-), reproduce_issue.py"
+        },
+        {
+          "repeat": 3,
+          "success": true,
+          "reason": "model_finished",
+          "mechanism": "PASS",
+          "tool_calls": 11,
+          "diff": "src/_pytest/skipping.py, 1 file changed, 1 insertion(+), 1 deletion(-), reproduce_issue.py"
+        }
+      ],
+      "n": 3,
+      "label": "HIGH_VARIANCE",
+      "mechanism_stable": true,
+      "mechanisms": [
+        "termination"
+      ]
+    },
+    {
+      "task_id": "pytest-dev__pytest-8365",
+      "repository": "pytest-dev/pytest",
+      "runs": [
+        {
+          "repeat": 1,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "editing",
+          "tool_calls": 35,
+          "diff": "src/_pytest/tmpdir.py, 1 file changed, 8 insertions(+), 1 deletion(-), reproduce_issue.py"
+        },
+        {
+          "repeat": 2,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "editing",
+          "tool_calls": 13,
+          "diff": "src/_pytest/tmpdir.py, 1 file changed, 1 insertion(+), 1 deletion(-), reproduce_issue.py, test_tmpdir_fix.py"
+        },
+        {
+          "repeat": 3,
+          "success": false,
+          "reason": "no_progress",
+          "mechanism": "long-horizon execution",
+          "tool_calls": 11,
+          "diff": "reproduce_issue.py"
+        }
+      ],
+      "n": 3,
+      "label": "STABLE_FAILURE",
+      "mechanism_stable": false,
+      "mechanisms": [
+        "editing",
+        "long-horizon execution"
+      ]
+    },
+    {
+      "task_id": "pytest-dev__pytest-8906",
+      "repository": "pytest-dev/pytest",
+      "runs": [
+        {
+          "repeat": 1,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "editing",
+          "tool_calls": 15,
+          "diff": "src/_pytest/python.py, 1 file changed, 2 insertions(+), 1 deletion(-), reproduction.py, reproduction_test.py, test_module_skip.py, test_module_skip_correct.py"
+        },
+        {
+          "repeat": 2,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "editing",
+          "tool_calls": 16,
+          "diff": "src/_pytest/python.py, 1 file changed, 2 insertions(+), 1 deletion(-), reproduction_skip.py, reproduction_skip_allowed.py"
+        },
+        {
+          "repeat": 3,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "editing",
+          "tool_calls": 11,
+          "diff": "src/_pytest/python.py, 1 file changed, 3 insertions(+), 2 deletions(-), repro.py, repro_fixed.py"
+        }
+      ],
+      "n": 3,
+      "label": "STABLE_FAILURE",
+      "mechanism_stable": true,
+      "mechanisms": [
+        "editing"
+      ]
+    }
+  ]
+}

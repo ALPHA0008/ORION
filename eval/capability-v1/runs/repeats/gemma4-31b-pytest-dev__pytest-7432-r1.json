@@ -1,0 +1,95 @@
+{
+  "model": "gemma4-31b",
+  "corpus_version": "CAPABILITY_V1_STAGE1",
+  "corpus_sha256": "0a9a279d48a491dacdadfd714c2c588bfb8a79adb4d536680241f1ebcf8300bb",
+  "runtime_commit": "6e4d5325d788acbf2453af143b732e22c7e3ec25",
+  "repeat_index": 1,
+  "of": 1,
+  "at": "2026-09-02T06:42:19.803Z",
+  "results": [
+    {
+      "task_id": "pytest-dev__pytest-7432",
+      "repository": "pytest-dev/pytest",
+      "started": "2026-09-02T06:41:28.345Z",
+      "model": "gemma4-31b",
+      "run_id": "run_63fcbe4d5d",
+      "status": "completed",
+      "reason": "model_finished",
+      "timed_out": false,
+      "run_error": null,
+      "wall_ms": 46212,
+      "fail_to_pass_now_passes": false,
+      "pass_to_pass_still_passes": true,
+      "pass_to_pass_checked": 25,
+      "pass_to_pass_declared": 77,
+      "pass_to_pass_unrunnable": 5,
+      "pass_to_pass_uncollectable": 0,
+      "task_success": false,
+      "f2p_output": "====== 1 skipped in 0.03s =============================='\r\nE       remains unmatched: 'SKIPPED [1] test_sample.py:2: unconditional skip'\r\n\r\nC:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\work\\pytest-dev__pytest-7432\\testing\\test_skipping.py:261: Failed\r\n---------------------------- Captured stdout call -----------------------------\r\n============================= test session starts =============================\r\nplatform win32 -- Python 3.9.25, pytest-5.4.1.dev593+ge6e300e72, py-1.9.0, pluggy-0.13.1\r\nrootdir: C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\pytest-of-abhijith.p\\pytest-414\\test_xfail_run_with_skip_mark0\r\ncollected 1 item\r\n\r\ntest_sample.py s                                                         [100%]\r\n\r\n=========================== short test summary info ===========================\r\nSKIPPED [1] ..\\..\\..\\capability-v1\\work\\pytest-dev__pytest-7432\\src\\_pytest\\skipping.py:239: unconditional skip\r\n============================= 1 skipped in 0.03s ==============================\r\n=========================== short test summary info ===========================\r\nFAILED testing/test_skipping.py::TestXFail::test_xfail_run_with_skip_mark[test_input1-expected1]\r\n1 failed in 0.14s\r\n",
+      "p2p_output": ".........................                                                [100%]\r\n25 passed in 1.82s\r\n",
+      "diff_stat": "",
+      "metrics": {
+        "events": 48,
+        "turns": 1,
+        "model_calls": 6,
+        "model_failures": 0,
+        "tool_calls": 5,
+        "tool_succeeded": 5,
+        "tool_failed": 0,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 1,
+        "failure_density": 0,
+        "tools_used": {
+          "bash": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "read": {
+            "started": 4,
+            "succeeded": 4,
+            "failed": 0
+          }
+        },
+        "files_touched": 1,
+        "file_list": [
+          "src/_pytest/skipping.py"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": false,
+        "authorization_events": 5,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 6,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 12,
+        "messages_hot": 12,
+        "messages_dropped": 0,
+        "projection_bytes": 19460,
+        "input_tokens": 11566,
+        "output_tokens": 2181,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 46212,
+        "model_ms": 45551,
+        "tool_ms": 649,
+        "other_ms": 12,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pytest-dev__pytest-7432-1788331289653.db"
+    }
+  ]
+}

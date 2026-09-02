@@ -1,0 +1,108 @@
+{
+  "model": "gemma4-31b",
+  "corpus_version": "CAPABILITY_V1_STAGE1",
+  "corpus_sha256": "0a9a279d48a491dacdadfd714c2c588bfb8a79adb4d536680241f1ebcf8300bb",
+  "runtime_commit": "6e4d5325d788acbf2453af143b732e22c7e3ec25",
+  "repeat_index": 1,
+  "of": 1,
+  "at": "2026-09-02T06:38:46.173Z",
+  "results": [
+    {
+      "task_id": "pallets__flask-5063",
+      "repository": "pallets/flask",
+      "started": "2026-09-02T06:38:11.304Z",
+      "model": "gemma4-31b",
+      "run_id": "run_1b18efee4f",
+      "status": "failed",
+      "reason": "no_progress",
+      "timed_out": false,
+      "run_error": null,
+      "wall_ms": 30945,
+      "fail_to_pass_now_passes": false,
+      "pass_to_pass_still_passes": true,
+      "pass_to_pass_checked": 25,
+      "pass_to_pass_declared": 54,
+      "pass_to_pass_unrunnable": 2,
+      "pass_to_pass_uncollectable": 0,
+      "task_success": false,
+      "f2p_output": "00%]\r\n================================== FAILURES ===================================\r\n__________________________ TestRoutes.test_subdomain __________________________\r\n\r\nself = <test_cli.TestRoutes object at 0x0000025AD59DBBE0>\r\nrunner = <click.testing.CliRunner object at 0x0000025AD59DB8B0>\r\n\r\n    def test_subdomain(self, runner):\r\n        app = Flask(__name__, static_folder=None)\r\n        app.add_url_rule(\"/a\", subdomain=\"a\", endpoint=\"a\")\r\n        app.add_url_rule(\"/b\", subdomain=\"b\", endpoint=\"b\")\r\n        cli = FlaskGroup(create_app=lambda: app)\r\n        result = runner.invoke(cli, [\"routes\"])\r\n        assert result.exit_code == 0\r\n>       assert \"Subdomain\" in result.output\r\nE       AssertionError: assert 'Subdomain' in 'Endpoint  Methods  Rule\\n--------  -------  ----\\na         GET      /a\\nb         GET      /b\\n'\r\nE        +  where 'Endpoint  Methods  Rule\\n--------  -------  ----\\na         GET      /a\\nb         GET      /b\\n' = <Result okay>.output\r\n\r\ntests\\test_cli.py:495: AssertionError\r\n=========================== short test summary info ===========================\r\nFAILED tests/test_cli.py::TestRoutes::test_subdomain - AssertionError: assert...\r\n1 failed in 0.10s\r\n",
+      "p2p_output": ".........................                                                [100%]\r\n25 passed in 0.11s\r\n",
+      "diff_stat": " reproduce_issue.py | (new file)",
+      "metrics": {
+        "events": 157,
+        "turns": 1,
+        "model_calls": 19,
+        "model_failures": 0,
+        "tool_calls": 19,
+        "tool_succeeded": 19,
+        "tool_failed": 0,
+        "tool_denied": 0,
+        "duplicate_action_count": 4,
+        "duplicate_action_rate": 0.211,
+        "tool_success_rate": 1,
+        "failure_density": 0,
+        "tools_used": {
+          "bash": {
+            "started": 11,
+            "succeeded": 11,
+            "failed": 0
+          },
+          "grep": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "read": {
+            "started": 6,
+            "succeeded": 6,
+            "failed": 0
+          },
+          "write": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 4,
+        "file_list": [
+          "src/flask/cli.py",
+          "reproduce_issue.py",
+          "src/flask/blueprints.py",
+          "src/flask/app.py"
+        ],
+        "edits": 0,
+        "writes": 1,
+        "test_runs": 0,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": false,
+        "authorization_events": 19,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 19,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 39,
+        "messages_hot": 39,
+        "messages_dropped": 0,
+        "projection_bytes": 24616,
+        "input_tokens": 81117,
+        "output_tokens": 1139,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 30945,
+        "model_ms": 25205,
+        "tool_ms": 5688,
+        "other_ms": 52,
+        "status": "failed",
+        "exit_reason": "no_progress"
+      },
+      "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pallets__flask-5063-1788331093005.db"
+    }
+  ]
+}

@@ -1,27 +1,7 @@
 {
-  "at": "2026-09-02T06:53:31.854Z",
+  "at": "2026-09-02T07:06:24.841Z",
   "accepted": [],
   "rejected": [
-    {
-      "task_id": "django__django-11532",
-      "repository": "django/django",
-      "base_commit": "a5308514fb4bc5086c9a16a8a24a945eeebb073c",
-      "python": "3.9",
-      "status": "rejected",
-      "stage": "oracle-negative",
-      "reason": "BASELINE_NOT_REPRODUCIBLE",
-      "evidence": " no tests ran in 0.00s ERROR: file or directory not found: test_non_ascii_dns_non_unicode_email (mail.tests.MailTests) "
-    },
-    {
-      "task_id": "django__django-11138",
-      "repository": "django/django",
-      "base_commit": "c84b91b7603e488f7171fdff8f08368ef3d6b856",
-      "python": "3.9",
-      "status": "rejected",
-      "stage": "oracle-negative",
-      "reason": "BASELINE_NOT_REPRODUCIBLE",
-      "evidence": " no tests ran in 0.00s ERROR: file or directory not found: test_query_convert_timezones (timezones.tests.NewDatabaseTests) "
-    },
     {
       "task_id": "pylint-dev__pylint-4551",
       "repository": "pylint-dev/pylint",
@@ -31,6 +11,46 @@
       "stage": "install",
       "reason": "DEPENDENCY_UNRESOLVABLE",
       "evidence": "Command failed: uv pip install --python \"C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1-t2\\_venvs\\pylint-dev__pylint-4551-py3.9\\Scripts\\python.exe\" --exclude-newer 2021-06-07T15:14:31Z --exclude-newer-package atomicwrites=2026-09-02 --no-build-isolation -q -e .\n  × No solution found when resolving dependencies:\n  ╰─▶ Because only astroid<=2.5.7 is available and pylint==2.9.0.dev1 depends\n   "
+    },
+    {
+      "task_id": "django__django-11532",
+      "repository": "django/django",
+      "base_commit": "a5308514fb4bc5086c9a16a8a24a945eeebb073c",
+      "python": "3.9",
+      "status": "rejected",
+      "stage": "oracle-negative",
+      "reason": "ENVIRONMENT_UNREPRODUCIBLE",
+      "evidence": "y\", line 154, in loadTestsFromName module = __import__(module_name) ModuleNotFoundError: No module named 'test_non_ascii_dns_non_unicode_email (mail' ---------------------------------------------------------------------- Ran 1 test in 0.000s FAILED (errors=1) "
+    },
+    {
+      "task_id": "django__django-11138",
+      "repository": "django/django",
+      "base_commit": "c84b91b7603e488f7171fdff8f08368ef3d6b856",
+      "python": "3.9",
+      "status": "rejected",
+      "stage": "oracle-negative",
+      "reason": "ENVIRONMENT_UNREPRODUCIBLE",
+      "evidence": "r.py\", line 154, in loadTestsFromName module = __import__(module_name) ModuleNotFoundError: No module named 'test_query_convert_timezones (timezones' ---------------------------------------------------------------------- Ran 1 test in 0.000s FAILED (errors=1) "
+    },
+    {
+      "task_id": "django__django-13121",
+      "repository": "django/django",
+      "base_commit": "ec5aa2161d8015a3fe57dcbbfe14200cd18f0a16",
+      "python": "3.9",
+      "status": "rejected",
+      "stage": "oracle-negative",
+      "reason": "ENVIRONMENT_UNREPRODUCIBLE",
+      "evidence": "er.py\", line 154, in loadTestsFromName module = __import__(module_name) ModuleNotFoundError: No module named 'test_duration_expressions (expressions' ---------------------------------------------------------------------- Ran 1 test in 0.000s FAILED (errors=1) "
+    },
+    {
+      "task_id": "django__django-15629",
+      "repository": "django/django",
+      "base_commit": "694cf458f16b8d340a3195244196980b2dec34fd",
+      "python": "3.9",
+      "status": "rejected",
+      "stage": "oracle-negative",
+      "reason": "ENVIRONMENT_UNREPRODUCIBLE",
+      "evidence": "FromName module = __import__(module_name) ModuleNotFoundError: No module named 'AlterField operation of db_collation on primary keys changes any FKs' ---------------------------------------------------------------------- Ran 1 test in 0.000s FAILED (errors=1) "
     }
   ]
 }

@@ -1,0 +1,102 @@
+{
+  "model": "gemma4-31b",
+  "corpus_version": "CAPABILITY_V1_STAGE1",
+  "corpus_sha256": "0a9a279d48a491dacdadfd714c2c588bfb8a79adb4d536680241f1ebcf8300bb",
+  "runtime_commit": "6e4d5325d788acbf2453af143b732e22c7e3ec25",
+  "repeat_index": 2,
+  "of": 3,
+  "at": "2026-09-02T06:50:51.926Z",
+  "results": [
+    {
+      "task_id": "pallets__flask-4045",
+      "repository": "pallets/flask",
+      "started": "2026-09-02T06:50:03.625Z",
+      "model": "gemma4-31b",
+      "run_id": "run_09d90bfc6a",
+      "status": "completed",
+      "reason": "model_finished",
+      "timed_out": false,
+      "run_error": null,
+      "wall_ms": 43625,
+      "fail_to_pass_now_passes": false,
+      "pass_to_pass_still_passes": true,
+      "pass_to_pass_checked": 25,
+      "pass_to_pass_declared": 50,
+      "pass_to_pass_unrunnable": 0,
+      "pass_to_pass_uncollectable": 0,
+      "task_success": false,
+      "f2p_output": "F                                                                        [100%]\r\n================================== FAILURES ===================================\r\n________________________ test_dotted_name_not_allowed _________________________\r\n\r\napp = <Flask 'flask_test'>, client = <FlaskClient <Flask 'flask_test'>>\r\n\r\n    def test_dotted_name_not_allowed(app, client):\r\n        with pytest.raises(ValueError):\r\n>           flask.Blueprint(\"app.ui\", __name__)\r\nE           Failed: DID NOT RAISE <class 'ValueError'>\r\n\r\ntests\\test_blueprints.py:256: Failed\r\n=========================== short test summary info ===========================\r\nFAILED tests/test_blueprints.py::test_dotted_name_not_allowed - Failed: DID N...\r\n1 failed in 0.10s\r\n",
+      "p2p_output": ".........................                                                [100%]\r\n25 passed in 0.12s\r\n",
+      "diff_stat": "",
+      "metrics": {
+        "events": 304,
+        "turns": 1,
+        "model_calls": 38,
+        "model_failures": 0,
+        "tool_calls": 37,
+        "tool_succeeded": 37,
+        "tool_failed": 0,
+        "tool_denied": 0,
+        "duplicate_action_count": 12,
+        "duplicate_action_rate": 0.324,
+        "tool_success_rate": 1,
+        "failure_density": 0,
+        "tools_used": {
+          "bash": {
+            "started": 19,
+            "succeeded": 19,
+            "failed": 0
+          },
+          "read": {
+            "started": 16,
+            "succeeded": 16,
+            "failed": 0
+          },
+          "grep": {
+            "started": 2,
+            "succeeded": 2,
+            "failed": 0
+          }
+        },
+        "files_touched": 3,
+        "file_list": [
+          "src/flask/blueprints.py",
+          "src/flask/app.py",
+          "src/flask/helpers.py"
+        ],
+        "edits": 0,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": false,
+        "authorization_events": 37,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 38,
+        "degraded_subsystems": [
+          "model_adapter"
+        ],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 76,
+        "messages_hot": 40,
+        "messages_dropped": 36,
+        "projection_bytes": 20404,
+        "input_tokens": 141043,
+        "output_tokens": 1282,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 43625,
+        "model_ms": 34473,
+        "tool_ms": 9043,
+        "other_ms": 109,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pallets__flask-4045-1788331805295.db"
+    }
+  ]
+}
