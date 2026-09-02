@@ -18,7 +18,9 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const FIX = path.join(HERE, 'fixtures');
-const ROOT = path.join(os.tmpdir(), 'capability-v1');
+// Tranche 2 keeps its own roots so Stage-1 venvs and worktrees are never touched.
+const SUITE = process.env.SUITE ?? 'capability-v1';
+const ROOT = path.join(os.tmpdir(), SUITE);
 const QUIET = { stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8' };
 
 const REPO_URL = (repo) => `https://github.com/${repo}.git`;
@@ -231,7 +233,7 @@ function categorise(stage, detail = '') {
 }
 
 // ── main ─────────────────────────────────────────────────────────────────────
-const data = JSON.parse(fs.readFileSync(path.join(FIX, 'swebench-lite-candidates.json'), 'utf8'));
+const data = JSON.parse(fs.readFileSync(path.join(FIX, process.env.CANDIDATES ?? 'swebench-lite-candidates.json'), 'utf8'));
 const only = process.env.ONLY_REPO;
 const limit = Number(process.env.LIMIT ?? 0);
 let cands = data.candidates;
