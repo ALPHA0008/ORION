@@ -22,8 +22,8 @@ const authorize = createAuthorizer(
   mode === 'permissive' ? { posture: 'permissive', escalateUnsafeRecovery: false } : {});
 
 const model = createOpenAICompatModel({
-  baseUrl: process.env.HARNESS_BASE_URL, apiKey: process.env.HARNESS_API_KEY,
-  model: process.env.HARNESS_MODEL, timeoutMs: 120_000, maxRetries: 2,
+  baseUrl: process.env.ORION_BASE_URL, apiKey: process.env.ORION_API_KEY,
+  model: process.env.ORION_MODEL, timeoutMs: 120_000, maxRetries: 2,
   shims: [applyGemmaToolCallShim],
 });
 

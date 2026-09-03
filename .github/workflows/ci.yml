@@ -1,0 +1,109 @@
+# CI for the @kernlbase/orion runtime.
+#
+# Deliberately small. It validates the four things that can break a release — the package installs,
+# the suite passes, the tarball builds, and the CLI is executable — on the Node versions the
+# manifest claims (engines: >=22).
+#
+# The runtime has ZERO production dependencies and no build step, so there is nothing to compile
+# and no lockfile to cache. `npm install` here exists to prove the manifest is valid, not to fetch
+# anything.
+#
+# The package lives in v0/, so every job runs with that as its working directory.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: v0
+
+jobs:
+  test:
+    name: test · node ${{ matrix.node }} · ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # 22 is the engines floor (node:sqlite); 24 is current. Both are claimed, so both are tested.
+        node: ['22', '24']
+        # ubuntu and windows are both first-class: the runtime was developed on Windows, and
+        # windows-latest is what verifies the documented Git Bash shell prerequisite really holds.
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install
+        run: npm install
+
+      - name: Test
+        run: npm test
+
+      - name: Pack
+        run: npm pack
+
+      - name: CLI is executable
+        # Exercises the published bin path, not the source path — this is what a consumer runs.
+        run: node ./src/cli/index.mjs --version
+
+  package:
+    name: package validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Pack
+        run: npm pack
+
+      - name: Install the tarball into a clean directory and use it
+        # A consumer-shaped check: install the real artifact, then run the binary and import the
+        # public API. Catches a broken `bin`, a bad `exports` map, or a missing file in `files`.
+        run: |
+          set -e
+          mkdir -p "$RUNNER_TEMP/consumer"
+          cp kernlbase-orion-*.tgz "$RUNNER_TEMP/consumer/"
+          cd "$RUNNER_TEMP/consumer"
+          npm init -y > /dev/null
+          npm install ./kernlbase-orion-*.tgz
+          ./node_modules/.bin/orionctl --version
+          node --input-type=module -e "
+            const m = await import('@kernlbase/orion');
+            if (typeof m.Store !== 'function') throw new Error('Store missing from public API');
+            const e = await import('@kernlbase/orion/events');
+            if (!Object.isFrozen(e.EVENT_TYPES)) throw new Error('EVENT_TYPES not frozen');
+            console.log('public API OK:', Object.keys(m).length, 'exports');
+          "
+
+      - name: Tarball must not leak research or local state
+        # The package ships from v0/ with an explicit `files` allowlist. This asserts the allowlist
+        # is actually doing its job rather than trusting it.
+        run: |
+          set -e
+          # Match on the FILE LIST only. `npm pack` also prints the package name and tarball
+          # filename, and naive substring matching against those produces false positives — e.g.
+          # `.orion` matches `kernlbase-orion-0.1.0.tgz`. Strip to paths first.
+          files=$(npm pack --dry-run 2>&1 | sed -n 's/^npm notice *[0-9.]*[kMG]\?B *//p')
+          for bad in 'research/' 'eval/' 'productization/' 'tests/' '\.orion/' 'node_modules/' '\.env' '\.npmrc'; do
+            if echo "$files" | grep -qE "(^|/)$bad"; then
+              echo "LEAK: tarball contains '$bad'"; echo "$files"; exit 1
+            fi
+          done
+          # Databases and local run state must never ship, whatever their directory.
+          if echo "$files" | grep -qE '\.(db|sqlite3?)$'; then
+            echo "LEAK: tarball contains a database file"; echo "$files"; exit 1
+          fi
+          echo "tarball clean"

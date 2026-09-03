@@ -28,7 +28,7 @@ SELECT id FROM runs WHERE id=? AND status IN ('pending','running') AND ...
 ```
 
 **`'paused'` was not in the list.** A run paused for human approval — the *normal* outcome of an
-escalation — could never be claimed, therefore never resumed. `harness resume` would have failed on
+escalation — could never be claimed, therefore never resumed. `orionctl resume` would have failed on
 every escalated run.
 
 ### Why 310 tests did not catch it
@@ -55,7 +55,7 @@ status IN ('pending','running')
                   WHERE h.run_id = r.id AND h.status = 'answered'))
 ```
 
-The asymmetry is the point. An explicit `harness resume <run>` is an instruction. A background
+The asymmetry is the point. An explicit `orionctl resume <run>` is an instruction. A background
 worker sweeping the queue must not pick up work that is still blocked on a person.
 
 ## Tradeoffs

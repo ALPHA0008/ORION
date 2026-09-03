@@ -16,7 +16,7 @@ const out = {};
 console.log(`model: ${CFG.model} @ ${CFG.baseUrl}\n`);
 
 // Shapes that indicate a real credential leaked to disk. These are DETECTOR patterns only —
-// no key material is stored here. The live key is passed via HARNESS_API_KEY at runtime.
+// no key material is stored here. The live key is passed via ORION_API_KEY at runtime.
 const SECRET_SHAPES = /sk-[A-Za-z0-9]|ghp_[A-Za-z0-9]|Bearer [A-Za-z0-9]|-recon-[A-Za-z0-9]/;
 
 const PERMISSIVE = () => createAuthorizer({ posture: 'permissive', escalateUnsafeRecovery: false });

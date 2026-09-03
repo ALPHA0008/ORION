@@ -95,7 +95,7 @@ export function explain(store, runId, { verbose = false, full = false, maxArg = 
   return lines.join('\n');
 }
 
-/** Compact status block for `harness status`. */
+/** Compact status block for `orionctl status`. */
 export function summarise(store, runId, state) {
   const run = store.run(runId);
   const L = [];

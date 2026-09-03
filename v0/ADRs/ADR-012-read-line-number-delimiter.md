@@ -62,5 +62,5 @@ rendered content can be copied verbatim into `edit(old_string, …)`.
 
 ## Durable note
 
-**read representation failure ≠ edit primitive failure.** The harness must not make the model
-solve a problem the harness created.
+**read representation failure ≠ edit primitive failure.** The runtime must not make the model
+solve a problem the runtime created.

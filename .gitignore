@@ -50,3 +50,6 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# npm pack output — build artifact, never committed
+*.tgz

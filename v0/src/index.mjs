@@ -1,4 +1,4 @@
-// Public API for @kernlbase/harness.
+// Public API for @kernlbase/orion.
 //
 // This barrel is a DELIBERATE re-export surface, not a convenience dump. What it exposes is the
 // API that already has a second consumer: `eval/` drives this runtime as a library across nine
@@ -7,7 +7,7 @@
 //
 // Deliberately NOT exported (reachable only via a subpath, or not at all):
 //   core/projection  — bounded-window mechanics (ADR-001). Tuning, not contract.
-//   core/lease       — operational; reached through the CLI (`harness reap`).
+//   core/lease       — operational; reached through the CLI (`orionctl reap`).
 //   core/projection/compact — implemented and tested, but OFF BY DEFAULT. Experimental.
 //   agent/model/shims/*     — model-specific implementations. The shim *slot* is public
 //                             (`shims: []` on createOpenAICompatModel); a given shim is not.

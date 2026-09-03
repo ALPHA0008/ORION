@@ -1,0 +1,283 @@
+{
+  "label": "repl",
+  "pass": 46,
+  "fail": 0,
+  "results": [
+    {
+      "group": "repl/banner",
+      "test": "help renders the wordmark",
+      "pass": true,
+      "detail": "wordmark present"
+    },
+    {
+      "group": "repl/banner",
+      "test": "help names the product",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/banner",
+      "test": "help advertises interactive mode",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/banner",
+      "test": "help exits 0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/non-tty",
+      "test": "bare orionctl exits 0 when not a tty",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/non-tty",
+      "test": "bare orionctl prints usage, not a prompt",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/non-tty",
+      "test": "bare orionctl does not hang",
+      "pass": true,
+      "detail": "returned"
+    },
+    {
+      "group": "repl/commands",
+      "test": "/help lists the slash commands",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/commands",
+      "test": "/runs reports an empty log",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/commands",
+      "test": "/bogus is rejected, not executed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/commands",
+      "test": "unknown command does not end the session",
+      "pass": true,
+      "detail": "reached the exit banner"
+    },
+    {
+      "group": "repl/commands",
+      "test": "/exit exits 0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/durability",
+      "test": "list --json exits 0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/durability",
+      "test": "a typed task became a run in the log",
+      "pass": true,
+      "detail": "got 1"
+    },
+    {
+      "group": "repl/durability",
+      "test": "the run carries the typed task verbatim",
+      "pass": true,
+      "detail": "make it faster"
+    },
+    {
+      "group": "repl/durability",
+      "test": "the run is visible from a separate process",
+      "pass": true,
+      "detail": "run_40ab148da0"
+    },
+    {
+      "group": "repl/durability",
+      "test": "the run has a terminal status recorded",
+      "pass": true,
+      "detail": "failed"
+    },
+    {
+      "group": "repl/log-is-shared",
+      "test": "/runs shows a run created outside the session",
+      "pass": true,
+      "detail": "visible"
+    },
+    {
+      "group": "repl/log-is-shared",
+      "test": "exactly one run so far",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/empty-input",
+      "test": "blank lines exit cleanly",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/empty-input",
+      "test": "blank input creates no runs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/empty-input",
+      "test": "no stray readline error leaks to the user",
+      "pass": true,
+      "detail": "clean"
+    },
+    {
+      "group": "repl/wordmark",
+      "test": "block rendering uses U+2588",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/wordmark",
+      "test": "ascii fallback uses no block glyphs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/wordmark",
+      "test": "block wordmark is five rows",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/wordmark",
+      "test": "ascii wordmark is five rows",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/wordmark",
+      "test": "both spell the product name",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/wordmark",
+      "test": "both carry the version",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/wordmark",
+      "test": "a modern console gets block glyphs even without WT_SESSION",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/wordmark",
+      "test": "a pre-1903 windows console falls back to ascii",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/wordmark",
+      "test": "ORION_ASCII=0 forces blocks on",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/wordmark",
+      "test": "ORION_ASCII=1 forces the fallback everywhere",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/wordmark",
+      "test": "windows terminal gets block glyphs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/colour",
+      "test": "piped output carries no ANSI escapes",
+      "pass": true,
+      "detail": "clean for pipes"
+    },
+    {
+      "group": "repl/colour",
+      "test": "the wordmark is painted when colour is available",
+      "pass": true,
+      "detail": "bright cyan"
+    },
+    {
+      "group": "repl/unconfigured",
+      "test": "the banner still renders unconfigured",
+      "pass": true,
+      "detail": "wordmark present"
+    },
+    {
+      "group": "repl/unconfigured",
+      "test": "it names what is missing",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/unconfigured",
+      "test": "it reports the model as not configured",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/unconfigured",
+      "test": "a task turn is refused with the fix, not a stack trace",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/unconfigured",
+      "test": "/runs still works unconfigured",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/unconfigured",
+      "test": "/help still works unconfigured",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/unconfigured",
+      "test": "the session does not exit on a refused turn",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/unconfigured",
+      "test": "exits 0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/answer-guards",
+      "test": "/answer with no pending run is refused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/answer-guards",
+      "test": "/resume with nothing to resume is refused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "repl/answer-guards",
+      "test": "neither guard ends the session",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

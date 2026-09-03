@@ -5,7 +5,7 @@ fork(run, at)   new Run seeded with history[1..at]. The future is NEW.
 ```
 
 ```bash
-harness fork #a81f2c --at 23
+orionctl fork #a81f2c --at 23
 forked #a81f2c @23 -> #5cb406
 ```
 

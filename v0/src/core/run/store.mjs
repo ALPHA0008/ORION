@@ -157,7 +157,7 @@ export class Store {
   claim(workerId, { leaseMs = 30_000, runId = null, now = Date.now() } = {}) {
     return this.tx(() => {
       // 'paused' IS claimable:
-      //  - targeted (runId given) => the caller is explicitly resuming, e.g. `harness resume`.
+      //  - targeted (runId given) => the caller is explicitly resuming, e.g. `orionctl resume`.
       //  - untargeted (queue scan) => only once a human has actually answered, otherwise a
       //    generic worker would pick up a run that is still waiting on a person.
       // Regression: excluding 'paused' entirely made every escalated run unresumable.

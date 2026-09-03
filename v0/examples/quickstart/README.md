@@ -6,8 +6,8 @@ example; the outputs are real, not illustrative.
 ## 1. Install
 
 ```bash
-npm install -g @kernlbase/harness
-harness --version          # 0.1.0
+npm install -g @kernlbase/orion
+orionctl --version          # 0.1.0
 ```
 
 Requires **Node ≥ 22** and `git` on `PATH`.
@@ -17,11 +17,11 @@ Requires **Node ≥ 22** and `git` on `PATH`.
 Any OpenAI-compatible endpoint. A local model is the cheapest way to try it:
 
 ```bash
-export HARNESS_BASE_URL=http://localhost:11434/v1
-export HARNESS_MODEL=qwen3:8b
-export HARNESS_API_KEY=not-needed
+export ORION_BASE_URL=http://localhost:11434/v1
+export ORION_MODEL=qwen3:8b
+export ORION_API_KEY=not-needed
 
-harness doctor
+orionctl doctor
 ```
 
 `doctor` should report your endpoint and `db integrity ok`.
@@ -36,7 +36,7 @@ printf 'def add(a, b):\n    return a - b\n' > calc.py
 ## 4. Run
 
 ```bash
-harness run "Fix the bug in calc.py: add() should return a + b, not a - b"
+orionctl run "Fix the bug in calc.py: add() should return a + b, not a - b"
 ```
 
 ```
@@ -47,17 +47,17 @@ Run #97efb25767  /tmp/demo
   ✓ edit edited calc.py
 
 ✓ model_finished
-  history:      harness explain #97efb25767
+  history:      orionctl explain #97efb25767
 ```
 
 `calc.py` now reads `return a + b`.
 
-Your run id will differ — use yours for everything below. `harness list` shows all runs.
+Your run id will differ — use yours for everything below. `orionctl list` shows all runs.
 
 ## 5. Inspect what actually happened
 
 ```bash
-harness explain #97efb25767
+orionctl explain #97efb25767
 ```
 
 ```
@@ -80,7 +80,7 @@ full payloads.
 ## 6. Replay — free, and no model calls
 
 ```bash
-harness replay #97efb25767
+orionctl replay #97efb25767
 ```
 
 ```
@@ -99,7 +99,7 @@ Replay is reconstruction, not re-execution. It costs nothing and always reproduc
 ## 7. Fork — branch from any point
 
 ```bash
-harness fork #97efb25767 --at 10
+orionctl fork #97efb25767 --at 10
 ```
 
 ```
@@ -107,7 +107,7 @@ forked #97efb25767 @10 -> #a46d563042
   history up to that point is inherited; the future is new
   note: the WORKSPACE is not rewound automatically.
         run the fork in a fresh workspace, or restore a checkpoint first.
-  continue with:  harness resume #a46d563042
+  continue with:  orionctl resume #a46d563042
 ```
 
 The fork inherits history through event 10 and diverges after it. If you split mid-turn, the CLI
@@ -121,11 +121,11 @@ checkpoint first.
 The core claim, demonstrable directly: start a run, kill the process, resume it.
 
 ```bash
-harness run "run the test suite and fix whatever fails" &
+orionctl run "run the test suite and fix whatever fails" &
 sleep 10 && kill -9 %1          # or close the terminal
 
-harness list                     # the run is still there
-harness resume #<id>
+orionctl list                     # the run is still there
+orionctl resume #<id>
 ```
 
 ```

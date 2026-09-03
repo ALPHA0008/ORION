@@ -1,14 +1,14 @@
 {
-  "name": "@kernlbase/harness",
-  "version": "0.1.0",
-  "description": "An inspectable, recoverable, replayable, trajectory-native agent harness. Agent runs are durable objects you can inspect, replay without cost, and fork from any point.",
+  "name": "@kernlbase/orion",
+  "version": "0.1.2",
+  "description": "An inspectable, recoverable, replayable, trajectory-native agent runtime. Agent runs are durable objects you can inspect, replay without cost, and fork from any point.",
   "type": "module",
   "license": "Apache-2.0",
   "engines": {
     "node": ">=22"
   },
   "bin": {
-    "harness": "./src/cli/index.mjs"
+    "orionctl": "./src/cli/index.mjs"
   },
   "main": "./src/index.mjs",
   "exports": {
@@ -50,11 +50,11 @@
   "author": "Abhijith P",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kernlbase/harness.git"
+    "url": "git+https://github.com/ALPHA0008/orion.git"
   },
-  "homepage": "https://github.com/kernlbase/harness#readme",
+  "homepage": "https://github.com/ALPHA0008/orion#readme",
   "bugs": {
-    "url": "https://github.com/kernlbase/harness/issues"
+    "url": "https://github.com/ALPHA0008/orion/issues"
   },
   "publishConfig": {
     "access": "public"

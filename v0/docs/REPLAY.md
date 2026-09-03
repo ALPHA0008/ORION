@@ -8,8 +8,8 @@ replay(run, at?)   reconstruct historical state.   NO model calls. Deterministic
 `{ model_calls_made: 0, deterministic: true }` structurally.
 
 ```bash
-harness replay #a81f2c            # final state
-harness replay #a81f2c --at 23    # state as of event 23
+orionctl replay #a81f2c            # final state
+orionctl replay #a81f2c --at 23    # state as of event 23
 ```
 
 ## Replay is not rerun

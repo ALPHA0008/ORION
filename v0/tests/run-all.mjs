@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const suites = [
   ['unit/event-store',      ['--max-old-space-size=6144']],
+  ['repl/repl',             []],
   ['concurrency/lease',     []],
   ['fencing/fencing',       []],
   ['runner/runner',         []],

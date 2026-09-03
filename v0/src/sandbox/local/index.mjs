@@ -82,9 +82,9 @@ export class LocalSandbox {
       for (const ent of entries) {
         if (truncated) return;
         // Name-based, like the existing .git / node_modules exclusions, so it applies at any
-        // depth. `.harness` is the runtime's OWN state — event-log database and workspace shadow
+        // depth. `.orion` is the runtime's OWN state — event-log database and workspace shadow
         // repos — and searching it fed the agent its own trajectory as if it were source.
-        if (ent.name === '.git' || ent.name === 'node_modules' || ent.name === '.harness') continue;
+        if (ent.name === '.git' || ent.name === 'node_modules' || ent.name === '.orion') continue;
         const child = rel === '.' ? ent.name : `${rel}/${ent.name}`;
         if (ent.isDirectory()) { walk(child); continue; }
         scanFile(child);
@@ -137,6 +137,18 @@ export class LocalSandbox {
         const e = new Error(`command timed out after ${this.execTimeoutMs}ms and was killed`);
         e.exitCode = null; e.kind = 'timeout'; throw e;
       }
+      // The SHELL ITSELF is missing — not the command. Without this branch the failure fell
+      // through to the generic handler and surfaced as "command failed (exit ?):" with an empty
+      // detail, because a spawn failure has no exit status and no stderr. On Windows, where the
+      // shell is `bash` resolved through PATH, that is the difference between a user knowing they
+      // need Git Bash and staring at a blank error.
+      if (err.code === 'ENOENT' || err.code === 'EACCES') {
+        const hint = process.platform === 'win32'
+          ? ' — install Git for Windows (Git Bash) or set the `shell` option to an available shell'
+          : ' — set the `shell` option to an available shell';
+        const e = new Error(`shell not found: ${this.shell} (${err.code})${hint}`);
+        e.exitCode = null; e.kind = 'shell_missing'; throw e;
+      }
       const stderr = (err.stderr || '').toString();
       const stdout = (err.stdout || '').toString();
       const detail = shorten(stderr || stdout, MAX_ERROR_BYTES);
@@ -158,8 +170,8 @@ export function attachCheckpoints(sandbox, shadowDir) {
   const git = (args) => execFileSync('git', args, {
     cwd: sandbox.root, encoding: 'utf8',
     env: { ...scrubEnv(process.env), GIT_DIR: shadowDir, GIT_WORK_TREE: sandbox.root,
-           GIT_AUTHOR_NAME: 'harness', GIT_AUTHOR_EMAIL: 'harness@local',
-           GIT_COMMITTER_NAME: 'harness', GIT_COMMITTER_EMAIL: 'harness@local' } });
+           GIT_AUTHOR_NAME: 'orion', GIT_AUTHOR_EMAIL: 'orion@local',
+           GIT_COMMITTER_NAME: 'orion', GIT_COMMITTER_EMAIL: 'orion@local' } });
   // init must NOT see GIT_WORK_TREE, so run it with a clean env
   if (!fs.existsSync(path.join(shadowDir, 'HEAD'))) {
     execFileSync('git', ['init', '--bare', '-q', shadowDir], { env: scrubEnv(process.env) });

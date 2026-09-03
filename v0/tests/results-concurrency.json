@@ -7,7 +7,7 @@
       "group": "I1 worker A claims; worker B cannot claim the same run",
       "test": "A got the lease",
       "pass": true,
-      "detail": "{\"runId\":\"run_fc0828f06e\",\"leaseToken\":\"6ba543739c1235d4\"}"
+      "detail": "{\"runId\":\"run_667f189bff\",\"leaseToken\":\"3ed7da33069143b5\"}"
     },
     {
       "group": "I1 worker A claims; worker B cannot claim the same run",
@@ -307,7 +307,7 @@
       "group": "a paused run is NOT picked up by the general queue scan while it waits on a human",
       "test": "once the human answers, the general scan CAN pick it up",
       "pass": true,
-      "detail": "run_66689968fa"
+      "detail": "run_96975bb36a"
     }
   ]
 }

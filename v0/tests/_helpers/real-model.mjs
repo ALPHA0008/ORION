@@ -1,5 +1,5 @@
 // Shared setup for real-model experiments.
-// Requires: HARNESS_BASE_URL, HARNESS_API_KEY, HARNESS_MODEL.
+// Requires: ORION_BASE_URL, ORION_API_KEY, ORION_MODEL.
 // Every experiment refuses to run rather than silently substituting a fake model.
 
 import fs from 'node:fs';
@@ -14,15 +14,15 @@ import { createOpenAICompatModel } from '../../src/agent/model/index.mjs';
 import { applyGemmaToolCallShim } from '../../src/agent/model/shims/gemma-tool-calls.mjs';
 
 export const CFG = {
-  baseUrl: process.env.HARNESS_BASE_URL,
-  apiKey: process.env.HARNESS_API_KEY ?? null,
-  model: process.env.HARNESS_MODEL ?? 'gemma4-31b',
+  baseUrl: process.env.ORION_BASE_URL,
+  apiKey: process.env.ORION_API_KEY ?? null,
+  model: process.env.ORION_MODEL ?? 'gemma4-31b',
 };
 
 export function requireRealModel() {
   if (!CFG.baseUrl) {
     console.error('\nREAL MODEL NOT CONFIGURED — refusing to run.');
-    console.error('  set HARNESS_BASE_URL, HARNESS_API_KEY, HARNESS_MODEL');
+    console.error('  set ORION_BASE_URL, ORION_API_KEY, ORION_MODEL');
     console.error('  (this experiment must never silently fall back to a scripted model)\n');
     process.exit(2);
   }

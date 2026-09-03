@@ -30,7 +30,7 @@ existing seams:
 
 ## Guarantee boundary
 
-This provides database fencing and execution fencing for authoritative harness state. It does not
+This provides database fencing and execution fencing for authoritative runtime state. It does not
 make SQLite and an arbitrary external tool one distributed transaction. After the final lease
 assertion, an external effect may begin before expiry/reclaim is observed. If that happens, the
 effect is in-flight and the following event append is fenced; the next owner must apply the

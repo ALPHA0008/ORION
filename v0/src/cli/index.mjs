@@ -14,26 +14,32 @@ import { explain, summarise } from '../core/run/explain.mjs';
 import { replay, fork, rerun, nearestTurnBoundary } from '../core/replay/index.mjs';
 import { reap, expireHumanRequests } from '../core/lease/reaper.mjs';
 import { createOpenAICompatModel } from '../agent/model/index.mjs';
+import { repl, banner } from './repl.mjs';
 
-const HOME = process.env.HARNESS_HOME ?? path.join(os.homedir(), '.harness');
-const DB = path.join(HOME, 'harness.db');
-const WORK = process.env.HARNESS_WORKSPACE ?? process.cwd();
+const HOME = process.env.ORION_HOME ?? path.join(os.homedir(), '.orion');
+const DB = path.join(HOME, 'orion.db');
+const WORK = process.env.ORION_WORKSPACE ?? process.cwd();
 
+// Colour only on a TTY. Piped or redirected the Proxy returns identity functions, so `--json`
+// and every other machine-read path stays free of escape sequences.
 const C = process.stdout.isTTY
   ? { dim: s => `\x1b[2m${s}\x1b[0m`, b: s => `\x1b[1m${s}\x1b[0m`, g: s => `\x1b[32m${s}\x1b[0m`,
-      r: s => `\x1b[31m${s}\x1b[0m`, y: s => `\x1b[33m${s}\x1b[0m`, c: s => `\x1b[36m${s}\x1b[0m` }
+      r: s => `\x1b[31m${s}\x1b[0m`, y: s => `\x1b[33m${s}\x1b[0m`, c: s => `\x1b[36m${s}\x1b[0m`,
+      // bright cyan for the wordmark, magenta for accents — the banner should read as a logo,
+      // not as more output.
+      cb: s => `\x1b[96m${s}\x1b[0m`, m: s => `\x1b[95m${s}\x1b[0m` }
   : new Proxy({}, { get: () => (s => s) });
 
 function open() { fs.mkdirSync(HOME, { recursive: true }); return new Store(DB); }
 
 function buildModel() {
-  const baseUrl = process.env.HARNESS_BASE_URL;
-  const apiKey = process.env.HARNESS_API_KEY ?? process.env.OPENAI_API_KEY ?? null;
-  const model = process.env.HARNESS_MODEL ?? 'gpt-4o-mini';
+  const baseUrl = process.env.ORION_BASE_URL;
+  const apiKey = process.env.ORION_API_KEY ?? process.env.OPENAI_API_KEY ?? null;
+  const model = process.env.ORION_MODEL ?? 'gpt-4o-mini';
   if (!baseUrl) {
     console.error(C.r('No model configured.'));
-    console.error('  Set HARNESS_BASE_URL (an OpenAI-compatible endpoint) and HARNESS_API_KEY.');
-    console.error('  e.g. HARNESS_BASE_URL=https://api.openai.com/v1 HARNESS_MODEL=gpt-4o-mini');
+    console.error('  Set ORION_BASE_URL (an OpenAI-compatible endpoint) and ORION_API_KEY.');
+    console.error('  e.g. ORION_BASE_URL=https://api.openai.com/v1 ORION_MODEL=gpt-4o-mini');
     process.exit(2);
   }
   return createOpenAICompatModel({ baseUrl, apiKey, model });
@@ -44,7 +50,7 @@ function makeWorker(store, workspace) {
     Buffer.from(workspace).toString('hex').slice(0, 16) + '.git'));
   return { sandbox, worker: (extra = {}) => new Worker(store, {
     sandbox, model: buildModel(), tools: makeTools(sandbox),
-    authorize: createAuthorizer({ posture: process.env.HARNESS_POSTURE ?? 'auto' }),
+    authorize: createAuthorizer({ posture: process.env.ORION_POSTURE ?? 'auto' }),
     ...extra }) };
 }
 
@@ -53,7 +59,7 @@ const short = (id) => id.replace(/^run_/, '#');
 // ─────────────────────────────────────────────────────────────── commands
 const cmds = {
   async run([task]) {
-    if (!task) die('usage: harness run "<task>"');
+    if (!task) die('usage: orionctl run "<task>"');
     const store = open();
     const runId = uid('run');
     store.createRun(runId, { task });
@@ -65,15 +71,82 @@ const cmds = {
     printLive(store, runId);
     console.log('');
     console.log(res.status === 'completed' ? C.g(`✓ ${res.reason}`) : C.y(`${res.status} — ${res.reason}`));
-    if (res.status === 'paused') console.log(C.dim(`  resume with:  harness resume ${short(runId)}`));
-    console.log(C.dim(`  history:      harness explain ${short(runId)}`));
+    if (res.status === 'paused') console.log(C.dim(`  resume with:  orionctl resume ${short(runId)}`));
+    console.log(C.dim(`  history:      orionctl explain ${short(runId)}`));
     store.close();
   },
 
-  list() {
+  // Interactive session. Deliberately a thin shell: every turn goes through the same
+  // createRun → claim → worker path as `run`, so a task typed here is durable and resumable
+  // from any other shell. See src/cli/repl.mjs for why the session holds no state of its own.
+  async chat() {
+    const store = open();
+    // Deliberately do NOT fail here on missing config. A first-time user's first command is
+    // `orionctl`, and exiting with a red error before showing anything is a hostile welcome.
+    // The session opens, says what is missing, and refuses only the turns that need a model —
+    // /help, /runs, /exit and the banner all work unconfigured.
+    reap(store); expireHumanRequests(store);
+    const configured = !!process.env.ORION_BASE_URL;
+    const { worker } = makeWorker(store, WORK);
+
+    const runTask = async (input) => {
+      // Executing a turn is the one thing that genuinely needs a model. Refuse it with the
+      // fix rather than letting the model layer throw a connection error.
+      if (!configured) {
+        const e = new Error('No model configured — set ORION_BASE_URL and ORION_API_KEY, then try again.');
+        e.hint = 'e.g.  set ORION_BASE_URL=https://api.openai.com/v1';
+        throw e;
+      }
+      // `/resume <id>` arrives as an object; plain text starts a new run.
+      const resuming = typeof input === 'object' && input.resume;
+      const runId = resuming ? resolve(store, input.resume) : uid('run');
+      if (!resuming) store.createRun(runId, { task: input });
+
+      const c = store.claim('cli', { runId });
+      if (!c) throw new Error('could not claim the run (another worker holds it)');
+      console.log(C.dim(`  ${short(runId)}`));
+      const res = await worker().run(runId, c.leaseToken, resuming ? {} : { input });
+      printLive(store, runId);
+      if (res.status === 'completed') console.log(C.g(`  ✓ ${res.reason}`));
+      const pending = store.humanRequests(runId, 'pending');
+      return { runId, status: res.status, reason: res.reason, question: pending[0]?.prompt };
+    };
+
+    const answerAndResume = async (runId, reply) => {
+      const pending = store.humanRequests(runId, 'pending');
+      if (!pending.length) { console.log(C.y('  no question is pending on that run')); return; }
+      store.answerHumanRequest(pending[0].id, reply);
+      await runTask({ resume: runId });
+    };
+
+    try {
+      await repl({
+        store, C, version: packageVersion(), workspace: WORK,
+        model: process.env.ORION_MODEL ?? 'gpt-4o-mini',
+        posture: process.env.ORION_POSTURE ?? 'auto',
+        configured,
+        runTask, answerAndResume,
+        listRuns: () => store.listRuns({ limit: 10 }),
+      });
+    } finally { store.close(); }
+  },
+
+  list(rest = []) {
     const store = open();
     const runs = store.listRuns({ limit: 30 });
-    if (!runs.length) return console.log(C.dim('no runs yet — try: harness run "…"'));
+    if (has(rest, '--json')) {
+      emitJson(runs.map(r => {
+        const st = project(store, r.id);
+        return {
+          run_id: r.id, status: r.status, events: st.seq,
+          created_at: new Date(r.created_at).toISOString(),
+          task: r.task ?? null,
+          parent_run_id: r.parent_run_id ?? null, forked_from_seq: r.forked_from_seq ?? null,
+        };
+      }));
+      return void store.close();
+    }
+    if (!runs.length) return console.log(C.dim('no runs yet — try: orionctl run "…"'));
     console.log(C.dim('ID          STATUS      EVENTS  WHEN                 TASK'));
     for (const r of runs) {
       const st = project(store, r.id);
@@ -86,9 +159,25 @@ const cmds = {
     store.close();
   },
 
-  status([id]) {
+  status([id, ...rest]) {
     const store = open(); const runId = resolve(store, id);
-    console.log(summarise(store, runId, project(store, runId)));
+    const state = project(store, runId);
+    if (has(rest, '--json')) {
+      const run = store.run(runId);
+      emitJson({
+        run_id: runId, status: state.status, exit_reason: state.exit_reason ?? null,
+        events: state.seq, task: run.task ?? null,
+        parent_run_id: run.parent_run_id ?? null, forked_from_seq: run.forked_from_seq ?? null,
+        turns: state.budget.turns, model_calls: state.budget.model_calls,
+        tool_calls: state.budget.tool_calls,
+        tokens: { input: state.budget.input_tokens, output: state.budget.output_tokens },
+        cost_usd: state.budget.cost_usd ?? null,
+        awaiting_human: (store.humanRequests(runId, 'pending') ?? [])
+          .map(h => ({ id: h.id, prompt: h.prompt })),
+      });
+      return void store.close();
+    }
+    console.log(summarise(store, runId, state));
     store.close();
   },
 
@@ -102,7 +191,7 @@ const cmds = {
     if (pending.length) {
       console.log(C.y('This run is waiting on you:'));
       for (const p of pending) console.log(`  ${p.id}  ${p.prompt}`);
-      console.log(C.dim(`  answer with:  harness answer ${short(runId)} <approve|deny>`));
+      console.log(C.dim(`  answer with:  orionctl answer ${short(runId)} <approve|deny>`));
       return void store.close();
     }
     const c = store.claim('cli', { runId });
@@ -120,7 +209,7 @@ const cmds = {
     const pending = store.humanRequests(runId, 'pending');
     if (!pending.length) return void console.log(C.dim('nothing pending')), store.close();
     store.answerHumanRequest(pending[0].id, response ?? 'approve');
-    console.log(C.g(`answered "${response ?? 'approve'}"`) + C.dim(`  now: harness resume ${short(runId)}`));
+    console.log(C.g(`answered "${response ?? 'approve'}"`) + C.dim(`  now: orionctl resume ${short(runId)}`));
     store.close();
   },
 
@@ -128,6 +217,18 @@ const cmds = {
     const store = open(); const runId = resolve(store, id);
     const at = flag(rest, '--at');
     const r = replay(store, runId, { at: at ? Number(at) : null });
+    if (has(rest, '--json')) {
+      emitJson({
+        run_id: runId, replayed_at: at ? Number(at) : null,
+        model_calls_made: 0,          // replay is reconstruction: it never calls a model
+        status: r.state.status, exit_reason: r.state.exit_reason ?? null,
+        events: r.state.seq,
+        turns: r.state.budget.turns, model_calls: r.state.budget.model_calls,
+        tool_calls: r.state.budget.tool_calls,
+        tokens: { input: r.state.budget.input_tokens, output: r.state.budget.output_tokens },
+      });
+      return void store.close();
+    }
     console.log(C.b(`Replay of ${short(runId)}${at ? ` at event ${at}` : ''}`));
     console.log(C.dim(`reconstructed from the event log — no model calls, no cost`));
     console.log('');
@@ -138,7 +239,7 @@ const cmds = {
   fork([id, ...rest]) {
     const store = open(); const runId = resolve(store, id);
     const at = Number(flag(rest, '--at'));
-    if (!Number.isInteger(at)) die('usage: harness fork <run> --at <seq>');
+    if (!Number.isInteger(at)) die('usage: orionctl fork <run> --at <seq>');
     const f = fork(store, runId, at);
     console.log(C.g(`forked ${short(runId)} @${at} -> ${C.b(short(f.run_id))}`));
     if (!f.at_turn_boundary) {
@@ -151,7 +252,7 @@ const cmds = {
     console.log(C.dim('  history up to that point is inherited; the future is new'));
     console.log(C.y('  note: the WORKSPACE is not rewound automatically.'));
     console.log(C.dim(`        run the fork in a fresh workspace, or restore a checkpoint first.`));
-    console.log(C.dim(`  continue with:  harness resume ${short(f.run_id)}`));
+    console.log(C.dim(`  continue with:  orionctl resume ${short(f.run_id)}`));
     store.close();
   },
 
@@ -159,7 +260,7 @@ const cmds = {
     const store = open(); const runId = resolve(store, id);
     const r = rerun(store, runId);
     console.log(C.g(`new run ${short(r.run_id)} from the same task`) + C.dim(' (no history inherited)'));
-    console.log(C.dim(`  start with:  harness resume ${short(r.run_id)}`));
+    console.log(C.dim(`  start with:  orionctl resume ${short(r.run_id)}`));
     store.close();
   },
 
@@ -174,14 +275,14 @@ const cmds = {
     const runs = store.listRuns({ limit: 1000 });
     const stale = runs.filter(r => r.status === 'running' && (r.lease_expires_at ?? 0) < Date.now());
     const waiting = runs.filter(r => r.status === 'paused');
-    console.log(C.b('harness doctor'));
+    console.log(C.b('orionctl doctor'));
     console.log(`  home              ${HOME}`);
     console.log(`  database          ${DB} ${fs.existsSync(DB) ? C.g('ok') : C.r('missing')}`);
     console.log(`  runs              ${runs.length}`);
-    console.log(`  model endpoint    ${process.env.HARNESS_BASE_URL ?? C.r('NOT SET (HARNESS_BASE_URL)')}`);
-    console.log(`  api key           ${process.env.HARNESS_API_KEY || process.env.OPENAI_API_KEY ? C.g('present') : C.y('absent')}`);
-    console.log(`  posture           ${process.env.HARNESS_POSTURE ?? 'auto'}`);
-    console.log(`  ${stale.length ? C.y(`stale leases      ${stale.length} (run 'harness reap')`) : C.g('stale leases      none')}`);
+    console.log(`  model endpoint    ${process.env.ORION_BASE_URL ?? C.r('NOT SET (ORION_BASE_URL)')}`);
+    console.log(`  api key           ${process.env.ORION_API_KEY || process.env.OPENAI_API_KEY ? C.g('present') : C.y('absent')}`);
+    console.log(`  posture           ${process.env.ORION_POSTURE ?? 'auto'}`);
+    console.log(`  ${stale.length ? C.y(`stale leases      ${stale.length} (run 'orionctl reap')`) : C.g('stale leases      none')}`);
     console.log(`  ${waiting.length ? C.y(`awaiting human    ${waiting.length}`) : C.g('awaiting human    none')}`);
     let sqliteOk = true;
     try { store.db.exec('PRAGMA integrity_check'); } catch { sqliteOk = false; }
@@ -217,6 +318,15 @@ function printLive(store, runId) {
 }
 const oneline = (s) => String(s ?? '').replace(/\s+/g, ' ').slice(0, 60);
 function flag(args, name) { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; }
+const has = (args, name) => args.includes(name);
+/**
+ * Machine-readable output.
+ *
+ * JSON goes to stdout ALONE — no banner, no colour, no human framing — so `orionctl status X --json`
+ * can be piped straight into jq. Commands that emit JSON return early rather than rendering both
+ * forms, because mixing the two on one stream is what makes --json useless in practice.
+ */
+const emitJson = (obj) => console.log(JSON.stringify(obj, null, 2));
 function die(m) { console.error(C.r(m)); process.exit(2); }
 function resolve(store, id) {
   if (!id) die('missing run id');
@@ -227,21 +337,21 @@ function resolve(store, id) {
   return hit.id;
 }
 function usage() {
-  console.log(`${C.b('harness')} — durable agent runs you can replay and fork
+  console.log(`${banner(C, packageVersion())}
+  orionctl                        interactive session
+  orionctl run "<task>"           start a run in the current directory
+  orionctl list                   all runs                        [--json]
+  orionctl status <run>           where a run got to              [--json]
+  orionctl resume <run>           continue a run (after a crash, or a human answer)
+  orionctl answer <run> <reply>   answer a question the run is waiting on
+  orionctl explain <run>          what the run actually did      [--verbose] [--full]
+  orionctl replay <run>           reconstruct history   [--at <seq>] [--json]
+  orionctl fork <run> --at <seq>  branch from a point in history
+  orionctl rerun <run>            fresh run of the same task
+  orionctl reap                   reclaim runs whose worker died
+  orionctl doctor                 environment check
 
-  harness run "<task>"           start a run in the current directory
-  harness list                   all runs
-  harness status <run>           where a run got to
-  harness resume <run>           continue a run (after a crash, or a human answer)
-  harness answer <run> <reply>   answer a question the run is waiting on
-  harness explain <run>          what the run actually did      [--verbose] [--full]
-  harness replay <run>           reconstruct history            [--at <seq>]
-  harness fork <run> --at <seq>  branch from a point in history
-  harness rerun <run>            fresh run of the same task
-  harness reap                   reclaim runs whose worker died
-  harness doctor                 environment check
-
-${C.dim('config:')}  HARNESS_BASE_URL  HARNESS_API_KEY  HARNESS_MODEL  HARNESS_HOME  HARNESS_POSTURE`);
+${C.dim('config:')}  ORION_BASE_URL  ORION_API_KEY  ORION_MODEL  ORION_HOME  ORION_POSTURE`);
 }
 
 /**
@@ -261,6 +371,16 @@ if (cmd === '-v' || cmd === '--version' || cmd === 'version') {
   console.log(packageVersion());
   process.exit(0);
 }
-if (!cmd || cmd === '-h' || cmd === '--help') { usage(); process.exit(0); }
+if (cmd === '-h' || cmd === '--help' || cmd === 'help') { usage(); process.exit(0); }
+// Bare `orionctl` opens the interactive session — but only on a terminal. Piped or redirected
+// (CI, scripts, `orionctl | head`) there is nobody to prompt, so print usage and exit cleanly
+// rather than blocking forever on a stdin that will never arrive.
+if (!cmd) {
+  if (process.stdin.isTTY && process.stdout.isTTY) {
+    try { await cmds.chat(); process.exit(0); }
+    catch (e) { console.error(C.r(e.message)); process.exit(1); }
+  }
+  usage(); process.exit(0);
+}
 if (!cmds[cmd]) { console.error(C.r(`unknown command: ${cmd}`)); usage(); process.exit(2); }
 try { await cmds[cmd](args); } catch (e) { console.error(C.r(e.message)); process.exit(1); }

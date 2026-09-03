@@ -25,7 +25,7 @@ a special case wired into the tool layer.
 
 **The default implementation ships in-tree and requires no external service.** No vendor-specific
 fields appear in `Action` or `Context`. Any provider — a rules file, an OPA sidecar, a commercial
-governance product — implements the same three-valued function. The harness must remain fully
+governance product — implements the same three-valued function. The runtime must remain fully
 useful with the built-in default; anything else makes it a disguised client for one vendor.
 
 ## Postures
