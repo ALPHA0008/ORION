@@ -1,0 +1,74 @@
+{
+  "at": "2026-09-03T05:18:10.665Z",
+  "n_required": 3,
+  "rows": [
+    {
+      "task_id": "pallets__flask-5063",
+      "repository": "pallets/flask",
+      "runs": [
+        {
+          "repeat": 1,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 0,
+          "diff": ""
+        }
+      ],
+      "n": 1,
+      "label": "INCOMPLETE (n=1)",
+      "mechanism_stable": null
+    },
+    {
+      "task_id": "pytest-dev__pytest-7432",
+      "repository": "pytest-dev/pytest",
+      "runs": [
+        {
+          "repeat": 1,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 4,
+          "diff": ""
+        }
+      ],
+      "n": 1,
+      "label": "INCOMPLETE (n=1)",
+      "mechanism_stable": null
+    },
+    {
+      "task_id": "pytest-dev__pytest-8365",
+      "repository": "pytest-dev/pytest",
+      "runs": [
+        {
+          "repeat": 1,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 3,
+          "diff": ""
+        }
+      ],
+      "n": 1,
+      "label": "INCOMPLETE (n=1)",
+      "mechanism_stable": null
+    },
+    {
+      "task_id": "pytest-dev__pytest-8906",
+      "repository": "pytest-dev/pytest",
+      "runs": [
+        {
+          "repeat": 1,
+          "success": false,
+          "reason": "model_finished",
+          "mechanism": "termination",
+          "tool_calls": 0,
+          "diff": ""
+        }
+      ],
+      "n": 1,
+      "label": "INCOMPLETE (n=1)",
+      "mechanism_stable": null
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "model": "qwen3:14b",
+  "corpus_version": "CAPABILITY_V1_STAGE1",
+  "corpus_sha256": "0a9a279d48a491dacdadfd714c2c588bfb8a79adb4d536680241f1ebcf8300bb",
+  "runtime_commit": "6e4d5325d788acbf2453af143b732e22c7e3ec25",
+  "repeat_index": 1,
+  "of": 1,
+  "at": "2026-09-02T12:09:53.537Z",
+  "results": [
+    {
+      "task_id": "pylint-dev__pylint-6506",
+      "repository": "pylint-dev/pylint",
+      "started": "2026-09-02T12:01:53.327Z",
+      "model": "qwen3:14b",
+      "run_id": "run_5cab121130",
+      "status": "completed",
+      "reason": "model_finished",
+      "timed_out": false,
+      "run_error": null,
+      "wall_ms": 473051,
+      "fail_to_pass_now_passes": false,
+      "pass_to_pass_still_passes": true,
+      "pass_to_pass_checked": 6,
+      "pass_to_pass_declared": 6,
+      "pass_to_pass_unrunnable": 0,
+      "pass_to_pass_uncollectable": 0,
+      "task_success": false,
+      "f2p_output": "essage(\"unrecognized-option\", line=0, args=msg)\r\n>           print(f\"Error: Unrecognized option found: {option} (unrecognized-option)\")\r\nE           NameError: name 'option' is not defined\r\n\r\npylint\\config\\config_initialization.py:85: NameError\r\n---------------------------- Captured stdout call -----------------------------\r\n************* Module Command line\r\nCommand line:1:0: E0015: Unrecognized option found: unknown-option=yes (unrecognized-option)\r\n============================== warnings summary ===============================\r\n..\\..\\_venvs\\pylint-dev__pylint-6506-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:6\r\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\pylint-dev__pylint-6506-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:6: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html\r\n    import pkg_resources\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n=========================== short test summary info ===========================\r\nFAILED tests/config/test_config.py::test_unknown_option_name - NameError: nam...\r\n1 failed, 1 warning in 0.15s\r\n",
+      "p2p_output": "......                                                                   [100%]\r\n============================== warnings summary ===============================\r\n..\\..\\_venvs\\pylint-dev__pylint-6506-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:6\r\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_venvs\\pylint-dev__pylint-6506-py3.9\\lib\\site-packages\\astroid\\interpreter\\_import\\util.py:6: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html\r\n    import pkg_resources\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n6 passed, 1 warning in 0.20s\r\n",
+      "diff_stat": "pylint/config/config_initialization.py | 3 ++-\n 1 file changed, 2 insertions(+), 1 deletion(-)",
+      "metrics": {
+        "events": 49,
+        "turns": 1,
+        "model_calls": 7,
+        "model_failures": 0,
+        "tool_calls": 6,
+        "tool_succeeded": 6,
+        "tool_failed": 0,
+        "tool_denied": 0,
+        "duplicate_action_count": 0,
+        "duplicate_action_rate": 0,
+        "tool_success_rate": 1,
+        "failure_density": 0,
+        "tools_used": {
+          "grep": {
+            "started": 3,
+            "succeeded": 3,
+            "failed": 0
+          },
+          "bash": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "read": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          },
+          "edit": {
+            "started": 1,
+            "succeeded": 1,
+            "failed": 0
+          }
+        },
+        "files_touched": 3,
+        "file_list": [
+          "pylint/config/config_initialization.py",
+          "./pylint/config/config_initialization.py",
+          "pylint/lint/run.py"
+        ],
+        "edits": 1,
+        "writes": 0,
+        "test_runs": 0,
+        "failed_test_runs": 0,
+        "recovery_decisions": 0,
+        "recovery_by_decision": {},
+        "recovered_from_tool_failure": false,
+        "authorization_events": 6,
+        "escalations": 0,
+        "human_requests": 0,
+        "degraded": 0,
+        "degraded_subsystems": [],
+        "context_compactions": 0,
+        "messages_elided": 0,
+        "compaction_bytes_saved": 0,
+        "messages_total": 14,
+        "messages_hot": 14,
+        "messages_dropped": 0,
+        "projection_bytes": 7646,
+        "input_tokens": 10785,
+        "output_tokens": 5646,
+        "cache_read_tokens": 0,
+        "cost_usd": 0,
+        "wall_ms": 473051,
+        "model_ms": 472133,
+        "tool_ms": 888,
+        "other_ms": 30,
+        "status": "completed",
+        "exit_reason": "model_finished"
+      },
+      "db": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\capability-v1\\_runs\\pylint-dev__pylint-6506-1788350516633.db"
+    }
+  ]
+}
