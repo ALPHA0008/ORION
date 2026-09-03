@@ -1,10 +1,26 @@
 <!-- markdownlint-disable MD033 MD041 -->
 
-[![npm](https://img.shields.io/npm/v/@kernlbase/orion?style=flat)](https://www.npmjs.com/package/@kernlbase/orion)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue?style=flat)](v0/LICENSE)
-[![CI](https://github.com/ALPHA0008/ORION/actions/workflows/ci.yml/badge.svg)](https://github.com/ALPHA0008/ORION/actions)
-[![Node](https://img.shields.io/badge/node-%E2%89%A522-blue?style=flat)](v0/README.md#requirements)
-[![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen?style=flat)](v0/README.md#requirements)
+<p align="center">
+  <img src="docs/assets/orion-banner.svg" alt="Orion — durable, replayable agent runs" width="100%">
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@kernlbase/orion"><img src="https://img.shields.io/npm/v/@kernlbase/orion?style=flat" alt="npm"></a>
+  <a href="v0/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue?style=flat" alt="License"></a>
+  <a href="https://github.com/ALPHA0008/ORION/actions"><img src="https://github.com/ALPHA0008/ORION/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="v0/README.md#requirements"><img src="https://img.shields.io/badge/node-%E2%89%A522-blue?style=flat" alt="Node"></a>
+  <a href="v0/README.md#requirements"><img src="https://img.shields.io/badge/dependencies-0-brightgreen?style=flat" alt="Dependencies"></a>
+</p>
+
+<p align="center">
+  <a href="v0/README.md"><strong>Docs</strong></a> ·
+  <a href="v0/docs/ARCHITECTURE.md"><strong>Architecture</strong></a> ·
+  <a href="v0/docs/RECOVERY.md"><strong>Recovery</strong></a> ·
+  <a href="v0/examples/quickstart/"><strong>Quickstart</strong></a> ·
+  <a href="v0/ADRs/"><strong>ADRs</strong></a>
+</p>
+
+---
 
 # Orion — durable, replayable agent runs
 

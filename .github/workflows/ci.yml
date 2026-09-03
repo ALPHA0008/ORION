@@ -49,6 +49,25 @@ jobs:
       - name: Test
         run: npm test
 
+      # The suite writes a results-*.json per suite. On failure those say which assertion went,
+      # which the console tail alone does not — CI runners are slower and more constrained than
+      # a dev box, so failures here are often ones that cannot be reproduced locally.
+      - name: Failing assertions
+        if: failure()
+        shell: bash
+        run: |
+          for f in tests/results-*.json; do
+            [ -e "$f" ] || continue
+            node -e "
+              const r = require('./$f');
+              const bad = (r.results || []).filter(x => !x.pass);
+              if (bad.length) {
+                console.log('--- $f: ' + bad.length + ' failed');
+                for (const b of bad) console.log('   [' + b.group + '] ' + b.test + (b.detail ? ' :: ' + b.detail : ''));
+              }
+            " || true
+          done
+
       - name: Pack
         run: npm pack
 

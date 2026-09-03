@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="1200" height="300" role="img" aria-label="Orion — durable, replayable agent runs">
+  <title>Orion — durable, replayable agent runs</title>
+
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b1020"/>
+      <stop offset="55%" stop-color="#0d1426"/>
+      <stop offset="100%" stop-color="#0a0f1c"/>
+    </linearGradient>
+
+    <linearGradient id="word" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7ee7e0"/>
+      <stop offset="50%" stop-color="#5ad3e6"/>
+      <stop offset="100%" stop-color="#4bb8e8"/>
+    </linearGradient>
+
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#7ee7e0" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#7ee7e0" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="300" fill="url(#sky)"/>
+
+  <!-- Field stars. Deliberately sparse: the constellation must stay legible. -->
+  <g fill="#ffffff">
+    <circle cx="96"  cy="58"  r="1.1" opacity=".45"/>
+    <circle cx="212" cy="104" r="0.9" opacity=".30"/>
+    <circle cx="330" cy="46"  r="1.3" opacity=".50"/>
+    <circle cx="470" cy="92"  r="0.9" opacity=".28"/>
+    <circle cx="612" cy="52"  r="1.1" opacity=".42"/>
+    <circle cx="742" cy="98"  r="0.9" opacity=".30"/>
+    <circle cx="884" cy="44"  r="1.2" opacity=".46"/>
+    <circle cx="1010" cy="88" r="0.9" opacity=".26"/>
+    <circle cx="1122" cy="60" r="1.1" opacity=".40"/>
+    <circle cx="150" cy="262" r="0.9" opacity=".26"/>
+    <circle cx="392" cy="272" r="1.1" opacity=".34"/>
+    <circle cx="690" cy="268" r="0.9" opacity=".24"/>
+    <circle cx="960" cy="276" r="1.1" opacity=".32"/>
+  </g>
+
+  <!-- ─────────────────────────────────────────────────────────────────────
+       The Orion constellation, laid out to scale: shoulders (Betelgeuse,
+       Bellatrix), the three belt stars, and the feet (Saiph, Rigel).
+       This is the actual figure, not decoration — it is the product's name.
+       ───────────────────────────────────────────────────────────────── -->
+  <g transform="translate(118, 42)">
+    <!-- linking lines -->
+    <g stroke="#5ad3e6" stroke-opacity="0.30" stroke-width="1.6" stroke-linecap="round" fill="none">
+      <path d="M22,14 L128,30"/>            <!-- shoulder to shoulder -->
+      <path d="M22,14 L58,108"/>            <!-- Betelgeuse to belt -->
+      <path d="M128,30 L104,112"/>          <!-- Bellatrix to belt -->
+      <path d="M58,108 L82,110 L104,112"/>  <!-- the belt -->
+      <path d="M58,108 L36,206"/>           <!-- belt to Saiph -->
+      <path d="M104,112 L136,200"/>         <!-- belt to Rigel -->
+    </g>
+
+    <!-- Betelgeuse: the red supergiant, rendered warm rather than cyan -->
+    <circle cx="22" cy="14" r="16" fill="url(#glow)"/>
+    <circle cx="22" cy="14" r="4.6" fill="#ffb08a"/>
+
+    <circle cx="128" cy="30" r="12" fill="url(#glow)"/>
+    <circle cx="128" cy="30" r="3.4" fill="#cfefff"/>
+
+    <!-- the belt: Alnitak, Alnilam, Mintaka -->
+    <circle cx="58"  cy="108" r="13" fill="url(#glow)"/>
+    <circle cx="58"  cy="108" r="3.8" fill="#ffffff"/>
+    <circle cx="82"  cy="110" r="13" fill="url(#glow)"/>
+    <circle cx="82"  cy="110" r="3.8" fill="#ffffff"/>
+    <circle cx="104" cy="112" r="13" fill="url(#glow)"/>
+    <circle cx="104" cy="112" r="3.8" fill="#ffffff"/>
+
+    <circle cx="36"  cy="206" r="11" fill="url(#glow)"/>
+    <circle cx="36"  cy="206" r="3.2" fill="#cfefff"/>
+
+    <!-- Rigel: brightest in the constellation -->
+    <circle cx="136" cy="200" r="15" fill="url(#glow)"/>
+    <circle cx="136" cy="200" r="4.4" fill="#e8f6ff"/>
+  </g>
+
+  <!-- ── wordmark ── -->
+  <g transform="translate(330, 132)">
+    <text x="0" y="0"
+          font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+          font-size="96" font-weight="700" letter-spacing="14"
+          fill="url(#word)" filter="url(#soft)" opacity="0.55">ORION</text>
+    <text x="0" y="0"
+          font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+          font-size="96" font-weight="700" letter-spacing="14"
+          fill="url(#word)">ORION</text>
+
+    <text x="4" y="48"
+          font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+          font-size="25" font-weight="400" letter-spacing="0.6"
+          fill="#9fb3c8">durable, replayable agent runs</text>
+
+    <!-- The three claims, spaced like the belt above them. -->
+    <g font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, monospace"
+       font-size="16" fill="#6f8aa6">
+      <text x="4"   y="96">crash · resume</text>
+      <text x="196" y="96">replay · 0 model calls</text>
+      <text x="430" y="96">fork any point</text>
+    </g>
+    <g stroke="#5ad3e6" stroke-opacity="0.5">
+      <line x1="4"   y1="106" x2="122" y2="106" stroke-width="2"/>
+      <line x1="196" y1="106" x2="378" y2="106" stroke-width="2"/>
+      <line x1="430" y1="106" x2="538" y2="106" stroke-width="2"/>
+    </g>
+  </g>
+</svg>

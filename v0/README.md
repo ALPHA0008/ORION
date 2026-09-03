@@ -1,14 +1,31 @@
 <!-- markdownlint-disable MD033 MD041 -->
 
-[![npm](https://img.shields.io/npm/v/@kernlbase/orion?style=flat)](https://www.npmjs.com/package/@kernlbase/orion)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue?style=flat)](LICENSE)
-[![CI](https://github.com/ALPHA0008/orion/actions/workflows/ci.yml/badge.svg)](https://github.com/ALPHA0008/orion/actions)
-[![Node](https://img.shields.io/badge/node-%E2%89%A522-blue?style=flat)](#requirements)
-[![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen?style=flat)](#requirements)
+<!-- npm renders this README from the registry, where relative paths do not resolve — so the
+     banner and every badge target must be an absolute URL. -->
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ALPHA0008/ORION/main/docs/assets/orion-banner.svg" alt="Orion — durable, replayable agent runs" width="100%">
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@kernlbase/orion"><img src="https://img.shields.io/npm/v/@kernlbase/orion?style=flat" alt="npm"></a>
+  <a href="https://github.com/ALPHA0008/ORION/blob/main/v0/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue?style=flat" alt="License"></a>
+  <a href="https://github.com/ALPHA0008/ORION/actions"><img src="https://github.com/ALPHA0008/ORION/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/ALPHA0008/ORION/blob/main/v0/README.md#requirements"><img src="https://img.shields.io/badge/node-%E2%89%A522-blue?style=flat" alt="Node"></a>
+  <a href="https://github.com/ALPHA0008/ORION/blob/main/v0/README.md#requirements"><img src="https://img.shields.io/badge/dependencies-0-brightgreen?style=flat" alt="Dependencies"></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/ALPHA0008/ORION/blob/main/v0/docs/ARCHITECTURE.md"><strong>Architecture</strong></a> ·
+  <a href="https://github.com/ALPHA0008/ORION/blob/main/v0/docs/RECOVERY.md"><strong>Recovery</strong></a> ·
+  <a href="https://github.com/ALPHA0008/ORION/blob/main/v0/docs/REPLAY.md"><strong>Replay</strong></a> ·
+  <a href="https://github.com/ALPHA0008/ORION/blob/main/v0/docs/TOOLS.md"><strong>Tools</strong></a> ·
+  <a href="https://github.com/ALPHA0008/ORION/blob/main/v0/docs/SECURITY.md"><strong>Security</strong></a> ·
+  <a href="https://github.com/ALPHA0008/ORION/tree/main/v0/ADRs"><strong>ADRs</strong></a>
+</p>
+
+---
 
 # Orion — durable, replayable agent runs
-
-[**Architecture**](docs/ARCHITECTURE.md) · [**Recovery**](docs/RECOVERY.md) · [**Replay**](docs/REPLAY.md) · [**Tools**](docs/TOOLS.md) · [**Security**](docs/SECURITY.md) · [**ADRs**](ADRs/)
 
 Orion is a runtime for agent runs that survive the process that started them. Every model call,
 tool invocation and decision is appended to a log, so a killed run resumes from where it stopped —
