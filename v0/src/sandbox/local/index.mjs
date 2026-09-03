@@ -59,6 +59,21 @@ export class LocalSandbox {
     const skipped = { dirs: [], files: [] };
     let truncated = false;
 
+    // Scanning one file, factored out so `walk` and the file-path entry below share it.
+    const scanFile = (rel) => {
+      let text;
+      // Files are read as UTF-8. A binary file is therefore scanned as lossy-decoded text rather
+      // than detected and skipped: it will not crash, but matches in it are not meaningful.
+      try { text = fs.readFileSync(this._abs(rel), 'utf8'); }
+      catch (e) { skipped.files.push(`${rel} (${e.code ?? 'error'})`); return; }
+      const lines = text.split('\n');
+      for (let i = 0; i < lines.length; i++) {
+        if (!lines[i].includes(pattern)) continue;
+        hits.push(`${rel}:${i + 1}: ${lines[i].trim().slice(0, 200)}`);
+        if (hits.length >= GREP_MAX_HITS) { truncated = true; return; }
+      }
+    };
+
     const walk = (rel) => {
       if (truncated) return;
       let entries;
@@ -66,21 +81,24 @@ export class LocalSandbox {
       catch (e) { skipped.dirs.push(`${rel} (${e.code ?? 'error'})`); return; }
       for (const ent of entries) {
         if (truncated) return;
-        if (ent.name === '.git' || ent.name === 'node_modules') continue;
+        // Name-based, like the existing .git / node_modules exclusions, so it applies at any
+        // depth. `.harness` is the runtime's OWN state — event-log database and workspace shadow
+        // repos — and searching it fed the agent its own trajectory as if it were source.
+        if (ent.name === '.git' || ent.name === 'node_modules' || ent.name === '.harness') continue;
         const child = rel === '.' ? ent.name : `${rel}/${ent.name}`;
         if (ent.isDirectory()) { walk(child); continue; }
-        let text;
-        try { text = fs.readFileSync(this._abs(child), 'utf8'); }
-        catch (e) { skipped.files.push(`${child} (${e.code ?? 'error'})`); continue; }
-        const lines = text.split('\n');
-        for (let i = 0; i < lines.length; i++) {
-          if (!lines[i].includes(pattern)) continue;
-          hits.push(`${child}:${i + 1}: ${lines[i].trim().slice(0, 200)}`);
-          if (hits.length >= GREP_MAX_HITS) { truncated = true; break; }
-        }
+        scanFile(child);
       }
     };
-    walk(start);
+
+    // A FILE path must be searched directly. Previously every start went through walk(), so
+    // readdirSync() threw ENOTDIR on a file and it was reported as an unreadable *directory* —
+    // "(no matches)" for a file that plainly contained the pattern.
+    let startIsDir = true;
+    try { startIsDir = fs.statSync(this._abs(start)).isDirectory(); }
+    catch { /* leave it to walk(), which records the error in skipped.dirs as before */ }
+    if (startIsDir) walk(start);
+    else scanFile(start);
 
     const notes = [];
     if (truncated)

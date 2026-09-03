@@ -1,0 +1,62 @@
+{
+  "name": "@kernlbase/harness",
+  "version": "0.1.0",
+  "description": "An inspectable, recoverable, replayable, trajectory-native agent harness. Agent runs are durable objects you can inspect, replay without cost, and fork from any point.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "harness": "./src/cli/index.mjs"
+  },
+  "main": "./src/index.mjs",
+  "exports": {
+    ".": "./src/index.mjs",
+    "./store": "./src/core/run/store.mjs",
+    "./events": "./src/core/event/index.mjs",
+    "./replay": "./src/core/replay/index.mjs",
+    "./explain": "./src/core/run/explain.mjs",
+    "./model": "./src/agent/model/index.mjs",
+    "./tools": "./src/agent/tools/index.mjs",
+    "./sandbox": "./src/sandbox/local/index.mjs",
+    "./auth": "./src/auth/default/index.mjs",
+    "./recovery": "./src/core/recovery/index.mjs",
+    "./worker": "./src/agent/loop/worker.mjs",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "docs",
+    "ADRs",
+    "examples",
+    "README.md",
+    "LICENSE",
+    "CONTRIBUTING.md"
+  ],
+  "scripts": {
+    "test": "node tests/run-all.mjs"
+  },
+  "keywords": [
+    "agent",
+    "agent-runtime",
+    "event-sourcing",
+    "durable-execution",
+    "replay",
+    "fork",
+    "trajectory",
+    "llm"
+  ],
+  "author": "Abhijith P",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kernlbase/harness.git"
+  },
+  "homepage": "https://github.com/kernlbase/harness#readme",
+  "bugs": {
+    "url": "https://github.com/kernlbase/harness/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

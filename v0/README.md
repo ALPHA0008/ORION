@@ -1,9 +1,12 @@
-# harness
+# @kernlbase/harness
 
-**Durable agent runs you can replay and fork.**
+**An inspectable, recoverable, replayable, trajectory-native agent harness.**
 
-Run an agent. Kill the process. Start it again — it continues from where it stopped.
-Then look at exactly what it did, and branch from any point in its history.
+An agent run is a durable object. Kill the process and it continues from where it stopped. Read
+exactly what it did. Reconstruct it for free. Branch from any point in its history.
+
+This is **runtime infrastructure**, not a coding agent competing on benchmark scores. See
+[What this is and is not](#what-this-is-and-is-not).
 
 ```bash
 $ harness run "add retries to the fetch helper"
@@ -23,15 +26,46 @@ resuming from event 23…
 ## Install
 
 ```bash
-git clone <repo> && cd harness
-node --version            # needs Node 24+ (uses the built-in node:sqlite)
-export HARNESS_BASE_URL=https://api.openai.com/v1     # any OpenAI-compatible endpoint
-export HARNESS_API_KEY=sk-...
-export HARNESS_MODEL=gpt-4o-mini
-node src/cli/index.mjs doctor
+npm install -g @kernlbase/harness
+harness --version
 ```
 
-No build step. No dependencies.
+**Requires Node ≥ 22** — the runtime uses the built-in `node:sqlite`. There are **no third-party
+dependencies** and no build step.
+
+`git` must be on `PATH`: workspace checkpoints use a bare shadow repository, kept separate from
+your own `.git`.
+
+## Configure
+
+Any OpenAI-compatible endpoint.
+
+```bash
+export HARNESS_BASE_URL=https://api.openai.com/v1
+export HARNESS_API_KEY=sk-...
+export HARNESS_MODEL=gpt-4o-mini
+harness doctor
+```
+
+Local providers work the same way — Ollama, vLLM, LM Studio:
+
+```bash
+export HARNESS_BASE_URL=http://localhost:11434/v1
+export HARNESS_MODEL=qwen3:8b
+export HARNESS_API_KEY=not-needed
+```
+
+| variable | required | default |
+|---|---|---|
+| `HARNESS_BASE_URL` | **yes** | — |
+| `HARNESS_MODEL` | recommended | `gpt-4o-mini` |
+| `HARNESS_API_KEY` | provider-dependent | falls back to `OPENAI_API_KEY` |
+| `HARNESS_HOME` | no | `~/.harness` |
+| `HARNESS_WORKSPACE` | no | current directory |
+| `HARNESS_POSTURE` | no | `auto` (`permissive` · `auto` · `strict`) |
+
+`harness doctor` reports home, database integrity, run count, endpoint, posture, stale leases and
+pending questions.
 
 ## Commands
 
@@ -47,49 +81,121 @@ harness fork <run> --at <seq>  branch from a point in history
 harness rerun <run>            fresh run of the same task
 harness reap                   reclaim runs whose worker died
 harness doctor                 environment check
+harness --version              package version
+```
+
+Exit codes: `0` success · `1` unexpected failure · `2` usage or configuration error.
+
+## Pause, answer, resume
+
+When the agent needs a human it calls `ask_user`. The run **pauses durably** rather than blocking a
+process, and stays claimable:
+
+```bash
+$ harness run "migrate the auth module"
+  🙋 asked: "Should I keep the legacy token format?"
+paused — awaiting_human
+  resume with:  harness resume #a81f2c
+
+$ harness answer #a81f2c "yes, keep it"
+$ harness resume #a81f2c
 ```
 
 ## The three verbs, precisely
 
-They are different, and the difference matters once the model is nondeterministic:
+They differ, and the difference matters once the model is nondeterministic:
 
 | | model calls | what you get |
 |---|---|---|
 | **replay** | **0** | the historical state, reconstructed exactly |
-| **fork** | new | a new run that inherits history up to a point, then diverges |
+| **fork** | new | a new run inheriting history to a point, then diverging |
 | **rerun** | new | a fresh run of the same task, sharing nothing |
 
-`replay` never calls a model, so it is free, instant, and always reproduces what actually happened.
+`replay` never calls a model, so it is free, instant, and reproduces what actually happened.
 
-## What makes this different
+`fork` branches **history**. It does **not** rewind your working directory — run a fork in a fresh
+workspace, or restore a checkpoint first. The CLI says so when you fork.
 
-**Crash recovery that knows what it doesn't know.** When a process dies between a tool's effect and
-the record of it, the runtime asks the tool: *did this land?* A file write is checked by hashing.
-An edit is checked by looking for its own precondition. When a tool cannot tell — `curl -X POST`,
-say — the run **pauses and asks you** rather than guessing. It never silently duplicates a side
-effect.
+## Recovery
 
-**Nothing degrades silently.** Every fallback emits a `degraded` event. Status is derived from
-counted effects, so a broken path cannot report itself healthy.
+When a process dies between a tool's effect and the record of it, the runtime asks the tool *did
+this land?*
 
-**Stalls are diagnosed, not just stopped.** A run that repeats itself terminates as `no_progress`
-with the reason attached — not as an anonymous `max_turns`.
+- **`write`** carries a runtime-captured pre-state witness, so it distinguishes *never applied*
+  (re-issue), *applied* (skip) and *applied then changed by someone else* (**escalate**).
+- **`edit`** needs no witness — its precondition is the pre-state, so a re-issue self-rejects.
+- **`bash`** cannot be verified. Every mutating shell command is classified `UNSAFE` and
+  **escalates** rather than being retried. Uncertain, but never silently duplicated.
 
-## Status
+Tools do not all carry the same guarantees, and the runtime does not pretend otherwise. See
+[docs/TOOLS.md](docs/TOOLS.md).
 
-**V0 — technically hardened, not yet validated with developers.** 268 automated assertions across
-7 suites, including real `SIGKILL`s at 8 points in the agent loop and a 6-process concurrency storm.
+## Programmatic use
 
-**Not yet tested against a real language model** (see `research/v0-hardening/real-model-results.md`).
-**Single-user and local.** Not multi-tenant, not a security boundary against hostile code.
+```js
+import { Store, replay, explain, createOpenAICompatModel } from '@kernlbase/harness';
+
+const store = new Store('./harness.db');
+console.log(explain(store, runId));          // what happened
+const { state } = replay(store, runId);      // reconstruct — no model calls
+```
+
+Subpath exports: `/store` `/events` `/replay` `/explain` `/model` `/tools` `/sandbox` `/auth`
+`/recovery` `/worker`.
+
+## What this is and is not
+
+**It provides:**
+
+- durable, append-only run history over a **closed set of 31 event types**
+- crash recovery with per-tool verification and honest escalation
+- zero-cost replay and history forking
+- human-readable explanation of any run
+- bounded tool output and context projection
+- an authorization seam: `authorize(action, context) → allow | deny | escalate`
+
+**It does not claim:**
+
+- frontier coding-agent performance, or benchmark leadership of any kind
+- universal model compatibility — one OpenAI-compatible adapter, plus optional quirk shims
+- OS or container isolation — the sandbox enforces **path containment** (including symlink escape)
+  and bounded output, **not** kernel-level isolation. `bash` runs with your privileges.
+- autonomous subagent orchestration, memory systems, or planning frameworks
+- enterprise fleet governance, centralized audit, or multi-tenancy
+
+The runtime is well tested. **How capable the agent is depends on the model you point it at**, and
+this project makes no claim about that.
+
+## Security
+
+Path containment with symlink-escape rejection, bounded tool output, secret scrubbing from the tool
+environment, three authorization postures with hard denials that apply even in `permissive`, and
+redaction in trajectory output.
+
+This is **not** a sandbox against hostile code. Repository contents are treated as data, never as
+instructions — but the harness will read whatever you point it at. See
+[docs/SECURITY.md](docs/SECURITY.md).
 
 ## Docs
 
-`docs/ARCHITECTURE.md` · `docs/RECOVERY.md` · `docs/REPLAY.md` · `docs/FORKING.md` ·
-`docs/TOOLS.md` · `docs/MODEL-ADAPTERS.md` · `docs/SECURITY.md` · `ADRs/`
+[ARCHITECTURE](docs/ARCHITECTURE.md) · [RECOVERY](docs/RECOVERY.md) · [REPLAY](docs/REPLAY.md) ·
+[FORKING](docs/FORKING.md) · [TOOLS](docs/TOOLS.md) · [MODEL-ADAPTERS](docs/MODEL-ADAPTERS.md) ·
+[SECURITY](docs/SECURITY.md) · [ADRs/](ADRs/) — 13 decision records, each with the evidence that
+forced it.
 
 ## Tests
 
 ```bash
 node tests/run-all.mjs
 ```
+
+**608 assertions across 23 suites**, including real `SIGKILL`s at multiple points in the agent loop,
+a multi-process concurrency storm, and replay-equivalence checks. No test framework.
+
+## Example
+
+[examples/quickstart](examples/quickstart/) — install → configure → run → explain → replay.
+
+## Licence
+
+Apache-2.0. See [LICENSE](LICENSE).

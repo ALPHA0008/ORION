@@ -3,6 +3,7 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import os from 'node:os';
+import { fileURLToPath } from 'node:url';
 import { Store, uid } from '../core/run/store.mjs';
 import { LocalSandbox, attachCheckpoints } from '../sandbox/local/index.mjs';
 import { makeTools } from '../agent/tools/index.mjs';
@@ -243,7 +244,23 @@ function usage() {
 ${C.dim('config:')}  HARNESS_BASE_URL  HARNESS_API_KEY  HARNESS_MODEL  HARNESS_HOME  HARNESS_POSTURE`);
 }
 
+/**
+ * Package version, read from the manifest rather than duplicated in source — a hardcoded string
+ * silently drifts from what npm actually published.
+ */
+function packageVersion() {
+  try {
+    const here = path.dirname(fileURLToPath(import.meta.url));
+    const pkg = JSON.parse(fs.readFileSync(path.join(here, '..', '..', 'package.json'), 'utf8'));
+    return pkg.version ?? 'unknown';
+  } catch { return 'unknown'; }
+}
+
 const [cmd, ...args] = process.argv.slice(2);
+if (cmd === '-v' || cmd === '--version' || cmd === 'version') {
+  console.log(packageVersion());
+  process.exit(0);
+}
 if (!cmd || cmd === '-h' || cmd === '--help') { usage(); process.exit(0); }
 if (!cmds[cmd]) { console.error(C.r(`unknown command: ${cmd}`)); usage(); process.exit(2); }
 try { await cmds[cmd](args); } catch (e) { console.error(C.r(e.message)); process.exit(1); }
