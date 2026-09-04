@@ -28,6 +28,7 @@ describe('path traversal and filesystem escape');
   const outside = path.join(dir, 'SECRET-OUTSIDE.txt');
   fs.writeFileSync(outside, 'top secret');
 
+  // Payloads that escape on EVERY platform.
   const attacks = [
     '../SECRET-OUTSIDE.txt',
     '../../SECRET-OUTSIDE.txt',
@@ -35,17 +36,36 @@ describe('path traversal and filesystem escape');
     'a/../../SECRET-OUTSIDE.txt',
     'a/b/../../../SECRET-OUTSIDE.txt',
     '/etc/passwd',
-    'C:\\Windows\\win.ini',
-    '..\\SECRET-OUTSIDE.txt',
   ];
+
+  // Payloads that are traversals ONLY on Windows. On POSIX a backslash is an ordinary filename
+  // character, so `C:\Windows\win.ini` names a file INSIDE the workspace and writing it is
+  // correct containment, not an escape. Asserting "this throws" everywhere made the suite fail
+  // on ubuntu (expected 8, got 7) and read as a path-traversal vulnerability. It is not one —
+  // the invariant below proves the byte never left the root on either platform.
+  const windowsShaped = ['C:\\Windows\\win.ini', '..\\SECRET-OUTSIDE.txt'];
+  const escapesHere = process.platform === 'win32' ? [...attacks, ...windowsShaped] : attacks;
+
   let blocked = 0;
-  for (const a of attacks) { try { tools.read.run({ path: a }); } catch { blocked++; } }
-  eq('every traversal read blocked', blocked, attacks.length);
+  for (const a of escapesHere) { try { tools.read.run({ path: a }); } catch { blocked++; } }
+  eq('every traversal read blocked', blocked, escapesHere.length);
 
   let wblocked = 0;
-  for (const a of attacks) { try { tools.write.run({ path: a, content: 'pwned' }); } catch { wblocked++; } }
-  eq('every traversal write blocked', wblocked, attacks.length);
+  for (const a of escapesHere) { try { tools.write.run({ path: a, content: 'pwned' }); } catch { wblocked++; } }
+  eq('every traversal write blocked', wblocked, escapesHere.length);
+
+  // THE INVARIANT THAT ACTUALLY MATTERS, and the one that holds on every platform: whatever the
+  // payload was, nothing was written outside the sandbox root. Counting thrown exceptions is a
+  // proxy for this; on POSIX it was also a FALSE PASS on the read side, where a Windows-shaped
+  // path "blocks" merely by not existing (ENOENT), which proves absence rather than containment.
+  for (const a of windowsShaped) { try { tools.write.run({ path: a, content: 'pwned' }); } catch { /* platform-dependent */ } }
   eq('the outside file is untouched', fs.readFileSync(outside, 'utf8'), 'top secret');
+
+  // `work/` is the sandbox root; the rest is this test's own scaffolding — the store file and
+  // the -wal/-shm sidecars SQLite creates beside it.
+  const strayOutside = fs.readdirSync(dir)
+    .filter(n => n !== 'work' && n !== 'SECRET-OUTSIDE.txt' && !/\.db(-wal|-shm)?$/.test(n));
+  eq('nothing was created outside the sandbox root', strayOutside.join(','), '');
 
   check('null byte rejected', (() => { try { sandbox.read('a\0b'); return false; } catch { return true; } })());
   check('empty path rejected', (() => { try { sandbox.read(''); return false; } catch { return true; } })());

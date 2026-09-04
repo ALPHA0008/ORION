@@ -40,7 +40,12 @@ function cli(args, home, work) {
     encoding: 'utf8',
     env: { ...process.env, ORION_HOME: home, ORION_WORKSPACE: work, ORION_BASE_URL: 'http://127.0.0.1:9/v1', ORION_MODEL: 'test-model', ORION_API_KEY: 'x' },
   });
-  return { out: (r.stdout ?? '') + (r.stderr ?? ''), code: r.status };
+  // `out` merges both streams for prose assertions. `stdout` is kept SEPARATE because that is
+  // the product's actual contract: "--json prints ONLY JSON to stdout". Parsing the merged
+  // streams silently couples every JSON assertion to stderr being empty — and on CI it is not:
+  // Node 22 prints an ExperimentalWarning for `node:sqlite` there, which made JSON.parse throw
+  // and reported "0 runs" as though the runtime had lost the run. It had not.
+  return { out: (r.stdout ?? '') + (r.stderr ?? ''), stdout: r.stdout ?? '', code: r.status };
 }
 
 describe('repl/banner');
@@ -83,10 +88,12 @@ describe('repl/durability');
   const home = tmpdir('repl-durable'); const work = tmpdir('repl-durable-w');
   session(['make it faster', '/exit'], home, work);
 
-  const { out, code } = cli(['list', '--json'], home, work);
+  const { stdout, code } = cli(['list', '--json'], home, work);
   eq('list --json exits 0', code, 0);
-  let runs = [];
-  try { runs = JSON.parse(out); } catch { /* asserted below */ }
+  let runs = [], parseErr = null;
+  try { runs = JSON.parse(stdout); } catch (e) { parseErr = e; }
+  check('--json emits ONLY JSON on stdout', !parseErr,
+    parseErr ? JSON.stringify(stdout.slice(0, 90)) : 'clean');
   check('a typed task became a run in the log', runs.length === 1, `got ${runs.length}`);
   check('the run carries the typed task verbatim', runs[0]?.task === 'make it faster', String(runs[0]?.task));
   check('the run is visible from a separate process', !!runs[0]?.run_id, runs[0]?.run_id ?? 'none');
@@ -104,7 +111,7 @@ describe('repl/log-is-shared');
   check('/runs shows a run created outside the session', /from the one-shot command/.test(out), 'visible');
 
   const after = cli(['list', '--json'], home, work);
-  const runs = JSON.parse(after.out || '[]');
+  const runs = JSON.parse(after.stdout || '[]');
   eq('exactly one run so far', runs.length, 1);
 }
 
@@ -113,7 +120,7 @@ describe('repl/empty-input');
   const home = tmpdir('repl-empty'); const work = tmpdir('repl-empty-w');
   const { out, code } = session(['', '   ', '/exit'], home, work);
   eq('blank lines exit cleanly', code, 0);
-  const list = JSON.parse(cli(['list', '--json'], home, work).out || '[]');
+  const list = JSON.parse(cli(['list', '--json'], home, work).stdout || '[]');
   eq('blank input creates no runs', list.length, 0);
   check('no stray readline error leaks to the user', !/readline was closed/.test(out), 'clean');
 }
