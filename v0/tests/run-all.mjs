@@ -104,7 +104,18 @@ export function main() {
     console.log(`${result.ok ? 'OK  ' : 'FAIL'}  ${s.padEnd(24)} ${String(result.pass).padStart(3)} passed, ${result.fail} failed  (${(ms / 1000).toFixed(1)}s)`);
     if (!result.ok) {
       console.log(`      ${result.reason}`);
-      console.log(out.split('\n').filter(l => l.includes('FAIL')).slice(0, 8).map(l => '      ' + l).join('\n'));
+      const failLines = out.split('\n').filter(l => l.includes('FAIL')).slice(0, 8);
+      if (failLines.length) {
+        console.log(failLines.map(l => '      ' + l).join('\n'));
+      } else {
+        // A suite that CRASHED has no FAIL lines, so filtering for them printed nothing at all
+        // and the stack trace — the only thing that explains the crash — was discarded. This is
+        // the case that matters most on a runner you cannot attach to: twice now a CI failure
+        // has been "suite exited with status N" with no further detail anywhere.
+        const tail = out.split('\n').filter(l => l.trim()).slice(-20);
+        console.log('      --- no assertion failures; last output before the exit ---');
+        console.log(tail.map(l => '      ' + l).join('\n'));
+      }
     }
   }
   console.log('\n' + '═'.repeat(60));
