@@ -9,7 +9,8 @@
 // These tests exercise the CLI's OWN wiring — `defaultCompletionContract` and `selectShims` —
 // not a hand-built contract, because the defect was entirely in what the CLI passed.
 
-import { spawnSync } from 'node:child_process';
+import { spawnSync, spawn } from 'node:child_process';
+import http from 'node:http';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -157,42 +158,47 @@ describe('truthfulcompletion/cli-integration');
 
   // A stub OpenAI-compatible endpoint that answers exactly as the live one did: prose only,
   // no tool_calls, finish_reason stop.
-  const server = path.join(dir, 'server.mjs');
-  fs.writeFileSync(server, `
-import http from 'node:http';
-http.createServer((req, res) => {
-  let b = ''; req.on('data', c => b += c); req.on('end', () => {
-    res.writeHead(200, { 'content-type': 'application/json' });
-    res.end(JSON.stringify({ id:'x', model:'stub', choices:[{ index:0, finish_reason:'stop',
-      message:{ role:'assistant', content:'I have fixed the bug.', tool_calls: [] } }],
-      usage:{ prompt_tokens:10, completion_tokens:5 } }));
+  //
+  // Run IN-PROCESS on an EPHEMERAL port, matching tests/real-model/06-remaining.mjs. The first
+  // version spawned a detached child on the fixed port 8791 and slept 600ms hoping it had bound.
+  // That is three separate ways to fail on a shared CI runner — the port may be taken, the sleep
+  // may be too short, and a killed-late child leaks — and none of them reproduce on a dev box.
+  const server = http.createServer((req, res) => {
+    let b = ''; req.on('data', c => b += c); req.on('end', () => {
+      res.writeHead(200, { 'content-type': 'application/json' });
+      res.end(JSON.stringify({ id: 'x', model: 'stub', choices: [{ index: 0, finish_reason: 'stop',
+        message: { role: 'assistant', content: 'I have fixed the bug.', tool_calls: [] } }],
+        usage: { prompt_tokens: 10, completion_tokens: 5 } }));
+    });
   });
-}).listen(8791, '127.0.0.1');
-`);
-  const srv = spawnSync(process.execPath, ['-e', `
-const { spawn } = require('node:child_process');
-const p = spawn(process.execPath, [${JSON.stringify(server)}], { detached:true, stdio:'ignore' });
-p.unref(); console.log(p.pid);
-`], { encoding: 'utf8' });
-  const pid = Number((srv.stdout || '').trim());
-
-  // Give the stub a moment to bind.
-  spawnSync(process.execPath, ['-e', 'setTimeout(()=>{},600)'], { timeout: 5_000 });
+  // Bind before the CLI runs: awaiting `listening` removes the race entirely.
+  const port = await new Promise((resolve) =>
+    server.listen(0, '127.0.0.1', () => resolve(server.address().port)));
 
   const env = { ...process.env,
     ORION_HOME: path.join(dir, 'home'), ORION_WORKSPACE: work,
-    ORION_BASE_URL: 'http://127.0.0.1:8791/v1', ORION_MODEL: 'stub', ORION_API_KEY: 'x' };
-  const r = spawnSync(process.execPath, [CLI, 'run', 'fix the bug in calc.py'],
-    { encoding: 'utf8', env, timeout: 120_000 });
-  const out = (r.stdout || '') + (r.stderr || '');
+    ORION_BASE_URL: `http://127.0.0.1:${port}/v1`, ORION_MODEL: 'stub', ORION_API_KEY: 'x' };
+  // spawn(), not spawnSync(): the stub server lives in THIS process, so the event loop must keep
+  // turning while the CLI runs or the request can never be answered. spawnSync blocks it and the
+  // CLI hangs against a server that is alive but unable to reply.
+  const out = await new Promise((resolve) => {
+    const child = spawn(process.execPath, [CLI, 'run', 'fix the bug in calc.py'],
+      { env, stdio: ['ignore', 'pipe', 'pipe'] });
+    let buf = '';
+    child.stdout.on('data', (c) => { buf += c; });
+    child.stderr.on('data', (c) => { buf += c; });
+    const kill = setTimeout(() => child.kill('SIGKILL'), 120_000);
+    child.on('close', () => { clearTimeout(kill); resolve(buf); });
+  });
 
-  check('orionctl did NOT print a success tick', !/✓\s*model_finished/.test(out), out.slice(-160).replace(/\n/g, ' | '));
+  const tail = () => out.slice(-160).split('\n').join(' | ');
+  check('orionctl did NOT print a success tick', !/✓\s*model_finished/.test(out), tail());
   check('orionctl reported the run as not finishing its work',
-    /finished_without_change|failed/i.test(out), out.slice(-160).replace(/\n/g, ' | '));
+    /finished_without_change|failed/i.test(out), tail());
   check('the file on disk is genuinely unchanged',
     fs.readFileSync(path.join(work, 'calc.py'), 'utf8').includes('a - b'));
 
-  try { if (pid) process.kill(pid); } catch { /* already gone */ }
+  await new Promise((resolve) => server.close(resolve));
 }
 
 process.exit(summary('truthfulcompletion', path.join(HERE, '..', 'results-truthfulcompletion.json')) ? 1 : 0);
