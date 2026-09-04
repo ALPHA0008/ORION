@@ -66,9 +66,18 @@ describe('stale model resume: no tool, event, or terminal effect after reclaim')
     workerId: 'A', leaseMs: 20, maxTurns: 1 });
   const pending = worker.run(r, a.leaseToken);
   await modelStarted;
-  await sleep(35);
-  reap(s);
-  const b = s.claim('B', { runId: r, leaseMs: 1_000 });
+  // A is PRESUMED DEAD, not merely slow.
+  //
+  // This used to wait 35ms for A's 20ms lease to lapse on its own. Since D1 the worker
+  // heartbeats its lease across the model call, so a LIVE worker no longer loses it by being
+  // slow — that was the bug D1 fixed (a measured 28.4s call against a 30s lease killed workers
+  // that were still working). The reaper's job is to reclaim runs whose worker DIED, and a dead
+  // worker stops heartbeating. Reclaiming at a future `now` is how that is expressed in-process:
+  // it makes the lease expired regardless of heartbeats, which is exactly the dead-worker case.
+  // The invariant under test is unchanged — a worker that HAS lost its lease must write nothing.
+  const presumedDead = Date.now() + 10 * 60_000;
+  reap(s, { now: presumedDead });
+  const b = s.claim('B', { runId: r, leaseMs: 1_000, now: presumedDead });
   const seqAtBClaim = s.lastSeq(r);
   release();
   const result = await pending;
@@ -125,9 +134,12 @@ describe('100 randomized reclaim-before-resume races');
     const w = new Worker(s, { sandbox, model, tools, authorize: createAuthorizer(), workerId: `A-${i}`, leaseMs, maxTurns: 1 });
     const pa = w.run(r, a.leaseToken);
     await modelStarted;
-    await sleep(leaseMs + random(5));
-    reap(s, { reaperId: `R-${i}` });
-    const b = s.claim(`B-${i}`, { runId: r, leaseMs: 1_000 });
+    // Same dead-worker construction as above: since D1 a live worker holds its lease across a
+    // model call, so the reclaim is driven by a future `now` rather than by hoping the sleep
+    // outlasts the lease.
+    const presumedDead = Date.now() + 10 * 60_000;
+    reap(s, { reaperId: `R-${i}`, now: presumedDead });
+    const b = s.claim(`B-${i}`, { runId: r, leaseMs: 1_000, now: presumedDead });
     const seqAtBClaim = s.lastSeq(r); release();
     const result = await pa;
     if (sandbox.exists(`STALE-${i}.txt`)) counts.effects++;
