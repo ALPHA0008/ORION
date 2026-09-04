@@ -20,6 +20,13 @@ export const EVENT_TYPES = Object.freeze([
   // human
   'human.requested', 'human.responded', 'human.timed_out',
   // children
+  // RESERVED (Wave 1 audit): declared in the closed vocabulary but not yet emitted by any code
+  // path. They are kept here deliberately rather than removed, because the type set is frozen
+  // and removing a member would be a breaking contract change for anything replaying an older
+  // log. Emitted when the corresponding capability lands:
+  //   child.spawned / child.finished — subagents as child trajectories (a later wave)
+  //   context.retrieved              — retrieval/memory (a later wave)
+  // `turn.finished` was in this state too; Wave 1 now emits it on normal turn completion.
   'child.spawned', 'child.finished',
   // degradation (ADR: named degradation — never silent fallback)
   'degraded',

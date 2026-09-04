@@ -43,6 +43,43 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
+      # The runtime shells out through LocalSandbox, which resolves the BARE NAME `bash` through
+      # PATH. On a Windows runner that is not automatically a usable shell:
+      #
+      #   - the default PATH carries `C:\Program Files\Git\cmd`, which holds git.exe but NOT
+      #     bash.exe, so `bash` may not resolve at all;
+      #   - where WSL is present, `C:\Windows\System32\bash.exe` resolves FIRST and runs in a
+      #     different filesystem namespace (`/mnt/d/...`), so it cannot see the checked-out
+      #     workspace and silently produces empty output.
+      #
+      # Both failure modes look like product defects and are not. Put Git Bash's own bin/ at the
+      # FRONT of PATH so `bash` is unambiguously Git Bash for every later step in the job.
+      - name: Use Git Bash as `bash` (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          # GitHub runners install Git for Windows under ProgramFiles; some Windows setups
+          # install per-user. Check both rather than assuming one layout.
+          $candidates = @(
+            "$env:ProgramFiles\Git\bin",
+            "${env:ProgramFiles(x86)}\Git\bin",
+            "$env:LOCALAPPDATA\Programs\Git\bin"
+          )
+          $gitBin = $candidates | Where-Object { Test-Path (Join-Path $_ 'bash.exe') } | Select-Object -First 1
+          if (-not $gitBin) {
+            Write-Error "Git Bash not found. Looked in: $($candidates -join '; ')"
+            exit 1
+          }
+          $gitBin | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          Write-Host "prepended to PATH: $gitBin"
+
+      # Fail fast and legibly if `bash` is still not the shell the suite needs. tests/run-all.mjs
+      # runs this same check internally; doing it here as its own step means a broken runner is
+      # obvious in the job list rather than buried in suite output.
+      - name: Shell preflight (Windows)
+        if: runner.os == 'Windows'
+        run: node -e "import('./tests/run-all.mjs').then(m=>{const r=m.preflightShell();console.log(JSON.stringify(r));if(!r.ok)process.exit(1);})"
+
       - name: Install
         run: npm install
 

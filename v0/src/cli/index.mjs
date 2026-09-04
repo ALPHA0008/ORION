@@ -14,6 +14,7 @@ import { explain, summarise } from '../core/run/explain.mjs';
 import { replay, fork, rerun, nearestTurnBoundary } from '../core/replay/index.mjs';
 import { reap, expireHumanRequests } from '../core/lease/reaper.mjs';
 import { createOpenAICompatModel } from '../agent/model/index.mjs';
+import { applyGemmaToolCallShim } from '../agent/model/shims/gemma-tool-calls.mjs';
 import { repl, banner } from './repl.mjs';
 
 const HOME = process.env.ORION_HOME ?? path.join(os.homedir(), '.orion');
@@ -32,6 +33,36 @@ const C = process.stdout.isTTY
 
 function open() { fs.mkdirSync(HOME, { recursive: true }); return new Store(DB); }
 
+/**
+ * Which provider quirk shims should this model run with? (D3)
+ *
+ * The shims themselves live in agent/model/shims and are deliberately opt-in — the core must
+ * not grow provider special-cases. But leaving the CLI with NO shims meant a real, documented
+ * provider quirk silently ended runs: vLLM serving Gemma without `--enable-auto-tool-choice`
+ * returns tool calls as raw text in `content` with `tool_calls: []`, so the loop saw
+ * "no tool calls, finish_reason=stop" and reported the run complete having done nothing.
+ *
+ * `ORION_SHIMS` is the explicit control (comma-separated, `none` disables auto-detect).
+ * Otherwise we auto-detect on the model name, because a user pointing at `gemma...` on a
+ * self-hosted endpoint has no way to know this flag exists until it has already cost them a run.
+ * Whenever a shim actually rewrites a response the worker appends `degraded`, so the fact that
+ * a shim fired is never invisible in the trajectory.
+ */
+export function selectShims(modelName, env = process.env) {
+  const requested = String(env.ORION_SHIMS ?? '').trim();
+  if (requested) {
+    if (/^(none|off|0)$/i.test(requested)) return [];
+    return requested.split(',').map(s => s.trim().toLowerCase()).filter(Boolean)
+      .map(name => {
+        if (name === 'gemma' || name === 'gemma-tool-calls') return applyGemmaToolCallShim;
+        console.error(C.y(`unknown shim: ${name} (known: gemma)`));
+        return null;
+      }).filter(Boolean);
+  }
+  // Auto-detect: the quirk is a property of how Gemma is commonly served, not of one endpoint.
+  return /gemma/i.test(String(modelName ?? '')) ? [applyGemmaToolCallShim] : [];
+}
+
 function buildModel() {
   const baseUrl = process.env.ORION_BASE_URL;
   const apiKey = process.env.ORION_API_KEY ?? process.env.OPENAI_API_KEY ?? null;
@@ -42,7 +73,70 @@ function buildModel() {
     console.error('  e.g. ORION_BASE_URL=https://api.openai.com/v1 ORION_MODEL=gpt-4o-mini');
     process.exit(2);
   }
-  return createOpenAICompatModel({ baseUrl, apiKey, model });
+  return createOpenAICompatModel({ baseUrl, apiKey, model, shims: selectShims(model) });
+}
+
+/**
+ * The default completion contract for `orionctl run` (D2).
+ *
+ * ADR-013 exists because STOPPING IS NOT COMPLETING, and the mechanism in the worker has been
+ * tested since. But the CLI never supplied a contract, so `completionContract` stayed `null`
+ * and the gate was inert. Measured on the published 0.1.2: a run whose model emitted an
+ * unparsed tool call did nothing at all to the workspace and the CLI reported
+ * `✓ model_finished`. The file was untouched and the failing test still failed. The runtime's
+ * own record was wrong — the one outcome this project must never produce.
+ *
+ * What counts as "the world changed": at least one MUTATING tool call succeeded. That is read
+ * from the durable event log, not from a filesystem scan and not from anything held in memory:
+ *
+ *   - it is replay-equivalent — replay and fork reconstruct the same decision from the same
+ *     events, which a `statSync` sweep of the workspace could never do;
+ *   - it does not depend on the task text, so it makes no guess about intent;
+ *   - it cannot be satisfied by the model merely *claiming* it edited something.
+ *
+ * The predicate has to satisfy two opposing requirements at once. It must catch the measured
+ * failure — where the model produced NO usable tool calls at all and the run still reported
+ * success — without fabricating failure on a legitimate read-only task ("explain this file"),
+ * which would be dishonest in the opposite direction. So:
+ *
+ *   - a mutating tool succeeded                        -> satisfied (the world changed)
+ *   - only read-only tools ran, and no mutation was
+ *     ever attempted                                   -> satisfied (analysis really was the job)
+ *   - a mutation was attempted but none succeeded      -> NOT satisfied
+ *   - nothing ran at all                               -> NOT satisfied  <- the §1.4 case
+ *
+ * An unsatisfied run gets exactly one bounded continuation (the worker counts it from the
+ * durable log, so a crash cannot buy a second) and then fails as FINISHED_WITHOUT_CHANGE.
+ */
+const MUTATING_TOOLS = new Set(['write', 'edit', 'bash']);
+
+export function defaultCompletionContract(store, runId) {
+  const inspect = () => {
+    const events = store.events(runId);
+    const names = new Map();          // tool_call_id -> tool name, from the request event
+    for (const e of events) {
+      if (e.type === 'tool.requested') names.set(e.payload?.tool_call_id, e.payload?.name);
+    }
+    let anySucceeded = false, mutationSucceeded = false, mutationAttempted = false;
+    for (const e of events) {
+      if (e.type === 'tool.requested' && MUTATING_TOOLS.has(e.payload?.name)) mutationAttempted = true;
+      if (e.type === 'tool.succeeded') {
+        anySucceeded = true;
+        if (MUTATING_TOOLS.has(names.get(e.payload?.tool_call_id))) mutationSucceeded = true;
+      }
+    }
+    return { anySucceeded, mutationSucceeded, mutationAttempted };
+  };
+
+  return {
+    requires_world_change: true,
+    objectiveSatisfied: () => {
+      const { anySucceeded, mutationSucceeded, mutationAttempted } = inspect();
+      if (mutationSucceeded) return true;
+      if (mutationAttempted) return false;    // tried to change the world and did not
+      return anySucceeded;                    // read-only work is real work; doing nothing is not
+    },
+  };
 }
 
 function makeWorker(store, workspace) {
@@ -67,7 +161,9 @@ const cmds = {
     console.log('─'.repeat(48));
     const { worker } = makeWorker(store, WORK);
     const c = store.claim('cli', { runId });
-    const res = await worker().run(runId, c.leaseToken, { input: task });
+    // D2: a run is only reported complete when it demonstrably did something (ADR-013).
+    const res = await worker({ completionContract: defaultCompletionContract(store, runId) })
+      .run(runId, c.leaseToken, { input: task });
     printLive(store, runId);
     console.log('');
     console.log(res.status === 'completed' ? C.g(`✓ ${res.reason}`) : C.y(`${res.status} — ${res.reason}`));
@@ -105,7 +201,8 @@ const cmds = {
       const c = store.claim('cli', { runId });
       if (!c) throw new Error('could not claim the run (another worker holds it)');
       console.log(C.dim(`  ${short(runId)}`));
-      const res = await worker().run(runId, c.leaseToken, resuming ? {} : { input });
+      const res = await worker({ completionContract: defaultCompletionContract(store, runId) })
+        .run(runId, c.leaseToken, resuming ? {} : { input });
       printLive(store, runId);
       if (res.status === 'completed') console.log(C.g(`  ✓ ${res.reason}`));
       const pending = store.humanRequests(runId, 'pending');
@@ -198,7 +295,9 @@ const cmds = {
     if (!c) { console.log(C.r('could not claim the run (another worker holds it)')); return void store.close(); }
     console.log(C.dim(`resuming from event ${store.lastSeq(runId)}…`));
     const { worker } = makeWorker(store, WORK);
-    const res = await worker().run(runId, c.leaseToken, {});
+    // The completion gate applies to a resumed run exactly as it does to a fresh one.
+    const res = await worker({ completionContract: defaultCompletionContract(store, runId) })
+      .run(runId, c.leaseToken, {});
     printLive(store, runId);
     console.log(res.status === 'completed' ? C.g(`✓ ${res.reason}`) : C.y(`${res.status} — ${res.reason}`));
     store.close();
@@ -366,21 +465,33 @@ function packageVersion() {
   } catch { return 'unknown'; }
 }
 
-const [cmd, ...args] = process.argv.slice(2);
-if (cmd === '-v' || cmd === '--version' || cmd === 'version') {
-  console.log(packageVersion());
-  process.exit(0);
-}
-if (cmd === '-h' || cmd === '--help' || cmd === 'help') { usage(); process.exit(0); }
-// Bare `orionctl` opens the interactive session — but only on a terminal. Piped or redirected
-// (CI, scripts, `orionctl | head`) there is nobody to prompt, so print usage and exit cleanly
-// rather than blocking forever on a stdin that will never arrive.
-if (!cmd) {
-  if (process.stdin.isTTY && process.stdout.isTTY) {
-    try { await cmds.chat(); process.exit(0); }
-    catch (e) { console.error(C.r(e.message)); process.exit(1); }
+/**
+ * Dispatch, but only when this file IS the program.
+ *
+ * The CLI also exports the policy it applies — `defaultCompletionContract`, `selectShims` —
+ * so tests can assert on the wiring the CLI actually uses rather than on a hand-built
+ * reconstruction of it. Without this guard, importing the module printed the banner and exited
+ * the importing process, which made that impossible.
+ */
+async function cli() {
+  const [cmd, ...args] = process.argv.slice(2);
+  if (cmd === '-v' || cmd === '--version' || cmd === 'version') {
+    console.log(packageVersion());
+    process.exit(0);
   }
-  usage(); process.exit(0);
+  if (cmd === '-h' || cmd === '--help' || cmd === 'help') { usage(); process.exit(0); }
+  // Bare `orionctl` opens the interactive session — but only on a terminal. Piped or redirected
+  // (CI, scripts, `orionctl | head`) there is nobody to prompt, so print usage and exit cleanly
+  // rather than blocking forever on a stdin that will never arrive.
+  if (!cmd) {
+    if (process.stdin.isTTY && process.stdout.isTTY) {
+      try { await cmds.chat(); process.exit(0); }
+      catch (e) { console.error(C.r(e.message)); process.exit(1); }
+    }
+    usage(); process.exit(0);
+  }
+  if (!cmds[cmd]) { console.error(C.r(`unknown command: ${cmd}`)); usage(); process.exit(2); }
+  try { await cmds[cmd](args); } catch (e) { console.error(C.r(e.message)); process.exit(1); }
 }
-if (!cmds[cmd]) { console.error(C.r(`unknown command: ${cmd}`)); usage(); process.exit(2); }
-try { await cmds[cmd](args); } catch (e) { console.error(C.r(e.message)); process.exit(1); }
+
+if (path.resolve(process.argv[1] ?? '') === path.resolve(fileURLToPath(import.meta.url))) await cli();

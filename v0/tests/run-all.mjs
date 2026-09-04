@@ -6,6 +6,8 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const suites = [
   ['unit/event-store',      ['--max-old-space-size=6144']],
   ['repl/repl',             []],
+  ['leaseheartbeat/leaseheartbeat', []],
+  ['truthfulcompletion/truthfulcompletion', []],
   ['concurrency/lease',     []],
   ['fencing/fencing',       []],
   ['runner/runner',         []],
@@ -43,9 +45,50 @@ export function assessSuiteResult(processResult, output) {
   return { ok: true, pass, fail, reason: null };
 }
 
+/**
+ * Shell preflight.
+ *
+ * Several suites shell out through LocalSandbox. On Windows the sandbox resolves the bare name
+ * `bash` through PATH, and what that finds is not always a shell that can run the workspace:
+ * WSL's C:\Windows\System32\bash.exe resolves first when Git for Windows is absent, and it
+ * executes in a DIFFERENT filesystem namespace (`/mnt/d/...`), so workspace paths do not match
+ * and commands silently produce empty output.
+ *
+ * Diagnosed once, loudly, before 24 suites fail in confusing ways further down. This checks
+ * that the shell can (a) run at all, (b) see the directory we hand it, and (c) evaluate the
+ * POSIX constructs the suites actually use.
+ */
+export function preflightShell() {
+  if (process.platform !== 'win32') return { ok: true };
+  const probe = 'i=1; while [ "$i" -le 3 ]; do echo "row $i"; i=$((i+1)); done';
+  const r = spawnSync('bash', ['-lc', probe], { encoding: 'utf8', cwd: HERE, timeout: 30_000 });
+  if (r.error || r.status !== 0) {
+    return { ok: false, reason: `\`bash\` could not run a POSIX loop (${r.error?.code ?? 'exit ' + r.status}).` };
+  }
+  const got = (r.stdout || '').trim();
+  if (!/row 1[\s\S]*row 3/.test(got)) {
+    return { ok: false, reason: `\`bash\` ran but produced unusable output: ${JSON.stringify(got.slice(0, 60))}. `
+      + 'This is the signature of WSL bash resolving ahead of Git Bash — it executes in a different '
+      + 'filesystem namespace and cannot see the Windows workspace.' };
+  }
+  return { ok: true };
+}
+
 export function main() {
   let totalPass = 0, totalFail = 0;
   const rows = [];
+
+  const pf = preflightShell();
+  if (!pf.ok) {
+    console.log('SHELL PREFLIGHT FAILED');
+    console.log(`  ${pf.reason}`);
+    console.log('  Fix: install Git for Windows and ensure its bin/ precedes C:\\Windows\\System32 on PATH,');
+    console.log('       so `bash` resolves to Git Bash rather than WSL.');
+    console.log('  These suites exercise a real shell; running them against an unusable one produces');
+    console.log('  failures that look like product defects but are environment defects.');
+    process.exitCode = 1;
+    return { totalPass: 0, totalFail: 1, rows: [], preflight: pf };
+  }
   for (const [s, nodeArgs] of suites) {
     const file = path.join(HERE, `${s}.test.mjs`);
     const t0 = Date.now();

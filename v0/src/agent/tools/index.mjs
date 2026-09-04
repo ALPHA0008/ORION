@@ -1,7 +1,7 @@
 // V0 toolset: read, write, edit, grep, bash, ask_user.
 // Each tool computes recovery() FROM ITS ARGUMENTS (ADR-002).
 
-import { RecoveryClass, classifyShell } from '../../core/recovery/index.mjs';
+import { RecoveryClass, classifyShell, isKnownDangerous } from '../../core/recovery/index.mjs';
 import crypto from 'node:crypto';
 
 const sha = (s) => crypto.createHash('sha256').update(String(s)).digest('hex').slice(0, 16);
@@ -317,6 +317,55 @@ export function makeTools(sandbox) {
       // ADR-002: argument-dependent. Conservative classifier; unknown => UNSAFE => escalate.
       recovery: ({ cmd }) => ({ class: classifyShell(cmd) }),
       run: ({ cmd }) => sandbox.exec(cmd),
+    },
+
+    // WAVE 1 (D2): verification as first-class trajectory evidence.
+    //
+    // `bash` can already run a test command, but its result is just output — indistinguishable
+    // in the log from `ls`. `verify` exists so that "did the work actually hold up?" is a
+    // recorded, machine-readable claim: it captures the command, its exit status and a PASS/FAIL
+    // verdict as an ordinary tool.succeeded/tool.failed pair, which `explain`, `replay` and any
+    // later evaluation can read without re-deriving intent from prose.
+    //
+    // On the guard: `classifyShell` is deliberately NOT used here. It answers a different
+    // question — "is re-running this after a crash safe?" — and it default-denies, so every
+    // real test command (`pytest`, `npm test`, `make test`) classifies UNSAFE. Gating on it
+    // would make `verify` refuse exactly the commands it exists to run.
+    //
+    // What matters for `verify` is that it must not be a hole around the shell policy. So it
+    // reuses the SAME explicitly-dangerous denylist that governs `bash`, via `isKnownDangerous`,
+    // and re-runs are safe by construction: a check that mutates the thing it is checking is
+    // not a check. Recovery class stays READ_ONLY, which is honest — re-running a test suite
+    // after a crash is exactly what recovery should do.
+    verify: {
+      description: 'Run a read-only check (a test suite, a linter, a build) and record whether it '
+                 + 'passed. Use this to prove the task is actually done. Do not use it to change files.',
+      schema: { type: 'object', required: ['cmd'],
+        properties: { cmd: { type: 'string' },
+                      expect: { type: 'string', description: 'optional substring that must appear in the output' } } },
+      effects: 'ReadOnly',
+      recovery: () => ({ class: RecoveryClass.READ_ONLY }),
+      run: ({ cmd, expect }) => {
+        if (isKnownDangerous(cmd)) {
+          throw new Error(`verify refuses a command with known side effects: ${cmd}. `
+                        + 'Use bash if you genuinely need to change the world.');
+        }
+        let out, ok = true, exitCode = 0;
+        try {
+          out = sandbox.exec(cmd);
+        } catch (e) {
+          // A failing check is a RESULT, not a tool error — the agent must be able to read the
+          // failure and act on it. Only the refusal above is a genuine tool error.
+          ok = false;
+          exitCode = e?.exitCode ?? 1;
+          out = String(e?.stdout ?? e?.message ?? '');
+        }
+        if (ok && typeof expect === 'string' && expect.length && !String(out).includes(expect)) {
+          ok = false;
+          out = `expected substring not found: ${JSON.stringify(expect)}\n${out}`;
+        }
+        return `${ok ? 'PASS' : 'FAIL'} (exit ${exitCode}) ${cmd}\n${out}`;
+      },
     },
 
     ask_user: {

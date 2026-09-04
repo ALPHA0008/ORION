@@ -96,6 +96,19 @@ const SHELL_UNSAFE = [
   /\bdocker\s+(run|rm|push)\b/, /\bkubectl\s+(apply|delete)\b/, /\bterraform\s+apply\b/,
 ];
 
+/**
+ * Does this command match the explicitly-dangerous denylist?
+ *
+ * Exposed separately from `classifyShell` because the two answer different questions.
+ * `classifyShell` asks "is re-running this after a crash safe?" and DEFAULT-DENIES, which is
+ * right for recovery and wrong as a permission gate — every ordinary test command would be
+ * refused. This asks only "is this on the known-dangerous list?", which is what a read-only
+ * tool needs in order to refuse side-effecting commands without refusing everything.
+ */
+export function isKnownDangerous(cmd) {
+  return SHELL_UNSAFE.some(re => re.test(String(cmd ?? '')));
+}
+
 export function classifyShell(cmd) {
   const c = String(cmd ?? '');
   if (SHELL_UNSAFE.some(re => re.test(c))) return RecoveryClass.UNSAFE;

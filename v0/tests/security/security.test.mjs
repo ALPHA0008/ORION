@@ -200,11 +200,19 @@ describe('resource bounds (DoS surface)');
 
   // Two distinct bounds: output that FITS is clamped; output that overflows the buffer
   // aborts with a short, actionable error (never a 64KB error string).
-  const modest = tools.bash.run({ cmd: 'for i in $(seq 1 3000); do echo "line $i padding padding"; done' });
+  //
+  // The loop is a POSIX `while`, not `for i in $(seq ...)` or a `{1..n}` brace expansion.
+  // `seq` is not in POSIX and is absent from some bash builds we legitimately run under on
+  // Windows; brace expansion is a bashism. Using either made this suite fail with
+  // "syntax error near unexpected token" on a shell that was otherwise perfectly usable —
+  // a test-portability defect that read as a product failure.
+  const emit = (n, pad) => `i=1; while [ "$i" -le ${n} ]; do echo "line $i ${pad}"; i=$((i+1)); done`;
+
+  const modest = tools.bash.run({ cmd: emit(3_000, 'padding padding') });
   check('large-but-bounded output is clamped', Buffer.byteLength(modest) <= 70_000, `${Buffer.byteLength(modest)} bytes`);
   check('clamp is announced', /truncated/.test(modest));
   let overflowErr = null;
-  try { tools.bash.run({ cmd: 'for i in $(seq 1 40000); do echo "line $i padding padding padding"; done' }); }
+  try { tools.bash.run({ cmd: emit(40_000, 'padding padding padding') }); }
   catch (e) { overflowErr = e; }
   check('runaway output aborts instead of buffering forever', overflowErr?.kind === 'output_overflow', overflowErr?.kind);
   check('overflow error text is SHORT and actionable',

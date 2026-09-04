@@ -49,6 +49,36 @@ export class Worker {
 
   #hook(marker, ctx = {}) { this.hooks.beforeAppend?.(marker, ctx); }
 
+  /**
+   * Run `fn()` while keeping this run's lease alive (D1).
+   *
+   * Renews on an interval comfortably inside the lease so a slow call cannot expire it, and
+   * always clears the timer — including when `fn` throws — so a failed model call cannot leak
+   * a timer that keeps renewing a lease for work that has stopped.
+   *
+   * The timer is deliberately NOT unref'd. An unref'd timer does not fire while the event loop
+   * is parked awaiting the model's promise, which is exactly when the heartbeat is needed;
+   * measured, it produced zero renewals across a 1.5s call. The `finally` guarantees the
+   * timer is cleared on every path, so it cannot outlive the call and hold the process open.
+   *
+   * Renewal is fenced by the lease token AND by `lease_expires_at > now` in the UPDATE, so
+   * once the lease is genuinely lost renew() returns false and we stop. This cannot resurrect
+   * a reclaimed run — defeating execution fencing would be a far worse bug than the one this
+   * fixes.
+   */
+  async #withLeaseHeartbeat(runId, leaseToken, fn) {
+    // Three beats per lease: frequent enough that one dropped beat is not fatal, cheap enough
+    // that a long call does not flood the log with renewals.
+    const everyMs = Math.max(250, Math.floor(this.leaseMs / 3));
+    const timer = setInterval(() => {
+      try {
+        if (!this.store.renew(runId, leaseToken, { leaseMs: this.leaseMs })) clearInterval(timer);
+      } catch { clearInterval(timer); }   // a store error must not crash the model call
+    }, everyMs);
+    try { return await fn(); }
+    finally { clearInterval(timer); }
+  }
+
   #append(runId, type, payload, opts = {}) {
     const leaseToken = opts.leaseToken ?? this.#leaseTokens.get(runId);
     try {
@@ -130,10 +160,23 @@ export class Worker {
             outbound = c.messages;
           }
         }
-        resp = await this.model.invoke({
+        // D1: hold the lease across the model call.
+        //
+        // The lease is renewed at the top of each turn, but a model call happens INSIDE the
+        // turn and can outlast it. Measured against a local model: a realistic agent request
+        // (system prompt + task + tool schemas) took 28.4s against a 30s lease. The reaper
+        // then treats the run as orphaned, and the worker — still alive, still working —
+        // loses its lease mid-flight and dies as `lease_lost`. That made self-hosted models,
+        // a documented use case, a coin flip on prompt length.
+        //
+        // A worker blocked in its own model call is not orphaned, so it heartbeats while it
+        // waits. This does NOT extend a lease the worker has already lost: renew() is
+        // fenced by the lease token, so a heartbeat after a genuine reclaim fails and we
+        // stop heartbeating, leaving the normal lost-lease path to detect it.
+        resp = await this.#withLeaseHeartbeat(runId, leaseToken, () => this.model.invoke({
           messages: outbound,
           tools: toolDefinitions(this.tools),
-        });
+        }));
       } catch (err) {
         const recorded = this.#append(runId, 'model.failed', {
           error: String(err?.message ?? err), kind: err?.kind ?? 'unknown', retryable: !!err?.retryable });
@@ -211,6 +254,17 @@ export class Worker {
         const paused = await this.#runToolCall(runId, leaseToken, tc);
         if (paused) return paused;
       }
+
+      // WAVE 1: close the turn in the log.
+      //
+      // `turn.finished` was in the frozen 31-type vocabulary but no code ever appended it, so
+      // `turn.started` had no counterpart and a reader could not tell a turn that completed
+      // from one that was cut short by a crash. It is emitted here — after the model round-trip
+      // AND its tool calls have been dispatched — which is the point at which the turn is
+      // genuinely over. A turn that ends by terminating the run does NOT get one: the
+      // `run.completed`/`run.failed` event is its terminator, and synthesising both would
+      // misreport a truncated turn as a clean one.
+      this.#append(runId, 'turn.finished', { tool_calls: resp.tool_calls.length });
 
       this.#maybeSnapshot(runId);
     }
