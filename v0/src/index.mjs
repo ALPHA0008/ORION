@@ -23,7 +23,7 @@ export { Store, uid, LeaseLostError } from './core/run/store.mjs';
 // EVENT_TYPES is frozen. isKnownType() rejects anything outside it, which is what makes the log
 // a contract rather than opportunistic logging.
 export {
-  EVENT_TYPES, isKnownType, TERMINAL, modelRespondedPayload, UnknownEventType,
+  EVENT_TYPES, EVENT_CONTRACT_VERSION, isKnownType, TERMINAL, modelRespondedPayload, UnknownEventType,
 } from './core/event/index.mjs';
 
 // ── Trajectory: inspect, replay, fork ───────────────────────────────────────
@@ -33,6 +33,13 @@ export {
   replay, verifyProjectionEquivalence, fork, nearestTurnBoundary, rerun,
 } from './core/replay/index.mjs';
 export { explain, summarise, redact } from './core/run/explain.mjs';
+
+// ── Planning (event contract v2) ────────────────────────────────────────────
+// A plan is DERIVED: `projectPlan` folds plan.* events into the current plan. Nothing about a
+// plan is stored, so it survives a crash and reconstructs identically under resume and replay.
+export {
+  projectPlan, readySteps, planSatisfied, summarisePlan,
+} from './core/projection/plan.mjs';
 
 // ── Provider: one OpenAI-compatible adapter ─────────────────────────────────
 // Provider quirks belong in a shim applied to the NORMALISED result, never inside the runtime.

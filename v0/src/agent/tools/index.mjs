@@ -368,6 +368,73 @@ export function makeTools(sandbox) {
       },
     },
 
+    // ── planning (Wave 2) ────────────────────────────────────────────────────
+    //
+    // These two tools are the ONLY way a plan enters the trajectory. They hold no state: `run`
+    // returns a human-readable acknowledgement, and `emits()` returns the events that become
+    // the durable record. The current plan is always a fold over those events
+    // (core/projection/plan.mjs), never something the worker remembers — which is exactly why
+    // a plan survives a crash and reconstructs identically under resume, replay and fork.
+    plan: {
+      description: 'Declare or revise your plan: a goal and an ordered list of steps. Call this '
+                 + 'once before you start work, and again if a step fails and you need a '
+                 + 'different approach. Revising keeps the old plan in the record.',
+      schema: { type: 'object', required: ['goal', 'steps'],
+        properties: {
+          goal: { type: 'string' },
+          steps: { type: 'array', items: { type: 'string' },
+                   description: 'ordered short step descriptions' },
+          reason: { type: 'string', description: 'why you are revising (only when revising)' },
+        } },
+      effects: 'ReadOnly',
+      recovery: () => ({ class: RecoveryClass.READ_ONLY }),
+      run: ({ goal, steps }) => {
+        const list = (Array.isArray(steps) ? steps : []).filter(s => String(s ?? '').trim());
+        if (!list.length) throw new Error('plan requires at least one step');
+        return `plan recorded — ${goal}\n` + list.map((s, i) => `  ${i + 1}. ${s}`).join('\n');
+      },
+      emits: ({ goal, steps, reason }, _result, ctx) => [{
+        // A plan that already exists is REVISED, never replaced in place: the previous step
+        // list is preserved in the projection's history so the trajectory still explains why
+        // the run changed course.
+        type: ctx?.plan ? 'plan.revised' : 'plan.created',
+        payload: { goal: String(goal), steps: (steps ?? []).map(String),
+                   ...(ctx?.plan ? { reason: String(reason ?? 'replan') } : {}) },
+      }],
+    },
+
+    plan_step: {
+      description: 'Mark a plan step as active, done or failed. When marking a step done, put '
+                 + 'the proof in `evidence` — the output of a verify call, a test result. A step '
+                 + 'marked done without evidence is a claim, not a result.',
+      schema: { type: 'object', required: ['step', 'state'],
+        properties: {
+          step: { type: 'string', description: 'the step id (e.g. s1.2) or its 1-based number' },
+          state: { type: 'string', enum: ['active', 'done', 'failed'] },
+          evidence: { type: 'string', description: 'what proves it — verify output, a test summary' },
+        } },
+      effects: 'ReadOnly',
+      recovery: () => ({ class: RecoveryClass.READ_ONLY }),
+      run: ({ step, state }) => `step ${step} -> ${state}`,
+      emits: ({ step, state, evidence }, _result, ctx) => {
+        const plan = ctx?.plan;
+        if (!plan) return [];        // nothing to mark against; the ack still stands
+        // Accept the id or the 1-based position. A model that has just written "3. run tests"
+        // will reach for "3" far more readily than for "s1.3".
+        const byId = plan.steps.find(s => s.id === String(step));
+        const byIndex = plan.steps[Number(step) - 1];
+        const target = byId ?? byIndex;
+        if (!target) return [];
+        return [{
+          type: state === 'active' ? 'plan.step_started' : 'plan.step_finished',
+          payload: state === 'active'
+            ? { step_id: target.id, title: target.title }
+            : { step_id: target.id, state: state === 'done' ? 'done' : 'failed',
+                evidence: evidence != null ? String(evidence) : null },
+        }];
+      },
+    },
+
     ask_user: {
       description: 'Ask the human a question and wait. The run pauses durably.',
       schema: { type: 'object', required: ['prompt'],

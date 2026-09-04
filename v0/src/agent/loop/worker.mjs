@@ -2,6 +2,7 @@
 
 import { project, stableDigest } from '../../core/projection/index.mjs';
 import { compactMessages } from '../../core/projection/compact.mjs';
+import { projectPlan } from '../../core/projection/plan.mjs';
 import { decideRecovery, Decision as RecDecision } from '../../core/recovery/index.mjs';
 import { Decision as AuthDecision, digestArgs } from '../../auth/default/index.mjs';
 import { modelRespondedPayload } from '../../core/event/index.mjs';
@@ -359,6 +360,28 @@ export class Worker {
       : this.#append(runId, 'tool.succeeded', { tool_call_id: tcid, name: tc.name, result: String(out ?? '') });
     if (recorded === null) return this.#leaseLost();
     this.#hook('after:tool.succeeded', { runId, tcid });
+
+    // A tool may declare derived events that belong on the trajectory (Wave 2: plan.*).
+    //
+    // This is a general seam rather than a special case for named tools: the worker knows only
+    // that a tool CAN emit, never which ones do. The events are appended AFTER tool.succeeded
+    // so ordering in the log matches causality — the tool ran, therefore this was recorded.
+    // Only a successful call emits; a failed one has nothing to assert.
+    if (!failed && typeof tool.emits === 'function') {
+      let derived = [];
+      try {
+        derived = tool.emits(args, out, { plan: projectPlan(S.events(runId)) }) ?? [];
+      } catch (e) {
+        // A broken emitter must not fail a tool call that genuinely succeeded — but it must
+        // not be silent either.
+        if (this.#append(runId, 'degraded', { subsystem: 'tool_emits',
+              reason: `${tc.name}.emits() threw: ${String(e?.message ?? e)}` }) === null)
+          return this.#leaseLost();
+      }
+      for (const d of derived) {
+        if (this.#append(runId, d.type, d.payload ?? {}) === null) return this.#leaseLost();
+      }
+    }
     return null;
   }
 
@@ -538,11 +561,34 @@ export function repairOrphans(msgs) {
   return out;
 }
 
+// ── plan + verify policy (Wave 2) ────────────────────────────────────────────
+//
+// Two additions, both deliberately short. This is prompt POLICY, not a framework: the runtime
+// records what the model declares and what actually happened, and never schedules anything.
+//
+// `verify` shipped in Wave 1 but nothing told the model to prefer it, so it competed with
+// `bash` on equal footing — a test run through `bash` is indistinguishable in the log from
+// `ls`, which is precisely the evidence gap Wave 1 opened the tool to close.
+//
+// The last line is load-bearing. Wave 0 measured a run that reported success having changed
+// nothing; the completion contract now refuses that, and this states the same rule to the model
+// so it corrects course rather than discovering the refusal only at the end.
 export const DEFAULT_SYSTEM =
 `You are a coding agent working inside a sandboxed workspace.
 Use the provided tools to inspect and modify files. Prefer 'edit' over 'write' when changing
 part of a file. When the task is complete, reply with a short summary and no tool calls.
-If a tool fails, read the error and adapt — do not repeat the identical call.`;
+If a tool fails, read the error and adapt — do not repeat the identical call.
+
+Before you start, call 'plan' with the goal and a short ordered list of steps. Mark each step
+with 'plan_step' as you go. If a step fails and you need a different approach, call 'plan' again
+with the revised steps and a reason — the earlier plan is kept in the record.
+
+After a change that should be checkable, run 'verify' with the command that proves it (a test
+suite, a build). Use 'verify' rather than 'bash' for checks: it records a PASS/FAIL verdict as
+evidence. Pass that output as the 'evidence' when you mark the step done.
+
+Saying the work is done is not the same as doing it. A run that changed nothing will be recorded
+as unfinished, whatever the summary claims.`;
 
 // ── escalation policy (phase 5) ──────────────────────────────────────────────
 //

@@ -15,6 +15,7 @@ import { replay, fork, rerun, nearestTurnBoundary } from '../core/replay/index.m
 import { reap, expireHumanRequests } from '../core/lease/reaper.mjs';
 import { createOpenAICompatModel } from '../agent/model/index.mjs';
 import { applyGemmaToolCallShim } from '../agent/model/shims/gemma-tool-calls.mjs';
+import { projectPlan, planSatisfied, summarisePlan } from '../core/projection/plan.mjs';
 import { repl, banner } from './repl.mjs';
 
 const HOME = process.env.ORION_HOME ?? path.join(os.homedir(), '.orion');
@@ -131,6 +132,15 @@ export function defaultCompletionContract(store, runId) {
   return {
     requires_world_change: true,
     objectiveSatisfied: () => {
+      // WAVE 2: when the run declared a plan, the plan is the objective.
+      //
+      // A declared plan is a stronger, self-supplied statement of what "done" means than any
+      // inference the runtime could make from tool activity — so it takes precedence. An
+      // unfinished plan is an unfinished run even if some file was written along the way,
+      // which is the case the Wave-1 predicate alone would have waved through.
+      const plan = projectPlan(store.events(runId));
+      if (plan) return planSatisfied(plan);
+
       const { anySucceeded, mutationSucceeded, mutationAttempted } = inspect();
       if (mutationSucceeded) return true;
       if (mutationAttempted) return false;    // tried to change the world and did not
@@ -271,10 +281,30 @@ const cmds = {
         cost_usd: state.budget.cost_usd ?? null,
         awaiting_human: (store.humanRequests(runId, 'pending') ?? [])
           .map(h => ({ id: h.id, prompt: h.prompt })),
+        // The plan is derived, so it costs a fold rather than a column — and it is null for a
+        // run that never declared one, which is an honest answer rather than an empty shape.
+        plan: (() => {
+          const pl = projectPlan(store.events(runId));
+          return pl && { goal: pl.goal, revision: pl.revision, satisfied: planSatisfied(pl),
+            steps: pl.steps.map(x => ({ id: x.id, title: x.title, state: x.state,
+              depends_on: x.depends_on, evidence: x.evidence, retry: x.retry })),
+            superseded_revisions: pl.history.length };
+        })(),
       });
       return void store.close();
     }
     console.log(summarise(store, runId, state));
+    const pl = projectPlan(store.events(runId));
+    if (pl) {
+      console.log('');
+      console.log('  ' + C.b(summarisePlan(pl)));
+      for (const st of pl.steps) {
+        const mark = st.state === 'done' ? C.g('✓') : st.state === 'failed' ? C.r('✕')
+                   : st.state === 'active' ? C.y('▸') : C.dim('·');
+        console.log(`   ${mark} ${st.id}  ${st.title}${st.evidence ? C.dim('  — ' + String(st.evidence).slice(0, 44)) : ''}`);
+      }
+      if (pl.history.length) console.log(C.dim(`   (${pl.history.length} superseded revision(s) kept in the log)`));
+    }
     store.close();
   },
 

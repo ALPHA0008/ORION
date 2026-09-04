@@ -2,6 +2,18 @@
 // ADR-004: event TYPES are closed (the reducer must be total); PAYLOADS are extensible
 // via `payload.ext` so provider metadata (cost, latency, cache, uuids) survives adaptation.
 
+/**
+ * Version of the event vocabulary.
+ *
+ * The type set is CLOSED, so growing it is a contract change and must be visible rather than
+ * silent. A log written under an earlier version replays unchanged — members are only ever
+ * added, never removed or renamed, because removal would break replay of existing logs.
+ *
+ *   1 — 31 types. The original frozen set.
+ *   2 — adds plan.* (4 types). Planning as derived-but-durable trajectory structure (Wave 2).
+ */
+export const EVENT_CONTRACT_VERSION = 2;
+
 export const EVENT_TYPES = Object.freeze([
   // lifecycle
   'run.created', 'run.leased', 'run.lease_renewed', 'run.lease_lost',
@@ -28,6 +40,13 @@ export const EVENT_TYPES = Object.freeze([
   //   context.retrieved              — retrieval/memory (a later wave)
   // `turn.finished` was in this state too; Wave 1 now emits it on normal turn completion.
   'child.spawned', 'child.finished',
+  // planning (contract v2, Wave 2)
+  //
+  // A plan is DERIVED state, not a side system: these events are the only durable record, and
+  // the current plan is a fold over them (see core/projection/plan.mjs). Nothing about a plan
+  // is held in worker memory, which is what makes a plan survive a crash and reconstruct
+  // identically under replay and fork.
+  'plan.created', 'plan.revised', 'plan.step_started', 'plan.step_finished',
   // degradation (ADR: named degradation — never silent fallback)
   'degraded',
 ]);

@@ -58,6 +58,35 @@ export function parseGemmaToolCalls(content) {
   return { tool_calls: calls, residualContent: residual.trim() };
 }
 
+/**
+ * Parse `[<|"|>a<|"|>,<|"|>b<|"|>]` (and bare `[1,2]`) starting at `body[at] === '['`.
+ * Returns { value, next }. Elements may contain commas and braces, so the scan keys off the
+ * sentinel rather than splitting on punctuation.
+ */
+function parseArray(body, at, SENT) {
+  const out = [];
+  let p = at + 1;
+  while (p < body.length) {
+    while (p < body.length && /[\s,]/.test(body[p])) p++;
+    if (body[p] === ']') { p++; break; }
+    if (body.startsWith(SENT, p)) {
+      p += SENT.length;
+      const close = body.indexOf(SENT, p);
+      if (close === -1) { out.push(body.slice(p)); p = body.length; break; }
+      out.push(body.slice(p, close));
+      p = close + SENT.length;
+    } else {
+      // Bare element: read to the next comma or the closing bracket.
+      let q = p;
+      while (q < body.length && body[q] !== ',' && body[q] !== ']') q++;
+      const raw = body.slice(p, q).trim();
+      if (raw) out.push(coerce(raw));
+      p = q;
+    }
+  }
+  return { value: out, next: p };
+}
+
 function parseOneCall(body, SENT) {
   // body looks like:  call:NAME{k:<|"|>v<|"|>,k2:<|"|>v2<|"|>}
   const m = /^\s*call\s*:\s*([A-Za-z_][A-Za-z0-9_]*)\s*\{/.exec(body);
@@ -76,7 +105,21 @@ function parseOneCall(body, SENT) {
     p += km[0].length;
     const key = km[1];
 
-    if (body.startsWith(SENT, p)) {
+    if (body[p] === '[') {
+      // ARRAY VALUE.
+      //
+      // Observed once a tool took an array argument: the model emits a correct list, but in
+      // this grammar every element is itself sentinel-delimited —
+      //
+      //   steps:[<|"|>read the file<|"|>,<|"|>fix the bug<|"|>]
+      //
+      // Without this branch the whole literal was read as one opaque scalar and arrived as a
+      // string, so schema validation rejected it and the run made no progress. The model was
+      // right; the shim could not express what it said.
+      const { value, next } = parseArray(body, p, SENT);
+      args[key] = value;
+      p = next;
+    } else if (body.startsWith(SENT, p)) {
       p += SENT.length;
       const close = body.indexOf(SENT, p);
       if (close === -1) { args[key] = body.slice(p); p = body.length; break; }
