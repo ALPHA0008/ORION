@@ -1,6 +1,6 @@
 {
   "label": "security",
-  "pass": 41,
+  "pass": 42,
   "fail": 0,
   "results": [
     {
@@ -18,6 +18,12 @@
     {
       "group": "path traversal and filesystem escape",
       "test": "the outside file is untouched",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "path traversal and filesystem escape",
+      "test": "nothing was created outside the sandbox root",
       "pass": true,
       "detail": ""
     },
@@ -217,7 +223,7 @@
       "group": "resource bounds (DoS surface)",
       "test": "long-running command is killed by the timeout",
       "pass": true,
-      "detail": "15005ms"
+      "detail": "15018ms"
     },
     {
       "group": "resource bounds (DoS surface)",

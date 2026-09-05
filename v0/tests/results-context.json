@@ -1,0 +1,307 @@
+{
+  "label": "context",
+  "pass": 50,
+  "fail": 0,
+  "results": [
+    {
+      "group": "context/contract-version",
+      "test": "the contract is at or beyond v3",
+      "pass": true,
+      "detail": "v4"
+    },
+    {
+      "group": "context/contract-version",
+      "test": "artifact.created is in the frozen vocabulary",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/contract-version",
+      "test": "the set is still frozen",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/artifact-identity-and-provenance",
+      "test": "an oversized result qualifies",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/artifact-identity-and-provenance",
+      "test": "a small result does not",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/artifact-identity-and-provenance",
+      "test": "the id is content-addressed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/artifact-identity-and-provenance",
+      "test": "the same bytes yield the same id anywhere",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/artifact-identity-and-provenance",
+      "test": "different bytes yield a different id",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/artifact-identity-and-provenance",
+      "test": "the sha256 is the content hash",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/artifact-identity-and-provenance",
+      "test": "provenance points at the source event",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/artifact-identity-and-provenance",
+      "test": "the byte count is recorded",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/artifact-identity-and-provenance",
+      "test": "a preview is carried inline",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/artifact-identity-and-provenance",
+      "test": "the preview is a PREFIX of the content",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/artifacts-are-created-for-oversized-output",
+      "test": "at least one artifact was created",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "group": "context/artifacts-are-created-for-oversized-output",
+      "test": "the artifact names its tool",
+      "pass": true,
+      "detail": "read"
+    },
+    {
+      "group": "context/artifacts-are-created-for-oversized-output",
+      "test": "the artifact records a source_seq",
+      "pass": true,
+      "detail": "18"
+    },
+    {
+      "group": "context/artifacts-are-created-for-oversized-output",
+      "test": "the artifact resolves through its provenance link",
+      "pass": true,
+      "detail": "null"
+    },
+    {
+      "group": "context/artifacts-are-created-for-oversized-output",
+      "test": "the resolved content is the full, unclamped text",
+      "pass": true,
+      "detail": "20002B"
+    },
+    {
+      "group": "context/artifacts-are-created-for-oversized-output",
+      "test": "the sha256 verifies against the resolved bytes",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/artifacts-are-created-for-oversized-output",
+      "test": "an unknown artifact id is an explicit miss",
+      "pass": true,
+      "detail": "no such artifact"
+    },
+    {
+      "group": "context/compaction-is-budget-aware",
+      "test": "no compaction under budget",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/compaction-is-budget-aware",
+      "test": "compaction fired over budget",
+      "pass": true,
+      "detail": "2 events"
+    },
+    {
+      "group": "context/compaction-is-budget-aware",
+      "test": "the record carries PROVENANCE — which calls were elided, not just how many",
+      "pass": true,
+      "detail": "1 elided / 1 ids"
+    },
+    {
+      "group": "context/compaction-is-budget-aware",
+      "test": "the record states the budget it exceeded",
+      "pass": true,
+      "detail": "1000"
+    },
+    {
+      "group": "context/compaction-is-budget-aware",
+      "test": "the record states the size that triggered it",
+      "pass": true,
+      "detail": "21816B > 1000B"
+    },
+    {
+      "group": "context/compaction-never-touches-the-durable-log",
+      "test": "compaction did happen",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/compaction-never-touches-the-durable-log",
+      "test": "the log still holds full, unelided tool results",
+      "pass": true,
+      "detail": "largest 16002B"
+    },
+    {
+      "group": "context/compaction-never-touches-the-durable-log",
+      "test": "no placeholder text ever entered the log",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/verify-verdicts-survive-compaction",
+      "test": "the earlier verify was elided",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "group": "context/verify-verdicts-survive-compaction",
+      "test": "its VERDICT survived in the placeholder",
+      "pass": true,
+      "detail": "[superseded verify — a newer result for this target appears below; full text rem"
+    },
+    {
+      "group": "context/verify-verdicts-survive-compaction",
+      "test": "its body did not",
+      "pass": true,
+      "detail": "147B"
+    },
+    {
+      "group": "context/verify-verdicts-survive-compaction",
+      "test": "the latest verify is untouched",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/elided-content-still-points-at-its-artifact",
+      "test": "the placeholder references the artifact id",
+      "pass": true,
+      "detail": "[superseded read of f.txt — a newer result for this target appears below; full text remains in the run history] [artifac"
+    },
+    {
+      "group": "context/elided-content-still-points-at-its-artifact",
+      "test": "and states how many bytes were withheld",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/elided-content-still-points-at-its-artifact",
+      "test": "provenance ids are returned for the compaction record",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/THE-BIG-ONE-compaction-preserves-replay-plan-and-resume",
+      "test": "compaction ACTUALLY fired during this run",
+      "pass": true,
+      "detail": "12 compaction events over 156 events"
+    },
+    {
+      "group": "context/THE-BIG-ONE-compaction-preserves-replay-plan-and-resume",
+      "test": "artifacts were created",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/THE-BIG-ONE-compaction-preserves-replay-plan-and-resume",
+      "test": "the run completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/THE-BIG-ONE-compaction-preserves-replay-plan-and-resume",
+      "test": "replay makes no model calls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/THE-BIG-ONE-compaction-preserves-replay-plan-and-resume",
+      "test": "replay reconstructs the same event count",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/THE-BIG-ONE-compaction-preserves-replay-plan-and-resume",
+      "test": "the plan survived a compacting run",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/THE-BIG-ONE-compaction-preserves-replay-plan-and-resume",
+      "test": "every plan step is still done",
+      "pass": true,
+      "detail": "s1.1:done s1.2:done s1.3:done"
+    },
+    {
+      "group": "context/THE-BIG-ONE-compaction-preserves-replay-plan-and-resume",
+      "test": "step evidence survived",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/THE-BIG-ONE-compaction-preserves-replay-plan-and-resume",
+      "test": "an independent reader folds the identical plan",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/THE-BIG-ONE-compaction-preserves-replay-plan-and-resume",
+      "test": "and sees the identical artifact set",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "context/THE-BIG-ONE-compaction-preserves-replay-plan-and-resume",
+      "test": "artifact a_4afda4a3f4 still resolves and verifies after compaction",
+      "pass": true,
+      "detail": "null"
+    },
+    {
+      "group": "context/THE-BIG-ONE-compaction-preserves-replay-plan-and-resume",
+      "test": "artifact a_80119a9f1e still resolves and verifies after compaction",
+      "pass": true,
+      "detail": "null"
+    },
+    {
+      "group": "context/THE-BIG-ONE-compaction-preserves-replay-plan-and-resume",
+      "test": "artifact a_9500aa70dc still resolves and verifies after compaction",
+      "pass": true,
+      "detail": "null"
+    },
+    {
+      "group": "context/THE-BIG-ONE-compaction-preserves-replay-plan-and-resume",
+      "test": "artifact a_44c21b290b still resolves and verifies after compaction",
+      "pass": true,
+      "detail": "null"
+    },
+    {
+      "group": "context/THE-BIG-ONE-compaction-preserves-replay-plan-and-resume",
+      "test": "artifact a_0ca0e24d6c still resolves and verifies after compaction",
+      "pass": true,
+      "detail": "null"
+    }
+  ]
+}

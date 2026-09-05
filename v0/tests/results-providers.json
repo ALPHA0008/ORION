@@ -1,0 +1,397 @@
+{
+  "label": "providers",
+  "pass": 65,
+  "fail": 0,
+  "results": [
+    {
+      "group": "providers/P6-unknown-kind-fails-at-construction",
+      "test": "an unknown kind throws",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P6-unknown-kind-fails-at-construction",
+      "test": "the message names the known kinds",
+      "pass": true,
+      "detail": "unknown provider kind: \"bogus\" (known: openai-compat, anthropic)"
+    },
+    {
+      "group": "providers/P6-unknown-kind-fails-at-construction",
+      "test": "exactly two providers are offered",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/anthropic-wire-translation",
+      "test": "the system prompt is hoisted out of the message list",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/anthropic-wire-translation",
+      "test": "no message retains role \"system\"",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/anthropic-wire-translation",
+      "test": "no message retains role \"tool\"",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/anthropic-wire-translation",
+      "test": "the tool CALL became a tool_use block",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/anthropic-wire-translation",
+      "test": "accompanying prose is preserved, not dropped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/anthropic-wire-translation",
+      "test": "the tool RESULT became a tool_result block",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/anthropic-wire-translation",
+      "test": "tool definitions use input_schema",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P2-structurally-identical-ModelResult",
+      "test": "anthropic result has content",
+      "pass": true,
+      "detail": "string"
+    },
+    {
+      "group": "providers/P2-structurally-identical-ModelResult",
+      "test": "anthropic result has tool_calls",
+      "pass": true,
+      "detail": "object"
+    },
+    {
+      "group": "providers/P2-structurally-identical-ModelResult",
+      "test": "anthropic result has finish",
+      "pass": true,
+      "detail": "boolean"
+    },
+    {
+      "group": "providers/P2-structurally-identical-ModelResult",
+      "test": "anthropic result has finish_reason",
+      "pass": true,
+      "detail": "string"
+    },
+    {
+      "group": "providers/P2-structurally-identical-ModelResult",
+      "test": "anthropic result has input_tokens",
+      "pass": true,
+      "detail": "number"
+    },
+    {
+      "group": "providers/P2-structurally-identical-ModelResult",
+      "test": "anthropic result has output_tokens",
+      "pass": true,
+      "detail": "number"
+    },
+    {
+      "group": "providers/P2-structurally-identical-ModelResult",
+      "test": "anthropic result has cache_read_tokens",
+      "pass": true,
+      "detail": "number"
+    },
+    {
+      "group": "providers/P2-structurally-identical-ModelResult",
+      "test": "anthropic result has cost_usd",
+      "pass": true,
+      "detail": "object"
+    },
+    {
+      "group": "providers/P2-structurally-identical-ModelResult",
+      "test": "anthropic result has duration_ms",
+      "pass": true,
+      "detail": "number"
+    },
+    {
+      "group": "providers/P2-structurally-identical-ModelResult",
+      "test": "anthropic result has ext",
+      "pass": true,
+      "detail": "object"
+    },
+    {
+      "group": "providers/P2-structurally-identical-ModelResult",
+      "test": "content matches",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P2-structurally-identical-ModelResult",
+      "test": "one tool call",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P2-structurally-identical-ModelResult",
+      "test": "tool call name",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P2-structurally-identical-ModelResult",
+      "test": "tool call args",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P2-structurally-identical-ModelResult",
+      "test": "tokens normalised",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P2-structurally-identical-ModelResult",
+      "test": "finish is FALSE when tool calls are present",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P2-structurally-identical-ModelResult",
+      "test": "finish is TRUE when the model ends its turn",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P5-shims-still-apply-and-are-provider-agnostic",
+      "test": "the shim parsed a tool call out of an ANTHROPIC-shaped result",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P5-shims-still-apply-and-are-provider-agnostic",
+      "test": "with the right name",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P5-shims-still-apply-and-are-provider-agnostic",
+      "test": "and marked itself for the degraded record",
+      "pass": true,
+      "detail": "gemma-native-tool-calls"
+    },
+    {
+      "group": "providers/P4-capability-negotiation-is-explicit",
+      "test": "a provider states what it cannot do",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P4-capability-negotiation-is-explicit",
+      "test": "and what it can",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P4-capability-negotiation-is-explicit",
+      "test": "both declare their provider identity",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P4-capability-negotiation-is-explicit",
+      "test": "openai-compat: declaration matches implementation",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P4-capability-negotiation-is-explicit",
+      "test": "anthropic: declaration matches implementation",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P1-P3-a-real-task-completes-through-BOTH-providers",
+      "test": "openai-compat: the run completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P1-P3-a-real-task-completes-through-BOTH-providers",
+      "test": "openai-compat: the file was ACTUALLY changed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P1-P3-a-real-task-completes-through-BOTH-providers",
+      "test": "anthropic: the run completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P1-P3-a-real-task-completes-through-BOTH-providers",
+      "test": "anthropic: the file was ACTUALLY changed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P1-P3-a-real-task-completes-through-BOTH-providers",
+      "test": "P3: the Anthropic endpoint received tool_result content blocks",
+      "pass": true,
+      "detail": "model,max_tokens,temperature,messages,system,tools"
+    },
+    {
+      "group": "providers/P1-P3-a-real-task-completes-through-BOTH-providers",
+      "test": "P3: and input_schema tool definitions",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P1-P3-a-real-task-completes-through-BOTH-providers",
+      "test": "openai-compat: model.requested names the provider",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/P1-P3-a-real-task-completes-through-BOTH-providers",
+      "test": "anthropic: model.requested names the provider",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V1: model.requested carries provider",
+      "pass": true,
+      "detail": "\"openai-compat\""
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V1: model.requested carries endpoint_host",
+      "pass": true,
+      "detail": "\"127.0.0.1:50963\""
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V1: model.requested carries request_digest",
+      "pass": true,
+      "detail": "\"ac1825ab03344721775664c96c9676c1c0b81b450ab20ea700dc3e1947d8fdfe\""
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V1: model.requested carries params",
+      "pass": true,
+      "detail": "{\"temperature\":0,\"max_tokens\":2048}"
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V1: model.requested carries messages",
+      "pass": true,
+      "detail": "2"
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V1: model.requested carries tools",
+      "pass": true,
+      "detail": "9"
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V1: model.requested carries context_bytes",
+      "pass": true,
+      "detail": "1077"
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V1: params carry temperature",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V1: params carry max_tokens",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V1: context_bytes is real",
+      "pass": true,
+      "detail": "1077"
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V2: the api key never appears in the log",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V2: userinfo credentials never appear",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V2: no unredacted userinfo survives anywhere in the log",
+      "pass": true,
+      "detail": "none"
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V2: where a URL was echoed by the provider, it was redacted",
+      "pass": true,
+      "detail": "username scrubbed"
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V2: only the HOST was recorded",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V3: identical requests digest identically",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V3: one changed message changes the digest",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V3: a changed param changes the digest",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/V1-V3-request-provenance",
+      "test": "V3: key order does not affect the digest",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/V4-digest-is-reproducible-under-replay-and-fork",
+      "test": "a digest was recorded",
+      "pass": true,
+      "detail": "ac1825ab03344721"
+    },
+    {
+      "group": "providers/V4-digest-is-reproducible-under-replay-and-fork",
+      "test": "V4: an independent reader sees the identical digest",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "providers/V4-digest-is-reproducible-under-replay-and-fork",
+      "test": "V4: a fork inherits the identical digest",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

@@ -1,0 +1,325 @@
+{
+  "label": "planning",
+  "pass": 53,
+  "fail": 0,
+  "results": [
+    {
+      "group": "planning/contract-version",
+      "test": "the event contract is versioned at or beyond v2",
+      "pass": true,
+      "detail": "v4"
+    },
+    {
+      "group": "planning/contract-version",
+      "test": "the set is still frozen",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/contract-version",
+      "test": "plan.created is in the vocabulary",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/contract-version",
+      "test": "plan.revised is in the vocabulary",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/contract-version",
+      "test": "plan.step_started is in the vocabulary",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/contract-version",
+      "test": "plan.step_finished is in the vocabulary",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T1-happy-path",
+      "test": "the run completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T1-happy-path",
+      "test": "for the normal reason",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T1-happy-path",
+      "test": "the file was actually fixed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T1-happy-path",
+      "test": "a plan exists on the trajectory",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T1-happy-path",
+      "test": "with three steps",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T1-happy-path",
+      "test": "every step is done",
+      "pass": true,
+      "detail": "s1.1:done s1.2:done s1.3:done"
+    },
+    {
+      "group": "planning/T1-happy-path",
+      "test": "the plan is satisfied",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T1-happy-path",
+      "test": "every step carries evidence",
+      "pass": true,
+      "detail": "read 1 line | wrote a + b | PASS (exit 0) echo TESTS_OK"
+    },
+    {
+      "group": "planning/T1-happy-path",
+      "test": "a verify PASS is recorded as trajectory evidence",
+      "pass": true,
+      "detail": "PASS (exit 0) echo TESTS_OK\nTESTS_OK\n"
+    },
+    {
+      "group": "planning/T1-happy-path",
+      "test": "the completion contract reads the plan as satisfied",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T1-unfinished-plan-blocks-completion",
+      "test": "a half-finished plan does not complete the run",
+      "pass": true,
+      "detail": "failed/finished_without_change"
+    },
+    {
+      "group": "planning/T1-unfinished-plan-blocks-completion",
+      "test": "it fails as FINISHED_WITHOUT_CHANGE",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T1-unfinished-plan-blocks-completion",
+      "test": "step 2 is still pending",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T2-fail-and-replan",
+      "test": "the run completed after replanning",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T2-fail-and-replan",
+      "test": "the file was fixed by the revised approach",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T2-fail-and-replan",
+      "test": "the replan is a recorded trajectory event",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T2-fail-and-replan",
+      "test": "the revision carries its reason",
+      "pass": true,
+      "detail": "the exact-match edit did not apply"
+    },
+    {
+      "group": "planning/T2-fail-and-replan",
+      "test": "the plan is now at revision 2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T2-fail-and-replan",
+      "test": "the superseded plan is preserved, not overwritten",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T2-fail-and-replan",
+      "test": "the old step list is still readable",
+      "pass": true,
+      "detail": "patch with edit | prove it"
+    },
+    {
+      "group": "planning/T2-fail-and-replan",
+      "test": "the failed step of the old revision is still marked failed",
+      "pass": true,
+      "detail": "failed"
+    },
+    {
+      "group": "planning/T2-fail-and-replan",
+      "test": "the current revision is satisfied",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T3-crash-resume-replay-identity",
+      "test": "worker A died mid-plan",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T3-crash-resume-replay-identity",
+      "test": "a plan was durable at the moment of the crash",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T3-crash-resume-replay-identity",
+      "test": "step 1 was done",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T3-crash-resume-replay-identity",
+      "test": "step 2 was not",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T3-crash-resume-replay-identity",
+      "test": "a DIFFERENT process reconstructs the identical plan",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T3-crash-resume-replay-identity",
+      "test": "worker B claimed the orphaned run",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T3-crash-resume-replay-identity",
+      "test": "the resumed run completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T3-crash-resume-replay-identity",
+      "test": "the plan continued from where it stopped — same goal",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T3-crash-resume-replay-identity",
+      "test": "same revision (no plan was lost or restarted)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T3-crash-resume-replay-identity",
+      "test": "step 1 kept its evidence across the crash",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T3-crash-resume-replay-identity",
+      "test": "step 2 is now done",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T3-crash-resume-replay-identity",
+      "test": "the completed plan is satisfied",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T3-crash-resume-replay-identity",
+      "test": "replay makes no model calls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T3-crash-resume-replay-identity",
+      "test": "replay reconstructs the plan identically",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/T3-crash-resume-replay-identity",
+      "test": "a third independent reader agrees",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/readiness-and-dependencies",
+      "test": "only the first step is ready initially",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/readiness-and-dependencies",
+      "test": "finishing a step unblocks the next",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/readiness-and-dependencies",
+      "test": "a plan with no steps is never satisfied",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/readiness-and-dependencies",
+      "test": "a run with no plan projects null",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/shim-parses-array-arguments",
+      "test": "one call is parsed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/shim-parses-array-arguments",
+      "test": "the scalar argument still works",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/shim-parses-array-arguments",
+      "test": "the array argument is an ARRAY",
+      "pass": true,
+      "detail": "object"
+    },
+    {
+      "group": "planning/shim-parses-array-arguments",
+      "test": "with every element",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/shim-parses-array-arguments",
+      "test": "in order",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "planning/shim-parses-array-arguments",
+      "test": "the parsed args pass schema validation",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

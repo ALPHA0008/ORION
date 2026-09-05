@@ -1,6 +1,6 @@
 {
   "label": "repl",
-  "pass": 46,
+  "pass": 47,
   "fail": 0,
   "results": [
     {
@@ -83,6 +83,12 @@
     },
     {
       "group": "repl/durability",
+      "test": "--json emits ONLY JSON on stdout",
+      "pass": true,
+      "detail": "clean"
+    },
+    {
+      "group": "repl/durability",
       "test": "a typed task became a run in the log",
       "pass": true,
       "detail": "got 1"
@@ -97,7 +103,7 @@
       "group": "repl/durability",
       "test": "the run is visible from a separate process",
       "pass": true,
-      "detail": "run_40ab148da0"
+      "detail": "run_a95e20b224"
     },
     {
       "group": "repl/durability",

@@ -1,0 +1,181 @@
+{
+  "label": "truthfulcompletion",
+  "pass": 29,
+  "fail": 0,
+  "results": [
+    {
+      "group": "truthfulcompletion/unperformed-work-is-not-success",
+      "test": "the run did NOT report completed",
+      "pass": true,
+      "detail": "failed/finished_without_change"
+    },
+    {
+      "group": "truthfulcompletion/unperformed-work-is-not-success",
+      "test": "it failed as FINISHED_WITHOUT_CHANGE",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/unperformed-work-is-not-success",
+      "test": "the file really is untouched",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/unperformed-work-is-not-success",
+      "test": "exactly one bounded continuation was granted",
+      "pass": true,
+      "detail": "2 turns"
+    },
+    {
+      "group": "truthfulcompletion/unperformed-work-is-not-success",
+      "test": "the continuation was recorded as a degradation",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/unperformed-work-is-not-success",
+      "test": "no run.completed event exists",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/performed-work-is-success",
+      "test": "the run completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/performed-work-is-success",
+      "test": "it completed for the normal reason",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/performed-work-is-success",
+      "test": "the file was actually changed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/performed-work-is-success",
+      "test": "a mutating tool succeeded in the log",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/read-only-work-is-not-punished",
+      "test": "an analysis run completes",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/read-only-work-is-not-punished",
+      "test": "for the normal reason",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/attempted-but-failed-mutation-is-not-success",
+      "test": "a failed mutation does not complete the run",
+      "pass": true,
+      "detail": "failed/finished_without_change"
+    },
+    {
+      "group": "truthfulcompletion/attempted-but-failed-mutation-is-not-success",
+      "test": "the file is unchanged",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/contract-is-replay-equivalent",
+      "test": "the predicate is stable across calls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/contract-is-replay-equivalent",
+      "test": "and it reports the work as unsatisfied",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/shim-selection",
+      "test": "a gemma model auto-selects the shim",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/shim-selection",
+      "test": "the selected shim is the gemma one",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/shim-selection",
+      "test": "a non-gemma model selects none",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/shim-selection",
+      "test": "ORION_SHIMS=gemma forces it on",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/shim-selection",
+      "test": "ORION_SHIMS=none forces it off",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/shim-parses-the-observed-payload",
+      "test": "the raw text becomes one tool call",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/shim-parses-the-observed-payload",
+      "test": "with the right name",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/shim-parses-the-observed-payload",
+      "test": "and the right argument",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/shim-parses-the-observed-payload",
+      "test": "the run is no longer treated as finished",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "truthfulcompletion/shim-parses-the-observed-payload",
+      "test": "the rewrite is marked for the degraded record",
+      "pass": true,
+      "detail": "gemma-native-tool-calls"
+    },
+    {
+      "group": "truthfulcompletion/cli-integration",
+      "test": "orionctl did NOT print a success tick",
+      "pass": true,
+      "detail": "ompletion_contract] model stopped before the declared objective was satisfied; g |  | failed — finished_without_change |   history:      orionctl explain #d37e5e93e2 | "
+    },
+    {
+      "group": "truthfulcompletion/cli-integration",
+      "test": "orionctl reported the run as not finishing its work",
+      "pass": true,
+      "detail": "ompletion_contract] model stopped before the declared objective was satisfied; g |  | failed — finished_without_change |   history:      orionctl explain #d37e5e93e2 | "
+    },
+    {
+      "group": "truthfulcompletion/cli-integration",
+      "test": "the file on disk is genuinely unchanged",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

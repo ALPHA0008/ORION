@@ -19,7 +19,7 @@
       "group": "setup: original run against a nondeterministic provider",
       "test": "provider output carries a nonce (is nondeterministic)",
       "pass": true,
-      "detail": "Done: created a.txt and b.txt, bumped VALUE to 20. [nonce 51186339]"
+      "detail": "Done: created a.txt and b.txt, bumped VALUE to 20. [nonce d0be37c7]"
     },
     {
       "group": "REPLAY — reconstruct history, make NO model calls",
@@ -91,7 +91,7 @@
       "group": "FORK — new run seeded with history, NEW future",
       "test": "found a fork point (before the edit)",
       "pass": true,
-      "detail": "23"
+      "detail": "25"
     },
     {
       "group": "FORK — new run seeded with history, NEW future",
@@ -139,7 +139,7 @@
       "group": "FORK — new run seeded with history, NEW future",
       "test": "a workspace checkpoint exists at/before the fork point",
       "pass": true,
-      "detail": "seq 22"
+      "detail": "seq 24"
     },
     {
       "group": "FORK — new run seeded with history, NEW future",

@@ -1,0 +1,271 @@
+{
+  "label": "streaming",
+  "pass": 44,
+  "fail": 0,
+  "results": [
+    {
+      "group": "streaming/contract-version",
+      "test": "the contract is at or beyond v4",
+      "pass": true,
+      "detail": "v4"
+    },
+    {
+      "group": "streaming/contract-version",
+      "test": "stream.started is in the frozen vocabulary",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/contract-version",
+      "test": "stream.delta is in the frozen vocabulary",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/contract-version",
+      "test": "stream.finished is in the frozen vocabulary",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/contract-version",
+      "test": "the set is still frozen",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/contract-version",
+      "test": "earlier contract member run.created survives",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/contract-version",
+      "test": "earlier contract member tool.succeeded survives",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/contract-version",
+      "test": "earlier contract member plan.created survives",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/contract-version",
+      "test": "earlier contract member artifact.created survives",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S3-deltas-are-bounded-not-per-token",
+      "test": "S3: far fewer delta events than tokens",
+      "pass": true,
+      "detail": "4 deltas / 400 pushes"
+    },
+    {
+      "group": "streaming/S3-deltas-are-bounded-not-per-token",
+      "test": "S3: but the stream was not silent",
+      "pass": true,
+      "detail": "4"
+    },
+    {
+      "group": "streaming/S3-deltas-are-bounded-not-per-token",
+      "test": "S3: cadence respects the byte threshold",
+      "pass": true,
+      "detail": "4 vs ceil(4000/1024)"
+    },
+    {
+      "group": "streaming/S1-S2-a-streamed-turn-is-recorded",
+      "test": "the run completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S1-S2-a-streamed-turn-is-recorded",
+      "test": "the file was ACTUALLY changed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S1-S2-a-streamed-turn-is-recorded",
+      "test": "S1: stream.started appended",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S1-S2-a-streamed-turn-is-recorded",
+      "test": "S1: at least one stream.delta appended",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "group": "streaming/S1-S2-a-streamed-turn-is-recorded",
+      "test": "S1: stream.finished appended",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S1-S2-a-streamed-turn-is-recorded",
+      "test": "S2: ttft_ms is POPULATED (it was always null before this wave)",
+      "pass": true,
+      "detail": "[15,3]"
+    },
+    {
+      "group": "streaming/S1-S2-a-streamed-turn-is-recorded",
+      "test": "S2: and it is greater than zero",
+      "pass": true,
+      "detail": "15"
+    },
+    {
+      "group": "streaming/S1-S2-a-streamed-turn-is-recorded",
+      "test": "stream.started carries the request digest",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S4-large-accumulation-becomes-an-artifact",
+      "test": "S4: a large delta was promoted to an artifact",
+      "pass": true,
+      "detail": "3 of 4 deltas"
+    },
+    {
+      "group": "streaming/S4-large-accumulation-becomes-an-artifact",
+      "test": "S4: the delta carries a REFERENCE, not the blob",
+      "pass": true,
+      "detail": "{\"seq_in_stream\":1,\"kind\":\"text\",\"bytes\":6000,\"artifact_id\":\"a_1853dfaa6b\"}"
+    },
+    {
+      "group": "streaming/S4-large-accumulation-becomes-an-artifact",
+      "test": "S4: the artifact is in the artifact projection",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S5-BLOCKING-replay-makes-zero-model-calls",
+      "test": "S5 [BLOCKING]: replay makes ZERO model calls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S5-BLOCKING-replay-makes-zero-model-calls",
+      "test": "S5: replay reconstructs the same event count",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S5-BLOCKING-replay-makes-zero-model-calls",
+      "test": "S5: the streamed turn is readable from the log alone",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S6-BLOCKING-a-killed-stream-leaves-a-durable-partial",
+      "test": "S6 [BLOCKING]: a stream.finished was still recorded",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S6-BLOCKING-a-killed-stream-leaves-a-durable-partial",
+      "test": "S6: it is marked aborted",
+      "pass": true,
+      "detail": "{\"chunks\":3,\"bytes\":3600,\"ttft_ms\":2,\"duration_ms\":72,\"aborted\":true}"
+    },
+    {
+      "group": "streaming/S6-BLOCKING-a-killed-stream-leaves-a-durable-partial",
+      "test": "S6: the partial bytes received are recorded",
+      "pass": true,
+      "detail": "3600"
+    },
+    {
+      "group": "streaming/S6-BLOCKING-a-killed-stream-leaves-a-durable-partial",
+      "test": "S6: the deltas received before the kill are durable",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S6-BLOCKING-a-killed-stream-leaves-a-durable-partial",
+      "test": "S6: the failure is attributed, not silent",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S6-BLOCKING-a-killed-stream-leaves-a-durable-partial",
+      "test": "S6: no effect was applied by the aborted turn",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S7-the-lease-survives-a-long-stream",
+      "test": "S7: the stream really outlasted the lease",
+      "pass": true,
+      "detail": "799ms vs 400ms"
+    },
+    {
+      "group": "streaming/S7-the-lease-survives-a-long-stream",
+      "test": "S7: the run did NOT die as lease_lost",
+      "pass": true,
+      "detail": "model_finished"
+    },
+    {
+      "group": "streaming/S7-the-lease-survives-a-long-stream",
+      "test": "S7: the lease was heartbeated during the stream",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S8-BLOCKING-streamed-and-non-streamed-reach-the-same-projection",
+      "test": "S8: both runs reached the same status",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S8-BLOCKING-streamed-and-non-streamed-reach-the-same-projection",
+      "test": "S8: both runs reached the same exit reason",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S8-BLOCKING-streamed-and-non-streamed-reach-the-same-projection",
+      "test": "S8 [BLOCKING]: the workspace ends identical",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S8-BLOCKING-streamed-and-non-streamed-reach-the-same-projection",
+      "test": "S8 [BLOCKING]: the final projection is identical",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S8-BLOCKING-streamed-and-non-streamed-reach-the-same-projection",
+      "test": "S8: the streamed run really did stream",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S8-BLOCKING-streamed-and-non-streamed-reach-the-same-projection",
+      "test": "S8: the plain run recorded no stream events",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/P4-capability-mismatch-is-recorded-not-silent",
+      "test": "the run still completed via the fallback",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/P4-capability-mismatch-is-recorded-not-silent",
+      "test": "P4: the fallback was RECORDED as degraded, not silent",
+      "pass": true,
+      "detail": "{\"subsystem\":\"streaming\",\"reason\":\"provider openai-compat cannot stream; falling back to a"
+    },
+    {
+      "group": "streaming/P4-capability-mismatch-is-recorded-not-silent",
+      "test": "P4: and no stream events were fabricated",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

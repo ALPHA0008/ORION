@@ -1,0 +1,271 @@
+{
+  "label": "shipped",
+  "pass": 44,
+  "fail": 0,
+  "results": [
+    {
+      "group": "shipped/F1-deny-patterns-apply-to-every-command-bearing-tool",
+      "test": "F1: bash denied at permissive posture",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F1-deny-patterns-apply-to-every-command-bearing-tool",
+      "test": "F1: verify denied at permissive posture",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F1-deny-patterns-apply-to-every-command-bearing-tool",
+      "test": "F1: bash denied at auto posture",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F1-deny-patterns-apply-to-every-command-bearing-tool",
+      "test": "F1: verify denied at auto posture",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F1-deny-patterns-apply-to-every-command-bearing-tool",
+      "test": "F1: bash denied at strict posture",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F1-deny-patterns-apply-to-every-command-bearing-tool",
+      "test": "F1: verify denied at strict posture",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F1-deny-patterns-apply-to-every-command-bearing-tool",
+      "test": "F1: legitimate verify \"npm test\" still allowed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F1-deny-patterns-apply-to-every-command-bearing-tool",
+      "test": "F1: legitimate verify \"py -m pytest -q\" still allowed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F1-deny-patterns-apply-to-every-command-bearing-tool",
+      "test": "F1: legitimate verify \"make check\" still allowed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F1-deny-patterns-apply-to-every-command-bearing-tool",
+      "test": "F1: a command-less tool is untouched",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F1c-the-command-actually-REACHES-the-authorizer",
+      "test": "F1c: the verify action reached the authorizer",
+      "pass": true,
+      "detail": "[{\"name\":\"s\"},{\"name\":\"verify\",\"command\":\"git push --force\"},{\"name\":\"s\"},{\"name\":\"s\"}]"
+    },
+    {
+      "group": "shipped/F1c-the-command-actually-REACHES-the-authorizer",
+      "test": "F1c: carrying its command",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F1c-the-command-actually-REACHES-the-authorizer",
+      "test": "F1c: and the run recorded the denial",
+      "pass": true,
+      "detail": "run.created,run.leased,turn.started,run.lease_renewed,model.requested,model.responded,tool.requested,tool.denied,turn.finished,run.lease_renewed,model.requested,model.responded,degraded,turn.started,run.lease_renewed,model.requested,model.responded,run.failed"
+    },
+    {
+      "group": "shipped/F4-completion-verdict-at-DEFAULT-wiring",
+      "test": "F4a: plan satisfied -> completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F4-completion-verdict-at-DEFAULT-wiring",
+      "test": "F4b: verified work without plan_step -> completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F4-completion-verdict-at-DEFAULT-wiring",
+      "test": "F4b: and the file really was changed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F4-completion-verdict-at-DEFAULT-wiring",
+      "test": "F4c: mutation without verify and without plan_step -> NOT completed",
+      "pass": true,
+      "detail": "failed/finished_without_change"
+    },
+    {
+      "group": "shipped/F4-completion-verdict-at-DEFAULT-wiring",
+      "test": "F4d: unperformed work still fails",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F4-completion-verdict-at-DEFAULT-wiring",
+      "test": "F4d: and the file is untouched",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F4-completion-verdict-at-DEFAULT-wiring",
+      "test": "F4e: an explicitly failed step still blocks completion",
+      "pass": true,
+      "detail": "failed/finished_without_change"
+    },
+    {
+      "group": "shipped/F4-completion-verdict-at-DEFAULT-wiring",
+      "test": "F4f: no plan + mutation -> completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F5-provider-and-streaming-are-reachable-from-the-CLI",
+      "test": "F5: the default provider is openai-compat",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F5-provider-and-streaming-are-reachable-from-the-CLI",
+      "test": "F5: ORION_PROVIDER selects anthropic",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F5-provider-and-streaming-are-reachable-from-the-CLI",
+      "test": "F5: anthropic gets a default endpoint so a key alone is enough",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F5-provider-and-streaming-are-reachable-from-the-CLI",
+      "test": "F5: streaming is ON by default from the product surface",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F5-provider-and-streaming-are-reachable-from-the-CLI",
+      "test": "F5: ORION_STREAM=off disables it",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F5-provider-and-streaming-are-reachable-from-the-CLI",
+      "test": "F5: ORION_STREAM=0 disables it",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F5-provider-and-streaming-are-reachable-from-the-CLI",
+      "test": "F5: the gemma shim is still auto-selected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F5b-capability-sets-match-the-implementation",
+      "test": "F5b: openai-compat declaration matches implementation",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F5b-capability-sets-match-the-implementation",
+      "test": "F5b: anthropic declaration matches implementation",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
+      "test": "F3d: read is a shipped tool",
+      "pass": true,
+      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+    },
+    {
+      "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
+      "test": "F3d: write is a shipped tool",
+      "pass": true,
+      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+    },
+    {
+      "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
+      "test": "F3d: edit is a shipped tool",
+      "pass": true,
+      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+    },
+    {
+      "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
+      "test": "F3d: grep is a shipped tool",
+      "pass": true,
+      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+    },
+    {
+      "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
+      "test": "F3d: bash is a shipped tool",
+      "pass": true,
+      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+    },
+    {
+      "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
+      "test": "F3d: verify is a shipped tool",
+      "pass": true,
+      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+    },
+    {
+      "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
+      "test": "F3d: plan is a shipped tool",
+      "pass": true,
+      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+    },
+    {
+      "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
+      "test": "F3d: plan_step is a shipped tool",
+      "pass": true,
+      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+    },
+    {
+      "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
+      "test": "F3d: ask_user is a shipped tool",
+      "pass": true,
+      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+    },
+    {
+      "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
+      "test": "F3d: the default system prompt names 'plan'",
+      "pass": true,
+      "detail": "prompt drift"
+    },
+    {
+      "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
+      "test": "F3d: the default system prompt names 'plan_step'",
+      "pass": true,
+      "detail": "prompt drift"
+    },
+    {
+      "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
+      "test": "F3d: the default system prompt names 'verify'",
+      "pass": true,
+      "detail": "prompt drift"
+    },
+    {
+      "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
+      "test": "F3d: the prompt states the completion rule",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
+      "test": "F3d: every quoted term names a real tool or argument",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

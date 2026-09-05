@@ -1,0 +1,61 @@
+{
+  "label": "leaseheartbeat",
+  "pass": 9,
+  "fail": 0,
+  "results": [
+    {
+      "group": "leaseheartbeat/survives-a-slow-model-call",
+      "test": "the model call really did outlast the lease",
+      "pass": true,
+      "detail": "1516ms call vs 900ms lease"
+    },
+    {
+      "group": "leaseheartbeat/survives-a-slow-model-call",
+      "test": "the run did NOT die as lease_lost",
+      "pass": true,
+      "detail": "model_finished"
+    },
+    {
+      "group": "leaseheartbeat/survives-a-slow-model-call",
+      "test": "the run completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "leaseheartbeat/survives-a-slow-model-call",
+      "test": "the lease was renewed during the call",
+      "pass": true,
+      "detail": "5 renewals"
+    },
+    {
+      "group": "leaseheartbeat/survives-a-slow-model-call",
+      "test": "no lease_lost event was recorded",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "leaseheartbeat/does-not-resurrect-a-reclaimed-lease",
+      "test": "a second worker was able to reclaim the run",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "leaseheartbeat/does-not-resurrect-a-reclaimed-lease",
+      "test": "the original worker did not report success after losing the lease",
+      "pass": true,
+      "detail": "failed/lease_lost"
+    },
+    {
+      "group": "leaseheartbeat/no-timer-leak-when-the-model-throws",
+      "test": "a thrown model call fails the run",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "leaseheartbeat/no-timer-leak-when-the-model-throws",
+      "test": "the lease is no longer being renewed after the run ended",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}
