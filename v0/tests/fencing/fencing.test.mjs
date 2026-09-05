@@ -13,6 +13,23 @@ import { describe, check, eq, summary, tmpdir, sleep } from '../harness.mjs';
 const DIR = tmpdir('fencing-regression');
 const random = (n) => Math.floor(Math.random() * n);
 
+/**
+ * Await a promise, but never forever.
+ *
+ * `await modelStarted` is a TOP-LEVEL await. If the worker returns before ever calling the model
+ * — which it does the instant its lease has already expired — that promise never settles, the
+ * event loop empties, and Node exits 13 with no assertion output and no stack. That is precisely
+ * what happened on the Windows CI runners: a hang is the least diagnosable failure there is.
+ * Converting it into a named assertion failure costs one helper.
+ */
+const settledWithin = (promise, ms, what) => Promise.race([
+  promise.then(() => true),
+  new Promise((resolve) => setTimeout(() => resolve(false), ms)),
+]).then((ok) => {
+  if (!ok) check(`${what} settled within ${ms}ms`, false, 'never settled — the model was never invoked');
+  return ok;
+});
+
 describe('database fencing: stale tokens cannot append events');
 {
   const s = new Store(path.join(DIR, 'database.db'));
@@ -65,7 +82,7 @@ describe('stale model resume: no tool, event, or terminal effect after reclaim')
   const worker = new Worker(s, { sandbox, model, tools, authorize: createAuthorizer(),
     workerId: 'A', leaseMs: 20, maxTurns: 1 });
   const pending = worker.run(r, a.leaseToken);
-  await modelStarted;
+  await settledWithin(modelStarted, 15_000, 'the model was invoked');
   // A is PRESUMED DEAD, not merely slow.
   //
   // This used to wait 35ms for A's 20ms lease to lapse on its own. Since D1 the worker
@@ -122,7 +139,16 @@ describe('100 randomized reclaim-before-resume races');
   const iterations = 100;
   for (let i = 0; i < iterations; i++) {
     const r = uid(); s.createRun(r);
-    const leaseMs = 7 + random(10); const a = s.claim(`A-${i}`, { runId: r, leaseMs });
+    // A comfortable lease, deliberately.
+    //
+    // This was `7 + random(10)` ms, which existed only to make the lease lapse on its own. That
+    // is no longer how the reclaim happens (see the presumedDead construction below), and a lease
+    // that short is a RACE: the worker's first action is to renew, and if more than ~10ms elapses
+    // between claim and worker start — routine on a loaded CI runner — the renew fails, the
+    // worker returns LEASE_LOST without ever calling the model, and the `await modelStarted`
+    // below hangs forever. Measured directly: with 40ms of delay, `model.invoke() was called:
+    // false`. The randomisation is kept where it still means something: the release timing.
+    const leaseMs = 5_000; const a = s.claim(`A-${i}`, { runId: r, leaseMs });
     let started; const modelStarted = new Promise(resolve => { started = resolve; });
     let release; const gate = new Promise(resolve => { release = resolve; });
     const model = { name: `slow-${i}`, capabilities: new Set(['tools']), async invoke() {
@@ -133,7 +159,7 @@ describe('100 randomized reclaim-before-resume races');
     }};
     const w = new Worker(s, { sandbox, model, tools, authorize: createAuthorizer(), workerId: `A-${i}`, leaseMs, maxTurns: 1 });
     const pa = w.run(r, a.leaseToken);
-    await modelStarted;
+    await settledWithin(modelStarted, 15_000, `iteration ${i}: the model was invoked`);
     // Same dead-worker construction as above: since D1 a live worker holds its lease across a
     // model call, so the reclaim is driven by a future `now` rather than by hoping the sleep
     // outlasts the lease.
