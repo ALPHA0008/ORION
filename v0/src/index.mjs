@@ -64,6 +64,13 @@ export {
   ModelError,
 } from './agent/model/index.mjs';
 
+// ── Streaming (event contract v4) ───────────────────────────────────────────
+// Durable partial execution, not a rendering concern: deltas are recorded at a BOUNDED cadence
+// and promote to artifacts, so a crash mid-stream leaves evidence and replay costs no model call.
+export {
+  createStreamAccumulator, sseEvents, decodeOpenAIChunk, DELTA_BYTES, DELTA_MS,
+} from './agent/model/stream.mjs';
+
 // ── Tools ───────────────────────────────────────────────────────────────────
 // toolDefinitions() strips runtime-injected fields, so values the runtime owns (e.g. write's
 // pre-state witness) are never exposed to — or supplied by — the model.

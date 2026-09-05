@@ -11,6 +11,7 @@
 // factory. Re-exported here: the public surface is unchanged.
 export { ModelError } from './errors.mjs';
 import { ModelError } from './errors.mjs';
+import { createStreamAccumulator, sseEvents, decodeOpenAIChunk } from './stream.mjs';
 
 /**
  * OpenAI-compatible chat-completions client.
@@ -33,6 +34,67 @@ export function createOpenAICompatModel({
     provider: 'openai-compat',
     endpoint,
     capabilities: new Set(capabilities),
+
+    /**
+     * Streaming invoke (Wave 4b). Present only when the caller declared the capability; the
+     * worker checks `capabilities.has('streaming')` and falls back with a `degraded` event
+     * otherwise, so an unsupported provider is never silently downgraded.
+     *
+     * `onDelta` is called at a BOUNDED cadence, not per token — see stream.mjs.
+     */
+    async invokeStream({ messages, tools = [], temperature = 0, maxTokens = 2048,
+                         signal = null, onDelta = null } = {}) {
+      const body = {
+        model, messages, temperature, max_tokens: maxTokens, stream: true,
+        ...(tools.length ? { tools, tool_choice: 'auto' } : {}),
+      };
+      const ac = new AbortController();
+      let timedOut = false;
+      const timer = setTimeout(() => { timedOut = true; ac.abort(new Error('model request timeout')); }, timeoutMs);
+      if (signal) signal.addEventListener('abort', () => ac.abort(signal.reason), { once: true });
+      const acc = createStreamAccumulator({ onDelta });
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST', signal: ac.signal,
+          headers: { 'content-type': 'application/json',
+                     accept: 'text/event-stream',
+                     ...(apiKey ? { authorization: `Bearer ${apiKey}` } : {}) },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) {
+          const t = await res.text().catch(() => '');
+          throw new ModelError(`provider ${res.status}: ${t.slice(0, 300)}`,
+            { retryable: res.status === 429 || res.status >= 500, status: res.status,
+              kind: res.status >= 500 ? 'server_error' : 'client_error' });
+        }
+        let finishReason = null, usage = null;
+        for await (const data of sseEvents(res.body, { signal: ac.signal })) {
+          const d = decodeOpenAIChunk(data);
+          if (!d) continue;
+          if (d.finishReason) finishReason = d.finishReason;
+          if (d.usage) usage = d.usage;
+          acc.push(d);
+        }
+        clearTimeout(timer);
+        let out = acc.finish({ finishReason, usage });
+        if (pricing) {
+          out.cost_usd = Math.round(((out.input_tokens / 1e6) * pricing.in_per_mtok
+            + (out.output_tokens / 1e6) * pricing.out_per_mtok) * 1e6) / 1e6;
+        }
+        for (const shim of shims) out = shim(out);
+        return out;
+      } catch (err) {
+        clearTimeout(timer);
+        if (err instanceof ModelError) throw err;
+        const kind = timedOut ? 'timeout' : 'network';
+        // A stream that dies part-way has still produced evidence. Attach what was accumulated so
+        // the caller can record a truthful partial rather than losing the turn entirely.
+        const e = new ModelError(`${kind}: ${err?.message ?? err}`,
+          { retryable: true, status: null, kind });
+        e.partial = acc.finish({ finishReason: null, usage: null, aborted: true });
+        throw e;
+      }
+    },
 
     async invoke({ messages, tools = [], temperature = 0, maxTokens = 2048, signal = null }) {
       const body = {

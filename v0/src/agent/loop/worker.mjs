@@ -50,13 +50,18 @@ export class Worker {
     // `model.requested.params` are the values actually used.
     temperature = 0,
     maxTokens = 2_048,
+    // WAVE 4b: opt-in. Streaming changes what is RECORDED, so it is a deliberate choice rather
+    // than an ambient default — and S8 asserts a streamed run reaches the same final projection
+    // as a non-streamed one, so turning it on must never change the outcome.
+    stream = false,
     completionContract = null,     // ADR-013: { requires_world_change, objectiveSatisfied() }
     hooks = {},                    // { beforeAppend(marker, ctx) } — crash injection in tests
   } = {}) {
     Object.assign(this, { store, sandbox, model, tools, authorize, workerId, leaseMs,
       snapshotEvery, maxTurns, maxRepeatedCalls, maxTurnsWithoutProgress,
       maxConsecutiveModelFailures, budget, systemPrompt, compactContext,
-      contextBudgetBytes, artifactMinBytes, temperature, maxTokens, completionContract, hooks });
+      contextBudgetBytes, artifactMinBytes, temperature, maxTokens, stream,
+      completionContract, hooks });
   }
 
   #hook(marker, ctx = {}) { this.hooks.beforeAppend?.(marker, ctx); }
@@ -229,12 +234,79 @@ export class Worker {
         // waits. This does NOT extend a lease the worker has already lost: renew() is
         // fenced by the lease token, so a heartbeat after a genuine reclaim fails and we
         // stop heartbeating, leaving the normal lost-lease path to detect it.
-        resp = await this.#withLeaseHeartbeat(runId, leaseToken, () => this.model.invoke({
-          messages: outbound,
-          tools: toolDefs,
-          temperature: this.temperature,
-          maxTokens: this.maxTokens,
-        }));
+        // WAVE 4b — stream when both sides agree, and record the partial execution.
+        //
+        // Capability negotiation is EXPLICIT: streaming is used only when the caller asked for it
+        // AND the provider declares it AND implements it. A provider that cannot stream is not
+        // silently downgraded — the mismatch is recorded as `degraded`, because a silent fallback
+        // would make a latency or attribution question unanswerable after the fact.
+        const wantStream = this.stream === true;
+        const canStream = !!this.model.capabilities?.has?.('streaming')
+                          && typeof this.model.invokeStream === 'function';
+        if (wantStream && !canStream) {
+          if (this.#append(runId, 'degraded', { subsystem: 'streaming',
+                reason: `provider ${this.model.provider ?? this.model.name} cannot stream; `
+                      + 'falling back to a single response' }) === null)
+            return this.#leaseLost();
+        }
+
+        if (wantStream && canStream) {
+          const digest = requestDigest({ messages: outbound, tools: toolDefs, params });
+          if (this.#append(runId, 'stream.started', {
+                model: this.model.name, provider: this.model.provider ?? null,
+                request_digest: digest }) === null)
+            return this.#leaseLost();
+
+          // Deltas are appended at the accumulator's BOUNDED cadence. A delta large enough to
+          // qualify becomes an artifact and the event carries only the reference — the same rule
+          // Wave 3 applies to tool output, for the same reason.
+          let seqInStream = 0, lost = false;
+          const onDelta = ({ kind, bytes, text }) => {
+            if (lost) return;
+            let artifactRef = null;
+            if (qualifiesAsArtifact(text, { minBytes: this.artifactMinBytes })) {
+              const desc = describeArtifact({ content: text, tool: 'stream', target: null, sourceSeq: null });
+              const at = this.#append(runId, 'artifact.created', desc);
+              if (at === null) { lost = true; return; }
+              artifactRef = desc.artifact_id;
+            }
+            const ok = this.#append(runId, 'stream.delta', {
+              seq_in_stream: ++seqInStream, kind, bytes,
+              ...(artifactRef ? { artifact_id: artifactRef } : {}),
+            });
+            if (ok === null) lost = true;
+          };
+
+          let streamErr = null;
+          try {
+            resp = await this.#withLeaseHeartbeat(runId, leaseToken, () => this.model.invokeStream({
+              messages: outbound, tools: toolDefs,
+              temperature: this.temperature, maxTokens: this.maxTokens, onDelta,
+            }));
+          } catch (e) { streamErr = e; }
+          if (lost) return this.#leaseLost();
+
+          // A stream that died part-way STILL produced evidence. Record what was accumulated
+          // before re-throwing, so a crash mid-stream leaves a durable partial rather than
+          // erasing the turn.
+          const st = (streamErr?.partial ?? resp) ?? {};
+          if (this.#append(runId, 'stream.finished', {
+                chunks: st.ext?.chunks ?? seqInStream,
+                bytes: st.ext?.bytes ?? 0,
+                ttft_ms: st.ttft_ms ?? null,
+                duration_ms: st.duration_ms ?? null,
+                aborted: !!streamErr,
+              }) === null)
+            return this.#leaseLost();
+          if (streamErr) throw streamErr;
+        } else {
+          resp = await this.#withLeaseHeartbeat(runId, leaseToken, () => this.model.invoke({
+            messages: outbound,
+            tools: toolDefs,
+            temperature: this.temperature,
+            maxTokens: this.maxTokens,
+          }));
+        }
       } catch (err) {
         // WAVE 4a — scrub secrets from text the runtime did not author.
         //

@@ -14,8 +14,11 @@
  *   3 — adds artifact.created (1 type). Oversized tool output gains a hashed, provenance-bearing
  *       identity so it can be referenced instead of inlined, and so a compaction placeholder
  *       points at evidence rather than orphaning it (Wave 3).
+ *   4 — adds stream.* (3 types). Streaming as DURABLE PARTIAL EXECUTION: a partially-completed
+ *       model call leaves attributable evidence, so a crash mid-stream is recoverable and replay
+ *       reconstructs the turn with no model call (Wave 4b).
  */
-export const EVENT_CONTRACT_VERSION = 3;
+export const EVENT_CONTRACT_VERSION = 4;
 
 export const EVENT_TYPES = Object.freeze([
   // lifecycle
@@ -56,6 +59,14 @@ export const EVENT_TYPES = Object.freeze([
   // record points at; the artifact adds identity (content-addressed id), integrity (sha256) and
   // provenance (source_seq). See core/projection/artifacts.mjs.
   'artifact.created',
+  // streaming (contract v4, Wave 4b)
+  //
+  // Streaming is NOT a rendering concern here — terminal output is a consumer of the stream,
+  // never its purpose. These events make a partially-completed model call durable and
+  // attributable: `stream.delta` is recorded at a BOUNDED cadence (never one event per token,
+  // which would multiply the log by the token count) and promotes to an artifact once the
+  // accumulation crosses the Wave 3 threshold.
+  'stream.started', 'stream.delta', 'stream.finished',
   // degradation (ADR: named degradation — never silent fallback)
   'degraded',
 ]);
