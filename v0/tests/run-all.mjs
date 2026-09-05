@@ -10,6 +10,7 @@ export const suites = [
   ['truthfulcompletion/truthfulcompletion', []],
   ['planning/planning',     []],
   ['context/context',       []],
+  ['providers/providers',   []],
   ['concurrency/lease',     []],
   ['fencing/fencing',       []],
   ['runner/runner',         []],

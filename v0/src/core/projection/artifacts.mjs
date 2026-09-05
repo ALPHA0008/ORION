@@ -97,3 +97,77 @@ export function summariseArtifact(rec) {
   const kb = (rec.bytes / 1024).toFixed(1);
   return `${rec.artifact_id}  ${String(rec.tool ?? '?').padEnd(7)} ${kb}kB  ${rec.target ?? ''}`.trimEnd();
 }
+
+// ── Request provenance (Wave 4a) ────────────────────────────────────────────
+//
+// Lives here, beside the artifact hashing, for two reasons: it reuses the same `sha256`, and it is
+// the same SHAPE of idea — a link plus a hash rather than a copy. Deliberately NOT in
+// core/recovery, which stays a recovery-classification module (the standing isKnownDangerous vs
+// classifyShell boundary).
+
+/**
+ * Stable JSON: object keys sorted at every level, so two structurally identical requests digest
+ * identically regardless of key order. Without this the digest would be an accident of
+ * serialisation order and could not answer "was this the same request?".
+ */
+export function stableStringify(value) {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value) ?? 'null';
+  if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
+  return '{' + Object.keys(value).sort()
+    .map(k => JSON.stringify(k) + ':' + stableStringify(value[k]))
+    .join(',') + '}';
+}
+
+/**
+ * Digest of the NORMALISED request — messages, tool definitions and the parameters that actually
+ * change the outcome.
+ *
+ * A digest, not the request itself. Storing the full request would duplicate the entire context
+ * into the log on every single turn, which is exactly the unbounded-blob problem Wave 3 exists to
+ * avoid. 64 hex characters answer the question that matters: was this the same request?
+ *
+ * This is what makes model-vs-provider-vs-harness attribution possible (master plan §9). Two runs
+ * that behaved differently can now be compared at the request level instead of guessed at.
+ */
+export function requestDigest({ messages = [], tools = [], params = {} } = {}) {
+  return sha256(stableStringify({ messages, tools, params }));
+}
+
+/**
+ * Host of an endpoint, and ONLY the host.
+ *
+ * Never the full URL. A base URL can carry a key in a query string or in userinfo, and a
+ * trajectory is meant to be readable and shareable evidence. The host answers "which endpoint
+ * family served this?" without carrying anything secret. Unparseable input yields null rather
+ * than the raw string, so a malformed URL cannot leak by falling through.
+ */
+export function endpointHost(url) {
+  try { return new URL(String(url)).host || null; } catch { return null; }
+}
+
+/**
+ * Strip secrets out of text that is about to be written to the log.
+ *
+ * FOUND BY THE WAVE 4 LEAK SCAN, and not in the provenance code. `fetch` refuses a URL carrying
+ * credentials with an error that ECHOES THE FULL URL BACK, and the worker records provider error
+ * messages verbatim:
+ *
+ *   model.failed: "Request cannot be constructed from a URL that includes credentials:
+ *                  http://someuser:SUPERSECRET@127.0.0.1:8000/v1/chat/completions"
+ *
+ * So a secret can reach the trajectory through an ERROR STRING even when every field the runtime
+ * chooses to record is clean. A trajectory is meant to be shareable evidence, so this is scrubbed
+ * where it is written rather than only where it is displayed — redaction at render time would
+ * leave the secret sitting in the durable log.
+ *
+ * Deliberately narrow: URL userinfo and the common bearer/`sk-` token shapes. It is a safety net
+ * for text the runtime did not author, NOT a general secret scanner — pretending otherwise would
+ * invite reliance it cannot support.
+ */
+export function redactSecrets(text) {
+  return String(text ?? '')
+    // scheme://user:pass@host  ->  scheme://<redacted>@host
+    .replace(/([a-zA-Z][\w+.-]*:\/\/)[^/\s@]+@/g, '$1<redacted>@')
+    .replace(/\b(sk-|pk-|ghp_|xox[baprs]-)[A-Za-z0-9_-]{8,}/g, '$1<redacted>')
+    .replace(/\b(Bearer|x-api-key|authorization)\s*[:=]?\s*[A-Za-z0-9._-]{8,}/gi, '$1 <redacted>');
+}

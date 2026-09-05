@@ -7,12 +7,10 @@
 //
 // Provider quirks live in explicitly named shims, never in the core.
 
-export class ModelError extends Error {
-  constructor(msg, { retryable = false, status = null, kind = 'unknown' } = {}) {
-    super(msg); this.name = 'ModelError';
-    this.retryable = retryable; this.status = status; this.kind = kind;
-  }
-}
+// ModelError now lives in errors.mjs so providers can import it without a cycle through this
+// factory. Re-exported here: the public surface is unchanged.
+export { ModelError } from './errors.mjs';
+import { ModelError } from './errors.mjs';
 
 /**
  * OpenAI-compatible chat-completions client.
@@ -30,6 +28,10 @@ export function createOpenAICompatModel({
 
   return {
     name: name ?? `openai-compat:${model}`,
+    // WAVE 4: providers declare their own identity. The worker records this rather than
+    // inferring it, so attribution never depends on parsing a name string.
+    provider: 'openai-compat',
+    endpoint,
     capabilities: new Set(capabilities),
 
     async invoke({ messages, tools = [], temperature = 0, maxTokens = 2048, signal = null }) {
@@ -140,3 +142,34 @@ function normalise(json, { pricing, duration_ms, attempts }) {
 const backoff = (n) => Math.min(8000, 200 * 2 ** (n - 1)) + Math.floor(Math.random() * 100);
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 const round6 = (n) => Math.round(n * 1e6) / 1e6;
+
+// ── Provider factory (Wave 4a) ──────────────────────────────────────────────
+//
+// One seam, two implementations. The worker already knew nothing vendor-specific — it calls
+// `model.invoke({messages, tools})` and reads a ModelResult — so this factory makes the EXISTING
+// seam real rather than inventing a new abstraction.
+//
+// Deliberately TWO providers, not a catalog (plan §6). The second exists to falsify the seam: if
+// Anthropic's genuinely different wire format cannot pass through without leaking vendor
+// specifics into the core, the design is wrong and the stop rule applies.
+import { createAnthropicModel } from './anthropic.mjs';
+
+export const PROVIDER_KINDS = Object.freeze(['openai-compat', 'anthropic']);
+
+/**
+ * @param {{kind: string}} opts  everything else is passed through to the implementation.
+ *
+ * An unknown kind throws HERE, at construction — not at first call. A misconfigured provider that
+ * only fails once a run is underway would burn a run and produce a confusing trajectory.
+ */
+export function createProvider({ kind = 'openai-compat', ...opts } = {}) {
+  switch (kind) {
+    case 'openai-compat': return createOpenAICompatModel(opts);
+    case 'anthropic':     return createAnthropicModel(opts);
+    default:
+      throw new Error(`unknown provider kind: ${JSON.stringify(kind)} `
+        + `(known: ${PROVIDER_KINDS.join(', ')})`);
+  }
+}
+
+export { createAnthropicModel, toAnthropicRequest, fromAnthropicResponse } from './anthropic.mjs';

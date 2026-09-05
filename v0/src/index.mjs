@@ -49,11 +49,20 @@ export {
 export {
   projectArtifacts, resolveArtifact, describeArtifact, artifactId, summariseArtifact,
   qualifiesAsArtifact, ARTIFACT_MIN_BYTES,
+  // Request provenance (Wave 4a): a digest and a host, never the request or the URL.
+  requestDigest, endpointHost, stableStringify, redactSecrets,
 } from './core/projection/artifacts.mjs';
 
-// ── Provider: one OpenAI-compatible adapter ─────────────────────────────────
-// Provider quirks belong in a shim applied to the NORMALISED result, never inside the runtime.
-export { createOpenAICompatModel, ModelError } from './agent/model/index.mjs';
+// ── Providers (Wave 4a) ─────────────────────────────────────────────────────
+// createProvider({kind}) is the seam: 'openai-compat' | 'anthropic'. Both normalise to ONE
+// ModelResult, and quirks live in shims applied AFTER normalisation — so a shim written against
+// ModelResult works for either provider. An unknown kind throws at construction, not at first call.
+export {
+  createProvider, PROVIDER_KINDS,
+  createOpenAICompatModel, createAnthropicModel,
+  toAnthropicRequest, fromAnthropicResponse,
+  ModelError,
+} from './agent/model/index.mjs';
 
 // ── Tools ───────────────────────────────────────────────────────────────────
 // toolDefinitions() strips runtime-injected fields, so values the runtime owns (e.g. write's

@@ -3,7 +3,8 @@
 import { project, stableDigest } from '../../core/projection/index.mjs';
 import { compactMessages } from '../../core/projection/compact.mjs';
 import { projectPlan } from '../../core/projection/plan.mjs';
-import { qualifiesAsArtifact, describeArtifact, projectArtifacts, sha256, ARTIFACT_MIN_BYTES } from '../../core/projection/artifacts.mjs';
+import { qualifiesAsArtifact, describeArtifact, projectArtifacts, sha256,
+         requestDigest, endpointHost, redactSecrets, ARTIFACT_MIN_BYTES } from '../../core/projection/artifacts.mjs';
 import { decideRecovery, Decision as RecDecision } from '../../core/recovery/index.mjs';
 import { Decision as AuthDecision, digestArgs } from '../../auth/default/index.mjs';
 import { modelRespondedPayload } from '../../core/event/index.mjs';
@@ -45,13 +46,17 @@ export class Worker {
     compactContext = true,
     contextBudgetBytes = 24_000,   // compact only once the outbound array exceeds this
     artifactMinBytes = ARTIFACT_MIN_BYTES,
+    // WAVE 4a: explicit rather than relying on the provider's defaults, so the values recorded in
+    // `model.requested.params` are the values actually used.
+    temperature = 0,
+    maxTokens = 2_048,
     completionContract = null,     // ADR-013: { requires_world_change, objectiveSatisfied() }
     hooks = {},                    // { beforeAppend(marker, ctx) } — crash injection in tests
   } = {}) {
     Object.assign(this, { store, sandbox, model, tools, authorize, workerId, leaseMs,
       snapshotEvery, maxTurns, maxRepeatedCalls, maxTurnsWithoutProgress,
       maxConsecutiveModelFailures, budget, systemPrompt, compactContext,
-      contextBudgetBytes, artifactMinBytes, completionContract, hooks });
+      contextBudgetBytes, artifactMinBytes, temperature, maxTokens, completionContract, hooks });
   }
 
   #hook(marker, ctx = {}) { this.hooks.beforeAppend?.(marker, ctx); }
@@ -149,44 +154,68 @@ export class Worker {
       if (az.decision === AuthDecision.DENY)
         return this.#stop(runId, leaseToken, 'failed', 'model_denied', { detail: az.reason });
 
-      if (this.#append(runId, 'model.requested', { model: this.model.name, messages: state.recent_messages.length }) === null)
+      // Built OUTSIDE the try below. That try exists to catch MODEL failures, and preparing the
+      // request is not one: swallowing a preparation error as `model.failed` would misattribute a
+      // harness bug to the provider — the precise confusion this wave's provenance exists to end.
+      let outbound = this.#buildMessages(state);
+
+      // WAVE 3 — budget-aware compaction.
+      //
+      // Compaction used to be opt-in and, when on, ran every single turn. It is now on by
+      // default and gated on the outbound array actually exceeding a byte budget, so a short
+      // run is never transformed at all and a long one stays bounded. Measuring the real
+      // outbound size is the honest trigger: turn count says nothing about context pressure,
+      // and one enormous tool result matters more than twenty small ones.
+      const outboundBytes = Buffer.byteLength(JSON.stringify(outbound));
+      if (this.compactContext && outboundBytes > this.contextBudgetBytes) {
+        const arts = projectArtifacts(S.events(runId));
+        // Resolve an elided body back to its artifact by content hash, so the placeholder can
+        // name the evidence instead of orphaning it.
+        const byHash = new Map();
+        for (const a of arts.values()) byHash.set(a.sha256, a);
+        const c = compactMessages(outbound, {
+          artifacts: { byContent: (text) => byHash.get(sha256(text)) ?? null },
+        });
+        if (c.elided > 0) {
+          // Record the compaction so it is auditable in the event log and in `explain`.
+          // `elided_tool_call_ids` is the PROVENANCE: which calls were transformed, not merely
+          // how many, so the record can be audited against the log it describes.
+          if (this.#append(runId, 'context.compacted', {
+                elided: c.elided, bytes_saved: c.bytesSaved, strategy: 'supersede',
+                elided_tool_call_ids: c.elidedIds,
+                outbound_bytes_before: outboundBytes,
+                budget_bytes: this.contextBudgetBytes }) === null)
+            return this.#leaseLost();
+          outbound = c.messages;
+        }
+      }
+      // WAVE 4a — request provenance.
+      //
+      // Recorded HERE, after compaction, because the digest must describe what was actually
+      // SENT. Appending before the outbound array was final would have digested a request that
+      // never existed — worse than no digest, because it would look authoritative.
+      //
+      // The digest is a hash, never the request: storing the full context on every turn is the
+      // unbounded-blob problem Wave 3 removed. The endpoint is recorded as a HOST ONLY — a base
+      // URL can carry credentials in userinfo or a query string, and a trajectory is meant to be
+      // shareable evidence.
+      const toolDefs = toolDefinitions(this.tools);
+      const params = { temperature: this.temperature, max_tokens: this.maxTokens };
+      if (this.#append(runId, 'model.requested', {
+            model: this.model.name,
+            provider: this.model.provider ?? null,
+            endpoint_host: endpointHost(this.model.endpoint),
+            request_digest: requestDigest({ messages: outbound, tools: toolDefs, params }),
+            params,
+            messages: outbound.length,
+            tools: toolDefs.length,
+            context_bytes: Buffer.byteLength(JSON.stringify(outbound)),
+          }) === null)
         return this.#leaseLost();
       this.#hook('after:model.requested', { runId });
 
-      let resp;
+        let resp;
       try {
-        let outbound = this.#buildMessages(state);
-
-        // WAVE 3 — budget-aware compaction.
-        //
-        // Compaction used to be opt-in and, when on, ran every single turn. It is now on by
-        // default and gated on the outbound array actually exceeding a byte budget, so a short
-        // run is never transformed at all and a long one stays bounded. Measuring the real
-        // outbound size is the honest trigger: turn count says nothing about context pressure,
-        // and one enormous tool result matters more than twenty small ones.
-        const outboundBytes = Buffer.byteLength(JSON.stringify(outbound));
-        if (this.compactContext && outboundBytes > this.contextBudgetBytes) {
-          const arts = projectArtifacts(S.events(runId));
-          // Resolve an elided body back to its artifact by content hash, so the placeholder can
-          // name the evidence instead of orphaning it.
-          const byHash = new Map();
-          for (const a of arts.values()) byHash.set(a.sha256, a);
-          const c = compactMessages(outbound, {
-            artifacts: { byContent: (text) => byHash.get(sha256(text)) ?? null },
-          });
-          if (c.elided > 0) {
-            // Record the compaction so it is auditable in the event log and in `explain`.
-            // `elided_tool_call_ids` is the PROVENANCE: which calls were transformed, not merely
-            // how many, so the record can be audited against the log it describes.
-            if (this.#append(runId, 'context.compacted', {
-                  elided: c.elided, bytes_saved: c.bytesSaved, strategy: 'supersede',
-                  elided_tool_call_ids: c.elidedIds,
-                  outbound_bytes_before: outboundBytes,
-                  budget_bytes: this.contextBudgetBytes }) === null)
-              return this.#leaseLost();
-            outbound = c.messages;
-          }
-        }
         // D1: hold the lease across the model call.
         //
         // The lease is renewed at the top of each turn, but a model call happens INSIDE the
@@ -202,11 +231,21 @@ export class Worker {
         // stop heartbeating, leaving the normal lost-lease path to detect it.
         resp = await this.#withLeaseHeartbeat(runId, leaseToken, () => this.model.invoke({
           messages: outbound,
-          tools: toolDefinitions(this.tools),
+          tools: toolDefs,
+          temperature: this.temperature,
+          maxTokens: this.maxTokens,
         }));
       } catch (err) {
+        // WAVE 4a — scrub secrets from text the runtime did not author.
+        //
+        // Found by this wave's leak scan, and NOT in the provenance code: `fetch` refuses a URL
+        // carrying credentials with an error that echoes the whole URL back, and provider error
+        // text is recorded verbatim. So a secret can reach the durable log through an error
+        // string even when every field the runtime chooses to record is clean. Scrubbed at the
+        // point of WRITING, not of display — redacting only at render time would leave the
+        // secret sitting in the log.
         const recorded = this.#append(runId, 'model.failed', {
-          error: String(err?.message ?? err), kind: err?.kind ?? 'unknown', retryable: !!err?.retryable });
+          error: redactSecrets(err?.message ?? err), kind: err?.kind ?? 'unknown', retryable: !!err?.retryable });
         if (recorded === null) return this.#leaseLost();
         if (err?.retryable) {
           const fails = project(S, runId).progress.consecutive_model_failures;
