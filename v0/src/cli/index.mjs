@@ -13,7 +13,7 @@ import { project } from '../core/projection/index.mjs';
 import { explain, summarise } from '../core/run/explain.mjs';
 import { replay, fork, rerun, nearestTurnBoundary } from '../core/replay/index.mjs';
 import { reap, expireHumanRequests } from '../core/lease/reaper.mjs';
-import { createOpenAICompatModel } from '../agent/model/index.mjs';
+import { createProvider } from '../agent/model/index.mjs';
 import { applyGemmaToolCallShim } from '../agent/model/shims/gemma-tool-calls.mjs';
 import { projectPlan, planSatisfied, summarisePlan } from '../core/projection/plan.mjs';
 import { repl, banner } from './repl.mjs';
@@ -64,17 +64,51 @@ export function selectShims(modelName, env = process.env) {
   return /gemma/i.test(String(modelName ?? '')) ? [applyGemmaToolCallShim] : [];
 }
 
-function buildModel() {
-  const baseUrl = process.env.ORION_BASE_URL;
-  const apiKey = process.env.ORION_API_KEY ?? process.env.OPENAI_API_KEY ?? null;
-  const model = process.env.ORION_MODEL ?? 'gpt-4o-mini';
+/**
+ * Should this run stream? (F5)
+ *
+ * `ORION_STREAM` is the explicit control. Default is ON, because streaming is what makes
+ * `ttft_ms` observable and leaves a durable partial when a call dies part-way — both strictly
+ * better than a single opaque response. A provider that cannot stream is NOT silently
+ * downgraded: the worker records a `degraded` event and falls back, so the choice is always
+ * visible in the trajectory.
+ */
+export function streamEnabled(env = process.env) {
+  const v = String(env.ORION_STREAM ?? '').trim().toLowerCase();
+  if (['0', 'off', 'false', 'no'].includes(v)) return false;
+  return true;
+}
+
+/**
+ * Build the model from configuration (F5).
+ *
+ * Wave 4 added a provider seam and a second provider, and the CLI then hardcoded
+ * `createOpenAICompatModel` — so the capability existed in the library and was UNREACHABLE from
+ * the product. That is the same class of defect as Waves 1-3 (a mechanism built, tested, and
+ * never wired), which is why tests/shipped/ now exercises this path rather than the module.
+ */
+export function buildModel(env = process.env) {
+  const kind = String(env.ORION_PROVIDER ?? 'openai-compat').trim().toLowerCase();
+  const apiKey = env.ORION_API_KEY ?? env.OPENAI_API_KEY ?? env.ANTHROPIC_API_KEY ?? null;
+  const model = env.ORION_MODEL ?? (kind === 'anthropic' ? 'claude-sonnet-5' : 'gpt-4o-mini');
+  // Anthropic has a real default endpoint; an OpenAI-compatible one could be anything, so it
+  // must be stated.
+  const baseUrl = env.ORION_BASE_URL ?? (kind === 'anthropic' ? 'https://api.anthropic.com' : null);
+
   if (!baseUrl) {
     console.error(C.r('No model configured.'));
     console.error('  Set ORION_BASE_URL (an OpenAI-compatible endpoint) and ORION_API_KEY.');
     console.error('  e.g. ORION_BASE_URL=https://api.openai.com/v1 ORION_MODEL=gpt-4o-mini');
+    console.error('  Or:  ORION_PROVIDER=anthropic ORION_API_KEY=sk-ant-...');
     process.exit(2);
   }
-  return createOpenAICompatModel({ baseUrl, apiKey, model, shims: selectShims(model) });
+  try {
+    return createProvider({ kind, baseUrl, apiKey, model, shims: selectShims(model, env) });
+  } catch (e) {
+    // An unknown provider is a configuration mistake; say so plainly rather than failing later.
+    console.error(C.r(e.message));
+    process.exit(2);
+  }
 }
 
 /**
@@ -119,14 +153,19 @@ export function defaultCompletionContract(store, runId) {
       if (e.type === 'tool.requested') names.set(e.payload?.tool_call_id, e.payload?.name);
     }
     let anySucceeded = false, mutationSucceeded = false, mutationAttempted = false;
+    let verifyPassed = false;
     for (const e of events) {
       if (e.type === 'tool.requested' && MUTATING_TOOLS.has(e.payload?.name)) mutationAttempted = true;
       if (e.type === 'tool.succeeded') {
         anySucceeded = true;
-        if (MUTATING_TOOLS.has(names.get(e.payload?.tool_call_id))) mutationSucceeded = true;
+        const tool = names.get(e.payload?.tool_call_id);
+        if (MUTATING_TOOLS.has(tool)) mutationSucceeded = true;
+        // A `verify` result's first line is its verdict. A PASS is the strongest evidence the
+        // trajectory can hold that the work actually holds up — stronger than any bookkeeping.
+        if (tool === 'verify' && /^PASS/.test(String(e.payload?.result ?? ''))) verifyPassed = true;
       }
     }
-    return { anySucceeded, mutationSucceeded, mutationAttempted };
+    return { anySucceeded, mutationSucceeded, mutationAttempted, verifyPassed };
   };
 
   return {
@@ -138,10 +177,34 @@ export function defaultCompletionContract(store, runId) {
       // inference the runtime could make from tool activity — so it takes precedence. An
       // unfinished plan is an unfinished run even if some file was written along the way,
       // which is the case the Wave-1 predicate alone would have waved through.
+      const { anySucceeded, mutationSucceeded, mutationAttempted, verifyPassed } = inspect();
       const plan = projectPlan(store.events(runId));
-      if (plan) return planSatisfied(plan);
 
-      const { anySucceeded, mutationSucceeded, mutationAttempted } = inspect();
+      if (plan) {
+        // A satisfied plan is the clearest possible statement that the work is done.
+        if (planSatisfied(plan)) return true;
+
+        // F4 — but the plan is BOOKKEEPING, and bookkeeping is not the work.
+        //
+        // Wave 2 made `planSatisfied` the only objective once a plan existed. Measured
+        // consequence: a run that edited the file AND got a verify PASS was recorded FAILED
+        // because the model never called `plan_step`. That swung Wave 1's truthfulness the other
+        // way — under-claiming success is as untruthful as over-claiming it, and it is worse for
+        // a user, who now cannot tell a real failure from an unticked box.
+        //
+        // Direct evidence outranks bookkeeping: a mutation that SUCCEEDED and a `verify` that
+        // PASSED are the two things a plan step is meant to attest to. When both are in the log,
+        // the objective is met however the steps were marked.
+        //
+        // One exception, deliberately kept strict: a step explicitly marked FAILED and never
+        // resolved is a positive statement that something is wrong. That still blocks, because
+        // it is the model's own report of incompleteness, not merely a missing tick.
+        const hasUnresolvedFailure = plan.steps.some(st => st.state === 'failed');
+        if (!hasUnresolvedFailure && mutationSucceeded && verifyPassed) return true;
+
+        return false;                         // an unfinished plan is still an unfinished run
+      }
+
       if (mutationSucceeded) return true;
       if (mutationAttempted) return false;    // tried to change the world and did not
       return anySucceeded;                    // read-only work is real work; doing nothing is not
@@ -155,6 +218,9 @@ function makeWorker(store, workspace) {
   return { sandbox, worker: (extra = {}) => new Worker(store, {
     sandbox, model: buildModel(), tools: makeTools(sandbox),
     authorize: createAuthorizer({ posture: process.env.ORION_POSTURE ?? 'auto' }),
+    // F5: streaming reaches the product surface. Default ON; a provider that cannot stream
+    // falls back with a recorded `degraded` event rather than silently.
+    stream: streamEnabled(),
     ...extra }) };
 }
 

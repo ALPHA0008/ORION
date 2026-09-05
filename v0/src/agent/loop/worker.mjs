@@ -440,7 +440,14 @@ export class Worker {
     const recovery = tool.recovery?.(tc.args) ?? { class: 'UNSAFE' };
     const action = { kind: 'tool', name: tc.name, args_digest: digestArgs(tc.args),
                      effects: tool.effects, recovery_class: recovery.class,
-                     command: tc.name === 'bash' ? tc.args?.cmd : undefined,
+                     // F1 (security): the command is declared for ANY command-bearing tool, not
+                     // just `bash`. This used to read `tc.name === 'bash' ? ... : undefined`, so a
+                     // deployer's denyCommandPatterns — "never git push", "never npm publish" —
+                     // was enforced for bash and SILENTLY NOT for `verify`, which also runs shell
+                     // commands. Keying on the ARGUMENT rather than the tool name means the next
+                     // command-bearing tool is covered the day it is added, instead of quietly
+                     // reopening the same hole.
+                     command: typeof tc.args?.cmd === 'string' ? tc.args.cmd : undefined,
                      // Phase 6: the target path, so a policy can reason about WHAT is being
                      // mutated, not merely which tool is running. `args_digest` is an opaque
                      // hash by design, so without this a policy can only say "never edit" or

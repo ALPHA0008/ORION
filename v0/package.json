@@ -1,6 +1,6 @@
 {
   "name": "@kernlbase/orion",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "An inspectable, recoverable, replayable, trajectory-native agent runtime. Agent runs are durable objects you can inspect, replay without cost, and fork from any point.",
   "type": "module",
   "license": "Apache-2.0",

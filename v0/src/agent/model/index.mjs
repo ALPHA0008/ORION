@@ -21,7 +21,12 @@ import { createStreamAccumulator, sseEvents, decodeOpenAIChunk } from './stream.
 export function createOpenAICompatModel({
   baseUrl, apiKey = null, model = 'gpt-4o-mini', name = null,
   timeoutMs = 60_000, maxRetries = 3, pricing = null,   // {in_per_mtok, out_per_mtok}
-  capabilities = ['tools'],
+  // F5: this provider IMPLEMENTS invokeStream, so it must DECLARE streaming. The two were
+  // inverted — openai-compat implemented streaming without advertising it while anthropic
+  // advertised it without implementing it — which made capability negotiation meaningless in
+  // both directions: the capable provider was never asked to stream, and the incapable one
+  // would have been. A capability set that does not match the implementation is worse than none.
+  capabilities = ['tools', 'streaming'],
   shims = [],          // provider quirk shims, applied to the normalised result in order
 } = {}) {
   if (!baseUrl) throw new Error('baseUrl is required');

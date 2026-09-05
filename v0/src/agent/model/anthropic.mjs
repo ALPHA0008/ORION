@@ -126,7 +126,12 @@ export function createAnthropicModel({
   baseUrl = 'https://api.anthropic.com', apiKey = null, model = 'claude-sonnet-5',
   name = null, timeoutMs = 60_000, maxRetries = 3, pricing = null,
   anthropicVersion = '2023-06-01',
-  capabilities = ['tools', 'streaming'],
+  // F5: NOT 'streaming'. This provider has no invokeStream — Anthropic's SSE format differs from
+  // the OpenAI one and implementing it is a separate piece of work, not a rename. Declaring a
+  // capability that is not implemented is exactly the silent-fallback failure this runtime
+  // refuses: the worker would select streaming and then quietly not stream. It is added here the
+  // day invokeStream exists, and not before.
+  capabilities = ['tools'],
   shims = [],
 } = {}) {
   const endpoint = String(baseUrl).replace(/\/+$/, '') + '/v1/messages';

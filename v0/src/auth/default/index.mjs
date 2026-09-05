@@ -65,8 +65,18 @@ export function createAuthorizer({
       if (denyTools.includes(action.name))
         return { decision: Decision.DENY, reason: `tool '${action.name}' denied by policy` };
 
-      // hard denials apply at every posture, including permissive
-      if (action.name === 'bash' && typeof action.command === 'string') {
+      // Hard denials apply at every posture, including permissive.
+      //
+      // F1 (security): gated on the ACTION CARRYING A COMMAND, not on the tool being named
+      // 'bash'. The previous `action.name === 'bash'` check meant `verify` — which also executes
+      // shell commands — bypassed every deployed denyCommandPattern entirely. A policy that says
+      // "never git push" must hold for every tool that can run a command, and a name-based switch
+      // silently excludes each new one.
+      //
+      // This does not replace `verify`'s own narrower static denylist (isKnownDangerous in
+      // agent/tools): that is the tool refusing side-effecting commands by construction. This is
+      // the DEPLOYER's policy, which the tool cannot know about.
+      if (typeof action.command === 'string') {
         for (const re of denyCommandPatterns)
           if (re.test(action.command))
             return { decision: Decision.DENY, reason: `command matches a hard-deny pattern` };

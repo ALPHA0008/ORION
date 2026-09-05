@@ -138,12 +138,23 @@ describe('providers/P5-shims-still-apply-and-are-provider-agnostic');
 describe('providers/P4-capability-negotiation-is-explicit');
 {
   const noStream = createProvider({ kind: 'openai-compat', baseUrl: 'http://x/v1', model: 'm',
-    capabilities: ['tools'] });
-  const streams = createProvider({ kind: 'anthropic', apiKey: 'k', model: 'c' });
+    capabilities: ['tools'] });                       // explicitly opted out
+  const streams  = createProvider({ kind: 'openai-compat', baseUrl: 'http://x/v1', model: 'm' });
+  const anthropic = createProvider({ kind: 'anthropic', apiKey: 'k', model: 'c' });
+
   check('a provider states what it cannot do', !noStream.capabilities.has('streaming'));
   check('and what it can', streams.capabilities.has('streaming'));
   check('both declare their provider identity',
-    noStream.provider === 'openai-compat' && streams.provider === 'anthropic');
+    streams.provider === 'openai-compat' && anthropic.provider === 'anthropic');
+
+  // F5: a declaration that does not match the implementation is worse than none — it makes
+  // capability negotiation meaningless in both directions. These were once INVERTED:
+  // openai-compat implemented invokeStream without advertising it, anthropic advertised
+  // streaming without implementing it.
+  for (const [label, m] of [['openai-compat', streams], ['anthropic', anthropic]]) {
+    eq(`${label}: declaration matches implementation`,
+      m.capabilities.has('streaming'), typeof m.invokeStream === 'function');
+  }
 }
 
 describe('providers/P1-P3-a-real-task-completes-through-BOTH-providers');
