@@ -3,6 +3,7 @@
 import { project, stableDigest } from '../../core/projection/index.mjs';
 import { compactMessages } from '../../core/projection/compact.mjs';
 import { projectPlan } from '../../core/projection/plan.mjs';
+import { qualifiesAsArtifact, describeArtifact, projectArtifacts, sha256, ARTIFACT_MIN_BYTES } from '../../core/projection/artifacts.mjs';
 import { decideRecovery, Decision as RecDecision } from '../../core/recovery/index.mjs';
 import { Decision as AuthDecision, digestArgs } from '../../auth/default/index.mjs';
 import { modelRespondedPayload } from '../../core/event/index.mjs';
@@ -38,14 +39,19 @@ export class Worker {
     maxConsecutiveModelFailures = 3,
     budget = { tokens: 500_000, tool_calls: 200, cost_usd: 5 },
     systemPrompt = DEFAULT_SYSTEM,
-    compactContext = false,        // opt-in: elide superseded tool results (see compact.mjs)
+    // WAVE 3: compaction is ON by default and BUDGET-AWARE. It no longer runs every turn —
+    // it runs when the outbound context actually exceeds a byte budget, so a short run pays
+    // nothing and a long one stays bounded. Set false to disable entirely.
+    compactContext = true,
+    contextBudgetBytes = 24_000,   // compact only once the outbound array exceeds this
+    artifactMinBytes = ARTIFACT_MIN_BYTES,
     completionContract = null,     // ADR-013: { requires_world_change, objectiveSatisfied() }
     hooks = {},                    // { beforeAppend(marker, ctx) } — crash injection in tests
   } = {}) {
     Object.assign(this, { store, sandbox, model, tools, authorize, workerId, leaseMs,
       snapshotEvery, maxTurns, maxRepeatedCalls, maxTurnsWithoutProgress,
       maxConsecutiveModelFailures, budget, systemPrompt, compactContext,
-      completionContract, hooks });
+      contextBudgetBytes, artifactMinBytes, completionContract, hooks });
   }
 
   #hook(marker, ctx = {}) { this.hooks.beforeAppend?.(marker, ctx); }
@@ -150,13 +156,33 @@ export class Worker {
       let resp;
       try {
         let outbound = this.#buildMessages(state);
-        if (this.compactContext) {
-          const c = compactMessages(outbound);
+
+        // WAVE 3 — budget-aware compaction.
+        //
+        // Compaction used to be opt-in and, when on, ran every single turn. It is now on by
+        // default and gated on the outbound array actually exceeding a byte budget, so a short
+        // run is never transformed at all and a long one stays bounded. Measuring the real
+        // outbound size is the honest trigger: turn count says nothing about context pressure,
+        // and one enormous tool result matters more than twenty small ones.
+        const outboundBytes = Buffer.byteLength(JSON.stringify(outbound));
+        if (this.compactContext && outboundBytes > this.contextBudgetBytes) {
+          const arts = projectArtifacts(S.events(runId));
+          // Resolve an elided body back to its artifact by content hash, so the placeholder can
+          // name the evidence instead of orphaning it.
+          const byHash = new Map();
+          for (const a of arts.values()) byHash.set(a.sha256, a);
+          const c = compactMessages(outbound, {
+            artifacts: { byContent: (text) => byHash.get(sha256(text)) ?? null },
+          });
           if (c.elided > 0) {
             // Record the compaction so it is auditable in the event log and in `explain`.
-            // Failure to append here is a lost lease, exactly like any other append.
-            if (this.#append(runId, 'context.compacted',
-                  { elided: c.elided, bytes_saved: c.bytesSaved, strategy: 'supersede' }) === null)
+            // `elided_tool_call_ids` is the PROVENANCE: which calls were transformed, not merely
+            // how many, so the record can be audited against the log it describes.
+            if (this.#append(runId, 'context.compacted', {
+                  elided: c.elided, bytes_saved: c.bytesSaved, strategy: 'supersede',
+                  elided_tool_call_ids: c.elidedIds,
+                  outbound_bytes_before: outboundBytes,
+                  budget_bytes: this.contextBudgetBytes }) === null)
               return this.#leaseLost();
             outbound = c.messages;
           }
@@ -360,6 +386,20 @@ export class Worker {
       : this.#append(runId, 'tool.succeeded', { tool_call_id: tcid, name: tc.name, result: String(out ?? '') });
     if (recorded === null) return this.#leaseLost();
     this.#hook('after:tool.succeeded', { runId, tcid });
+
+    // WAVE 3: oversized output earns an artifact.
+    //
+    // The bytes are NOT copied — they are already durable in the `tool.succeeded` event this
+    // record points at (`source_seq: recorded`). What the artifact adds is identity, a sha256,
+    // and a provenance link, so the content can be referenced instead of inlined and a
+    // compaction placeholder can point at evidence rather than orphaning it.
+    if (!failed && qualifiesAsArtifact(out, { minBytes: this.artifactMinBytes })) {
+      const target = typeof args?.path === 'string' ? args.path
+                   : typeof args?.cmd === 'string' ? args.cmd : null;
+      if (this.#append(runId, 'artifact.created', describeArtifact({
+            content: out, tool: tc.name, target, sourceSeq: recorded })) === null)
+        return this.#leaseLost();
+    }
 
     // A tool may declare derived events that belong on the trajectory (Wave 2: plan.*).
     //

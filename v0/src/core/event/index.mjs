@@ -11,8 +11,11 @@
  *
  *   1 — 31 types. The original frozen set.
  *   2 — adds plan.* (4 types). Planning as derived-but-durable trajectory structure (Wave 2).
+ *   3 — adds artifact.created (1 type). Oversized tool output gains a hashed, provenance-bearing
+ *       identity so it can be referenced instead of inlined, and so a compaction placeholder
+ *       points at evidence rather than orphaning it (Wave 3).
  */
-export const EVENT_CONTRACT_VERSION = 2;
+export const EVENT_CONTRACT_VERSION = 3;
 
 export const EVENT_TYPES = Object.freeze([
   // lifecycle
@@ -47,6 +50,12 @@ export const EVENT_TYPES = Object.freeze([
   // is held in worker memory, which is what makes a plan survive a crash and reconstruct
   // identically under replay and fork.
   'plan.created', 'plan.revised', 'plan.step_started', 'plan.step_finished',
+  // artifacts (contract v3, Wave 3)
+  //
+  // An artifact does NOT copy content. The full bytes stay in the `tool.succeeded` event this
+  // record points at; the artifact adds identity (content-addressed id), integrity (sha256) and
+  // provenance (source_seq). See core/projection/artifacts.mjs.
+  'artifact.created',
   // degradation (ADR: named degradation — never silent fallback)
   'degraded',
 ]);

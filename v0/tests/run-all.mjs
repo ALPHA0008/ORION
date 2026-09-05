@@ -9,6 +9,7 @@ export const suites = [
   ['leaseheartbeat/leaseheartbeat', []],
   ['truthfulcompletion/truthfulcompletion', []],
   ['planning/planning',     []],
+  ['context/context',       []],
   ['concurrency/lease',     []],
   ['fencing/fencing',       []],
   ['runner/runner',         []],

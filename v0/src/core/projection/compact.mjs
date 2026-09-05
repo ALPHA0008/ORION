@@ -101,24 +101,48 @@ export function findSuperseded(msgs) {
  *        result costs more in marker text than it saves.
  * @returns {{messages:Array, elided:number, bytesSaved:number}}
  */
-export function compactMessages(msgs, { minBytes = 200 } = {}) {
+export function compactMessages(msgs, { minBytes = 200, artifacts = null } = {}) {
   const { superseded, targets, meta } = findSuperseded(msgs);
-  if (superseded.size === 0) return { messages: msgs, elided: 0, bytesSaved: 0 };
+  if (superseded.size === 0) return { messages: msgs, elided: 0, bytesSaved: 0, elidedIds: [] };
 
   let elided = 0, bytesSaved = 0;
+  const elidedIds = [];
   const out = msgs.map((m) => {
     if (m.role !== 'tool' || !superseded.has(m.tool_call_id)) return m;
     const original = String(m.content ?? '');
     const name = meta.get(m.tool_call_id)?.name ?? 'result';
-    const replacement = PLACEHOLDER(name, targets.get(m.tool_call_id));
+
+    // WAVE 3 — evidence must survive compaction.
+    //
+    // A `verify` result's FIRST LINE is its verdict (`PASS (exit 0) npm test`). That line is the
+    // evidence the completion contract and any later evaluation depend on; eliding it would
+    // discard the proof while keeping the claim, which is the exact failure mode Wave 1 exists
+    // to prevent. The body is still elided — only the verdict is carried into the placeholder.
+    const verdict = name === 'verify' ? original.split(String.fromCharCode(10), 1)[0] : null;
+
+    // WAVE 3 — point at the evidence rather than orphaning it.
+    //
+    // When the elided content has an artifact, the placeholder names it. The full bytes remain
+    // in the log and stay retrievable by that id, so a compacted run loses addressability of
+    // nothing.
+    const art = artifacts?.byContent?.(original) ?? null;
+
+    const replacement = PLACEHOLDER(name, targets.get(m.tool_call_id))
+      + (art ? ` [artifact:${art.artifact_id}, ${art.bytes}B]` : '')
+      + (verdict ? String.fromCharCode(10) + `verdict retained: ${verdict}` : '');
+
     // Never let "compaction" make a message larger.
     if (original.length < minBytes || replacement.length >= original.length) return m;
     elided++;
     bytesSaved += original.length - replacement.length;
+    elidedIds.push(m.tool_call_id);
     return { ...m, content: replacement };
   });
 
-  return { messages: out, elided, bytesSaved };
+  // `elidedIds` is the provenance the compaction event records: which tool calls were elided,
+  // not merely how many. Without it `context.compacted` says a transformation happened but not
+  // what it touched, and the record cannot be audited against the log it describes.
+  return { messages: out, elided, bytesSaved, elidedIds };
 }
 
 /** Order-independent, stable stringification of tool args for duplicate detection. */

@@ -8,7 +8,9 @@
 // Deliberately NOT exported (reachable only via a subpath, or not at all):
 //   core/projection  — bounded-window mechanics (ADR-001). Tuning, not contract.
 //   core/lease       — operational; reached through the CLI (`orionctl reap`).
-//   core/projection/compact — implemented and tested, but OFF BY DEFAULT. Experimental.
+//   core/projection/compact — ON by default since Wave 3, but its mechanics are tuning, not
+//                             contract. Compaction is observable through `context.compacted`
+//                             events and configurable via the Worker's contextBudgetBytes.
 //   agent/model/shims/*     — model-specific implementations. The shim *slot* is public
 //                             (`shims: []` on createOpenAICompatModel); a given shim is not.
 //   cli/             — a composition root, not a library.
@@ -40,6 +42,14 @@ export { explain, summarise, redact } from './core/run/explain.mjs';
 export {
   projectPlan, readySteps, planSatisfied, summarisePlan,
 } from './core/projection/plan.mjs';
+
+// ── Artifacts (event contract v3) ───────────────────────────────────────────
+// An artifact does not copy content: it is a hashed, provenance-bearing REFERENCE to the event
+// that already holds the bytes. `resolveArtifact` follows that link and verifies the sha256.
+export {
+  projectArtifacts, resolveArtifact, describeArtifact, artifactId, summariseArtifact,
+  qualifiesAsArtifact, ARTIFACT_MIN_BYTES,
+} from './core/projection/artifacts.mjs';
 
 // ── Provider: one OpenAI-compatible adapter ─────────────────────────────────
 // Provider quirks belong in a shim applied to the NORMALISED result, never inside the runtime.
