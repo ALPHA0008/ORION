@@ -17,8 +17,19 @@
  *   4 — adds stream.* (3 types). Streaming as DURABLE PARTIAL EXECUTION: a partially-completed
  *       model call leaves attributable evidence, so a crash mid-stream is recoverable and replay
  *       reconstructs the turn with no model call (Wave 4b).
+ *   5 — adds resource.* (4), grant.* (2) and tool.output_delta (1) — 7 types, Wave 6.
+ *
+ *       Recovery 2.0: the runtime gains RESOURCES with durable identity, so resume can REATTACH
+ *       to the sandbox a run was bound to instead of silently reconstructing a different one;
+ *       approvals become durable, attributable facts rather than per-turn prompts; and a running
+ *       command's output is observable while it runs.
+ *
+ *       The first two families are events rather than columns on purpose. TrueForge — the prior art —
+ *       keeps resource identity in a mutable `TurnRecord.snapshot`, which is state beside the
+ *       log: it would violate Invariant 1 and make replay non-deterministic. The current binding
+ *       here is a FOLD over the log, exactly as `plan.*` works for plans.
  */
-export const EVENT_CONTRACT_VERSION = 4;
+export const EVENT_CONTRACT_VERSION = 5;
 
 export const EVENT_TYPES = Object.freeze([
   // lifecycle
@@ -31,6 +42,22 @@ export const EVENT_TYPES = Object.freeze([
   // tool
   'tool.requested', 'tool.authorized', 'tool.denied', 'tool.escalated',
   'tool.started', 'tool.succeeded', 'tool.failed', 'tool.timed_out',
+  // live execution output (contract v5, Wave 6-L)
+  //
+  // A committed, incremental record of what a running command is printing, so a long `npm test`
+  // is observable while it runs instead of only after it ends.
+  //
+  // Deliberately a NEW type rather than a reuse of `stream.*`. The streaming family's payloads
+  // are model-specific — `model`, `provider`, `request_digest`, `ttft_ms` — and emitting a
+  // `stream.started` carrying a model name for a shell command would put a false fact in the log
+  // to save a type. The cadence mechanism is shared (bounded bytes/ms, never per line); the
+  // vocabulary is not.
+  //
+  // Bounded exactly like `stream.delta`: the event carries a byte count and a short excerpt, and
+  // the complete output still arrives in `tool.succeeded`. This is an observability record, not a
+  // second copy of the output — replay reconstructs the result from the terminal event, so
+  // dropping every delta would change nothing about what a run means.
+  'tool.output_delta',
   // recovery (ADR-002/003)
   'tool.recovery_decided',
   // context / memory
@@ -67,6 +94,41 @@ export const EVENT_TYPES = Object.freeze([
   // which would multiply the log by the token count) and promotes to an artifact once the
   // accumulation crosses the Wave 3 threshold.
   'stream.started', 'stream.delta', 'stream.finished',
+  // resources (contract v5, Wave 6 — Recovery 2.0, plan §9.3)
+  //
+  // The first and most important resource is the SANDBOX. Recovery until now was effect-level:
+  // "did this invocation's effect land?" It was silent about the handle the effect landed ON,
+  // which was invisible only because `LocalSandbox` is reconstructed from a path every time and a
+  // path is not stateful. A container is. If a run is killed and resumed, its sandbox is either
+  // still alive (reattach), gone (recreate, and SAY SO), or unknown (escalate) — and before W6
+  // the runtime had no vocabulary for any of those.
+  //
+  //   resource.acquired   — a resource was created and bound to this run. Carries the durable
+  //                         identity, the backend's declared capabilities, and the posture
+  //                         DERIVED from them (W6-G), so a later reader can see not just what
+  //                         was allowed but why it could be.
+  //   resource.reattached — a resume found the SAME resource, by identity, and rebound to it.
+  //                         This is the event that distinguishes Recovery 2.0 from a silent
+  //                         reconstruction.
+  //   resource.released   — the run let the resource go deliberately. Terminal for that binding.
+  //   resource.lost       — the resource was expected and is not there. NEVER silent: it records
+  //                         what was lost and what was done about it (recreated / escalated), so
+  //                         "the world changed under this run" is a fact in the trajectory
+  //                         rather than an inference.
+  'resource.acquired', 'resource.reattached', 'resource.released', 'resource.lost',
+  // grants — approval memory (contract v5, Wave 6-M)
+  //
+  // An approval that is forgotten at the end of a turn is not an approval, it is a prompt. The
+  // grant store makes "yes, `npm test` is fine in this project" a durable, attributable,
+  // revocable fact. It is recorded as events for the same reason resources are: a grant decides
+  // whether a future effect is allowed, so it must be reconstructible by replay rather than read
+  // from mutable state beside the log.
+  //
+  //   grant.created — an approval was remembered. Records its scope (session / project /
+  //                   command-pattern / resource), who decided it, and what it covers.
+  //   grant.revoked — an approval was withdrawn. Present so the fold can express removal;
+  //                   without it a grant store would be a one-way door.
+  'grant.created', 'grant.revoked',
   // degradation (ADR: named degradation — never silent fallback)
   'degraded',
 ]);

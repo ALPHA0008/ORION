@@ -416,6 +416,44 @@ export class Store {
     try { this.db.exec('PRAGMA integrity_check'); return true; } catch { return false; }
   }
 
+  /**
+   * W6 M — every `grant.*` event, across ALL runs, oldest first.
+   *
+   * A project-scoped approval has to outlive the run that recorded it, and events are per-run.
+   * The alternative designs were both worse: a `grants` table would be state beside the log
+   * (Invariant 1, and a replayed run could then reach a different authorization decision than
+   * the original), and folding every run's full event list would make an authorization check
+   * cost the whole database.
+   *
+   * So this is a cross-run QUERY over the grant events themselves — an index INTO the log, not a
+   * second copy of it. The events stay the only source of truth; `projectGrants` folds whatever
+   * this returns. It lives here because `Store` is the only path to the database (W5 S1/S2), and
+   * a grant subsystem reaching for `store.db` would reopen exactly the boundary W5 closed.
+   *
+   * `project` filters in SQL on the payload rather than in JS over every row, because the common
+   * call is "the grants for this directory" on a database holding every run ever.
+   */
+  grantEvents({ project = null, limit = 5_000 } = {}) {
+    const rows = project === null
+      ? this.db.prepare(
+          `SELECT run_id, seq, type, at, payload FROM events
+            WHERE type LIKE 'grant.%' ORDER BY at ASC, seq ASC LIMIT ?`).all(limit)
+      : this.db.prepare(
+          // A revoke carries only the grant_id, so it has no project to match on. Filtering it
+          // out here would let a revoked grant come back to life whenever the query is scoped —
+          // which is the one thing a revocation must never do.
+          `SELECT run_id, seq, type, at, payload FROM events
+            WHERE type LIKE 'grant.%'
+              AND (type = 'grant.revoked' OR json_extract(payload, '$.project') IS ?
+                   OR json_extract(payload, '$.project') = ?)
+            ORDER BY at ASC, seq ASC LIMIT ?`).all(null, project, limit);
+
+    return rows.map(r => ({
+      run_id: String(r.run_id), seq: Number(r.seq), type: String(r.type), at: Number(r.at),
+      payload: r.payload == null ? null : JSON.parse(String(r.payload)),
+    }));
+  }
+
   /** Atomically append a terminal/pause event and update the run under one live lease. */
   /**
    * @param {string} runId @param {string} type @param {any} payload @param {string} status

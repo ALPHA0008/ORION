@@ -11,6 +11,12 @@ import { modelRespondedPayload } from '../../core/event/index.mjs';
 import { toolDefinitions, validateArgs } from '../tools/index.mjs';
 import { LeaseLostError, uid } from '../../core/run/store.mjs';
 
+// W6 L — live-output cadence. Mirrors the streaming constants (W4b) for the same reason: an
+// event per line would multiply the log by the output's line count.
+const OUTPUT_DELTA_BYTES = 1024;
+const OUTPUT_DELTA_MS = 400;
+const OUTPUT_EXCERPT = 400;
+
 export const ExitReason = Object.freeze({
   MODEL_FINISHED: 'model_finished',
   NO_PROGRESS: 'no_progress',
@@ -58,6 +64,7 @@ export class Worker {
   /** @type {boolean} */ stream;
   /** @type {any} */ completionContract;
   /** @type {{beforeAppend?: (marker: string, ctx: any) => void}} */ hooks;
+  /** @type {Record<string, any>} W6 K — extra authorization-context fields (project, resource). */ authContext;
 
   #leaseTokens = new Map();
 
@@ -70,7 +77,7 @@ export class Worker {
    *           budget?: any, systemPrompt?: string, compactContext?: boolean,
    *           contextBudgetBytes?: number, artifactMinBytes?: number, temperature?: number,
    *           maxTokens?: number, stream?: boolean, completionContract?: any,
-   *           hooks?: any }} [opts]
+   *           authContext?: Record<string, any>, hooks?: any }} [opts]
    */
   constructor(store, {
     sandbox, model, tools, authorize,
@@ -98,13 +105,14 @@ export class Worker {
     // as a non-streamed one, so turning it on must never change the outcome.
     stream = false,
     completionContract = null,     // ADR-013: { requires_world_change, objectiveSatisfied() }
+    authContext = {},              // W6 K: project / resource_id, for grant scoping
     hooks = {},                    // { beforeAppend(marker, ctx) } — crash injection in tests
   } = {}) {
     Object.assign(this, { store, sandbox, model, tools, authorize, workerId, leaseMs,
       snapshotEvery, maxTurns, maxRepeatedCalls, maxTurnsWithoutProgress,
       maxConsecutiveModelFailures, budget, systemPrompt, compactContext,
       contextBudgetBytes, artifactMinBytes, temperature, maxTokens, stream,
-      completionContract, hooks });
+      completionContract, authContext, hooks });
   }
 
   #hook(marker, ctx = {}) { this.hooks.beforeAppend?.(marker, ctx); }
@@ -583,10 +591,42 @@ export class Worker {
     // loop is free during the call, so `setInterval` can actually fire — X1 made this possible
     // and X2 is what delivers it. A synchronous tool still blocks and still cannot be renewed;
     // that is a property of the tool, not of this wrapper.
+    // W6 L — live execution output, at a BOUNDED cadence.
+    //
+    // The rule is the same one streaming follows (W4b): never one event per line. A test suite
+    // printing 10,000 lines would otherwise multiply the log by 10,000 and make replay pay for
+    // rendering. Deltas are emitted every OUTPUT_DELTA_BYTES or OUTPUT_DELTA_MS, whichever comes
+    // first, and each carries a short excerpt plus a byte count — the COMPLETE output still
+    // arrives in `tool.succeeded`, which is what the model reads and what replay reconstructs
+    // from. Losing every delta would change nothing about what the run means.
+    let pending = '', pendingBytes = 0, lastFlush = Date.now(), deltaSeq = 0;
+    const flushOutput = (force = false) => {
+      if (!pending) return;
+      const due = force || pendingBytes >= OUTPUT_DELTA_BYTES
+                        || (Date.now() - lastFlush) >= OUTPUT_DELTA_MS;
+      if (!due) return;
+      const excerptText = pending.length > OUTPUT_EXCERPT ? pending.slice(0, OUTPUT_EXCERPT) : pending;
+      this.#append(runId, 'tool.output_delta', {
+        tool_call_id: tcid, name: tc.name, seq_in_output: ++deltaSeq,
+        bytes: pendingBytes, excerpt: excerptText,
+      });
+      // The excerpt travels with the hook so a consumer can RENDER it without re-reading the
+      // log on every delta. The hook is a notification, never a return path: whether anyone is
+      // listening cannot change what was committed.
+      this.#hook('after:tool.output_delta', { runId, tcid, name: tc.name, text: excerptText });
+      pending = ''; pendingBytes = 0; lastFlush = Date.now();
+    };
+    const onOutput = ({ text }) => {
+      pending += text;
+      pendingBytes += Buffer.byteLength(text, 'utf8');
+      flushOutput();
+    };
+
     let out = null, failed = null;
     try {
-      out = await this.#withLeaseHeartbeat(runId, leaseToken, () => tool.run(args));
+      out = await this.#withLeaseHeartbeat(runId, leaseToken, () => tool.run(args, { onOutput }));
     } catch (e) { failed = e; }
+    flushOutput(true);   // whatever was still buffered when the command ended
     this.#hook('after:tool.effect', { runId, tcid });    // <- the crash window
 
     // W5 X4: a tool that timed out is recorded as `tool.timed_out`, not `tool.failed`.
@@ -759,6 +799,12 @@ export class Worker {
   #ctx(runId, state) {
     return { principal: 'local', scope: this.store.run(runId)?.scope ?? 'personal:local',
              run_id: runId, posture: null, environment: 'local',
+             // W6 K: whatever the composition root said this run's authorization is scoped BY —
+             // the project directory and the bound resource id. The worker does not compute these
+             // (it has no opinion about what a project is); it carries them, so a grant scoped to
+             // a project or a resource can be matched at decision time. Spread FIRST so nothing
+             // here can silently shadow a field the authorizer contract already defines.
+             ...(this.authContext ?? {}),
              budget_remaining: {
                tokens: (this.budget?.tokens ?? Infinity) - state.budget.tokens,
                tool_calls: (this.budget?.tool_calls ?? Infinity) - state.budget.tool_calls,

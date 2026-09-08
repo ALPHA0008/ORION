@@ -17,6 +17,12 @@ export const suites = [
   ['fencing/fencing',       []],
   ['runner/runner',         []],
   ['crash/matrix',          []],
+  // W6: the crash matrix UNDER the isolation boundary — the wave's acceptance test. Skips
+  // loudly (never silently passes) when no container runtime is available.
+  ['crash/matrix-container', []],
+  ['sandbox/sandbox',       []],
+  ['resource/resource',     []],
+  ['shipped/w6-shipped',    []],
   ['recovery/recovery',     []],
   ['replay/semantics',      []],
   ['integration/provider',  []],

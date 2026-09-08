@@ -172,6 +172,27 @@ export function applyEvent(s, e) {
       while (s.recent_degradations.length > DEGRADE_WINDOW) s.recent_degradations.shift();
       break;
 
+    // W6 (contract v5): resource bindings and grants are DERIVED BY THEIR OWN FOLDS —
+    // `core/projection/resource.mjs` and `core/projection/grant.mjs` — for the same reason
+    // `plan.*` is: they are structure over the trajectory, not part of the bounded model window.
+    // Listed explicitly rather than left to `default`, because `default` is documented as
+    // unreachable and a silent fall-through there would hide a genuinely unhandled type.
+    //
+    // They deliberately contribute NOTHING to this state: none of them is a message the model
+    // sees, and none of them changes the budget. A resource being reattached is a fact about the
+    // run, not a turn in the conversation.
+    // W6-L: live output is an observability record. The COMPLETE output arrives in
+    // `tool.succeeded`, which is what the model sees and what replay reconstructs from, so a
+    // delta must add nothing to the projection — counting it would double the bytes.
+    case 'tool.output_delta':
+    case 'resource.acquired':
+    case 'resource.reattached':
+    case 'resource.released':
+    case 'resource.lost':
+    case 'grant.created':
+    case 'grant.revoked':
+      break;
+
     default:
       // Unreachable: Store.append rejects unknown types (ADR-004). Defensive only.
       break;

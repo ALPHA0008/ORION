@@ -7,7 +7,7 @@
       "group": "planning/contract-version",
       "test": "the event contract is versioned at or beyond v2",
       "pass": true,
-      "detail": "v4"
+      "detail": "v5"
     },
     {
       "group": "planning/contract-version",

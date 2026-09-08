@@ -7,7 +7,7 @@
       "group": "context/contract-version",
       "test": "the contract is at or beyond v3",
       "pass": true,
-      "detail": "v4"
+      "detail": "v5"
     },
     {
       "group": "context/contract-version",

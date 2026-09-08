@@ -330,7 +330,10 @@ export function makeTools(sandbox) {
       recovery: ({ cmd }) => ({ class: classifyShell(cmd) }),
       // W5 / X1: `sandbox.exec` is now async. The worker already awaits `tool.run(...)`, so this
       // is a type change, not a control-flow change.
-      run: async ({ cmd }) => sandbox.exec(cmd),
+      //
+      // W6 L: `ctx.onOutput`, when the worker supplies one, makes a long command observable
+      // while it runs. Absent, this is byte-for-byte the previous behaviour.
+      run: async ({ cmd }, ctx = {}) => sandbox.exec(cmd, { onOutput: ctx.onOutput ?? null }),
     },
 
     // WAVE 1 (D2): verification as first-class trajectory evidence.
@@ -359,7 +362,7 @@ export function makeTools(sandbox) {
                       expect: { type: 'string', description: 'optional substring that must appear in the output' } } },
       effects: 'ReadOnly',
       recovery: () => ({ class: RecoveryClass.READ_ONLY }),
-      run: async ({ cmd, expect }) => {
+      run: async ({ cmd, expect }, ctx = {}) => {
         if (isKnownDangerous(cmd)) {
           throw new Error(`verify refuses a command with known side effects: ${cmd}. `
                         + 'Use bash if you genuinely need to change the world.');

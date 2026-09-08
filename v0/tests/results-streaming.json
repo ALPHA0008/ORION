@@ -7,7 +7,7 @@
       "group": "streaming/contract-version",
       "test": "the contract is at or beyond v4",
       "pass": true,
-      "detail": "v4"
+      "detail": "v5"
     },
     {
       "group": "streaming/contract-version",
@@ -199,7 +199,7 @@
       "group": "streaming/S7-the-lease-survives-a-long-stream",
       "test": "S7: the stream really outlasted the lease",
       "pass": true,
-      "detail": "784ms vs 400ms"
+      "detail": "787ms vs 400ms"
     },
     {
       "group": "streaming/S7-the-lease-survives-a-long-stream",

@@ -1,0 +1,373 @@
+{
+  "label": "shipped/w6",
+  "pass": 61,
+  "fail": 0,
+  "results": [
+    {
+      "group": "shipped/W6-G: posture follows the backend the CLI actually built",
+      "test": "the default backend is the local one",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-G: posture follows the backend the CLI actually built",
+      "test": "...which honestly declares no isolation",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-G: posture follows the backend the CLI actually built",
+      "test": "the shipped wiring derives `auto` for an unisolated backend",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-G: posture follows the backend the CLI actually built",
+      "test": "the shipped run records resource.acquired",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-G: posture follows the backend the CLI actually built",
+      "test": "...carrying the derived posture",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-G: posture follows the backend the CLI actually built",
+      "test": "...marked as derived rather than configured",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-G: posture follows the backend the CLI actually built",
+      "test": "...with the capabilities it was derived from",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-G: posture follows the backend the CLI actually built",
+      "test": "an ordinary command escalates under the shipped local posture",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-M: an approval is asked ONCE and then remembered",
+      "test": "the first encounter escalates",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-M: an approval is asked ONCE and then remembered",
+      "test": "the SAME authorizer now allows it",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-M: an approval is asked ONCE and then remembered",
+      "test": "...attributing the decision to the grant",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-M: an approval is asked ONCE and then remembered",
+      "test": "...naming who decided",
+      "pass": true,
+      "detail": "human:test"
+    },
+    {
+      "group": "shipped/W6-M: an approval is asked ONCE and then remembered",
+      "test": "a LATER RUN in the same project does not re-prompt",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-M: an approval is asked ONCE and then remembered",
+      "test": "a different command still escalates",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-M: an approval is asked ONCE and then remembered",
+      "test": "an appended command still escalates",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-M: an approval is asked ONCE and then remembered",
+      "test": "after revocation it is asked again",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
+      "test": "the bare --remember form is accepted",
+      "pass": true,
+      "detail": "answered \"approve\"  now: orionctl resume #9e14074bbd\n  remembered (session): npm test  grant_2ba80bd0a909aed2\n"
+    },
+    {
+      "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
+      "test": "...and reports that it remembered something",
+      "pass": true,
+      "detail": "answered \"approve\"  now: orionctl resume #9e14074bbd\n  remembered (session): npm test  grant_2ba80bd0a909aed2\n"
+    },
+    {
+      "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
+      "test": "...naming the command it remembered",
+      "pass": true,
+      "detail": "answered \"approve\"  now: orionctl resume #9e14074bbd\n  remembered (session): npm test  grant_2ba80bd0a909aed2\n"
+    },
+    {
+      "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
+      "test": "a grant.created event really reached the log",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
+      "test": "...covering the escalated command",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
+      "test": "...at session scope by default",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
+      "test": "...attributed to a human",
+      "pass": true,
+      "detail": "human:abhijith.p"
+    },
+    {
+      "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
+      "test": "an explicit project scope is honoured",
+      "pass": true,
+      "detail": "answered \"approve\"  now: orionctl resume #b815b618bd\n  remembered (project): npm run build  grant_548087edf053a5ac\n"
+    },
+    {
+      "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
+      "test": "...recorded at project scope",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
+      "test": "...scoped to this workspace",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
+      "test": "a DENIAL is never remembered as a grant",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
+      "test": "`orionctl grants` runs",
+      "pass": true,
+      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-ozxase\n  none — every escalation will be as"
+    },
+    {
+      "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
+      "test": "...and says plainly that nothing is remembered",
+      "pass": true,
+      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-ozxase\n  none — every escalation will be asked\n"
+    },
+    {
+      "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
+      "test": "a recorded grant is listed by the CLI",
+      "pass": true,
+      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-ozxase\ngrant_24e7016fcb24029b  project         npm test  [c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-ozxase]  b"
+    },
+    {
+      "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
+      "test": "...with its scope",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
+      "test": "...and its decider",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
+      "test": "--json emits parseable output alone",
+      "pass": true,
+      "detail": "{\n  \"project\": \"c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-ozxase\",\n  \"active\": [\n    {\n      \"grant_id\": \"g"
+    },
+    {
+      "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
+      "test": "...listing the active grant",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
+      "test": "`orionctl revoke` reports success",
+      "pass": true,
+      "detail": "revoked grant_24e7016fcb24029b\n"
+    },
+    {
+      "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
+      "test": "...and the grant is gone from the list",
+      "pass": true,
+      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-ozxase\n  none — every escalation will be asked\n  (1 revoked)\n"
+    },
+    {
+      "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
+      "test": "...but is not deleted from the log — it is recorded as revoked",
+      "pass": true,
+      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-ozxase\n  none — every escalation will be asked\n  (1 revoked)\n"
+    },
+    {
+      "group": "shipped/W6-I: a resumed run reattaches by id, in the event log",
+      "test": "the first run acquires",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-I: a resumed run reattaches by id, in the event log",
+      "test": "the shipped resume path REATTACHES",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-I: a resumed run reattaches by id, in the event log",
+      "test": "...to the same identity",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-I: a resumed run reattaches by id, in the event log",
+      "test": "exactly one acquire is in the log",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-I: a resumed run reattaches by id, in the event log",
+      "test": "and one reattach",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-I: a resumed run reattaches by id, in the event log",
+      "test": "the log never claims a silent reconstruction",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-L: output arrives incrementally, and is committed",
+      "test": "output deltas were committed",
+      "pass": true,
+      "detail": "8"
+    },
+    {
+      "group": "shipped/W6-L: output arrives incrementally, and is committed",
+      "test": "...more than one, so it really was incremental",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-L: output arrives incrementally, and is committed",
+      "test": "...but BOUNDED, not one per line",
+      "pass": true,
+      "detail": "8 deltas for 300 lines"
+    },
+    {
+      "group": "shipped/W6-L: output arrives incrementally, and is committed",
+      "test": "every delta precedes the terminal event",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-L: output arrives incrementally, and is committed",
+      "test": "delta ordering is monotonic",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-L: output arrives incrementally, and is committed",
+      "test": "a live consumer saw them as they landed",
+      "pass": true,
+      "detail": "8 rendered vs 8 committed"
+    },
+    {
+      "group": "shipped/W6-L: output arrives incrementally, and is committed",
+      "test": "the COMPLETE output is still in tool.succeeded",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-L: output arrives incrementally, and is committed",
+      "test": "deltas add nothing to the projection (no double counting)",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "group": "shipped/W6-B: the container backend is selectable and changes posture",
+      "test": "ORION_SANDBOX=container selects the container backend",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-B: the container backend is selectable and changes posture",
+      "test": "...which declares isolation",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-B: the container backend is selectable and changes posture",
+      "test": "...and no network",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-B: the container backend is selectable and changes posture",
+      "test": "an isolated backend derives `permissive`",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-B: the container backend is selectable and changes posture",
+      "test": "...recorded on the acquisition",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-B: the container backend is selectable and changes posture",
+      "test": "...as derived, not configured",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-B: the container backend is selectable and changes posture",
+      "test": "...explaining the blast-radius reasoning",
+      "pass": true,
+      "detail": "backend declares isolation='container' with network='none' —"
+    },
+    {
+      "group": "shipped/W6-B: the container backend is selectable and changes posture",
+      "test": "an ordinary command is auto-allowed inside the boundary",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-B: the container backend is selectable and changes posture",
+      "test": "a hard-denied command is STILL denied at permissive posture",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6-B: the container backend is selectable and changes posture",
+      "test": "a container that cannot be provided refuses rather than falling back",
+      "pass": true,
+      "detail": "Run #32986d25e7  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w6s-nofallback-ws-RC5i29\n────────────────────────────────────────────────\nORION_SANDBOX=container was requested but no container runtime is avai"
+    }
+  ]
+}

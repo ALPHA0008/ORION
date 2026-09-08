@@ -6,6 +6,16 @@ import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { Store, uid } from '../core/run/store.mjs';
 import { LocalSandbox, attachCheckpoints } from '../sandbox/local/index.mjs';
+// W6: the backend contract, the second (isolated) backend, and default-deny egress.
+import { assertBackendContract } from '../sandbox/backend.mjs';
+import { ContainerSandbox, detectRuntime, pruneOrionContainers } from '../sandbox/container/index.mjs';
+import { createNetworkPolicy } from '../sandbox/network.mjs';
+// W6 C/D/H/I/J: resource identity and Recovery 2.0.
+import { resolveResource, releaseResource, Resolution } from '../core/resource/index.mjs';
+import { projectResources, summariseResources } from '../core/projection/resource.mjs';
+// W6 M: approval memory.
+import { describeGrant, projectGrants, summariseGrants, projectKey, GrantScope }
+  from '../core/projection/grant.mjs';
 import { makeTools, mutatingTools } from '../agent/tools/index.mjs';
 import { createAuthorizer } from '../auth/default/index.mjs';
 import { Worker } from '../agent/loop/worker.mjs';
@@ -229,16 +239,119 @@ export function defaultCompletionContract(store, runId, { tools = null } = {}) {
   };
 }
 
-function makeWorker(store, workspace) {
-  const sandbox = attachCheckpoints(new LocalSandbox(workspace), path.join(HOME, 'workspaces',
-    Buffer.from(workspace).toString('hex').slice(0, 16) + '.git'));
-  return { sandbox, worker: (extra = {}) => new Worker(store, {
-    sandbox, model: buildModel(), tools: makeTools(sandbox),
-    authorize: createAuthorizer({ posture: process.env.ORION_POSTURE ?? 'auto' }),
-    // F5: streaming reaches the product surface. Default ON; a provider that cannot stream
-    // falls back with a recorded `degraded` event rather than silently.
-    stream: streamEnabled(),
-    ...extra }) };
+/**
+ * W6 A/B — choose the execution backend.
+ *
+ * `ORION_SANDBOX=container` opts into real isolation; `local` (the default) keeps the documented
+ * containment-only behaviour. Both satisfy the same contract, asserted here at wiring time rather
+ * than discovered on the first tool call.
+ *
+ * A REQUESTED CONTAINER THAT CANNOT BE PROVIDED IS A HARD FAILURE, never a fallback. Falling back
+ * to local would leave the operator believing commands are isolated when they are running on
+ * their own machine — and since W6-G derives posture from the backend, the quieter failure would
+ * also silently change the authorization floor. Refusing is the only honest option.
+ */
+export function makeSandbox(workspace, env = process.env) {
+  const want = String(env.ORION_SANDBOX ?? 'local').trim().toLowerCase();
+  const shadow = path.join(HOME, 'workspaces',
+    Buffer.from(workspace).toString('hex').slice(0, 16) + '.git');
+
+  if (want === 'container' || want === 'docker' || want === 'podman') {
+    const runtime = detectRuntime(want === 'container' ? {} : { candidates: [want] });
+    if (!runtime) {
+      console.error(C.r('ORION_SANDBOX=container was requested but no container runtime is available.'));
+      console.error('  Looked for: docker, podman (the CLI must exist AND its daemon must answer).');
+      console.error(C.dim('  Refusing to fall back to the local sandbox: that would run commands on this'));
+      console.error(C.dim('  machine while you believed they were isolated. Start the runtime, or unset'));
+      console.error(C.dim('  ORION_SANDBOX to use the local (containment-only) backend deliberately.'));
+      process.exit(2);
+    }
+    const sandbox = new ContainerSandbox(workspace, {
+      runtime,
+      network: createNetworkPolicy({ mode: 'none' }),   // W6-F: default-deny, and here that is
+    });                                                 // literally no network stack
+    // Checkpoints still shell to HOST git against the host side of the bind mount — the Q4
+    // reconciliation. See src/sandbox/container/index.mjs for why this is correct rather than
+    // convenient.
+    attachCheckpoints(sandbox, shadow);
+    assertBackendContract(sandbox, 'ContainerSandbox');
+    return { sandbox, backendName: 'ContainerSandbox' };
+  }
+
+  const sandbox = attachCheckpoints(new LocalSandbox(workspace), shadow);
+  assertBackendContract(sandbox, 'LocalSandbox');
+  return { sandbox, backendName: 'LocalSandbox' };
+}
+
+/**
+ * Bind a run to its resource and build a worker whose posture was DERIVED from that resource.
+ *
+ * The ordering here is the whole of W6's wiring, and it only works in this direction: the
+ * resource must be resolved BEFORE the authorizer exists, because the authorizer's posture is a
+ * consequence of the backend's declared capability (W6-G) rather than a setting. Every command
+ * that runs a turn goes through this one function, so there is no path on which a mechanism is
+ * reachable in a test and absent in the product.
+ */
+export async function prepareRun(store, runId, leaseToken, workspace) {
+  const { sandbox, backendName } = makeSandbox(workspace);
+
+  // W6 C/D/H/I/J — acquire or reattach, and record which it was.
+  const resource = await resolveResource({
+    store, runId, backend: sandbox, leaseToken, backendName,
+    postureOverride: process.env.ORION_POSTURE ?? null,
+  });
+
+  if (resource.resolution === Resolution.ESCALATED) {
+    console.log(C.y(`⚠ resource escalation: ${resource.escalate}`));
+    console.log(C.dim('  the run was bound to a resource whose state cannot be established;'));
+    console.log(C.dim('  it is recorded in the log as `resource.lost` and no work was resumed.'));
+    return { sandbox, resource, worker: null };
+  }
+  if (resource.resolution === Resolution.RECREATED) {
+    // Never silent (W6-I): the run continues, but not on the world it started on.
+    console.log(C.y('⚠ the resource this run was bound to is gone; a new one was created.'));
+    console.log(C.dim('  state held only inside the old resource did not survive'
+                    + ' (recorded as `resource.lost`).'));
+  } else if (resource.resolution === Resolution.REATTACHED) {
+    console.log(C.dim(`  reattached to ${resource.resource_id}`));
+  }
+
+  console.log(C.dim(`  sandbox: ${backendName}  posture: ${resource.posture}`
+    + `${sandbox.capabilities.isolated ? ' (isolated)' : ''}`));
+
+  const project = projectKey(workspace);
+  const authorize = createAuthorizer({
+    // DERIVED, not read from a flag. `resolveResource` already folded in any operator override
+    // and refused to let it lower the floor the backend earns.
+    posture: resource.posture,
+    // W6 M — approval memory, read at DECISION time so an approval given earlier this run (or in
+    // an earlier run against this project) is visible to the check happening now.
+    grants: () => store.grantEvents({ project }),
+  });
+
+  return {
+    sandbox, resource,
+    worker: (extra = {}) => new Worker(store, {
+      sandbox, model: buildModel(), tools: makeTools(sandbox), authorize,
+      // F5: streaming reaches the product surface. Default ON; a provider that cannot stream
+      // falls back with a recorded `degraded` event rather than silently.
+      stream: streamEnabled(),
+      // W6 L: render committed output deltas as they land. This is a CONSUMER of the durable
+      // record, not a substitute for it — the events are appended whether or not anything is
+      // watching, so piping the CLI or killing the terminal changes what you see and never what
+      // was recorded.
+      hooks: { beforeAppend: (marker, ctx) => {
+        if (marker !== 'after:tool.output_delta' || !ctx.text) return;
+        for (const line of String(ctx.text).split(String.fromCharCode(10))) {
+          if (line.trim()) console.log(C.dim('  │ ') + line.slice(0, 120));
+        }
+      } },
+      // W6 K: the authorization context carries what grants are scoped BY. Without these the
+      // grant store would be wired but could never match anything — the exact "mechanism that
+      // grants nothing" failure the plan names.
+      authContext: { project, resource_id: resource.resource_id },
+      ...extra }),
+  };
 }
 
 const short = (id) => id.replace(/^run_/, '#');
@@ -252,11 +365,16 @@ const cmds = {
     store.createRun(runId, { task });
     console.log(C.b(`Run ${short(runId)}`) + C.dim(`  ${WORK}`));
     console.log('─'.repeat(48));
-    const { worker } = makeWorker(store, WORK);
     const c = store.claim('cli', { runId });
+    // W6: resource resolution happens BEFORE the worker exists, because posture is derived from
+    // the backend rather than configured (W6-G).
+    const { worker, sandbox, resource } = await prepareRun(store, runId, c.leaseToken, WORK);
+    if (!worker) { store.close(); process.exitCode = 1; return; }
     // D2: a run is only reported complete when it demonstrably did something (ADR-013).
     const res = await worker({ completionContract: defaultCompletionContract(store, runId) })
       .run(runId, c.leaseToken, { input: task });
+    await releaseResource({ store, runId, backend: sandbox, leaseToken: c.leaseToken,
+                            reason: `run ${res.status}` });
     printLive(store, runId);
     console.log('');
     console.log(res.status === 'completed' ? C.g(`✓ ${res.reason}`) : C.y(`${res.status} — ${res.reason}`));
@@ -276,7 +394,6 @@ const cmds = {
     // /help, /runs, /exit and the banner all work unconfigured.
     reap(store); expireHumanRequests(store);
     const configured = !!process.env.ORION_BASE_URL;
-    const { worker } = makeWorker(store, WORK);
 
     const runTask = async (input) => {
       // Executing a turn is the one thing that genuinely needs a model. Refuse it with the
@@ -294,6 +411,10 @@ const cmds = {
       const c = store.claim('cli', { runId });
       if (!c) throw new Error('could not claim the run (another worker holds it)');
       console.log(C.dim(`  ${short(runId)}`));
+      // Per TURN, not per session: an interactive session resumes and rebinds exactly like
+      // `orionctl resume`, so a container that died between turns is reattached or reported.
+      const { worker, sandbox } = await prepareRun(store, runId, c.leaseToken, WORK);
+      if (!worker) return { runId, status: 'parked', reason: 'resource unavailable' };
       const res = await worker({ completionContract: defaultCompletionContract(store, runId) })
         .run(runId, c.leaseToken, resuming ? {} : { input });
       printLive(store, runId);
@@ -407,21 +528,121 @@ const cmds = {
     const c = store.claim('cli', { runId });
     if (!c) { console.log(C.r('could not claim the run (another worker holds it)')); return void store.close(); }
     console.log(C.dim(`resuming from event ${store.lastSeq(runId)}…`));
-    const { worker } = makeWorker(store, WORK);
+    // W6-I: this is where Recovery 2.0 happens — reattach by identity, or say what was lost.
+    const { worker, sandbox, resource } = await prepareRun(store, runId, c.leaseToken, WORK);
+    if (!worker) { store.close(); process.exitCode = 1; return; }
     // The completion gate applies to a resumed run exactly as it does to a fresh one.
     const res = await worker({ completionContract: defaultCompletionContract(store, runId) })
       .run(runId, c.leaseToken, {});
+    await releaseResource({ store, runId, backend: sandbox, leaseToken: c.leaseToken,
+                            reason: `run ${res.status}` });
     printLive(store, runId);
     console.log(res.status === 'completed' ? C.g(`✓ ${res.reason}`) : C.y(`${res.status} — ${res.reason}`));
     store.close();
   },
 
-  answer([id, response]) {
+  /**
+   * Answer a pending escalation — and optionally REMEMBER the answer (W6-M).
+   *
+   *   orionctl answer <run> approve                     answer once
+   *   orionctl answer <run> approve --remember          remember for this run
+   *   orionctl answer <run> approve --remember project  remember for this project, across runs
+   *
+   * Remembering is opt-in and explicit. Making it the default would be the footgun M exists to
+   * avoid: an operator approving one command would silently create standing consent, which is
+   * exactly the "approved without reading" dynamic that repeated prompting produces.
+   */
+  answer([id, response, ...rest]) {
     const store = open(); const runId = resolve(store, id);
     const pending = store.humanRequests(runId, 'pending');
     if (!pending.length) return void console.log(C.dim('nothing pending')), store.close();
-    store.answerHumanRequest(pending[0].id, response ?? 'approve');
-    console.log(C.g(`answered "${response ?? 'approve'}"`) + C.dim(`  now: orionctl resume ${short(runId)}`));
+    const answer = response ?? 'approve';
+    const req = pending[0];
+    store.answerHumanRequest(req.id, answer);
+    console.log(C.g(`answered "${answer}"`) + C.dim(`  now: orionctl resume ${short(runId)}`));
+
+    const remember = flag(rest, '--remember', has(rest, '--remember') ? 'session' : null);
+    if (remember && answer === 'approve') {
+      // The command being approved is recovered from the trajectory, not from the prompt text:
+      // the prompt is prose for a human, and a grant must key off exactly the command that will
+      // be re-run. `tool.started`/`tool.requested` carries the real args.
+      const events = store.events(runId);
+      const esc = [...events].reverse().find(e => e.type === 'tool.escalated');
+      const cmd = esc?.payload?.args?.cmd ?? null;
+      const tool = esc?.payload?.name ?? null;
+      if (!cmd && !tool) {
+        console.log(C.y('  could not identify what to remember (no tool.escalated in this run)'));
+      } else {
+        /** @type {string} */
+        const scope = remember === 'project' ? GrantScope.PROJECT
+                    : remember === 'resource' ? GrantScope.RESOURCE
+                    : GrantScope.SESSION;
+        const binding = projectResources(events).current;
+        try {
+          const g = describeGrant({
+            scope, tool: cmd ? null : tool, command: cmd,
+            project: scope === GrantScope.PROJECT ? WORK : null,
+            resourceId: scope === GrantScope.RESOURCE ? binding?.resource_id : null,
+            runId: scope === GrantScope.SESSION ? runId : null,
+            decidedBy: `human:${process.env.USERNAME ?? process.env.USER ?? 'cli'}`,
+            reason: `approved at ${new Date().toISOString()}`,
+          });
+          // Through Store.append, like every other event — there is no second path (W5 S1/S2).
+          //
+          // Deliberately UNFENCED (no lease token). A grant is an additive FACT, not a lifecycle
+          // transition: it changes no run status and takes no lease, and `append` allocates its
+          // seq inside a transaction, so a concurrent worker cannot collide with it. Claiming the
+          // run to write it would be worse than pointless — the operator is answering a run that
+          // a worker may legitimately be resuming, and stealing its lease to record an approval
+          // would fence out the very run the approval is for.
+          store.append(runId, 'grant.created', g);
+          console.log(C.g(`  remembered (${scope}): ${g.command ?? `tool:${g.tool}`}`)
+            + C.dim(`  ${g.grant_id}`));
+        } catch (e) {
+          console.log(C.y(`  could not record the grant: ${e.message}`));
+        }
+      }
+    }
+    store.close();
+  },
+
+  /** W6 M — what is currently remembered, and where it came from. */
+  grants(rest = []) {
+    const store = open();
+    const all = has(rest, '--all');
+    const events = store.grantEvents(all ? {} : { project: projectKey(WORK) });
+    const { active, grants } = projectGrants(events);
+    if (has(rest, '--json')) {
+      emitJson({ project: all ? null : projectKey(WORK), active, total: Object.keys(grants).length });
+      return void store.close();
+    }
+    console.log(C.b('remembered approvals') + C.dim(all ? '  (all projects)' : `  ${projectKey(WORK)}`));
+    const text = summariseGrants(events);
+    console.log(text ? text : C.dim('  none — every escalation will be asked'));
+    const revoked = Object.values(grants).filter(g => g.revoked).length;
+    if (revoked) console.log(C.dim(`  (${revoked} revoked)`));
+    store.close();
+  },
+
+  /** W6 M — withdraw a remembered approval. Recorded, never deleted. */
+  revoke([grantId, ...rest]) {
+    if (!grantId) die('usage: orionctl revoke <grant_id> [--reason "..."]');
+    const store = open();
+    const events = store.grantEvents({});
+    const { grants } = projectGrants(events);
+    const g = grants[grantId];
+    if (!g) { console.log(C.r(`no such grant: ${grantId}`)); return void store.close(); }
+    if (g.revoked) { console.log(C.dim('already revoked')); return void store.close(); }
+    // A revocation is an event on the run that created the grant, so the withdrawal sits in the
+    // same trajectory as the approval — deleting the row would erase the fact that it ever held.
+    const runId = g.created_in_run;
+    if (!runId) { console.log(C.r('this grant has no originating run recorded')); return void store.close(); }
+    // Unfenced, for the same reason as the grant itself — and revocation especially must not be
+    // blocked by whoever happens to hold the lease. An approval you cannot withdraw while a run
+    // is using it is not a revocation.
+    store.append(runId, 'grant.revoked',
+      { grant_id: grantId, reason: flag(rest, '--reason', 'revoked by operator') });
+    console.log(C.g(`revoked ${grantId}`));
     store.close();
   },
 
@@ -530,7 +751,15 @@ function printLive(store, runId) {
   }
 }
 const oneline = (s) => String(s ?? '').replace(/\s+/g, ' ').slice(0, 60);
-function flag(args, name) { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; }
+function flag(args, name, fallback = null) {
+  const i = args.indexOf(name);
+  if (i < 0) return fallback;
+  const v = args[i + 1];
+  // A flag present with no value, or immediately followed by another flag, takes the fallback.
+  // Without this, `--remember` alone returned undefined and the caller silently did nothing.
+  if (v === undefined || String(v).startsWith('--')) return fallback;
+  return v;
+}
 const has = (args, name) => args.includes(name);
 /**
  * Machine-readable output.
@@ -563,8 +792,13 @@ function usage() {
   orionctl rerun <run>            fresh run of the same task
   orionctl reap                   reclaim runs whose worker died
   orionctl doctor                 environment check
+  orionctl grants                 approvals this project remembers   [--all] [--json]
+  orionctl revoke <grant>         withdraw a remembered approval     [--reason "..."]
 
-${C.dim('config:')}  ORION_BASE_URL  ORION_API_KEY  ORION_MODEL  ORION_HOME  ORION_POSTURE`);
+${C.dim('config:')}  ORION_BASE_URL  ORION_API_KEY  ORION_MODEL  ORION_HOME  ORION_POSTURE
+${C.dim('sandbox:')} ORION_SANDBOX=local|container   (container ⇒ isolated, --network none,
+          and commands are auto-allowed because the blast radius is the sandbox, not your machine)
+${C.dim('answer:')}  orionctl answer <run> approve --remember [session|project|resource]`);
 }
 
 /**

@@ -39,8 +39,36 @@ Nothing mutates a run except by appending an event.
 | `agent/loop/worker` | the loop; stateless — all state comes from the log |
 | `agent/model` | one thin OpenAI-compatible client |
 | `agent/tools` | 9 tools, each declaring `recovery(args)` and its `effects` |
-| `sandbox/local` | workspace containment + git-shadow checkpoints |
+| `core/resource` | acquire / reattach / lose a resource; Recovery 2.0 |
+| `core/projection/resource` | the fold that derives the current resource binding |
+| `core/projection/grant` | the fold that derives remembered approvals |
+| `sandbox/backend` | the `SandboxBackend` contract + capability declaration |
+| `sandbox/local` | backend #1: workspace containment (**not** OS isolation) + git-shadow checkpoints |
+| `sandbox/container` | backend #2: real isolation — own process tree and network stack, workspace bind-mounted |
+| `sandbox/network` | default-deny egress; link-local and cloud-metadata always blocked |
+| `auth/posture` | posture **derived** from the backend's capability, never configured |
 | `auth/default` | `authorize(action, ctx) -> allow \| deny \| escalate` |
+
+### Execution environment (Wave 6)
+
+Two backends, one contract. `LocalSandbox` declares `isolation: 'none'` — honestly, because path
+containment is a workspace scope and not an OS boundary. `ContainerSandbox` declares
+`isolation: 'container'`, and **posture follows from that declaration**: isolated ⇒ auto-allow,
+not isolated ⇒ escalate. An operator override may raise strictness but never lower it.
+
+The container **bind-mounts** the workspace rather than copying it. That is deliberate and it is
+what keeps the recovery contract intact: the ADR-011 pre-state witness is a sha256 of bytes read
+through the sandbox, and `attachCheckpoints` shells to host `git` against a host path. Sharing the
+workspace means a witness taken inside the container equals the one taken on the host, so the
+crash matrix reaches identical decisions under both backends (measured — see
+`tests/crash/matrix-container.test.mjs`). Only **execution** is isolated: process tree, network
+(`--network none` by default), cpu and memory.
+
+A resource has durable identity, and resume **reattaches** to it rather than silently building a
+new one. The three outcomes are all named in the log: `resource.reattached`, `resource.lost` with
+`action: 'recreated'` (usable again, but permanently marked as not the same world), or
+`resource.lost` with `action: 'escalated'`. The current binding is a fold over those events, never
+a stored column.
 
 ## The loop
 
