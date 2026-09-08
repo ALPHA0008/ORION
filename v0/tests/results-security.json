@@ -223,7 +223,7 @@
       "group": "resource bounds (DoS surface)",
       "test": "long-running command is killed by the timeout",
       "pass": true,
-      "detail": "15020ms"
+      "detail": "15019ms"
     },
     {
       "group": "resource bounds (DoS surface)",
