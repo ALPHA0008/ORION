@@ -54,7 +54,7 @@ const CORE_TASKS = [
     verification: {
       method: 'cli_contract',
       // graded on the agent's final text, checked mechanically for both facts
-      check: (ctx) => {
+      check: async (ctx) => {
         const t = String(ctx.result ?? '');
         const hasPath = /taxRate\.js/.test(t);
         const hasVal = /0\.0625|6\.25\s*%/.test(t);
@@ -85,10 +85,10 @@ const CORE_TASKS = [
     expected_behavior: '--help exits 0 and mentions sum; sum still works.',
     verification: {
       method: 'cli_contract',
-      check: (ctx) => {
+      check: async (ctx) => {
         let help, sum;
-        try { help = ctx.sandbox.exec('node src/cli.js --help'); } catch (e) { return { pass: false, detail: `--help failed: ${e.message.slice(0,80)}` }; }
-        try { sum = ctx.sandbox.exec('node src/cli.js sum 1 2 3'); } catch (e) { return { pass: false, detail: `sum regressed: ${e.message.slice(0,80)}` }; }
+        try { help = await ctx.sandbox.exec('node src/cli.js --help'); } catch (e) { return { pass: false, detail: `--help failed: ${e.message.slice(0,80)}` }; }
+        try { sum = await ctx.sandbox.exec('node src/cli.js sum 1 2 3'); } catch (e) { return { pass: false, detail: `sum regressed: ${e.message.slice(0,80)}` }; }
         const okHelp = /sum/i.test(help);
         const okSum = String(sum).trim() === '6';
         return { pass: okHelp && okSum, detail: `help_mentions_sum=${okHelp} sum_still_6=${okSum}` };
@@ -140,11 +140,11 @@ const CORE_TASKS = [
     expected_behavior: 'max works, empty max errors, sum unaffected.',
     verification: {
       method: 'cli_contract',
-      check: (ctx) => {
+      check: async (ctx) => {
         let maxOut, sumOut, emptyFailed = false;
-        try { maxOut = ctx.sandbox.exec('node src/cli.js max 4 9 2'); } catch (e) { return { pass: false, detail: `max failed: ${e.message.slice(0,70)}` }; }
-        try { ctx.sandbox.exec('node src/cli.js max'); } catch { emptyFailed = true; }
-        try { sumOut = ctx.sandbox.exec('node src/cli.js sum 1 2 3'); } catch (e) { return { pass: false, detail: `sum regressed: ${e.message.slice(0,70)}` }; }
+        try { maxOut = await ctx.sandbox.exec('node src/cli.js max 4 9 2'); } catch (e) { return { pass: false, detail: `max failed: ${e.message.slice(0,70)}` }; }
+        try { await ctx.sandbox.exec('node src/cli.js max'); } catch { emptyFailed = true; }
+        try { sumOut = await ctx.sandbox.exec('node src/cli.js sum 1 2 3'); } catch (e) { return { pass: false, detail: `sum regressed: ${e.message.slice(0,70)}` }; }
         const okMax = String(maxOut).trim() === '9';
         const okSum = String(sumOut).trim() === '6';
         return { pass: okMax && emptyFailed && okSum,
@@ -163,10 +163,10 @@ const CORE_TASKS = [
     expected_behavior: 'Shared module created, all three import it, behaviour preserved.',
     verification: {
       method: 'diff_invariant',
-      check: (ctx) => {
+      check: async (ctx) => {
         const sb = ctx.sandbox;
         let tests;
-        try { tests = sb.exec('node test/totals.test.mjs'); } catch (e) { return { pass: false, detail: `tests fail: ${e.message.slice(0,70)}` }; }
+        try { tests = await sb.exec('node test/totals.test.mjs'); } catch (e) { return { pass: false, detail: `tests fail: ${e.message.slice(0,70)}` }; }
         if (!/ALL PASS/.test(tests)) return { pass: false, detail: 'tests did not report ALL PASS' };
         const shared = ['src/total.js', 'src/totals.js', 'src/shared.js', 'src/util.js', 'src/utils.js']
           .find(p => sb.exists(p));
@@ -200,10 +200,10 @@ const CORE_TASKS = [
           `const b = JSON.stringify(chunk([1,2,3,4,5],2));\n` +
           `console.log(a === '[1,2,3,4]' && b === '[[1,2],[3,4],[5]]' ? 'SPEC_OK' : 'SPEC_VIOLATED ' + a + ' ' + b);\n`);
         let specOut = '';
-        try { specOut = sb.exec('node __verify.mjs'); } catch (e) { return { pass: false, detail: `spec check crashed: ${e.message.slice(0,70)}` }; }
+        try { specOut = await sb.exec('node __verify.mjs'); } catch (e) { return { pass: false, detail: `spec check crashed: ${e.message.slice(0,70)}` }; }
         const specOk = /SPEC_OK/.test(specOut);
         let suiteOk = false;
-        try { suiteOk = /ALL PASS/.test(sb.exec('node test/list.test.mjs')); } catch { suiteOk = false; }
+        try { suiteOk = /ALL PASS/.test(await sb.exec('node test/list.test.mjs')); } catch { suiteOk = false; }
         return { pass: specOk && suiteOk,
                  detail: `spec_conformant=${specOk} suite_passes=${suiteOk} (${specOut.trim().slice(0,50)})` };
       },

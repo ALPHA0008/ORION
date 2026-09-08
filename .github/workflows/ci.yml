@@ -112,6 +112,67 @@ jobs:
         # Exercises the published bin path, not the source path — this is what a consumer runs.
         run: node ./src/cli/index.mjs --version
 
+  static:
+    name: static checks · typecheck + lint
+    runs-on: ubuntu-latest
+    # W5 Q1 + Q3 — two static gates that need no runtime dependency.
+    #
+    # Q1 (`tsc --checkJs`): A GATE, not a build step: `noEmit` is set, nothing is compiled, and the runtime
+    # still ships as plain ESM with zero runtime dependencies. `typescript` and `@types/node` are
+    # devDependencies and never reach the tarball — the `files` allowlist in package.json covers
+    # src/docs/ADRs/examples only, and the package job asserts that.
+    #
+    # It earns its place: it found a real defect on its first run. `supportsBlockGlyphs` called
+    # `stream.getDefaultEncoding()`, which does not exist on a WriteStream — the optional call
+    # always returned undefined, so a documented branch of the terminal-encoding decision had
+    # never once executed. The suite could not see it; the checker found it immediately.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install (devDependencies only — the runtime has none)
+        run: npm install
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      # W5 Q3. Zero-dependency, and it checks the conventions this project actually holds rather
+      # than a general style opinion. The load-bearing rule is the control-character scan: a `\b`
+      # written through a tool that interprets it becomes a literal 0x08, the file still parses,
+      # the regex silently stops matching, and nothing shows it. That has happened twice here, so
+      # the byte scan the session prompt mandates is now permanent rather than a manual step.
+      - name: Lint (conventions + control-character scan)
+        run: npm run lint
+
+  eval:
+    name: eval harness selfcheck
+    runs-on: ubuntu-latest
+    # W5 E1. `eval/` lives at the repository ROOT, outside v0/, which is part of why it was
+    # never gated: the other jobs all run with `working-directory: v0`.
+    #
+    # This does NOT run the benchmark — that needs a live model, and `eval/cli run` rightly
+    # refuses to substitute a scripted one. What it gates is the harness itself: that every
+    # task validates, every fixture materialises, and every verifier still FAILS on the
+    # unfixed fixture. The last of those is the point. When W5 made LocalSandbox.exec async,
+    # eleven unawaited call sites turned every verifier into an unconditional PASS, and
+    # nothing noticed, because nothing ran. A benchmark that cannot fail reports numbers
+    # people believe.
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Eval selfcheck
+        run: node eval/selfcheck.mjs
+
   package:
     name: package validation
     runs-on: ubuntu-latest

@@ -1,13 +1,13 @@
 {
   "label": "leaseheartbeat",
-  "pass": 9,
+  "pass": 45,
   "fail": 0,
   "results": [
     {
       "group": "leaseheartbeat/survives-a-slow-model-call",
       "test": "the model call really did outlast the lease",
       "pass": true,
-      "detail": "1516ms call vs 900ms lease"
+      "detail": "1518ms call vs 900ms lease"
     },
     {
       "group": "leaseheartbeat/survives-a-slow-model-call",
@@ -54,6 +54,222 @@
     {
       "group": "leaseheartbeat/no-timer-leak-when-the-model-throws",
       "test": "the lease is no longer being renewed after the run ended",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "leaseheartbeat/x2-survives-a-slow-tool-call",
+      "test": "the tool call really did outlast the lease",
+      "pass": true,
+      "detail": "1520ms run vs 900ms lease"
+    },
+    {
+      "group": "leaseheartbeat/x2-survives-a-slow-tool-call",
+      "test": "the run did NOT die as lease_lost",
+      "pass": true,
+      "detail": "model_finished"
+    },
+    {
+      "group": "leaseheartbeat/x2-survives-a-slow-tool-call",
+      "test": "the tool completed and was recorded",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "leaseheartbeat/x2-survives-a-slow-tool-call",
+      "test": "the recorded result is the tool output, not a Promise",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "leaseheartbeat/x2-survives-a-slow-tool-call",
+      "test": "the lease was renewed while the TOOL ran",
+      "pass": true,
+      "detail": "6 renewals"
+    },
+    {
+      "group": "leaseheartbeat/x2-survives-a-slow-tool-call",
+      "test": "no lease_lost event was recorded",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "leaseheartbeat/x2-tool-heartbeat-is-fenced",
+      "test": "a second worker reclaimed the run mid-tool-call",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "leaseheartbeat/x2-tool-heartbeat-is-fenced",
+      "test": "the original worker did not report a clean completion",
+      "pass": true,
+      "detail": "failed/lease_lost"
+    },
+    {
+      "group": "leaseheartbeat/x3-async-tool-result-on-the-resume-path",
+      "test": "the run paused for a human",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "leaseheartbeat/x3-async-tool-result-on-the-resume-path",
+      "test": "exactly one request is open",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "leaseheartbeat/x3-async-tool-result-on-the-resume-path",
+      "test": "the approved tool ran on the resume path",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "leaseheartbeat/x3-async-tool-result-on-the-resume-path",
+      "test": "the recorded result is the AWAITED value",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "leaseheartbeat/x3-async-tool-result-on-the-resume-path",
+      "test": "the result is not a stringified Promise",
+      "pass": true,
+      "detail": "awaited-value"
+    },
+    {
+      "group": "leaseheartbeat/x3-async-tool-rejection-becomes-tool-failed",
+      "test": "an async rejection on the resume path is recorded as tool.failed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "leaseheartbeat/x3-async-tool-rejection-becomes-tool-failed",
+      "test": "the recorded error is the real one",
+      "pass": true,
+      "detail": "async boom"
+    },
+    {
+      "group": "x4/a tool timeout is recorded as tool.timed_out",
+      "test": "the timeout is recorded as tool.timed_out",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x4/a tool timeout is recorded as tool.timed_out",
+      "test": "it is NOT recorded as a generic tool.failed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x4/a tool timeout is recorded as tool.timed_out",
+      "test": "every started tool call reached a terminal event",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x4/an ordinary failure is still tool.failed",
+      "test": "a non-timeout failure is still tool.failed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x4/an ordinary failure is still tool.failed",
+      "test": "it is not mislabelled as a timeout",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x5/cancelling before the first turn parks the run",
+      "test": "the run is parked, not failed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x5/cancelling before the first turn parks the run",
+      "test": "the reason is cancellation",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x5/cancelling before the first turn parks the run",
+      "test": "a run.parked event was recorded",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x5/cancelling before the first turn parks the run",
+      "test": "it is NOT recorded as run.failed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x5/cancelling before the first turn parks the run",
+      "test": "no tool ever started",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x5/cancelling before the first turn parks the run",
+      "test": "the store agrees the run is parked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x5/cancelling before the first turn parks the run",
+      "test": "the lease was released",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x5/a cancel mid-run does not orphan the tool call it interrupts",
+      "test": "the run parked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x5/a cancel mid-run does not orphan the tool call it interrupts",
+      "test": "the reason is cancellation",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x5/a cancel mid-run does not orphan the tool call it interrupts",
+      "test": "only the first tool call ran",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x5/a cancel mid-run does not orphan the tool call it interrupts",
+      "test": "exactly one tool call started",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x5/a cancel mid-run does not orphan the tool call it interrupts",
+      "test": "NO ORPHAN: every started call reached a terminal event",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x5/a cancel mid-run does not orphan the tool call it interrupts",
+      "test": "the interrupted call recorded its real result",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x5/a cancel mid-run does not orphan the tool call it interrupts",
+      "test": "the park is recorded after the tool resolved",
+      "pass": true,
+      "detail": "parked@11 vs succeeded@10"
+    },
+    {
+      "group": "x5/an uncancelled run is unaffected",
+      "test": "the run completed normally with a live signal",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "x5/an uncancelled run is unaffected",
+      "test": "no park event was recorded",
       "pass": true,
       "detail": ""
     }

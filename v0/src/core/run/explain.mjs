@@ -13,7 +13,9 @@ const SECRET_PATTERNS = [
 
 export function redact(text) {
   let s = String(text ?? '');
-  for (const [re, rep] of SECRET_PATTERNS) s = s.replace(re, rep);
+  // One pattern replaces via a function (the email rule keeps the domain); the rest are
+  // strings. `String.replace` has no overload covering that union, hence the cast.
+  for (const [re, rep] of SECRET_PATTERNS) s = /** @type {any} */ (s).replace(re, rep);
   return s;
 }
 

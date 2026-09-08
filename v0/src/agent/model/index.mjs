@@ -18,7 +18,12 @@ import { createStreamAccumulator, sseEvents, decodeOpenAIChunk } from './stream.
  * Works against any endpoint speaking that wire format (OpenAI, OpenRouter, Together,
  * Ollama's /v1, LM Studio, vLLM…). ONE provider, per Phase H — not a multi-provider layer.
  */
-export function createOpenAICompatModel({
+/**
+ * @param {{ baseUrl: string, apiKey?: string|null, model?: string, name?: string|null,
+ *           pricing?: any, shims?: any[], timeoutMs?: number, maxRetries?: number,
+ *           capabilities?: string[] }} opts
+ */
+export function createOpenAICompatModel(/** @type {any} */ {
   baseUrl, apiKey = null, model = 'gpt-4o-mini', name = null,
   timeoutMs = 60_000, maxRetries = 3, pricing = null,   // {in_per_mtok, out_per_mtok}
   // F5: this provider IMPLEMENTS invokeStream, so it must DECLARE streaming. The two were
@@ -46,6 +51,10 @@ export function createOpenAICompatModel({
      * otherwise, so an unsupported provider is never silently downgraded.
      *
      * `onDelta` is called at a BOUNDED cadence, not per token — see stream.mjs.
+     */
+    /**
+     * @param {{ messages?: any[], tools?: any[], temperature?: number, maxTokens?: number,
+     *           signal?: AbortSignal|null, onDelta?: ((d: any) => void)|null }} [opts]
      */
     async invokeStream({ messages, tools = [], temperature = 0, maxTokens = 2048,
                          signal = null, onDelta = null } = {}) {
@@ -78,7 +87,7 @@ export function createOpenAICompatModel({
           if (!d) continue;
           if (d.finishReason) finishReason = d.finishReason;
           if (d.usage) usage = d.usage;
-          acc.push(d);
+          acc.push(/** @type {any} */ (d));
         }
         clearTimeout(timer);
         let out = acc.finish({ finishReason, usage });
@@ -229,9 +238,10 @@ export const PROVIDER_KINDS = Object.freeze(['openai-compat', 'anthropic']);
  * An unknown kind throws HERE, at construction — not at first call. A misconfigured provider that
  * only fails once a run is underway would burn a run and produce a confusing trajectory.
  */
+/** @param {{ kind?: string } & Record<string, any>} [cfg] */
 export function createProvider({ kind = 'openai-compat', ...opts } = {}) {
   switch (kind) {
-    case 'openai-compat': return createOpenAICompatModel(opts);
+    case 'openai-compat': return createOpenAICompatModel(/** @type {any} */ (opts));
     case 'anthropic':     return createAnthropicModel(opts);
     default:
       throw new Error(`unknown provider kind: ${JSON.stringify(kind)} `

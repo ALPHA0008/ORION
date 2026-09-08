@@ -1,6 +1,6 @@
 {
   "label": "shipped",
-  "pass": 44,
+  "pass": 68,
   "fail": 0,
   "results": [
     {
@@ -264,6 +264,150 @@
     {
       "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
       "test": "F3d: every quoted term names a real tool or argument",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "T1/T2: capability metadata is declared once, on the tool",
+      "test": "mutatingTools() derives exactly the tools declaring Mutating",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "T1/T2: capability metadata is declared once, on the tool",
+      "test": "at least one tool is mutating (the check is not vacuous)",
+      "pass": true,
+      "detail": "bash,edit,write"
+    },
+    {
+      "group": "T1/T2: capability metadata is declared once, on the tool",
+      "test": "every shipped tool declares a known effect",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "T1/T2: capability metadata is declared once, on the tool",
+      "test": "pathAddressedTools() derives the tools declaring pathAddressed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "T1/T2: capability metadata is declared once, on the tool",
+      "test": "at least one tool is path-addressed",
+      "pass": true,
+      "detail": "edit,read,write"
+    },
+    {
+      "group": "T1/T2: capability metadata is declared once, on the tool",
+      "test": "every path-addressed tool takes a `path` argument",
+      "pass": true,
+      "detail": "edit,read,write"
+    },
+    {
+      "group": "T1/T2: capability metadata is declared once, on the tool",
+      "test": "makeTools(null) yields the same effects as a real toolset",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "T1/T2: capability metadata is declared once, on the tool",
+      "test": "no source file hand-maintains a list of tool names",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "T3: isKnownDangerous is public, and distinct from classifyShell",
+      "test": "isKnownDangerous is exported from the public API",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "T3: isKnownDangerous is public, and distinct from classifyShell",
+      "test": "classifyShell is still exported",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "T3: isKnownDangerous is public, and distinct from classifyShell",
+      "test": "a catastrophic command is known-dangerous",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "T3: isKnownDangerous is public, and distinct from classifyShell",
+      "test": "an ordinary command is not",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "T3: isKnownDangerous is public, and distinct from classifyShell",
+      "test": "an unrecognised command is UNSAFE to re-run",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "T3: isKnownDangerous is public, and distinct from classifyShell",
+      "test": "...but is NOT on the denylist",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "T3: isKnownDangerous is public, and distinct from classifyShell",
+      "test": "the two answers genuinely differ for at least one command",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "D1/D2: documentation states the real tool count and names",
+      "test": "ARCHITECTURE.md states a tool count",
+      "pass": true,
+      "detail": "9 tools"
+    },
+    {
+      "group": "D1/D2: documentation states the real tool count and names",
+      "test": "ARCHITECTURE.md states the REAL tool count",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "D1/D2: documentation states the real tool count and names",
+      "test": "the tools module header lists every shipped tool",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "S1/S2: Store.append is the only mutation path",
+      "test": "no module outside store.mjs touches the database directly",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "S1/S2: Store.append is the only mutation path",
+      "test": "Store.append rejects a type outside the frozen contract",
+      "pass": true,
+      "detail": "UnknownEventType"
+    },
+    {
+      "group": "R3: nothing in the runtime bypasses the status guards",
+      "test": "no caller forces a status write",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "R3: nothing in the runtime bypasses the status guards",
+      "test": "a second worker reclaimed the run",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "R3: nothing in the runtime bypasses the status guards",
+      "test": "the STALE lease cannot change the status",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "R3: nothing in the runtime bypasses the status guards",
+      "test": "the live lease can",
       "pass": true,
       "detail": ""
     }

@@ -17,6 +17,8 @@ import { verify } from '../evaluators/index.mjs';
 import { aggregate } from '../metrics/index.mjs';
 import { OUTCOME } from '../tasks/schema.mjs';
 import { explain } from '../../v0/src/core/run/explain.mjs';
+// W5 E3: a report that does not say what it measured is not a measurement.
+import { resolveConfig, describeConfig, configLine } from '../config.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const EVAL_ROOT = path.join(HERE, '..');
@@ -102,11 +104,19 @@ async function cmdRun(args) {
 
   const out = flag(args, '--out', path.join(EVAL_ROOT, 'reports', `${label.replace(/\W+/g,'-')}-${Date.now()}.json`));
   fs.mkdirSync(path.dirname(out), { recursive: true });
+  // E3: every report carries the CONFIGURATION it was produced under, as structured data.
+  // `label` is free text a human typed; it is not evidence. `configuration.deviations` names
+  // every field where the measured setup differs from what the product ships, so a stored
+  // report stays interpretable after the defaults move again.
+  const cfg = resolveConfig();
   fs.writeFileSync(out, JSON.stringify({
     label, runner: runnerName, model: process.env.HARNESS_MODEL,
     endpoint_kind: 'openai-compatible', at: new Date().toISOString(),
-    node: process.version, aggregate: agg, results,
+    node: process.version,
+    configuration: describeConfig(cfg),
+    aggregate: agg, results,
   }, null, 2));
+  console.log(C.d('  ' + configLine(cfg)));
   console.log(C.d(`\nwrote ${out}`));
 }
 
@@ -157,6 +167,30 @@ function cmdCompare([a, b]) {
   const keys = [...new Set([...Object.keys(ra), ...Object.keys(rb)])].sort();
 
   console.log(C.b(`${A.label}  ->  ${B.label}`));
+
+  // W5 E3: a comparison across two different configurations is not a comparison of the change
+  // under test — it silently folds in every config difference as if it were a result. Reports
+  // written before E3 have no `configuration` block at all; those are flagged as unknown rather
+  // than assumed compatible, because assuming is exactly how the unlabelled reports happened.
+  const cfgA = A.configuration?.config ?? null, cfgB = B.configuration?.config ?? null;
+  if (!cfgA || !cfgB) {
+    console.log(C.y('  ⚠ one or both reports predate configuration labelling (W5 E3) — '
+      + 'the configurations compared here are UNKNOWN'));
+  } else {
+    const differing = [...new Set([...Object.keys(cfgA), ...Object.keys(cfgB)])]
+      .filter(k => JSON.stringify(cfgA[k]) !== JSON.stringify(cfgB[k]));
+    if (differing.length) {
+      console.log(C.r('  ⚠ CONFIGURATIONS DIFFER — this is not a clean A/B:'));
+      for (const k of differing) console.log(C.r(`      ${k}: ${JSON.stringify(cfgA[k])} -> ${JSON.stringify(cfgB[k])}`));
+    }
+    for (const [tag, rep] of [['baseline', A], ['candidate', B]]) {
+      if (rep.configuration && !rep.configuration.matches_shipped_defaults) {
+        console.log(C.y(`  ⚠ ${tag} does not measure shipped defaults: `
+          + Object.keys(rep.configuration.deviations).join(', ')));
+      }
+    }
+  }
+
   console.log(`  success: ${A.aggregate.success_rate}%  ->  ${B.aggregate.success_rate}%  ` +
     delta(B.aggregate.success_rate - A.aggregate.success_rate, '%'));
   console.log(`  tokens/success: ${A.aggregate.tokens_per_success} -> ${B.aggregate.tokens_per_success}`);

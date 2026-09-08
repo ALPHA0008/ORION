@@ -32,8 +32,21 @@
 // log or the projection, so replay/fork/resume are unaffected and a compacted run and an
 // uncompacted run remain byte-identical in their durable history.
 
-/** Tools whose results describe the content of a specific path. */
-const PATH_TOOLS = new Set(['read', 'write', 'edit']);
+import { makeTools, pathAddressedTools } from '../../agent/tools/index.mjs';
+
+/**
+ * Tools whose results describe the content of a specific path.
+ *
+ * W5 T1/T2: this was `new Set(['read','write','edit'])` — a hand-maintained restatement of a
+ * capability the tools themselves declare (`pathAddressed: true`). A tenth path-addressed tool
+ * would not have been compacted and nothing would have reported it. The default is derived from
+ * the shipped toolset; a caller with a custom toolset passes its own via `pathTools`.
+ *
+ * Derived once at module load. `makeTools` only closes over its sandbox — it never touches it
+ * at construction — so a null sandbox yields the real descriptors, and this module keeps its
+ * property of never reaching for a workspace.
+ */
+const PATH_TOOLS = pathAddressedTools(makeTools(null));
 
 const PLACEHOLDER = (name, hint) =>
   `[superseded ${name}${hint ? ` of ${hint}` : ''} — a newer result for this target appears below; ` +
@@ -46,7 +59,12 @@ const PLACEHOLDER = (name, hint) =>
  * @param {Array} msgs provider message array (system + conversation)
  * @returns {{superseded:Set<string>, targets:Map<string,string>}}
  */
-export function findSuperseded(msgs) {
+/**
+ * @param {any[]} msgs
+ * @param {{ pathTools?: Set<string> }} [opts]
+ * @returns {{ superseded: Set<string>, targets: Map<string,string>, meta: Map<string,any> }}
+ */
+export function findSuperseded(msgs, { pathTools = PATH_TOOLS } = {}) {
   // tool_call_id -> { name, path, argKey }
   const meta = new Map();
   for (const m of msgs) {
@@ -73,7 +91,7 @@ export function findSuperseded(msgs) {
     const info = meta.get(m.tool_call_id);
     if (!info) continue;
     order.push(m.tool_call_id);
-    if (info.path && PATH_TOOLS.has(info.name)) lastByPath.set(info.path, m.tool_call_id);
+    if (info.path && pathTools.has(info.name)) lastByPath.set(info.path, m.tool_call_id);
     lastByArgs.set(info.argKey, m.tool_call_id);
   }
 
@@ -82,7 +100,7 @@ export function findSuperseded(msgs) {
   for (const id of order) {
     const info = meta.get(id);
     if (!info) continue;
-    const winnerByPath = info.path && PATH_TOOLS.has(info.name) ? lastByPath.get(info.path) : null;
+    const winnerByPath = info.path && pathTools.has(info.name) ? lastByPath.get(info.path) : null;
     const winnerByArgs = lastByArgs.get(info.argKey);
     // Superseded only if a strictly later result covers the same target.
     if ((winnerByPath && winnerByPath !== id) || (winnerByArgs && winnerByArgs !== id)) {
@@ -101,8 +119,13 @@ export function findSuperseded(msgs) {
  *        result costs more in marker text than it saves.
  * @returns {{messages:Array, elided:number, bytesSaved:number}}
  */
-export function compactMessages(msgs, { minBytes = 200, artifacts = null } = {}) {
-  const { superseded, targets, meta } = findSuperseded(msgs);
+/**
+ * @param {any[]} msgs
+ * @param {{ minBytes?: number, artifacts?: any, pathTools?: Set<string> }} [opts]
+ * @returns {{ messages: any[], elided: number, bytesSaved: number, elidedIds: string[] }}
+ */
+export function compactMessages(msgs, { minBytes = 200, artifacts = null, pathTools = PATH_TOOLS } = {}) {
+  const { superseded, targets, meta } = findSuperseded(msgs, { pathTools });
   if (superseded.size === 0) return { messages: msgs, elided: 0, bytesSaved: 0, elidedIds: [] };
 
   let elided = 0, bytesSaved = 0;

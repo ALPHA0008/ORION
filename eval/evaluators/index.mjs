@@ -14,7 +14,7 @@ export async function verify(task, ctx) {
     switch (v.method) {
       case 'test_command': {
         let out, failed = false;
-        try { out = ctx.sandbox.exec(v.command); }
+        try { out = await ctx.sandbox.exec(v.command); }
         catch (e) { failed = true; out = e.message; }
         const pass = !failed;
         return {

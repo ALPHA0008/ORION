@@ -1,6 +1,6 @@
 {
   "label": "replay semantics",
-  "pass": 44,
+  "pass": 58,
   "fail": 0,
   "results": [
     {
@@ -19,7 +19,7 @@
       "group": "setup: original run against a nondeterministic provider",
       "test": "provider output carries a nonce (is nondeterministic)",
       "pass": true,
-      "detail": "Done: created a.txt and b.txt, bumped VALUE to 20. [nonce d0be37c7]"
+      "detail": "Done: created a.txt and b.txt, bumped VALUE to 20. [nonce 0d5913f6]"
     },
     {
       "group": "REPLAY — reconstruct history, make NO model calls",
@@ -266,6 +266,90 @@
       "test": "replay of an unknown run yields empty state",
       "pass": true,
       "detail": ""
+    },
+    {
+      "group": "replay/P2-a-0.2.0-database-migrates-forward-and-replays-identically",
+      "test": "a fresh database is stamped at the current schema version",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "replay/P2-a-0.2.0-database-migrates-forward-and-replays-identically",
+      "test": "the database now looks like 0.2.0 (unstamped)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "replay/P2-a-0.2.0-database-migrates-forward-and-replays-identically",
+      "test": "opening an old database migrates it forward",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "replay/P2-a-0.2.0-database-migrates-forward-and-replays-identically",
+      "test": "the run is still there",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "replay/P2-a-0.2.0-database-migrates-forward-and-replays-identically",
+      "test": "the task is intact",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "replay/P2-a-0.2.0-database-migrates-forward-and-replays-identically",
+      "test": "every event survived the migration unchanged",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "replay/P2-a-0.2.0-database-migrates-forward-and-replays-identically",
+      "test": "the projection is IDENTICAL after the upgrade",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "replay/P2-a-0.2.0-database-migrates-forward-and-replays-identically",
+      "test": "a migrated run can be claimed again",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "replay/P2-a-0.2.0-database-migrates-forward-and-replays-identically",
+      "test": "and appended to",
+      "pass": true,
+      "detail": "9"
+    },
+    {
+      "group": "replay/P2-a-0.2.0-database-migrates-forward-and-replays-identically",
+      "test": "the frozen contract still applies after migration",
+      "pass": true,
+      "detail": "UnknownEventType"
+    },
+    {
+      "group": "replay/P2-a-0.2.0-database-migrates-forward-and-replays-identically",
+      "test": "reopening leaves the version unchanged",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "replay/P2-a-0.2.0-database-migrates-forward-and-replays-identically",
+      "test": "and the events unchanged",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "replay/P1-a-newer-database-is-REFUSED-not-guessed-at",
+      "test": "a database from the future is refused",
+      "pass": true,
+      "detail": "threw"
+    },
+    {
+      "group": "replay/P1-a-newer-database-is-REFUSED-not-guessed-at",
+      "test": "and the error says what to do",
+      "pass": true,
+      "detail": "database schema v99 is newer than this build supports (v1). Upgrade @kernlbase/orion, or point ORION_HOME at a different"
     }
   ]
 }

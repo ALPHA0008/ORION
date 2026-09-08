@@ -1,0 +1,42 @@
+{
+  // W5 Q1 — type checking as a CI GATE, not a build step.
+  //
+  // The runtime ships as plain ESM JavaScript with zero dependencies and no compile step, and
+  // that does not change: `noEmit` is true, nothing here produces output, and `typescript` is a
+  // devDependency that never reaches the published tarball (`files` in package.json lists only
+  // src/docs/ADRs/examples and the three top-level docs).
+  //
+  // What it buys is the class of defect this wave kept finding by hand: X1 made
+  // `LocalSandbox.exec` async and eleven call sites across the eval harness silently began
+  // awaiting nothing. `checkJs` with the JSDoc already in the source catches exactly that shape
+  // — a Promise used as a value, a missing await, a typo'd property — without asking anyone to
+  // write TypeScript.
+  //
+  // Strictness is deliberately moderate. The goal is to catch real mistakes in a JS codebase,
+  // not to relitigate every untyped parameter; `strict` on an unannotated codebase produces
+  // thousands of implicit-any complaints that bury the findings that matter.
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2023"],
+    "types": ["node"],
+
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+
+    // The checks that find real bugs in untyped JS.
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "useUnknownInCatchVariables": false,
+
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*.mjs"],
+  "exclude": ["node_modules", "tests", "eval"]
+}

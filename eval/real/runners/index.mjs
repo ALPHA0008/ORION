@@ -19,6 +19,8 @@ import { trajectoryMetrics } from '../../metrics/index.mjs';
 import { RealEnvironment, InfraFailure } from '../environments/index.mjs';
 import { getRepo } from '../repositories/index.mjs';
 import { snapshotTestFiles } from '../evaluators/index.mjs';
+// W5 E3: the evaluation measures the SHIPPED configuration by default.
+import { resolveConfig, describeConfig } from '../../config.mjs';
 
 export function buildModel({ timeoutMs = 180_000 } = {}) {
   return createOpenAICompatModel({
@@ -43,7 +45,7 @@ export const realV0Runner = {
     trajectory: 'event_log',
     recovery_granularity: 'tool',
     replay: true, fork: true, resume: true,
-    context_compaction: process.env.HARNESS_COMPACT === '1' ? 'supersede' : 'none',
+    context_compaction: resolveConfig().compactContext ? 'supersede' : 'none',
   },
 
   /**
@@ -52,6 +54,8 @@ export const realV0Runner = {
   async run(task, { model, root } = {}) {
     const repo = getRepo(task.repository);
     const env = new RealEnvironment(repo, { root });
+
+    const cfg = resolveConfig();
 
     // ── environment provisioning: failures here are INFRA, not capability ──
     let dir, guard;
@@ -87,7 +91,14 @@ export const realV0Runner = {
       workerId: 'real-eval',
       maxTurns: task.max_turns,
       leaseMs: task.timeout_ms + 120_000,
-      compactContext: process.env.HARNESS_COMPACT === '1',
+      // W5 E3: this used to default compaction OFF while the product shipped it ON, so every
+      // unlabelled report measured a configuration no user runs. It now resolves from
+      // SHIPPED_DEFAULTS; HARNESS_COMPACT=0 still forces it off for the A/B.
+      compactContext: cfg.compactContext,
+      contextBudgetBytes: cfg.contextBudgetBytes,
+      stream: cfg.stream,
+      temperature: cfg.temperature,
+      maxTokens: cfg.maxTokens,
       // ADR-013: the declared completion contract. Every real task in this benchmark requires a
       // world-state change, and each carries a DETERMINISTIC check (its own test command) — no
       // LLM judge. The runtime does not decide what correctness means; it asks the predicate the
@@ -135,6 +146,8 @@ export const realV0Runner = {
       // surfaced as a normal agent-side error so it cannot be hidden as INFRA.
       runError: runError ? String(runError.message).slice(0, 300) : null,
       metrics: trajectoryMetrics(store, runId, { wallMs }),
+      // E3: the configuration travels WITH the result, so a report cannot lose it.
+      config: describeConfig(cfg),
       close: () => { try { store.close(); } catch {} try { env.destroy(); } catch {} },
     };
   },

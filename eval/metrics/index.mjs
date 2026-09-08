@@ -3,11 +3,15 @@
 // The point of §11 of the brief: because every Run is a durable trajectory, behavioural metrics
 // come from the log itself rather than from ad-hoc instrumentation. Nothing here is estimated.
 
-import { project, stableDigest } from '../../v0/src/core/projection/index.mjs';
+// W5 E2: the eval harness consumes the runtime through its PUBLIC API, exactly as any other
+// consumer would. It previously deep-imported `core/projection`, a module `src/index.mjs`
+// explicitly documents as not public — so the runtime's own second consumer was validating a
+// boundary it was simultaneously breaking. `runSummary` was added in W5 to serve this need.
+import { runSummary, stableDigest } from '../../v0/src/index.mjs';
 
 export function trajectoryMetrics(store, runId, { wallMs = 0 } = {}) {
   const ev = store.events(runId);
-  const st = project(store, runId, { useSnapshot: false });
+  const st = runSummary(store, runId, { useSnapshot: false });
   const n = (t) => ev.filter(e => e.type === t).length;
 
   const modelResponses = ev.filter(e => e.type === 'model.responded');
@@ -21,7 +25,11 @@ export function trajectoryMetrics(store, runId, { wallMs = 0 } = {}) {
   // ── tool efficiency ────────────────────────────────────────────────
   const started = ev.filter(e => e.type === 'tool.started');
   const succeeded = ev.filter(e => e.type === 'tool.succeeded');
-  const failed = ev.filter(e => e.type === 'tool.failed');
+  // W5 X4: a timed-out tool is now recorded as `tool.timed_out` rather than `tool.failed`.
+  // Counting only the latter would silently under-report failures the moment X4 landed, so
+  // both are folded into the failure total and the timeout count is reported separately.
+  const timedOut = ev.filter(e => e.type === 'tool.timed_out');
+  const failed = [...ev.filter(e => e.type === 'tool.failed'), ...timedOut];
   const denied = ev.filter(e => e.type === 'tool.denied');
 
   // duplicate actions: the same (tool, args) issued more than once
@@ -85,12 +93,13 @@ export function trajectoryMetrics(store, runId, { wallMs = 0 } = {}) {
   return {
     // volume
     events: ev.length,
-    turns: st.budget.turns,
+    turns: st.turns,
     model_calls: n('model.requested'),
     model_failures: n('model.failed'),
     tool_calls: started.length,
     tool_succeeded: succeeded.length,
     tool_failed: failed.length,
+    tool_timed_out: timedOut.length,
     tool_denied: denied.length,
 
     // efficiency
@@ -119,10 +128,15 @@ export function trajectoryMetrics(store, runId, { wallMs = 0 } = {}) {
     context_compactions: n('context.compacted'),
     messages_elided: ev.filter(e => e.type === 'context.compacted').reduce((a, e) => a + (e.payload?.elided || 0), 0),
     compaction_bytes_saved: ev.filter(e => e.type === 'context.compacted').reduce((a, e) => a + (e.payload?.bytes_saved || 0), 0),
-    messages_total: st.message_count,
-    messages_hot: st.recent_messages.length,
-    messages_dropped: st.dropped_message_count,
-    projection_bytes: Buffer.byteLength(JSON.stringify(st)),
+    messages_total: st.messages_total,
+    messages_hot: st.messages_hot,
+    messages_dropped: st.messages_dropped,
+    // W5 E2: this used to serialise the FULL projection. That object is no longer reachable
+    // from the public API by design, and quietly renaming the summary's size to
+    // `projection_bytes` would have made every historical report incomparable without saying
+    // so. The honest replacement is the size of the durable log — which is what actually
+    // governs replay cost, and unlike the projection is contract, not tuning.
+    log_bytes: ev.reduce((a, e) => a + Buffer.byteLength(JSON.stringify(e)), 0),
 
     // cost
     input_tokens: tokens.in,

@@ -172,7 +172,7 @@ describe('secrets never reach durable events or explain output');
   eq('SESSION stripped', scrubbed.SESSION_ID, undefined);
 
   // the secret really is absent from the child process
-  const got = sandbox.exec(process.platform === 'win32'
+  const got = await sandbox.exec(process.platform === 'win32'
     ? 'echo "${OPENAI_API_KEY:-ABSENT}"' : 'echo "${OPENAI_API_KEY:-ABSENT}"');
   check('child process cannot see a parent API key', /ABSENT/.test(got), got.trim().slice(0, 40));
 
@@ -228,11 +228,11 @@ describe('resource bounds (DoS surface)');
   // a test-portability defect that read as a product failure.
   const emit = (n, pad) => `i=1; while [ "$i" -le ${n} ]; do echo "line $i ${pad}"; i=$((i+1)); done`;
 
-  const modest = tools.bash.run({ cmd: emit(3_000, 'padding padding') });
+  const modest = await tools.bash.run({ cmd: emit(3_000, 'padding padding') });
   check('large-but-bounded output is clamped', Buffer.byteLength(modest) <= 70_000, `${Buffer.byteLength(modest)} bytes`);
   check('clamp is announced', /truncated/.test(modest));
   let overflowErr = null;
-  try { tools.bash.run({ cmd: emit(40_000, 'padding padding padding') }); }
+  try { await tools.bash.run({ cmd: emit(40_000, 'padding padding padding') }); }
   catch (e) { overflowErr = e; }
   check('runaway output aborts instead of buffering forever', overflowErr?.kind === 'output_overflow', overflowErr?.kind);
   check('overflow error text is SHORT and actionable',
@@ -240,7 +240,7 @@ describe('resource bounds (DoS surface)');
 
   const t0 = Date.now();
   let toErr = null;
-  try { tools.bash.run({ cmd: 'sleep 30' }); } catch (e) { toErr = e; }
+  try { await tools.bash.run({ cmd: 'sleep 30' }); } catch (e) { toErr = e; }
   check('long-running command is killed by the timeout', !!toErr && Date.now() - t0 < 25_000, `${Date.now() - t0}ms`);
   check('timeout is classified distinctly', toErr?.kind === 'timeout', toErr?.kind);
   check('timeout error text is short', (toErr?.message?.length ?? 999) < 200, `${toErr?.message?.length} chars`);

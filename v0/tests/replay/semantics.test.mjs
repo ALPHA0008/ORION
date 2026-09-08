@@ -187,6 +187,106 @@ describe('guard rails');
   check('replay of an unknown run yields empty state', replay(store, 'nope').state.seq === 0);
 }
 
+// ─────────────────────────────────────────── W5 P1/P2: cross-version durability (Invariant 9)
+//
+// ACCEPTANCE 1: "a 0.2.0 database migrates forward and replays identically."
+//
+// A run's value is that it stays readable. Before W5 the schema had no version stamp at all, so
+// an older database opened by a newer build would either work by luck or fail in whatever way
+// the mismatch happened to produce — and a NEWER database opened by an OLDER build would appear
+// to work while silently ignoring columns it could not see, which is how data is lost quietly.
+//
+// The 0.2.0 shape is reproduced honestly: a database written by this build, then stamped back to
+// `user_version = 0`, which is exactly what a pre-migration build left behind (no stamp at all →
+// SQLite reports 0). The assertion is not that the file opens — it is that the PROJECTION
+// reconstructed from the migrated database is identical to the one from before the migration.
+
+describe('replay/P2-a-0.2.0-database-migrates-forward-and-replays-identically');
+{
+  const d = path.join(DIR, 'p2-upgrade'); fs.mkdirSync(d, { recursive: true });
+  const dbPath = path.join(d, 'old.db');
+
+  // 1. Write a real run, then reopen and reconstruct the pre-migration truth.
+  const before = new Store(dbPath, { durability: 'normal' });
+  const oldRun = uid('run');
+  before.createRun(oldRun, { task: 'a run written by the previous version' });
+  const claim = before.claim('w-old', { runId: oldRun, leaseMs: 60_000 });
+  before.append(oldRun, 'turn.started', { input: 'go' }, { leaseToken: claim.leaseToken });
+  before.append(oldRun, 'tool.requested', { tool_call_id: 'tc1', name: 'read', args: { path: 'a.txt' } }, { leaseToken: claim.leaseToken });
+  before.append(oldRun, 'tool.started', { tool_call_id: 'tc1', name: 'read', args: { path: 'a.txt' } }, { leaseToken: claim.leaseToken });
+  before.append(oldRun, 'tool.succeeded', { tool_call_id: 'tc1', name: 'read', result: 'hello' }, { leaseToken: claim.leaseToken });
+  before.append(oldRun, 'turn.finished', { tool_calls: 1 }, { leaseToken: claim.leaseToken });
+
+  eq('a fresh database is stamped at the current schema version', before.schemaVersion(), 1);
+  const eventsBefore = JSON.stringify(before.events(oldRun));
+  const projBefore = JSON.stringify(project(before, oldRun, { useSnapshot: false }));
+  before.close();
+
+  // 2. Rewind the stamp to 0 — the 0.2.0 shape, which carried no version at all.
+  {
+    const { DatabaseSync } = await import('node:sqlite');
+    const raw = new DatabaseSync(dbPath);
+    raw.exec('PRAGMA user_version=0');
+    eq('the database now looks like 0.2.0 (unstamped)',
+      Number(raw.prepare('PRAGMA user_version').get().user_version), 0);
+    raw.close();
+  }
+
+  // 3. Open it with the current build. This is the upgrade.
+  const after = new Store(dbPath, { durability: 'normal' });
+  eq('opening an old database migrates it forward', after.schemaVersion(), 1);
+
+  // 4. The run survives, byte-for-byte, and projects identically.
+  check('the run is still there', !!after.run(oldRun));
+  eq('the task is intact', after.run(oldRun).task, 'a run written by the previous version');
+  eq('every event survived the migration unchanged', JSON.stringify(after.events(oldRun)), eventsBefore);
+  eq('the projection is IDENTICAL after the upgrade',
+    JSON.stringify(project(after, oldRun, { useSnapshot: false })), projBefore);
+
+  // 5. The migrated database is still writable, and still fenced/contract-checked.
+  const claim2 = after.claim('w-new', { runId: oldRun, leaseMs: 60_000, now: Date.now() + 120_000 });
+  check('a migrated run can be claimed again', !!claim2);
+  const seq = after.append(oldRun, 'run.completed', { reason: 'model_finished' }, { leaseToken: claim2.leaseToken });
+  check('and appended to', typeof seq === 'number' && seq > 0, String(seq));
+  let rejected = null;
+  try { after.append(oldRun, 'totally.made.up', {}, { leaseToken: claim2.leaseToken }); }
+  catch (e) { rejected = e; }
+  check('the frozen contract still applies after migration', rejected !== null,
+    rejected ? rejected.constructor.name : 'accepted an unknown type');
+
+  // 6. Migration is idempotent — reopening does not re-run it or disturb the data.
+  const countAfterWrites = after.events(oldRun).length;
+  after.close();
+  const again = new Store(dbPath, { durability: 'normal' });
+  eq('reopening leaves the version unchanged', again.schemaVersion(), 1);
+  // The pre-migration events, plus exactly the two appended in step 5 (run.leased from the
+  // re-claim, and run.completed). Derived rather than hardcoded so the count cannot drift.
+  eq('and the events unchanged', again.events(oldRun).length, countAfterWrites);
+  again.close();
+}
+
+describe('replay/P1-a-newer-database-is-REFUSED-not-guessed-at');
+{
+  // The other half of Invariant 9, and the more dangerous direction. An older build opening a
+  // newer database must fail loudly: appearing to work while ignoring unknown columns is how a
+  // database is silently corrupted.
+  const d = path.join(DIR, 'p2-newer'); fs.mkdirSync(d, { recursive: true });
+  const dbPath = path.join(d, 'future.db');
+  const s = new Store(dbPath, { durability: 'normal' });
+  s.close();
+  {
+    const { DatabaseSync } = await import('node:sqlite');
+    const raw = new DatabaseSync(dbPath);
+    raw.exec('PRAGMA user_version=99');
+    raw.close();
+  }
+  let threw = null;
+  try { new Store(dbPath, { durability: 'normal' }); } catch (e) { threw = e; }
+  check('a database from the future is refused', threw !== null, threw ? 'threw' : 'opened it anyway');
+  check('and the error says what to do',
+    /newer than this build supports/.test(String(threw?.message)), String(threw?.message).slice(0, 120));
+}
+
 await prov.close();
 store.close();
 process.exit(summary('replay semantics', path.join(HERE, '../results-replay.json')) ? 1 : 0);

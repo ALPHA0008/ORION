@@ -1,4 +1,4 @@
-// V0 toolset: read, write, edit, grep, bash, ask_user.
+// V0 toolset: read, grep, write, edit, bash, verify, plan, plan_step, ask_user.
 // Each tool computes recovery() FROM ITS ARGUMENTS (ADR-002).
 
 import { RecoveryClass, classifyShell, isKnownDangerous } from '../../core/recovery/index.mjs';
@@ -187,6 +187,10 @@ export function makeTools(sandbox) {
           limit: { type: 'integer', description: 'Maximum lines to return (default: all).' },
         } },
       effects: 'ReadOnly',
+      // W5 T1/T2: this tool's result describes the content of a specific path, which is what
+      // makes it compactable by supersession. Declared here rather than in a list inside
+      // core/projection/compact.mjs, which is not the authority on what a tool does.
+      pathAddressed: true,
       recovery: () => ({ class: RecoveryClass.READ_ONLY }),
       run: ({ path, offset, limit }) => readPaged(sandbox, path, offset, limit),
     },
@@ -209,6 +213,10 @@ export function makeTools(sandbox) {
         properties: { path: { type: 'string' }, content: { type: 'string' },
                       expected_pre_sha: { type: 'string' } } },
       effects: 'Mutating',
+      // W5 T1/T2: this tool's result describes the content of a specific path, which is what
+      // makes it compactable by supersession. Declared here rather than in a list inside
+      // core/projection/compact.mjs, which is not the authority on what a tool does.
+      pathAddressed: true,
 
       // ADR-011: capture a trusted PRE-STATE WITNESS (the runtime computes it, never the model).
       // The worker folds this into `args` before appending `tool.started`, so it is durable and
@@ -285,6 +293,10 @@ export function makeTools(sandbox) {
       schema: { type: 'object', required: ['path', 'old_string', 'new_string'],
         properties: { path: { type: 'string' }, old_string: { type: 'string' }, new_string: { type: 'string' } } },
       effects: 'Mutating',
+      // W5 T1/T2: this tool's result describes the content of a specific path, which is what
+      // makes it compactable by supersession. Declared here rather than in a list inside
+      // core/projection/compact.mjs, which is not the authority on what a tool does.
+      pathAddressed: true,
       // Content-addressed precondition: the effect invalidates it, so a replay rejects itself.
       recovery: ({ path, old_string, new_string }) => ({
         class: RecoveryClass.SELF_VERIFYING,
@@ -316,7 +328,9 @@ export function makeTools(sandbox) {
       effects: 'Mutating',
       // ADR-002: argument-dependent. Conservative classifier; unknown => UNSAFE => escalate.
       recovery: ({ cmd }) => ({ class: classifyShell(cmd) }),
-      run: ({ cmd }) => sandbox.exec(cmd),
+      // W5 / X1: `sandbox.exec` is now async. The worker already awaits `tool.run(...)`, so this
+      // is a type change, not a control-flow change.
+      run: async ({ cmd }) => sandbox.exec(cmd),
     },
 
     // WAVE 1 (D2): verification as first-class trajectory evidence.
@@ -345,14 +359,14 @@ export function makeTools(sandbox) {
                       expect: { type: 'string', description: 'optional substring that must appear in the output' } } },
       effects: 'ReadOnly',
       recovery: () => ({ class: RecoveryClass.READ_ONLY }),
-      run: ({ cmd, expect }) => {
+      run: async ({ cmd, expect }) => {
         if (isKnownDangerous(cmd)) {
           throw new Error(`verify refuses a command with known side effects: ${cmd}. `
                         + 'Use bash if you genuinely need to change the world.');
         }
         let out, ok = true, exitCode = 0;
         try {
-          out = sandbox.exec(cmd);
+          out = await sandbox.exec(cmd);
         } catch (e) {
           // A failing check is a RESULT, not a tool error — the agent must be able to read the
           // failure and act on it. Only the refusal above is a genuine tool error.
@@ -489,4 +503,46 @@ export function validateArgs(tool, args) {
     if (spec.type && t !== spec.type) errs.push(`property ${k} must be ${spec.type}, got ${t}`);
   }
   return errs;
+}
+
+/**
+ * W5 T1 — capability metadata is DECLARED ONCE, on the tool.
+ *
+ * `src/cli/index.mjs` carried `const MUTATING_TOOLS = new Set(['write','edit','bash'])`, which
+ * restated what each of those tools already declares as `effects: 'Mutating'`. Two statements
+ * of the same fact drift: adding a mutating tool, or changing an existing tool's effects,
+ * updated one and silently left the other — and the one that governs whether a run counts as
+ * having changed the world (ADR-013's completion contract) was the copy, not the declaration.
+ *
+ * These helpers derive the answer from the toolset that is actually wired, so a new tool is
+ * classified correctly the moment it exists. See `tests/shipped` for the rule that forbids
+ * reintroducing a hand-maintained list (T2).
+ */
+export const EFFECTS = Object.freeze({ READ_ONLY: 'ReadOnly', MUTATING: 'Mutating' });
+
+/** Names of tools in `tools` that can change the world. */
+export function mutatingTools(tools) {
+  return new Set(Object.entries(tools)
+    .filter(([, t]) => t?.effects === EFFECTS.MUTATING)
+    .map(([name]) => name));
+}
+
+/** True when `tools[name]` declares a mutating effect. */
+export function isMutating(tools, name) {
+  return tools?.[name]?.effects === EFFECTS.MUTATING;
+}
+
+/**
+ * W5 T1/T2 — tools whose result describes the content of a specific path.
+ *
+ * Declared here for the same reason as `effects`: `core/projection/compact.mjs` held
+ * `const PATH_TOOLS = new Set(['read','write','edit'])`, a hand-maintained restatement of a
+ * capability the tools themselves are the authority on. A tenth path-addressed tool would not
+ * have been compacted, and nothing would have said so. Compaction reads this via its
+ * `pathTools` option, defaulting to the shipped toolset.
+ */
+export function pathAddressedTools(tools) {
+  return new Set(Object.entries(tools)
+    .filter(([, t]) => t?.pathAddressed === true)
+    .map(([name]) => name));
 }

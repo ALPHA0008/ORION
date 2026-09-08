@@ -24,11 +24,54 @@ export const ExitReason = Object.freeze({
   // ADR-013: the model stopped, but the run's declared objective was not satisfied.
   // Distinct from a crash and from a lost lease — the run simply did not finish its work.
   FINISHED_WITHOUT_CHANGE: 'finished_without_change',
+  // W5 X5: the run was cancelled by its caller. NOT a failure: nothing broke, and saying
+  // `failed` would be untruthful about why the run stopped (ADR-013). The run parks, which is
+  // the existing terminal status for "stopped, not finished, and here is why".
+  CANCELLED: 'cancelled',
 });
 
 export class Worker {
+  // W5 Q1: these are assigned in one `Object.assign(this, {...})` at the end of the constructor,
+  // which a static checker cannot see through — without these declarations every read of
+  // `this.store`, `this.model`, … is reported as a missing property (66 of this file's
+  // findings were that one pattern). Declaring them keeps the single assign while making the
+  // instance shape checkable, so a genuine typo in a field name is now caught.
+  /** @type {import('../../core/run/store.mjs').Store} */ store;
+  /** @type {any} */ sandbox;
+  /** @type {any} */ model;
+  /** @type {Record<string, any>} */ tools;
+  /** @type {(action: any, ctx: any) => any} */ authorize;
+  /** @type {string} */ workerId;
+  /** @type {number} */ leaseMs;
+  /** @type {number} */ snapshotEvery;
+  /** @type {number} */ maxTurns;
+  /** @type {number} */ maxRepeatedCalls;
+  /** @type {number} */ maxTurnsWithoutProgress;
+  /** @type {number} */ maxConsecutiveModelFailures;
+  /** @type {{tokens?: number, tool_calls?: number, cost_usd?: number}} */ budget;
+  /** @type {string} */ systemPrompt;
+  /** @type {boolean} */ compactContext;
+  /** @type {number} */ contextBudgetBytes;
+  /** @type {number} */ artifactMinBytes;
+  /** @type {number} */ temperature;
+  /** @type {number} */ maxTokens;
+  /** @type {boolean} */ stream;
+  /** @type {any} */ completionContract;
+  /** @type {{beforeAppend?: (marker: string, ctx: any) => void}} */ hooks;
+
   #leaseTokens = new Map();
 
+  /**
+   * @param {any} store
+   * @param {{ sandbox?: any, model?: any, tools?: Record<string, any>,
+   *           authorize?: (action: any, ctx: any) => any, workerId?: string, leaseMs?: number,
+   *           snapshotEvery?: number, maxTurns?: number, maxRepeatedCalls?: number,
+   *           maxTurnsWithoutProgress?: number, maxConsecutiveModelFailures?: number,
+   *           budget?: any, systemPrompt?: string, compactContext?: boolean,
+   *           contextBudgetBytes?: number, artifactMinBytes?: number, temperature?: number,
+   *           maxTokens?: number, stream?: boolean, completionContract?: any,
+   *           hooks?: any }} [opts]
+   */
   constructor(store, {
     sandbox, model, tools, authorize,
     workerId = uid('w'),
@@ -115,17 +158,42 @@ export class Worker {
   /**
    * Run one worker session. Assumes the caller already holds the lease.
    * Returns { status, reason, ... }.
+   *
+   * W5 X5 — cancellation.
+   *
+   * `signal` is a standard AbortSignal, so a caller cancels with the platform primitive rather
+   * than a bespoke handle. Cancellation is COOPERATIVE and checked only at points where no
+   * effect is in flight:
+   *
+   *   - at the top of each turn, before any model spend;
+   *   - after the model responds, before the first tool call of that turn is authorized;
+   *   - between tool calls within a turn.
+   *
+   * It is deliberately NOT checked between `tool.started` and the tool's completion event. A
+   * cancel that landed there would abandon a call whose effect had already happened without
+   * recording its outcome — manufacturing exactly the orphan that ADR-002/003 recovery exists
+   * to eliminate. An in-flight tool therefore always runs to its terminal event first; the
+   * cancel takes effect immediately afterwards. "No orphan effect" is the requirement, and
+   * finishing the current call is what satisfies it.
    */
-  async run(runId, leaseToken, { input = null } = {}) {
+  async run(runId, leaseToken, { input = null, signal = null } = {}) {
     this.#leaseTokens.set(runId, leaseToken);
     try {
-      return await this.#runLoop(runId, leaseToken, { input });
+      return await this.#runLoop(runId, leaseToken, { input, signal });
     } finally {
       if (this.#leaseTokens.get(runId) === leaseToken) this.#leaseTokens.delete(runId);
     }
   }
 
-  async #runLoop(runId, leaseToken, { input = null } = {}) {
+  /** Park the run as cancelled. Returns a stop result, or null when not cancelled. */
+  #checkCancelled(runId, leaseToken, signal, where) {
+    if (!signal?.aborted) return null;
+    return this.#stop(runId, leaseToken, 'parked', ExitReason.CANCELLED, {
+      detail: `cancelled by caller at ${where}`,
+    });
+  }
+
+  async #runLoop(runId, leaseToken, { input = null, signal = null } = {}) {
     const S = this.store;
     if (input !== null && this.#append(runId, 'turn.started', { input }) === null)
       return this.#leaseLost();
@@ -135,13 +203,19 @@ export class Worker {
     if (rec) return rec;
 
     // ---- 2. consume any human answers that arrived while we were away ----
-    const hr = this.#consumeHumanAnswers(runId, leaseToken);
+    const hr = await this.#consumeHumanAnswers(runId, leaseToken);
     if (hr) return hr;
 
     // ---- 3. main loop ----
     for (let turn = 0; turn < this.maxTurns; turn++) {
       if (!this.store.renew(runId, leaseToken, { leaseMs: this.leaseMs }))
         return this.#stop(runId, leaseToken, 'failed', ExitReason.LEASE_LOST);
+
+      // X5 checkpoint: before spending a model call. Cheapest possible place to stop.
+      {
+        const c = this.#checkCancelled(runId, leaseToken, signal, 'turn start');
+        if (c) return c;
+      }
 
       let state = project(S, runId);
 
@@ -388,7 +462,13 @@ export class Worker {
       }
 
       // ---- tools ----
+      //
+      // X5 checkpoints bracket the dispatch but never interrupt a single call: the model has
+      // already responded, so stopping here wastes nothing and abandons nothing. Between calls
+      // the previous one has reached its terminal event, so there is no orphan to recover.
       for (const tc of resp.tool_calls) {
+        const c = this.#checkCancelled(runId, leaseToken, signal, 'before tool call');
+        if (c) return c;
         const paused = await this.#runToolCall(runId, leaseToken, tc);
         if (paused) return paused;
       }
@@ -495,12 +575,33 @@ export class Worker {
     if (!this.#ensureLease(runId, leaseToken)) return this.#leaseLost();
     this.#hook('before:tool.effect', { runId, tcid });
 
+    // W5 X2: the tool path gets the SAME lease heartbeat the model path got in D1.
+    //
+    // Before this, a tool call longer than the lease silently lost the lease while it ran: the
+    // reaper reclaimed the run, and the completion below could not be recorded even though the
+    // effect had already happened. Now that LocalSandbox.exec is asynchronous (X1) the event
+    // loop is free during the call, so `setInterval` can actually fire — X1 made this possible
+    // and X2 is what delivers it. A synchronous tool still blocks and still cannot be renewed;
+    // that is a property of the tool, not of this wrapper.
     let out = null, failed = null;
-    try { out = await tool.run(args); } catch (e) { failed = e; }
+    try {
+      out = await this.#withLeaseHeartbeat(runId, leaseToken, () => tool.run(args));
+    } catch (e) { failed = e; }
     this.#hook('after:tool.effect', { runId, tcid });    // <- the crash window
 
+    // W5 X4: a tool that timed out is recorded as `tool.timed_out`, not `tool.failed`.
+    //
+    // NO CONTRACT CHANGE IS NEEDED. `tool.timed_out` is already one of the 39 frozen v4 types,
+    // and the projection, replay filter, and explain renderer have always handled it — it was
+    // simply never emitted, so a timeout was indistinguishable from any other failure in the
+    // log. The distinction matters because a timeout means the effect may still be in flight
+    // (the child was SIGTERM'd, not proven not to have run), whereas most failures are known
+    // not to have taken effect. The sandbox already tags this as `kind: 'timeout'`; this is the
+    // one line that stops throwing that information away.
+    const timedOut = failed != null && failed.kind === 'timeout';
     const recorded = failed
-      ? this.#append(runId, 'tool.failed', { tool_call_id: tcid, name: tc.name, error: String(failed.message ?? failed) })
+      ? this.#append(runId, timedOut ? 'tool.timed_out' : 'tool.failed',
+          { tool_call_id: tcid, name: tc.name, error: String(failed.message ?? failed) })
       : this.#append(runId, 'tool.succeeded', { tool_call_id: tcid, name: tc.name, result: String(out ?? '') });
     if (recorded === null) return this.#leaseLost();
     this.#hook('after:tool.succeeded', { runId, tcid });
@@ -583,36 +684,57 @@ export class Worker {
     return null;
   }
 
-  #consumeHumanAnswers(runId, leaseToken) {
+  // W5 X3: this path was synchronous and therefore silently wrong for any async tool.
+  //
+  // `run()` returns a Promise; `String(r)` recorded "[object Promise]" as the tool result, and
+  // a rejection escaped the try/catch entirely (an unhandled rejection instead of tool.failed).
+  // X1 made every sandbox-backed tool async, so this was no longer a latent defect. The method
+  // is now async and the call is awaited under the SAME heartbeat as the primary path (X2) —
+  // a human-approved tool call is not somehow shorter than an auto-approved one.
+  async #consumeHumanAnswers(runId, leaseToken) {
     const S = this.store;
     let state = project(S, runId);
     for (const hr of S.humanRequests(runId, 'answered')) {
       if (!this.#ensureLease(runId, leaseToken)) return this.#leaseLost();
-      if (!state.open_human_requests[hr.id]) { S.consumeHumanRequest(hr.id); continue; }
-      const tcid = state.open_human_requests[hr.id].tool_call_id;
-      if (this.#append(runId, 'human.responded', { request_id: hr.id, response: hr.response, tool_call_id: tcid }) === null) return this.#leaseLost();
+      // node:sqlite types every column as SQLOutputValue; the schema guarantees TEXT for an id.
+      const hrId = String(hr.id);
+      if (!state.open_human_requests[hrId]) { S.consumeHumanRequest(hrId); continue; }
+      const tcid = state.open_human_requests[hrId].tool_call_id;
+      if (this.#append(runId, 'human.responded', { request_id: hrId, response: hr.response, tool_call_id: tcid }) === null) return this.#leaseLost();
       if (tcid) {
         const pend = state.pending_tool_calls[tcid];
         if (hr.response === 'approve' && pend) {
           if (!this.#ensureLease(runId, leaseToken)) return this.#leaseLost();
           this.#append(runId, 'tool.started', { tool_call_id: tcid, name: pend.name, args: pend.args });
           try {
-            const r = this.tools[pend.name].run(pend.args);
+            const r = await this.#withLeaseHeartbeat(runId, leaseToken, () => this.tools[pend.name].run(pend.args));
             if (this.#append(runId, 'tool.succeeded', { tool_call_id: tcid, name: pend.name, result: String(r ?? '') }) === null) return this.#leaseLost();
           } catch (e) {
-            if (this.#append(runId, 'tool.failed', { tool_call_id: tcid, name: pend.name, error: String(e.message ?? e) }) === null) return this.#leaseLost();
+            // X4 applies here too: a human-approved tool that times out is still a timeout.
+            // Recording it as a plain failure on this path only would make the log's meaning
+            // depend on whether a human happened to be in the loop.
+            if (this.#append(runId, e?.kind === 'timeout' ? 'tool.timed_out' : 'tool.failed',
+                  { tool_call_id: tcid, name: pend.name, error: String(e.message ?? e) }) === null) return this.#leaseLost();
           }
         } else {
           this.#append(runId, 'tool.denied', { tool_call_id: tcid, name: pend?.name ?? 'unknown',
             reason: `human responded: ${hr.response}` });
         }
       }
-      S.consumeHumanRequest(hr.id);
+      S.consumeHumanRequest(hrId);
       state = project(S, runId);
     }
     if (S.run(runId)?.status === 'paused') {
-      S.setStatus(runId, 'running', { force: true });
-    if (this.#append(runId, 'run.resumed', {}) === null) return this.#leaseLost();
+      // W5 R3: this was `{ force: true }` with NO lease token, so it bypassed execution fencing
+      // outright — a worker that had already lost its lease could still flip a paused run back
+      // to running, behind the back of whichever worker legitimately held it.
+      //
+      // The bypass bought nothing. `force` exists to skip the "never terminalize twice" guard,
+      // and `paused` is not terminal, so the ONLY thing it was skipping here was the fencing
+      // check. Passing the lease token makes this an ordinary fenced write; if we no longer hold
+      // the lease it returns false and we stop, which is the correct outcome.
+      if (!S.setStatus(runId, 'running', { leaseToken })) return this.#leaseLost();
+      if (this.#append(runId, 'run.resumed', {}) === null) return this.#leaseLost();
     }
     return null;
   }
@@ -665,7 +787,12 @@ export class Worker {
   // ---------------------------------------------------------------- exits
   #stop(runId, leaseToken, status, reason, extra = {}) {
     this.#hook('before:terminal', { runId });
-    const type = status === 'completed' ? 'run.completed' : 'run.failed';
+    // W5 X5: `parked` is a third terminal status, and it already has its own event type.
+    // Folding it into `run.failed` would say the run broke when in fact it was stopped
+    // deliberately — the exact truthfulness failure ADR-013 exists to prevent.
+    const type = status === 'completed' ? 'run.completed'
+               : status === 'parked'    ? 'run.parked'
+               : 'run.failed';
     if (!this.#ensureLease(runId, leaseToken)) return this.#leaseLost();
     const seq = this.store.appendStatus(runId, type, { reason, ...extra }, status,
       { leaseToken, releaseLease: true });

@@ -53,14 +53,16 @@ export function fork(store, srcRunId, atSeq, { newRunId = uid('run'), scope = nu
   const openToolCalls = openToolCallsAt(prefix);
   const atTurnBoundary = openToolCalls.length === 0;
 
-  store.tx(() => {
-    store.db.prepare(`INSERT INTO runs (id,parent_run_id,forked_from_seq,scope,principal,status,attempts,created_at,task)
-                      VALUES (?,?,?,?,?,'pending',0,?,?)`)
-      .run(newRunId, srcRunId, atSeq, scope ?? src.scope, principal ?? src.principal, Date.now(), src.task);
-    const ins = store.db.prepare('INSERT INTO events (run_id,seq,type,at,causation_id,payload) VALUES (?,?,?,?,?,?)');
-    for (const e of prefix)
-      ins.run(newRunId, e.seq, e.type, e.at, e.causation_id, e.payload == null ? null : JSON.stringify(e.payload));
-  });
+  // W5 (S1/S2): this used to issue its own INSERTs against `store.db`, including into `events` —
+  // the second place the closed vocabulary could be bypassed. Copied history is re-validated by
+  // the Store: history that could not be written today must not become writable by being copied.
+  store.createForkedRun(newRunId, {
+    parent_run_id: srcRunId,
+    forked_from_seq: atSeq,
+    scope: scope ?? src.scope,
+    principal: principal ?? src.principal,
+    task: src.task,
+  }, prefix);
 
   // Mark the seam explicitly so `explain` can show where history stops and the new future starts.
   store.append(newRunId, 'run.resumed', {

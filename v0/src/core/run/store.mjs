@@ -57,6 +57,36 @@ CREATE INDEX IF NOT EXISTS runs_claimable ON runs(status, lease_expires_at);
 CREATE INDEX IF NOT EXISTS hr_by_run ON human_requests(run_id, status);
 `;
 
+// ── Schema versioning (W5 / P1) ─────────────────────────────────────────────
+//
+// Until now the schema was `CREATE TABLE IF NOT EXISTS` and nothing else: a database written by an
+// older build was simply opened and used, and a schema change would have silently produced a
+// half-shaped database with no way to detect it. That is Invariant 9 — an old log must replay
+// under a new build — resting on nothing but the schema never changing.
+//
+// SQLite's own `user_version` pragma is the version store: it costs no table, it is atomic with
+// the file, and it is readable by any SQLite tool if this runtime is ever unavailable.
+//
+// RULES, so a future migration cannot quietly break an existing database:
+//   1. Migrations are FORWARD-ONLY and applied in order, each inside one transaction.
+//   2. A migration NEVER rewrites or deletes an event. The log is the authority; a migration may
+//      add tables, columns or indexes around it.
+//   3. Opening a database from a NEWER build than this one is refused loudly rather than guessed
+//      at — a downgrade that silently ignores unknown columns is how data is lost.
+export const SCHEMA_VERSION = 1;
+
+/**
+ * Ordered forward migrations. Index i upgrades a database at version i to version i+1.
+ *
+ * v0 -> v1 is deliberately a no-op: every database written before this wave already has the
+ * v1 shape (that is what SCHEMA creates), so the only thing to do is stamp it. Recording it as a
+ * real migration rather than special-casing "unversioned" means the runner has exactly one code
+ * path, and the first genuine schema change is an ordinary entry rather than a new mechanism.
+ */
+const MIGRATIONS = [
+  { to: 1, name: 'baseline', apply: (_db) => { /* shape already created by SCHEMA */ } },
+];
+
 export class Store {
   /** @param {string} dbPath  @param {{durability?:'full'|'normal'}} opts */
   constructor(dbPath, { durability = 'full' } = {}) {
@@ -67,7 +97,48 @@ export class Store {
     this.db.exec('PRAGMA foreign_keys=ON');
     this.db.exec('PRAGMA busy_timeout=5000');
     this.db.exec(SCHEMA);
+    this.#migrate();
     this.#prepare();
+  }
+
+  /**
+   * Bring the database to SCHEMA_VERSION (W5 / P1).
+   *
+   * Runs before anything is prepared, so a migration can change shape that prepared statements
+   * would otherwise have bound to. Each step is its own transaction: a crash between two
+   * migrations leaves the database at the last COMPLETED version rather than half-way through one.
+   */
+  #migrate() {
+    const current = Number(this.db.prepare('PRAGMA user_version').get().user_version ?? 0);
+
+    if (current > SCHEMA_VERSION) {
+      // Refuse rather than guess. A newer database opened by an older build would appear to work
+      // while ignoring columns it cannot see — the failure mode that loses data quietly.
+      throw new Error(
+        `database schema v${current} is newer than this build supports (v${SCHEMA_VERSION}). `
+        + 'Upgrade @kernlbase/orion, or point ORION_HOME at a different database.');
+    }
+    if (current === SCHEMA_VERSION) return;
+
+    for (const m of MIGRATIONS) {
+      if (m.to <= current) continue;
+      this.db.exec('BEGIN IMMEDIATE');
+      try {
+        m.apply(this.db);
+        // PRAGMA does not accept a bound parameter; `m.to` is an integer literal from this file,
+        // never user input.
+        this.db.exec(`PRAGMA user_version=${Number(m.to)}`);
+        this.db.exec('COMMIT');
+      } catch (err) {
+        try { this.db.exec('ROLLBACK'); } catch { /* the failure below is the real one */ }
+        throw new Error(`schema migration to v${m.to} (${m.name}) failed: ${err?.message ?? err}`);
+      }
+    }
+  }
+
+  /** The schema version this database is currently at. */
+  schemaVersion() {
+    return Number(this.db.prepare('PRAGMA user_version').get().user_version ?? 0);
   }
 
   #prepare() {
@@ -78,6 +149,22 @@ export class Store {
     this._putSnap  = d.prepare('INSERT OR REPLACE INTO snapshots (run_id,seq,state) VALUES (?,?,?)');
     this._getSnap  = d.prepare('SELECT seq,state FROM snapshots WHERE run_id=? AND seq<=? ORDER BY seq DESC LIMIT 1');
     this._getRun   = d.prepare('SELECT * FROM runs WHERE id=?');
+
+    // W5 / S1: statements for the operations that used to be raw SQL in the reaper and in fork.
+    this._selStale = d.prepare(
+      `SELECT id, attempts, lease_token, status FROM runs
+        WHERE status='running' AND lease_expires_at IS NOT NULL AND lease_expires_at <= ?`);
+    this._reclaim = d.prepare(
+      `UPDATE runs SET status=?, lease_expires_at=NULL, lease_token=NULL, worker_id=NULL
+        WHERE id=? AND lease_token IS ? AND lease_expires_at IS NOT NULL AND lease_expires_at <= ?`);
+    this._selDueHr = d.prepare(
+      `SELECT id, run_id FROM human_requests
+        WHERE status='pending' AND expires_at IS NOT NULL AND expires_at <= ?`);
+    this._expireHr = d.prepare(`UPDATE human_requests SET status='expired' WHERE id=?`);
+    this._setStatusUnfenced = d.prepare('UPDATE runs SET status=? WHERE id=?');
+    this._insRunFull = d.prepare(
+      `INSERT INTO runs (id,parent_run_id,forked_from_seq,scope,principal,status,attempts,created_at,task)
+       VALUES (?,?,?,?,?,?,?,?,?)`);
   }
 
   // ---------------------------------------------------------------- events
@@ -129,7 +216,8 @@ export class Store {
   putSnapshot(runId, seq, state) { this._putSnap.run(runId, seq, JSON.stringify(state)); }
   getSnapshot(runId, upToSeq = Number.MAX_SAFE_INTEGER) {
     const r = this._getSnap.get(runId, upToSeq);
-    return r ? { seq: Number(r.seq), state: JSON.parse(r.state) } : null;
+    // node:sqlite types every column as SQLOutputValue; the schema guarantees TEXT here.
+    return r ? { seq: Number(r.seq), state: JSON.parse(String(r.state)) } : null;
   }
 
   // ------------------------------------------------------------------ runs
@@ -214,20 +302,126 @@ export class Store {
     return this.tx(() => {
       const r = this._getRun.get(runId);
       if (!r) return false;
-      if (!force && TERMINAL.has(r.status)) return false;             // never terminalize twice
+      if (!force && TERMINAL.has(String(r.status))) return false;     // never terminalize twice
       if (!force && leaseToken !== null && !this.#leaseIsLive(runId, leaseToken)) return false; // fencing
       const fenced = !force && leaseToken !== null;
       const sql = releaseLease
         ? `UPDATE runs SET status=?, lease_expires_at=NULL, lease_token=NULL, worker_id=NULL WHERE id=?${fenced ? ' AND lease_token=? AND lease_expires_at>?' : ''}`
         : `UPDATE runs SET status=? WHERE id=?${fenced ? ' AND lease_token=? AND lease_expires_at>?' : ''}`;
-      const args = releaseLease
-        ? (fenced ? [status, runId, leaseToken, Date.now()] : [status, runId])
-        : (fenced ? [status, runId, leaseToken, Date.now()] : [status, runId]);
+      // X7: this was a ternary on `releaseLease` whose two branches were byte-identical. The
+      // argument list depends only on whether the statement is fenced.
+      const args = fenced ? [status, runId, leaseToken, Date.now()] : [status, runId];
       return this.db.prepare(sql).run(...args).changes > 0;
     });
   }
 
+  // ── Store boundary (W5 / S1-S3, R1-R4) ────────────────────────────────────
+  //
+  // These exist so no caller needs `store.db`. Before this wave the reaper and `fork` reached
+  // past the Store and issued raw SQL — including two `INSERT INTO events` that bypassed
+  // `isKnownType()` entirely, so the "closed vocabulary" could be broken by any caller willing to
+  // write SQL. Proven: a raw insert of `totally.made.up` was accepted and read back.
+  //
+  // Invariant 1 says `Store.append` is the ONLY mutation path. A guard that a caller can step
+  // around is not a guard, and moving these inside also puts storage behind one seam — the
+  // precondition for a non-SQLite backend later without touching three modules (S3).
+
+  /** Runs whose lease has expired and which are therefore reclaimable. */
+  staleRuns({ now = Date.now() } = {}) {
+    return this._selStale.all(now);
+  }
+
+  /**
+   * Reclaim ONE stale run and record why, atomically (R1/R4).
+   *
+   * Compare-and-set on the observed lease token: a racing reaper or a fresh claim invalidates it,
+   * so two reapers cannot both act. The status change and its event commit together — a crash
+   * between them would leave a run reclaimed with no record of why, which `explain` could not
+   * narrate.
+   */
+  /**
+   * @param {string} runId
+   * @param {{ observedLeaseToken?: string|null, status: string, type: string,
+   *           payload?: any, now?: number }} opts
+   */
+  reclaimStale(runId, { observedLeaseToken, status, type, payload, now = Date.now() } = /** @type {any} */ ({})) {
+    if (!isKnownType(type)) throw new UnknownEventType(type);
+    const json = payload == null ? null : JSON.stringify(payload);
+    return this.tx(() => {
+      const changed = this._reclaim.run(status, runId, observedLeaseToken, now).changes;
+      if (changed === 0) return false;
+      const seq = Number(this._maxSeq.get(runId).m) + 1;
+      this._insEvent.run(runId, seq, type, now, null, json);
+      return true;
+    });
+  }
+
+  /** Human requests whose deadline has passed. */
+  dueHumanRequests({ now = Date.now() } = {}) {
+    return this._selDueHr.all(now);
+  }
+
+  /**
+   * Expire one human request and park its run — as ONE transaction (R1/R2).
+   *
+   * This was four writes across three transactions, so a crash mid-way could expire the request
+   * without parking the run, or park it with no `run.parked` event. It also used
+   * `setStatus(..., {force:true})`, which skips the terminal guard: a run that had already
+   * completed could be forced back to `parked` (R2). Terminal is now respected — a finished run
+   * is left alone and the caller is told, rather than silently rewritten.
+   */
+  expireHumanRequest(requestId, runId, { now = Date.now() } = {}) {
+    return this.tx(() => {
+      const r = this._getRun.get(runId);
+      if (!r) return { expired: false, parked: false, reason: 'no such run' };
+
+      this._expireHr.run(requestId);
+      let seq = Number(this._maxSeq.get(runId).m) + 1;
+      this._insEvent.run(runId, seq, 'human.timed_out', now, null,
+                         JSON.stringify({ request_id: requestId }));
+
+      // R2: never rewrite a terminal run. The request genuinely expired and that is recorded;
+      // the run's outcome stands.
+      if (TERMINAL.has(String(r.status))) return { expired: true, parked: false, reason: `run already ${r.status}` };
+
+      this._setStatusUnfenced.run('parked', runId);
+      this._insEvent.run(runId, seq + 1, 'run.parked', now, null,
+                         JSON.stringify({ reason: 'human_request_expired' }));
+      return { expired: true, parked: true, reason: null };
+    });
+  }
+
+  /**
+   * Create a forked run and copy its inherited history, atomically (S1/S2).
+   *
+   * `fork` previously issued its own INSERTs, including into `events` — the second bypass of the
+   * closed vocabulary. Copied events are re-validated here: history that could not be written
+   * today must not become writable by being copied.
+   */
+  createForkedRun(newRunId, source, events) {
+    return this.tx(() => {
+      this._insRunFull.run(newRunId, source.parent_run_id ?? null, source.forked_from_seq ?? null,
+        source.scope, source.principal, 'pending', 0, Date.now(), source.task ?? null);
+      for (const e of events) {
+        if (!isKnownType(e.type)) throw new UnknownEventType(e.type);
+        this._insEvent.run(newRunId, e.seq, e.type, e.at, e.causation_id ?? null,
+          e.payload == null ? null : JSON.stringify(e.payload));
+      }
+      return newRunId;
+    });
+  }
+
+  /** `PRAGMA integrity_check` — exposed so the CLI's doctor need not reach for `store.db`. */
+  integrityOk() {
+    try { this.db.exec('PRAGMA integrity_check'); return true; } catch { return false; }
+  }
+
   /** Atomically append a terminal/pause event and update the run under one live lease. */
+  /**
+   * @param {string} runId @param {string} type @param {any} payload @param {string} status
+   * @param {{ leaseToken?: string|null, releaseLease?: boolean,
+   *           causationId?: string|null, at?: number }} [opts]
+   */
   appendStatus(runId, type, payload, status,
     { leaseToken, releaseLease = true, causationId = null, at = Date.now() } = {}) {
     if (!isKnownType(type)) throw new UnknownEventType(type);
@@ -235,14 +429,13 @@ export class Store {
     return this.tx(() => {
       if (!this.#leaseIsLive(runId, leaseToken)) return false;
       const r = this._getRun.get(runId);
-      if (!r || TERMINAL.has(r.status)) return false;
+      if (!r || TERMINAL.has(String(r.status))) return false;
       const next = releaseLease
         ? this.db.prepare(`UPDATE runs SET status=?, lease_expires_at=NULL, lease_token=NULL, worker_id=NULL
                            WHERE id=? AND lease_token=? AND lease_expires_at>?`)
         : this.db.prepare(`UPDATE runs SET status=? WHERE id=? AND lease_token=? AND lease_expires_at>?`);
-      const changed = next.run(...(releaseLease
-        ? [status, runId, leaseToken, Date.now()]
-        : [status, runId, leaseToken, Date.now()])).changes;
+      // X7: likewise byte-identical branches. appendStatus is always fenced.
+      const changed = next.run(status, runId, leaseToken, Date.now()).changes;
       if (changed === 0) return false;
       const seq = Number(this._maxSeq.get(runId).m) + 1;
       this._insEvent.run(runId, seq, type, at, causationId, json);

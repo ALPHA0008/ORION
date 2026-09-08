@@ -5,6 +5,8 @@
 // provider existed. `index.mjs` re-exports it, so the public surface is unchanged.
 
 export class ModelError extends Error {
+  /** @type {any} Partial stream accumulation, present when a stream died mid-flight (W5 Q1). */
+  partial;
   constructor(msg, { retryable = false, status = null, kind = 'unknown' } = {}) {
     super(msg); this.name = 'ModelError';
     this.retryable = retryable; this.status = status; this.kind = kind;

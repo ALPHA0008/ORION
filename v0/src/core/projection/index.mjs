@@ -213,3 +213,39 @@ function sortKeys(v) {
   }
   return v;
 }
+
+/**
+ * W5 E2 — a stable, public read-only view of a run.
+ *
+ * `eval/` needed six facts about a finished run (turn count, context-window sizes, final
+ * status) and, having no public way to get them, deep-imported `project` from this module —
+ * which `src/index.mjs` explicitly documents as NOT public, because bounded-window mechanics
+ * are tuning rather than contract. That left the runtime's own second consumer depending on an
+ * internal, so the boundary was decorative.
+ *
+ * The fix is to export what the consumer actually needs, not the machinery it was reaching
+ * through. These fields are a stable surface: `project`'s internal shape stays free to change,
+ * and `summarise()` renders this same information as text for humans.
+ */
+export function runSummary(store, runId, { useSnapshot = true } = {}) {
+  const s = project(store, runId, { useSnapshot });
+  return {
+    status: s.status,
+    exit_reason: s.exit_reason,
+    seq: s.seq,
+    turns: s.budget.turns,
+    model_calls: s.budget.model_calls,
+    tool_calls: s.budget.tool_calls,
+    tokens: s.budget.tokens,
+    input_tokens: s.budget.input_tokens,
+    output_tokens: s.budget.output_tokens,
+    cache_read_tokens: s.budget.cache_read_tokens,
+    cost_usd: s.budget.cost_usd,
+    messages_total: s.message_count,
+    messages_hot: s.recent_messages.length,
+    messages_dropped: s.dropped_message_count,
+    degradation_count: s.degradation_count,
+    pending_tool_calls: Object.keys(s.pending_tool_calls).length,
+    open_human_requests: Object.keys(s.open_human_requests).length,
+  };
+}

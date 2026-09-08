@@ -6,7 +6,7 @@ import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { Store, uid } from '../core/run/store.mjs';
 import { LocalSandbox, attachCheckpoints } from '../sandbox/local/index.mjs';
-import { makeTools } from '../agent/tools/index.mjs';
+import { makeTools, mutatingTools } from '../agent/tools/index.mjs';
 import { createAuthorizer } from '../auth/default/index.mjs';
 import { Worker } from '../agent/loop/worker.mjs';
 import { project } from '../core/projection/index.mjs';
@@ -24,13 +24,18 @@ const WORK = process.env.ORION_WORKSPACE ?? process.cwd();
 
 // Colour only on a TTY. Piped or redirected the Proxy returns identity functions, so `--json`
 // and every other machine-read path stays free of escape sequences.
+//
+// The annotation is what makes this checkable (W5 Q1): the Proxy branch is structurally `{}`, so
+// without it the union narrows to nothing and every single use of `C.dim` / `C.r` / … is
+// reported as a missing property — 81 of this file's findings were that one inference.
+/** @type {Record<'dim'|'b'|'g'|'r'|'y'|'c'|'cb'|'m', (s: any) => string>} */
 const C = process.stdout.isTTY
   ? { dim: s => `\x1b[2m${s}\x1b[0m`, b: s => `\x1b[1m${s}\x1b[0m`, g: s => `\x1b[32m${s}\x1b[0m`,
       r: s => `\x1b[31m${s}\x1b[0m`, y: s => `\x1b[33m${s}\x1b[0m`, c: s => `\x1b[36m${s}\x1b[0m`,
       // bright cyan for the wordmark, magenta for accents — the banner should read as a logo,
       // not as more output.
       cb: s => `\x1b[96m${s}\x1b[0m`, m: s => `\x1b[95m${s}\x1b[0m` }
-  : new Proxy({}, { get: () => (s => s) });
+  : /** @type {any} */ (new Proxy({}, { get: () => (s => s) }));
 
 function open() { fs.mkdirSync(HOME, { recursive: true }); return new Store(DB); }
 
@@ -143,9 +148,21 @@ export function buildModel(env = process.env) {
  * An unsatisfied run gets exactly one bounded continuation (the worker counts it from the
  * durable log, so a crash cannot buy a second) and then fails as FINISHED_WITHOUT_CHANGE.
  */
-const MUTATING_TOOLS = new Set(['write', 'edit', 'bash']);
+// W5 T1: which tools change the world is DERIVED from the toolset's own `effects`
+// declarations, never restated here. This was `new Set(['write','edit','bash'])` — a second
+// copy of a fact each tool already declares, and the copy is what decided whether a run had
+// really done its work. A tenth tool with `effects: 'Mutating'` is now counted automatically;
+// under the old list it would have been silently treated as read-only.
+//
+// `tools` is a parameter so a caller running a restricted toolset gets a contract that matches
+// what it actually wired. It defaults to the shipped toolset for the common case.
+// Built once, with a null sandbox: `makeTools` only closes over the sandbox, it never touches
+// it at construction, so this yields the real shipped descriptors — including their `effects` —
+// without needing a workspace. Anything that would make that untrue is caught by the T2 test.
+const SHIPPED_TOOL_EFFECTS = makeTools(null);
 
-export function defaultCompletionContract(store, runId) {
+export function defaultCompletionContract(store, runId, { tools = null } = {}) {
+  const MUTATING = mutatingTools(tools ?? SHIPPED_TOOL_EFFECTS);
   const inspect = () => {
     const events = store.events(runId);
     const names = new Map();          // tool_call_id -> tool name, from the request event
@@ -155,11 +172,11 @@ export function defaultCompletionContract(store, runId) {
     let anySucceeded = false, mutationSucceeded = false, mutationAttempted = false;
     let verifyPassed = false;
     for (const e of events) {
-      if (e.type === 'tool.requested' && MUTATING_TOOLS.has(e.payload?.name)) mutationAttempted = true;
+      if (e.type === 'tool.requested' && MUTATING.has(e.payload?.name)) mutationAttempted = true;
       if (e.type === 'tool.succeeded') {
         anySucceeded = true;
         const tool = names.get(e.payload?.tool_call_id);
-        if (MUTATING_TOOLS.has(tool)) mutationSucceeded = true;
+        if (MUTATING.has(tool)) mutationSucceeded = true;
         // A `verify` result's first line is its verdict. A PASS is the strongest evidence the
         // trajectory can hold that the work actually holds up — stronger than any bookkeeping.
         if (tool === 'verify' && /^PASS/.test(String(e.payload?.result ?? ''))) verifyPassed = true;
@@ -265,9 +282,9 @@ const cmds = {
       // Executing a turn is the one thing that genuinely needs a model. Refuse it with the
       // fix rather than letting the model layer throw a connection error.
       if (!configured) {
-        const e = new Error('No model configured — set ORION_BASE_URL and ORION_API_KEY, then try again.');
-        e.hint = 'e.g.  set ORION_BASE_URL=https://api.openai.com/v1';
-        throw e;
+        throw Object.assign(
+          new Error('No model configured — set ORION_BASE_URL and ORION_API_KEY, then try again.'),
+          { hint: 'e.g.  set ORION_BASE_URL=https://api.openai.com/v1' });
       }
       // `/resume <id>` arrives as an object; plain text starts a new run.
       const resuming = typeof input === 'object' && input.resume;
@@ -480,7 +497,8 @@ const cmds = {
     console.log(`  ${stale.length ? C.y(`stale leases      ${stale.length} (run 'orionctl reap')`) : C.g('stale leases      none')}`);
     console.log(`  ${waiting.length ? C.y(`awaiting human    ${waiting.length}`) : C.g('awaiting human    none')}`);
     let sqliteOk = true;
-    try { store.db.exec('PRAGMA integrity_check'); } catch { sqliteOk = false; }
+    // W5 (S1): the last `store.db` reach outside the Store. Integrity is the Store's question.
+    sqliteOk = store.integrityOk();
     console.log(`  db integrity      ${sqliteOk ? C.g('ok') : C.r('FAILED')}`);
     store.close();
   },

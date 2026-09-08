@@ -35,7 +35,10 @@
     "CONTRIBUTING.md"
   ],
   "scripts": {
-    "test": "node tests/run-all.mjs"
+    "test": "node tests/run-all.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "coverage": "node tests/coverage.mjs",
+    "lint": "node tests/lint.mjs"
   },
   "keywords": [
     "agent",
@@ -58,5 +61,9 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0",
+    "@types/node": "^22.0.0"
   }
 }

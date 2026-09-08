@@ -1,32 +1,31 @@
 // Reaper: reclaim runs whose lease expired (the owning worker died).
-// Invariants: never terminalize twice; never steal a live lease; compare-and-set on reclaim
-// so two racing reapers cannot both act on the same run.
+//
+// Invariants: never terminalize twice; never steal a live lease; compare-and-set on reclaim so two
+// racing reapers cannot both act on the same run.
+//
+// W5 (S1/S2/R1-R4): this module used to issue six raw SQL statements against `store.db`, two of
+// them `INSERT INTO events` that bypassed `isKnownType()` — so the closed vocabulary could be
+// broken by anyone willing to write SQL. It now goes through the Store, which is Invariant 1
+// ("Store.append is the only mutation path") holding in fact rather than by convention.
 
 export function reap(store, { maxAttempts = 5, now = Date.now(), reaperId = 'reaper' } = {}) {
-  const stale = store.db.prepare(
-    `SELECT id, attempts, lease_token, status FROM runs
-      WHERE status='running' AND lease_expires_at IS NOT NULL AND lease_expires_at <= ?`
-  ).all(now);
+  const stale = store.staleRuns({ now });
 
   let requeued = 0, parked = 0, skipped = 0;
   const actions = [];
 
   for (const r of stale) {
-    // Compare-and-set: only act if the lease_token is still the one we observed AND
-    // the lease is still expired. A racing reaper or a fresh claim invalidates both.
     const park = Number(r.attempts) >= maxAttempts;
-    const applied = store.tx(() => {
-      const res = store.db.prepare(
-        `UPDATE runs SET status=?, lease_expires_at=NULL, lease_token=NULL, worker_id=NULL
-          WHERE id=? AND lease_token IS ? AND lease_expires_at IS NOT NULL AND lease_expires_at <= ?`
-      ).run(park ? 'parked' : 'pending', r.id, r.lease_token, now);
-      if (res.changes === 0) return false;
-      const seq = Number(store.db.prepare('SELECT COALESCE(MAX(seq),0) m FROM events WHERE run_id=?').get(r.id).m) + 1;
-      store.db.prepare('INSERT INTO events (run_id,seq,type,at,causation_id,payload) VALUES (?,?,?,?,?,?)')
-        .run(r.id, seq, park ? 'run.parked' : 'run.lease_lost', now, null,
-             JSON.stringify({ reason: park ? 'max_attempts' : 'lease_expired',
-                              attempts: Number(r.attempts), reaper: reaperId }));
-      return true;
+    // One transaction: the status change and the event that explains it commit together. A crash
+    // between them would leave a run reclaimed with no record of why, which `explain` could not
+    // narrate — and an unexplainable reclaim is indistinguishable from a lost run.
+    const applied = store.reclaimStale(r.id, {
+      observedLeaseToken: r.lease_token,
+      status: park ? 'parked' : 'pending',
+      type: park ? 'run.parked' : 'run.lease_lost',
+      payload: { reason: park ? 'max_attempts' : 'lease_expired',
+                 attempts: Number(r.attempts), reaper: reaperId },
+      now,
     });
     if (!applied) { skipped++; continue; }
     park ? parked++ : requeued++;
@@ -35,16 +34,24 @@ export function reap(store, { maxAttempts = 5, now = Date.now(), reaperId = 'rea
   return { requeued, parked, skipped, actions };
 }
 
-/** Expire human requests whose deadline passed; parks the run rather than losing it. */
+/**
+ * Expire human requests whose deadline passed; park the run rather than losing it.
+ *
+ * R1: this was four writes across three transactions, so a crash mid-sequence could expire the
+ * request without parking the run, or park it with no `run.parked` event to explain the park.
+ * It is now one atomic call per request.
+ *
+ * R2: it also used `setStatus(..., { force: true })`, which skips the "never terminalize twice"
+ * guard — so an already-completed run could be forced back to `parked` by a late timeout. The
+ * Store now refuses that: the expiry is still recorded, and the run's outcome stands.
+ */
 export function expireHumanRequests(store, { now = Date.now() } = {}) {
-  const due = store.db.prepare(
-    `SELECT id, run_id FROM human_requests WHERE status='pending' AND expires_at IS NOT NULL AND expires_at <= ?`
-  ).all(now);
+  const due = store.dueHumanRequests({ now });
+  let parked = 0, skippedTerminal = 0;
   for (const hr of due) {
-    store.db.prepare(`UPDATE human_requests SET status='expired' WHERE id=?`).run(hr.id);
-    store.append(hr.run_id, 'human.timed_out', { request_id: hr.id }, { at: now });
-    store.setStatus(hr.run_id, 'parked', { force: true });
-    store.append(hr.run_id, 'run.parked', { reason: 'human_request_expired' }, { at: now });
+    const r = store.expireHumanRequest(hr.id, hr.run_id, { now });
+    if (r.parked) parked++;
+    else if (r.expired) skippedTerminal++;
   }
-  return { expired: due.length };
+  return { expired: due.length, parked, skippedTerminal };
 }

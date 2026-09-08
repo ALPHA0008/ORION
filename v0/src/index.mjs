@@ -36,6 +36,15 @@ export {
 } from './core/replay/index.mjs';
 export { explain, summarise, redact } from './core/run/explain.mjs';
 
+// W5 E2: a stable, read-only view of a run as DATA (`summarise` renders the same facts as text).
+//
+// `project` itself stays private — see the note above; its bounded-window shape is tuning. But
+// `eval/` legitimately needs turn counts, context sizes and the final status, and with no public
+// accessor it deep-imported `project`, which made the "not exported" boundary decorative. This
+// exports the need rather than the machinery. `stableDigest` comes with it because comparing two
+// tool-call argument objects for identity is part of the same read-only analysis.
+export { runSummary, stableDigest } from './core/projection/index.mjs';
+
 // ── Planning (event contract v2) ────────────────────────────────────────────
 // A plan is DERIVED: `projectPlan` folds plan.* events into the current plan. Nothing about a
 // plan is stored, so it survives a crash and reconstructs identically under resume and replay.
@@ -91,7 +100,17 @@ export { createAuthorizer, Decision, digestArgs } from './auth/default/index.mjs
 // ── Recovery ────────────────────────────────────────────────────────────────
 // RecoveryClass is contract (tools declare one). classifyShell is an internal heuristic and is
 // exported for inspection only — treat its exact verdicts as unstable.
-export { RecoveryClass, decideRecovery, classifyShell } from './core/recovery/index.mjs';
+// W5 T3: `isKnownDangerous` is exported too. It and `classifyShell` answer DIFFERENT questions,
+// and that distinction is load-bearing — collapsing them is a standing non-goal:
+//
+//   classifyShell(cmd)     — how safely can this be RE-RUN after a crash? A default-deny
+//                            recovery classification; an unrecognised command is UNSAFE.
+//   isKnownDangerous(cmd)  — is this on the explicit denylist that no posture may authorize
+//                            (rm -rf /, mkfs, dd to a device)? An explicit, enumerated set.
+//
+// A deployer writing an authorizer needs the second to reproduce the shipped hard denials; the
+// first tells them nothing about that. It was reachable only by deep-importing `core/recovery`.
+export { RecoveryClass, decideRecovery, classifyShell, isKnownDangerous } from './core/recovery/index.mjs';
 
 // ── Worker: the run loop ────────────────────────────────────────────────────
 export {

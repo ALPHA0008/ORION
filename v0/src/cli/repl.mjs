@@ -43,11 +43,16 @@ const ASCII_FALLBACK = [
 /**
  * True when stdout can be trusted to render U+2588 rather than tofu.
  *
- * The honest test is the stream's own encoding, not the terminal's brand. Windows 10 1903+
- * consoles — including plain cmd.exe and conhost — negotiate UTF-8 and render block glyphs
- * correctly, so keying off WT_SESSION alone needlessly downgrades most modern Windows users.
- * A raw codepage of 437 is not disqualifying: what matters is what Node writes with.
+ * Windows 10 1903+ consoles — including plain cmd.exe and conhost — negotiate UTF-8 and render
+ * block glyphs correctly, so keying off WT_SESSION alone needlessly downgrades most modern
+ * Windows users. A raw codepage of 437 is not disqualifying.
+ *
+ * The decision is therefore: explicit opt-out/in, then known-good terminals, then an explicitly
+ * declared `ORION_ENCODING`, then the OS build number. An earlier version claimed to consult
+ * the stream's own declared encoding; it never could (W5 Q1) — see below.
  */
+// `stream` is retained in the signature (callers and tests pass it) but is no longer consulted —
+// see the W5 Q1 note below for why the encoding probe that used it was removed.
 export function supportsBlockGlyphs(env = process.env, stream = process.stdout) {
   if (env.ORION_ASCII === '1') return false;               // explicit opt-out
   if (env.ORION_ASCII === '0') return true;                // explicit opt-in
@@ -56,10 +61,20 @@ export function supportsBlockGlyphs(env = process.env, stream = process.stdout) 
   // Terminals that are known-good regardless of what the encoding probe reports.
   if (env.WT_SESSION || env.WT_PROFILE_ID || env.TERM_PROGRAM || env.ConEmuANSI) return true;
 
-  // Otherwise trust the console's declared output encoding. Node reports UTF-8 here on
-  // Windows 10 1903+ even when `chcp` still says 437, which is precisely the case that the
-  // brand check above gets wrong.
-  const declared = String(stream?.getDefaultEncoding?.() ?? env.ORION_ENCODING ?? '').toLowerCase();
+  // An explicitly declared encoding wins if one is set.
+  //
+  // W5 Q1 (found by `tsc --checkJs`): this used to read `stream.getDefaultEncoding()` and the
+  // comment claimed Node reports UTF-8 there on Windows 10 1903+. That method does not exist on
+  // a WriteStream — the optional call always yielded `undefined`, so the branch never once
+  // fired and the decision has always fallen through to the build-number check below. The
+  // optional-call syntax made it harmless, and invisible.
+  //
+  // It is NOT "fixed" by reaching for the real value: the only stream property carrying it is
+  // the private `_writableState.defaultEncoding`, which reports 'utf8' on every platform
+  // regardless of what the console can actually render — it would return true universally and
+  // defeat the check. So the probe is dropped and `ORION_ENCODING` (a real, documented escape
+  // hatch) is read directly. Behaviour is unchanged; the comment is now true.
+  const declared = String(env.ORION_ENCODING ?? '').toLowerCase();
   if (declared.includes('utf')) return true;
 
   // Windows 10 1903 (build 18362) is where console UTF-8 became dependable. Below that, or

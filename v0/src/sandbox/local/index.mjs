@@ -9,6 +9,24 @@ export const MAX_OUTPUT_BYTES = 64 * 1024;   // tool output bounded AT SOURCE (A
 export const MAX_ERROR_BYTES = 2 * 1024;     // error text must be FAR smaller than output
 export const GREP_MAX_HITS = 500;
 
+/**
+ * The sandbox's error taxonomy, as a type rather than four ad-hoc augmentations of `Error`.
+ *
+ * W5 Q1: `#execError` built plain Errors and then attached `exitCode` and `kind` to each. That
+ * works at runtime but the taxonomy — which recovery classification depends on — was invisible
+ * to any checker, so a typo'd `kind` or a forgotten `exitCode` would have gone unnoticed. The
+ * kinds are the contract: `output_overflow`, `timeout`, `shell_missing`, `nonzero_exit`.
+ */
+export class SandboxError extends Error {
+  /** @param {string} message @param {{ kind: string, exitCode?: number|null }} info */
+  constructor(message, { kind, exitCode = null }) {
+    super(message);
+    this.name = 'SandboxError';
+    this.kind = kind;
+    this.exitCode = exitCode;
+  }
+}
+
 export class LocalSandbox {
   constructor(root, { execTimeoutMs = 15_000, shell = null } = {}) {
     // NB: fs.mkdirSync(recursive) returns the FIRST directory created (or undefined),
@@ -116,47 +134,93 @@ export class LocalSandbox {
     return clamp(body, 'grep') + suffix;
   }
 
-  exec(cmd) {
+  /**
+   * Run a shell command in the workspace (W5 / X1 — now ASYNC).
+   *
+   * This was `execFileSync`, which blocked the event loop for the whole command. Two consequences
+   * the plan calls the weakest decision in the tree: the runtime was capped at one run per
+   * process, and — worse — the D1 lease heartbeat is a `setInterval`, which cannot fire while the
+   * loop is blocked. A tool call longer than the lease therefore lost the lease, which is exactly
+   * the failure D1 was built to prevent, reintroduced on the tool path (X2).
+   *
+   * The change is MECHANICAL, not a redesign. Same shell, same cwd, same scrubbed env, same
+   * timeout, same output bounds, and the SAME ERROR TAXONOMY — output_overflow, timeout,
+   * shell_missing, nonzero_exit — because recovery classification and every existing test depend
+   * on those `kind` values. `exec` remains the boundary; nothing else gained the ability to spawn.
+   *
+   * Callers await it. `execSync` below is kept for the few genuinely synchronous internal uses
+   * (checkpoints), which are not on the agent's tool path.
+   */
+  async exec(cmd) {
     if (typeof cmd !== 'string') throw new Error('cmd must be a string');
-    let out;
+    const { execFile } = await import('node:child_process');
+
+    return new Promise((resolve, reject) => {
+      const child = execFile(this.shell, ['-lc', cmd], {
+        cwd: this.root, encoding: 'utf8', timeout: this.execTimeoutMs,
+        maxBuffer: MAX_OUTPUT_BYTES * 4,
+        env: scrubEnv(process.env),
+      }, (err, stdout, stderr) => {
+        if (!err) return resolve(clamp(stdout ?? '', 'stdout'));
+        reject(this.#execError(err, stdout, stderr));
+      });
+      // stdin is never a source of input for a tool call; close it so a command that reads
+      // stdin fails fast rather than hanging until the timeout.
+      child.stdin?.end();
+    });
+  }
+
+  /**
+   * Translate a child_process failure into this sandbox's error taxonomy.
+   *
+   * Extracted so the async and sync paths cannot drift: a divergence here would silently change
+   * recovery classification, which is the one thing the crash matrix depends on.
+   */
+  #execError(err, stdout, stderr) {
+    if (err.code === 'ENOBUFS' || /maxBuffer/i.test(err.message ?? '')) {
+      return new SandboxError(
+        `command produced more than ${MAX_OUTPUT_BYTES * 4} bytes and was aborted — ` +
+        `redirect output to a file and read it in slices`, { kind: 'output_overflow' });
+    }
+    if (err.signal === 'SIGTERM' || err.killed) {
+      return new SandboxError(
+        `command timed out after ${this.execTimeoutMs}ms and was killed`, { kind: 'timeout' });
+    }
+    // The SHELL ITSELF is missing — not the command. Without this branch the failure fell
+    // through to the generic handler and surfaced as "command failed (exit ?):" with an empty
+    // detail, because a spawn failure has no exit status and no stderr. On Windows, where the
+    // shell is `bash` resolved through PATH, that is the difference between a user knowing they
+    // need Git Bash and staring at a blank error.
+    if (err.code === 'ENOENT' || err.code === 'EACCES') {
+      const hint = process.platform === 'win32'
+        ? ' — install Git for Windows (Git Bash) or set the `shell` option to an available shell'
+        : ' — set the `shell` option to an available shell';
+      return new SandboxError(
+        `shell not found: ${this.shell} (${err.code})${hint}`, { kind: 'shell_missing' });
+    }
+    const detail = shorten(String(stderr ?? err.stderr ?? '') || String(stdout ?? err.stdout ?? ''), MAX_ERROR_BYTES);
+    return new SandboxError(
+      `command failed (exit ${err.status ?? err.code ?? err.signal ?? '?'}): ${detail}`,
+      { kind: 'nonzero_exit',
+        exitCode: typeof err.code === 'number' ? err.code : (err.status ?? null) });
+  }
+
+  /**
+   * Synchronous exec, retained for internal callers that are NOT on the agent's tool path
+   * (workspace checkpoints shell to git). Kept deliberately un-exported to the tools so the
+   * blocking behaviour cannot creep back into a run.
+   */
+  execSync(cmd) {
+    if (typeof cmd !== 'string') throw new Error('cmd must be a string');
     try {
-      out = execFileSync(this.shell, ['-lc', cmd], {
+      return clamp(execFileSync(this.shell, ['-lc', cmd], {
         cwd: this.root, encoding: 'utf8', timeout: this.execTimeoutMs,
         maxBuffer: MAX_OUTPUT_BYTES * 4, stdio: ['ignore', 'pipe', 'pipe'],
-        // Phase M: do not forward the parent's secrets into tool execution.
         env: scrubEnv(process.env),
-      });
+      }), 'stdout');
     } catch (err) {
-      // Distinguish the failure modes an operator actually needs to tell apart.
-      if (err.code === 'ENOBUFS' || /maxBuffer/i.test(err.message ?? '')) {
-        const e = new Error(`command produced more than ${MAX_OUTPUT_BYTES * 4} bytes and was aborted — ` +
-          `redirect output to a file and read it in slices`);
-        e.exitCode = null; e.kind = 'output_overflow'; throw e;
-      }
-      if (err.signal === 'SIGTERM' || err.killed) {
-        const e = new Error(`command timed out after ${this.execTimeoutMs}ms and was killed`);
-        e.exitCode = null; e.kind = 'timeout'; throw e;
-      }
-      // The SHELL ITSELF is missing — not the command. Without this branch the failure fell
-      // through to the generic handler and surfaced as "command failed (exit ?):" with an empty
-      // detail, because a spawn failure has no exit status and no stderr. On Windows, where the
-      // shell is `bash` resolved through PATH, that is the difference between a user knowing they
-      // need Git Bash and staring at a blank error.
-      if (err.code === 'ENOENT' || err.code === 'EACCES') {
-        const hint = process.platform === 'win32'
-          ? ' — install Git for Windows (Git Bash) or set the `shell` option to an available shell'
-          : ' — set the `shell` option to an available shell';
-        const e = new Error(`shell not found: ${this.shell} (${err.code})${hint}`);
-        e.exitCode = null; e.kind = 'shell_missing'; throw e;
-      }
-      const stderr = (err.stderr || '').toString();
-      const stdout = (err.stdout || '').toString();
-      const detail = shorten(stderr || stdout, MAX_ERROR_BYTES);
-      const e = new Error(`command failed (exit ${err.status ?? err.signal ?? '?'}): ${detail}`);
-      e.exitCode = err.status ?? null; e.kind = 'nonzero_exit';
-      throw e;
+      throw this.#execError(err, err.stdout, err.stderr);
     }
-    return clamp(out, 'stdout');
   }
 }
 

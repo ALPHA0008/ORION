@@ -22,6 +22,8 @@ import { createOpenAICompatModel } from '../../v0/src/agent/model/index.mjs';
 import { applyGemmaToolCallShim } from '../../v0/src/agent/model/shims/gemma-tool-calls.mjs';
 import { trajectoryMetrics } from '../metrics/index.mjs';
 import { OUTCOME } from '../tasks/schema.mjs';
+// W5 E3: the evaluation measures the SHIPPED configuration by default.
+import { resolveConfig, describeConfig, configLine } from '../config.mjs';
 
 export function buildModel({ baseUrl, apiKey, model, timeoutMs = 120_000 } = {}) {
   return createOpenAICompatModel({
@@ -48,10 +50,11 @@ export const v0Runner = {
     trajectory: 'event_log',      // full durable trajectory, not just a transcript
     recovery_granularity: 'tool',
     replay: true, fork: true, resume: true,
-    context_compaction: process.env.HARNESS_COMPACT === '1' ? 'supersede' : 'none',
+    context_compaction: resolveConfig().compactContext ? 'supersede' : 'none',
   },
 
   async run(task, { model, evalRoot } = {}) {
+    const cfg = resolveConfig();
     const dir = path.join(evalRoot ?? os.tmpdir(), `eval-${task.task_id}-${Date.now()}`);
     fs.mkdirSync(dir, { recursive: true });
     const store = new Store(path.join(dir, 'run.db'));
@@ -75,9 +78,14 @@ export const v0Runner = {
       workerId: 'eval',
       maxTurns: task.max_turns,
       leaseMs: task.timeout_ms + 60_000,
-      // A/B switch for the compaction iteration. Default OFF so the baseline path is
-      // unchanged and `compare` measures exactly one variable.
-      compactContext: process.env.HARNESS_COMPACT === '1',
+      // W5 E3: this used to default compaction OFF while the product shipped it ON, so every
+      // unlabelled report measured a configuration no user runs. It now resolves from
+      // SHIPPED_DEFAULTS; HARNESS_COMPACT=0 still forces it off for the A/B.
+      compactContext: cfg.compactContext,
+      contextBudgetBytes: cfg.contextBudgetBytes,
+      stream: cfg.stream,
+      temperature: cfg.temperature,
+      maxTokens: cfg.maxTokens,
       budget: { tokens: 2_000_000, tool_calls: 400, cost_usd: 50 },
     });
 
@@ -102,6 +110,8 @@ export const v0Runner = {
       reason: res?.reason ?? null,
       timedOut, infraError: infraError ? String(infraError.message) : null,
       metrics,
+      // E3: the configuration travels WITH the result, so a report cannot lose it.
+      config: describeConfig(cfg),
       close: () => { try { store.close(); } catch {} },
     };
   },

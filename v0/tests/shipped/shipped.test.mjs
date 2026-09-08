@@ -21,7 +21,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Store, uid } from '../../src/core/run/store.mjs';
 import { LocalSandbox } from '../../src/sandbox/local/index.mjs';
-import { makeTools, toolDefinitions } from '../../src/agent/tools/index.mjs';
+import { makeTools, toolDefinitions, mutatingTools, pathAddressedTools, EFFECTS } from '../../src/agent/tools/index.mjs';
 import { createAuthorizer } from '../../src/auth/default/index.mjs';
 import { Worker, DEFAULT_SYSTEM, ExitReason } from '../../src/agent/loop/worker.mjs';
 import { defaultCompletionContract, buildModel, streamEnabled, selectShims } from '../../src/cli/index.mjs';
@@ -260,6 +260,218 @@ describe('shipped/F3d-the-shipped-prompt-matches-the-shipped-tools');
   const named = [...DEFAULT_SYSTEM.matchAll(/'([a-z_]+)'/g)].map(m => m[1]);
   const unknown = [...new Set(named.filter(n => !known.has(n)))];
   eq('F3d: every quoted term names a real tool or argument', unknown.join(','), '');
+}
+
+// ─────────────────────────────────────────────────── W5 T1/T2: no duplicated capability metadata
+//
+// The rule: a tool's capabilities are declared ON THE TOOL, once. Nothing else may restate
+// them. `src/cli/index.mjs` used to hold `MUTATING_TOOLS = new Set(['write','edit','bash'])`,
+// duplicating each tool's own `effects: 'Mutating'` — and that copy, not the declaration, is
+// what decided whether a run had changed the world (ADR-013). A tenth mutating tool would have
+// been silently classified read-only, and the completion contract would have passed a run that
+// did nothing.
+//
+// T2 makes the rule enforceable rather than aspirational: it fails if the derivation stops
+// matching the declarations, AND if a hand-maintained list reappears in source.
+
+describe('T1/T2: capability metadata is declared once, on the tool');
+{
+  const sandbox = new LocalSandbox(fs.mkdtempSync(path.join(os.tmpdir(), 'shipped-t2-')));
+  const tools = makeTools(sandbox);
+
+  // 1. The derivation is the truth, and it matches what the tools declare.
+  const derived = [...mutatingTools(tools)].sort();
+  const declared = Object.entries(tools)
+    .filter(([, t]) => t.effects === EFFECTS.MUTATING).map(([n]) => n).sort();
+  eq('mutatingTools() derives exactly the tools declaring Mutating', derived.join(','), declared.join(','));
+  check('at least one tool is mutating (the check is not vacuous)', derived.length > 0, derived.join(','));
+
+  // 2. Every tool declares an effect at all. An undeclared tool would silently be treated as
+  //    read-only by the derivation — a safe-looking default that is wrong for a mutating tool.
+  const undeclared = Object.entries(tools)
+    .filter(([, t]) => t.effects !== EFFECTS.MUTATING && t.effects !== EFFECTS.READ_ONLY)
+    .map(([n, t]) => `${n}=${JSON.stringify(t.effects)}`);
+  eq('every shipped tool declares a known effect', undeclared.join(','), '');
+
+  // 2b. The same rule for path-addressability. T2 caught this one on its first run:
+  //     `core/projection/compact.mjs` held its own `PATH_TOOLS = new Set(['read','write','edit'])`,
+  //     so a tenth path-addressed tool would never have been compacted. The capability is now
+  //     declared on the tool and derived, exactly like `effects`.
+  const pathish = [...pathAddressedTools(tools)].sort();
+  eq('pathAddressedTools() derives the tools declaring pathAddressed',
+    pathish.join(','), Object.entries(tools).filter(([, t]) => t.pathAddressed === true).map(([n]) => n).sort().join(','));
+  check('at least one tool is path-addressed', pathish.length > 0, pathish.join(','));
+  check('every path-addressed tool takes a `path` argument',
+    pathish.every(n => 'path' in (tools[n].schema?.properties ?? {})), pathish.join(','));
+
+  // 3. `makeTools(null)` must keep yielding real descriptors — the CLI builds its metadata view
+  //    that way, so if a tool ever touched the sandbox at construction the contract would throw
+  //    at import time rather than here.
+  const metaOnly = makeTools(null);
+  eq('makeTools(null) yields the same effects as a real toolset',
+    [...mutatingTools(metaOnly)].sort().join(','), derived.join(','));
+
+  // 4. THE RULE. No source file outside the tools module may hand-maintain a set of tool names
+  //    that encodes an effect. Searching for the shape of the defect — a literal collection
+  //    containing two or more shipped tool names — catches a reintroduction under any name.
+  const SRC = path.join(HERE, '..', '..', 'src');
+  const toolNames = new Set(Object.keys(tools));
+  const offenders = [];
+  const walk = (dir) => {
+    for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, ent.name);
+      if (ent.isDirectory()) { walk(p); continue; }
+      if (!ent.name.endsWith('.mjs')) continue;
+      // The tools module is where these names legitimately live.
+      if (p.includes(`${path.sep}agent${path.sep}tools${path.sep}`)) continue;
+      const src = fs.readFileSync(p, 'utf8');
+      // Strip comments: this very rule is described in prose in several files.
+      const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '');
+      for (const m of code.matchAll(/\[([^\]\n]{0,200})\]/g)) {
+        const literals = [...m[1].matchAll(/'([a-z_]+)'|"([a-z_]+)"/g)].map(x => x[1] ?? x[2]);
+        const hits = literals.filter(l => toolNames.has(l));
+        if (hits.length >= 2 && hits.length === literals.length) {
+          offenders.push(`${path.relative(SRC, p)}: [${literals.join(', ')}]`);
+        }
+      }
+    }
+  };
+  walk(SRC);
+  eq('no source file hand-maintains a list of tool names', offenders.join(' | '), '');
+}
+
+// ─────────────────────────────────────────────────── W5 T3: the public API carries both questions
+describe('T3: isKnownDangerous is public, and distinct from classifyShell');
+{
+  // A deployer writing a custom authorizer needs to reproduce the shipped hard denials.
+  // `isKnownDangerous` was reachable only by deep-importing `core/recovery`, so in practice a
+  // deployer either re-implemented the denylist or omitted it.
+  const api = await import('../../src/index.mjs');
+  eq('isKnownDangerous is exported from the public API', typeof api.isKnownDangerous, 'function');
+  eq('classifyShell is still exported', typeof api.classifyShell, 'function');
+
+  eq('a catastrophic command is known-dangerous', api.isKnownDangerous('rm -rf /'), true);
+  eq('an ordinary command is not', api.isKnownDangerous('npm test'), false);
+
+  // THE BOUNDARY. These answer different questions and must not be collapsed into one another:
+  // `classifyShell` is default-deny about RE-RUN safety, so an unrecognised-but-harmless command
+  // is UNSAFE while not being dangerous. If these ever agree on everything, one has absorbed the
+  // other and the recovery contract has quietly become a command-policy module.
+  eq('an unrecognised command is UNSAFE to re-run', api.classifyShell('npm test'), 'UNSAFE');
+  eq('...but is NOT on the denylist', api.isKnownDangerous('npm test'), false);
+  check('the two answers genuinely differ for at least one command',
+    api.classifyShell('npm test') === 'UNSAFE' && api.isKnownDangerous('npm test') === false);
+}
+
+// ─────────────────────────────────────────────────── W5 D1/D2: the docs match the toolset
+describe('D1/D2: documentation states the real tool count and names');
+{
+  // ARCHITECTURE.md said "6 tools" and tools/index.mjs's header listed six names, while the
+  // runtime shipped nine — the three added across Waves 2-4 (verify, plan, plan_step) were
+  // never written down. Fixing the numbers is not enough: they were correct once and rotted.
+  // These assertions make the documents fail the build when they next drift.
+  const tools = makeTools(null);
+  const names = Object.keys(tools).sort();
+  const ROOT = path.join(HERE, '..', '..');
+
+  const arch = fs.readFileSync(path.join(ROOT, 'docs', 'ARCHITECTURE.md'), 'utf8');
+  const claimed = /`agent\/tools`\s*\|\s*(\d+) tools/.exec(arch);
+  check('ARCHITECTURE.md states a tool count', !!claimed, claimed ? `${claimed[1]} tools` : 'no "N tools" row found');
+  eq('ARCHITECTURE.md states the REAL tool count', Number(claimed?.[1]), names.length);
+
+  const header = fs.readFileSync(path.join(ROOT, 'src', 'agent', 'tools', 'index.mjs'), 'utf8')
+    .split(/\r?\n/)[0];
+  const listed = [...header.matchAll(/\b([a-z_]+)\b/g)].map(m => m[1]).filter(n => names.includes(n));
+  eq('the tools module header lists every shipped tool',
+    [...new Set(listed)].sort().join(','), names.join(','));
+}
+
+// ─────────────────────────────────────────────────── W5 S1/S2: the Store boundary holds
+describe('S1/S2: Store.append is the only mutation path');
+{
+  // INVARIANT 1. `Store.append` validates against the frozen event contract (`isKnownType`);
+  // a raw `INSERT INTO events` does not. Before W5 the reaper, the replay/fork path and the
+  // CLI's doctor all reached past the Store into `store.db` — so the contract that makes the
+  // log a contract was bypassable by the runtime's own code. Proven empirically at the time:
+  // `append` throws UnknownEventType for a made-up type, a raw insert accepts it.
+  //
+  // This is acceptance item 2, kept as a test rather than a one-off grep so it cannot regress.
+  const SRC = path.join(HERE, '..', '..', 'src');
+  const PATTERNS = [
+    [/\bstore\.db\b/, 'store.db'],
+    [/\.db\.prepare\(/, '.db.prepare('],
+    [/INSERT\s+INTO\s+events/i, 'INSERT INTO events'],
+    [/\bPRAGMA\b/, 'PRAGMA'],
+  ];
+  const offenders = [];
+  const walk = (d) => {
+    for (const ent of fs.readdirSync(d, { withFileTypes: true })) {
+      const p = path.join(d, ent.name);
+      if (ent.isDirectory()) { walk(p); continue; }
+      if (!ent.name.endsWith('.mjs')) continue;
+      const norm = p.split(path.sep).join('/');
+      if (norm.endsWith('core/run/store.mjs')) continue;    // the one legitimate home
+      // Strip comments — several modules describe this rule in prose.
+      const code = fs.readFileSync(p, 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '');
+      for (const [re, label] of PATTERNS) {
+        if (re.test(code)) offenders.push(`${path.relative(SRC, p)} :: ${label}`);
+      }
+    }
+  };
+  walk(SRC);
+  eq('no module outside store.mjs touches the database directly', offenders.join(' | '), '');
+
+  // And the boundary is worth having: the Store really does reject an off-contract type.
+  const d2 = fs.mkdtempSync(path.join(os.tmpdir(), 'shipped-s2-'));
+  const st = new Store(path.join(d2, 'run.db'));
+  const rid = uid('run');
+  st.createRun(rid, { task: 'boundary' });
+  let threw = null;
+  try { st.append(rid, 'totally.made.up', {}); } catch (e) { threw = e; }
+  check('Store.append rejects a type outside the frozen contract', threw !== null,
+    threw ? threw.constructor.name : 'accepted it');
+  st.close();
+}
+
+// ─────────────────────────────────────────────────── W5 R3: no lifecycle write bypasses fencing
+describe('R3: nothing in the runtime bypasses the status guards');
+{
+  // `setStatus(..., { force: true })` skips BOTH the "never terminalize twice" guard and the
+  // lease fencing check. Two callers used it. The reaper's was removed when its logic moved
+  // behind the Store (R1/R2); the worker's resume path passed no lease token at all, so a
+  // worker that had already lost its lease could still flip a paused run back to running,
+  // behind the back of whichever worker legitimately held it. Neither needed the bypass:
+  // `paused` is not terminal, so the only thing being skipped was the fencing.
+  const SRC = path.join(HERE, '..', '..', 'src');
+  const offenders = [];
+  const walk = (d) => {
+    for (const ent of fs.readdirSync(d, { withFileTypes: true })) {
+      const p = path.join(d, ent.name);
+      if (ent.isDirectory()) { walk(p); continue; }
+      if (!ent.name.endsWith('.mjs')) continue;
+      const code = fs.readFileSync(p, 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '');
+      // `force` on a STATUS write. `fs.rmSync(..., { force: true })` is unrelated and stays.
+      if (/setStatus\([^)]*force\s*:\s*true/s.test(code)) offenders.push(path.relative(SRC, p));
+    }
+  };
+  walk(SRC);
+  eq('no caller forces a status write', offenders.join(', '), '');
+
+  // And the guard being relied on is real: a stale lease cannot move a run's status.
+  const d3 = fs.mkdtempSync(path.join(os.tmpdir(), 'shipped-r3-'));
+  const st = new Store(path.join(d3, 'run.db'));
+  const rid = uid('run');
+  st.createRun(rid, { task: 'fencing' });
+  const first = st.claim('w1', { runId: rid, leaseMs: 1_000 });
+  // A second worker legitimately takes over once the first lease has expired.
+  const second = st.claim('w2', { runId: rid, leaseMs: 60_000, now: Date.now() + 10_000 });
+  check('a second worker reclaimed the run', !!second);
+  eq('the STALE lease cannot change the status',
+    st.setStatus(rid, 'running', { leaseToken: first.leaseToken }), false);
+  eq('the live lease can', st.setStatus(rid, 'running', { leaseToken: second.leaseToken }), true);
+  st.close();
 }
 
 process.exit(summary('shipped', path.join(HERE, '..', 'results-shipped.json')) ? 1 : 0);

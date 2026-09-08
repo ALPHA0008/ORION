@@ -54,6 +54,9 @@ export async function* sseEvents(body, { signal = null } = {}) {
  * (the worker) decides what to durably record; this function only decides *when* there is enough
  * to be worth recording.
  */
+/**
+ * @param {{ onDelta?: ((d: any) => void)|null, deltaBytes?: number, deltaMs?: number }} [opts]
+ */
 export function createStreamAccumulator({ onDelta, deltaBytes = DELTA_BYTES, deltaMs = DELTA_MS } = {}) {
   let text = '';
   let pending = '';
