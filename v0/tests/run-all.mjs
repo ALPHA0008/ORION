@@ -27,6 +27,9 @@ export const suites = [
   ['sandbox/network-live',  []],
   ['resource/resource',     []],
   ['shipped/w6-shipped',    []],
+  // W7: skills + project instructions, and the wiring that makes them reach the product.
+  ['context/skills',        []],
+  ['shipped/w7-shipped',    []],
   ['recovery/recovery',     []],
   ['replay/semantics',      []],
   ['integration/provider',  []],

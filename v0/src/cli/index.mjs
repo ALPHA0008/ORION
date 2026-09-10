@@ -19,7 +19,10 @@ import { describeGrant, projectGrants, summariseGrants, projectKey, GrantScope }
   from '../core/projection/grant.mjs';
 import { makeTools, mutatingTools } from '../agent/tools/index.mjs';
 import { createAuthorizer } from '../auth/default/index.mjs';
-import { Worker } from '../agent/loop/worker.mjs';
+import { Worker, DEFAULT_SYSTEM } from '../agent/loop/worker.mjs';
+// W7: skills + project instructions — the runtime becomes instructable, with provenance.
+import { discoverSkills, renderDisclosure, disclosureBytes } from '../context/skills.mjs';
+import { loadProjectInstructions, renderInstructions } from '../context/instructions.mjs';
 import { project } from '../core/projection/index.mjs';
 import { explain, summarise } from '../core/run/explain.mjs';
 import { replay, fork, rerun, nearestTurnBoundary } from '../core/replay/index.mjs';
@@ -331,6 +334,61 @@ export async function prepareRun(store, runId, leaseToken, workspace) {
   console.log(C.dim(`  sandbox: ${backendName}  posture: ${resource.posture}`
     + `${sandbox.capabilities.isolated ? ' (isolated)' : ''}`));
 
+  // ── W7 — the runtime becomes instructable ────────────────────────────────
+  //
+  // Both influences are resolved HERE, at the composition root, because every turn-bearing
+  // command (`run`, `resume`, and each turn of the interactive session) funnels through this
+  // function. A skills loader reachable only from a test is the failure class this project has
+  // repeated six times in five waves.
+  //
+  // Both are recorded BEFORE the worker exists, so the log explains the prompt of the very first
+  // turn rather than of the second onwards.
+  const instructions = loadProjectInstructions(workspace);
+  if (instructions.found) {
+    store.append(runId, 'instructions.loaded', {
+      name: instructions.name,
+      path: instructions.path,
+      // The digest is of the FILE, not of the truncated view, so an edited brief is visible as a
+      // different digest even when the change fell past the cap.
+      digest: instructions.digest,
+      bytes: instructions.bytes,
+      truncated: instructions.truncated,
+      // "Why is my CLAUDE.md being ignored?" is answerable from the log rather than from a
+      // support thread.
+      shadowed: instructions.shadowed.map(s => s.name),
+    }, { leaseToken });
+    console.log(C.dim(`  instructions: ${instructions.name}`
+      + (instructions.truncated ? ' (truncated)' : '')
+      + (instructions.shadowed.length ? `  [${instructions.shadowed.map(s => s.name).join(', ')} shadowed]` : '')));
+  }
+
+  const { skills, shadowed: skillShadowed, searched } = discoverSkills({ workspace, home: HOME });
+  const disclosure = renderDisclosure(skills);
+  if (skills.length) {
+    store.append(runId, 'skill.disclosed', {
+      // Names and descriptions only — the same thing the model sees. Recording the BODIES here
+      // would defeat progressive disclosure in the log while preserving it in the prompt, which
+      // is the wrong way round: the log should be able to show that disclosure stayed cheap.
+      skills: skills.map(s => ({ name: s.name, scope: s.scope, path: s.path,
+                                 digest: s.digest, bytes: s.bytes })),
+      disclosure_bytes: disclosureBytes(skills),
+      shadowed: skillShadowed,
+      searched: searched.filter(s => s.found > 0),
+    }, { leaseToken });
+    console.log(C.dim(`  skills: ${skills.length} available (${disclosureBytes(skills)} B disclosed)`
+      + `  ${skills.map(s => s.name).join(', ')}`));
+  }
+
+  // The system prompt is assembled from: the runtime's own instructions, the project's standing
+  // brief, and the skill catalogue. `#buildMessages` prepends it fresh every turn, so this is
+  // rebuilt identically on replay from the same files — which is what keeps Invariant 2 true for
+  // a briefed run.
+  const systemPrompt = [
+    DEFAULT_SYSTEM,
+    renderInstructions(instructions),
+    disclosure,
+  ].filter(Boolean).join('\n\n');
+
   const project = projectKey(workspace);
   const authorize = createAuthorizer({
     // DERIVED, not read from a flag. `resolveResource` already folded in any operator override
@@ -344,7 +402,11 @@ export async function prepareRun(store, runId, leaseToken, workspace) {
   return {
     sandbox, resource,
     worker: (extra = {}) => new Worker(store, {
-      sandbox, model: buildModel(), tools: makeTools(sandbox), authorize,
+      sandbox, model: buildModel(), authorize,
+      // W7: the `skill` tool exists only when there is something to activate, so a project with
+      // no skills sees the identical toolset it saw before this wave.
+      tools: makeTools(sandbox, { skills }),
+      systemPrompt,
       // F5: streaming reaches the product surface. Default ON; a provider that cannot stream
       // falls back with a recorded `degraded` event rather than silently.
       stream: streamEnabled(),

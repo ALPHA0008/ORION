@@ -7,7 +7,7 @@
       "group": "leaseheartbeat/survives-a-slow-model-call",
       "test": "the model call really did outlast the lease",
       "pass": true,
-      "detail": "1516ms call vs 900ms lease"
+      "detail": "1510ms call vs 900ms lease"
     },
     {
       "group": "leaseheartbeat/survives-a-slow-model-call",
@@ -61,7 +61,7 @@
       "group": "leaseheartbeat/x2-survives-a-slow-tool-call",
       "test": "the tool call really did outlast the lease",
       "pass": true,
-      "detail": "1512ms run vs 900ms lease"
+      "detail": "1518ms run vs 900ms lease"
     },
     {
       "group": "leaseheartbeat/x2-survives-a-slow-tool-call",

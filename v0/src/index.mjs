@@ -162,3 +162,22 @@ export {
   Worker, ExitReason, repairOrphans,
   DEFAULT_SYSTEM, ESCALATION_POLICY, SYSTEM_WITH_ESCALATION_POLICY,
 } from './agent/loop/worker.mjs';
+
+// ── Instructable context (Wave 7) ───────────────────────────────────────────
+//
+// Skills and project instructions are INSTRUCTION TEXT — the same trust posture as the system
+// prompt. There is no plugin engine and no skill code is ever executed, which is why W7 adds no
+// trust boundary; a fenced code block in a `SKILL.md` is text the model may choose to run through
+// the ordinary tool path, where the authorizer and sandbox apply as always.
+//
+// Exported because a consumer embedding this runtime needs to assemble the same context the CLI
+// does — and, more importantly, because the precedence ladder and the disclosure rendering are
+// the parts that must not be re-implemented differently by a second caller.
+export {
+  discoverSkills, renderDisclosure, disclosureBytes, parseFrontmatter, readSkillFile,
+  skillSearchPaths, skillDigest, SCOPES,
+} from './context/skills.mjs';
+export {
+  loadProjectInstructions, renderInstructions, instructionDigest,
+  INSTRUCTION_FILES, MAX_INSTRUCTION_BYTES,
+} from './context/instructions.mjs';

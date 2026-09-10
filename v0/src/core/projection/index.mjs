@@ -193,6 +193,18 @@ export function applyEvent(s, e) {
     case 'grant.revoked':
       break;
 
+    // W7 (contract v6): instruction and skill PROVENANCE. Deliberately contributes nothing here.
+    //
+    // The text these describe reaches the model through the system prompt, which is rebuilt fresh
+    // every turn from the files on disk — it is never a message in the bounded window. Adding it
+    // to the projection would double-count it: once in the prompt the worker prepends, and again
+    // in the messages the worker derives from this state. Listed explicitly rather than left to
+    // `default`, which is documented as unreachable.
+    case 'instructions.loaded':
+    case 'skill.disclosed':
+    case 'skill.activated':
+      break;
+
     default:
       // Unreachable: Store.append rejects unknown types (ADR-004). Defensive only.
       break;

@@ -35,7 +35,10 @@ function rig(tag) {
 // ═══════════════════════════════════════════ contract additions
 describe('resource/contract: the additions are additive and documented');
 {
-  eq('the contract is at v5', EVENT_CONTRACT_VERSION, 5);
+  // W7: '>=' rather than '=='. This suite's job is to prove W6's additions survive, not to pin
+  // the version — a later additive wave must not fail a test about an earlier one. The
+  // additive-only property below is what actually protects W6, and it is unaffected by v6.
+  check('the contract is at or beyond v5', EVENT_CONTRACT_VERSION >= 5, 'v' + EVENT_CONTRACT_VERSION);
   for (const t of ['resource.acquired', 'resource.reattached', 'resource.released', 'resource.lost',
                    'grant.created', 'grant.revoked', 'tool.output_delta'])
     check(`${t} is in the closed vocabulary`, isKnownType(t));
@@ -56,7 +59,8 @@ describe('resource/contract: the additions are additive and documented');
   eq('v4 had 39 types', v4Types.length, 39);
   const missing = v4Types.filter(t => !isKnownType(t));
   eq('NO v4 type was removed or renamed', missing.join(','), '');
-  eq('v5 adds exactly 7', EVENT_TYPES.length, 46);
+  check('v5 added its 7 types and nothing was lost since', EVENT_TYPES.length >= 46,
+    EVENT_TYPES.length + ' types');
 }
 
 // ═══════════════════════════════════════════ C — identity

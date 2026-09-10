@@ -28,8 +28,34 @@
  *       keeps resource identity in a mutable `TurnRecord.snapshot`, which is state beside the
  *       log: it would violate Invariant 1 and make replay non-deterministic. The current binding
  *       here is a FOLD over the log, exactly as `plan.*` works for plans.
+ *   6 — adds instructions.loaded (1) and skill.* (2) — 3 types, Wave 7.
+ *
+ *       The runtime becomes INSTRUCTABLE — by the project (`AGENTS.md` / `CLAUDE.md`) and by the
+ *       operator (skills) — and §1.2 makes the consequence non-optional: "a skill activation is
+ *       provenance on the turn it influenced". Instruction text that shapes a model's output
+ *       without appearing in the trajectory is a hallucination source with no audit trail, so
+ *       every influence on the prompt is recorded as an event.
+ *
+ *       Why three and not one: they answer different questions, and collapsing them would lose
+ *       the one that matters most.
+ *
+ *         instructions.loaded — WHICH project file briefed this run, with its digest. Answers
+ *                               "why did the agent think the build command was X?" and, because
+ *                               the digest is of the file, makes an edited brief visible as a
+ *                               different run rather than an unexplained behaviour change.
+ *         skill.disclosed     — WHICH skills were offered, at what byte cost. The catalogue is in
+ *                               every request, so adding a skill to a repo changes every
+ *                               subsequent request digest; without this the log could not explain
+ *                               why. It is also where progressive disclosure is auditable: the
+ *                               event carries the disclosure size, not the bodies.
+ *         skill.activated     — WHICH skill's full body entered the prompt, from WHICH path, on
+ *                               which turn. This is the §1.2 sentence, made checkable.
+ *
+ *       None of the three changes the projection: they are provenance about the prompt, not
+ *       messages in it. Replay reconstructs the same prompt from the same files on disk, which is
+ *       what keeps Invariant 2 (deterministic replay at zero model cost) true for a briefed run.
  */
-export const EVENT_CONTRACT_VERSION = 5;
+export const EVENT_CONTRACT_VERSION = 6;
 
 export const EVENT_TYPES = Object.freeze([
   // lifecycle
@@ -129,6 +155,17 @@ export const EVENT_TYPES = Object.freeze([
   //   grant.revoked — an approval was withdrawn. Present so the fold can express removal;
   //                   without it a grant store would be a one-way door.
   'grant.created', 'grant.revoked',
+  // instruction & skill provenance (contract v6, Wave 7 — plan §1.2)
+  //
+  // "A skill activation is provenance on the turn it influenced" is the organising principle,
+  // verbatim. These make it checkable: the trajectory can answer which skill, from which
+  // directory, and which instruction file, shaped which turn.
+  //
+  // They are PROVENANCE, not messages: none of them contributes to the bounded projection. The
+  // text they describe reaches the model through the system prompt, which `#buildMessages`
+  // rebuilds fresh every turn — so the events explain the prompt rather than being part of it,
+  // and `model.requested`'s digest remains the ground truth of what was actually sent.
+  'instructions.loaded', 'skill.disclosed', 'skill.activated',
   // degradation (ADR: named degradation — never silent fallback)
   'degraded',
 ]);

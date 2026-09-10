@@ -162,8 +162,71 @@ function readPaged(sandbox, path, offset, limit) {
   return header + out.join('\n') + footer;
 }
 
-export function makeTools(sandbox) {
+/**
+ * @param {any} sandbox
+ * @param {{ skills?: any[] }} [opts]  W7: the discovered skill catalogue, if any.
+ */
+export function makeTools(sandbox, { skills = [] } = {}) {
+  // W7 B — the ACTIVATION MECHANISM.
+  //
+  // Activation is a TOOL CALL, and choosing that over the alternatives is the main design
+  // decision of this wave. The alternatives were: a magic marker the model emits in prose, or
+  // automatic keyword matching against the task.
+  //
+  //   - A prose marker means parsing the model's text for control signals, which is the class of
+  //     defect the Gemma shim already exists to paper over. It would also be invisible to the
+  //     authorizer.
+  //   - Auto-matching removes the model's judgement — the thing progressive disclosure exists to
+  //     use — and makes "why did this skill fire?" unanswerable.
+  //
+  // A tool call is already MODEL-VISIBLE (it is in the tool schema the provider receives),
+  // already RECORDED (`tool.requested` / `tool.succeeded`), already authorized, already
+  // replayable, and already compaction-aware. The body arrives as a tool RESULT, which means it
+  // lands in the bounded projection like any other content and is subject to the same budget —
+  // rather than being spliced into the system prompt where it would be re-sent, uncompactable,
+  // on every subsequent turn.
+  //
+  // The dedicated `skill.activated` event is emitted alongside via the existing `emits` seam, so
+  // the trajectory answers the §1.2 question directly instead of requiring a reader to infer it
+  // from a tool result's contents.
+  const skillsByName = new Map(skills.map(s => [s.name, s]));
+
   return {
+    ...(skills.length ? {
+      skill: {
+        description:
+          'Load the full instructions of an available skill by name. The skill catalogue (names '
+          + 'and descriptions) is in your system prompt; this returns the body of one. Call it '
+          + 'when a skill is relevant to the work, then follow what it says.',
+        schema: { type: 'object', required: ['name'],
+          properties: { name: { type: 'string', description: 'the skill name, exactly as listed' } } },
+        // Reading instruction text changes nothing in the world. It is ReadOnly and safely
+        // re-runnable, which is what keeps a skill activation from ever needing a human.
+        effects: 'ReadOnly',
+        recovery: () => ({ class: RecoveryClass.READ_ONLY }),
+        run: ({ name }) => {
+          const s = skillsByName.get(String(name ?? '').trim());
+          if (!s) {
+            const known = [...skillsByName.keys()];
+            throw new Error(`no such skill: ${name}. Available: ${known.join(', ') || '(none)'}`);
+          }
+          if (!s.body) throw new Error(`skill '${s.name}' has no body`);
+          return `# Skill: ${s.name}\n\n${s.body}`;
+        },
+        emits: ({ name }) => {
+          const s = skillsByName.get(String(name ?? '').trim());
+          if (!s) return [];
+          return [{
+            type: 'skill.activated',
+            // The source PATH is the point: "which skill, from which directory, influenced which
+            // turn" is the question §1.2 requires the trajectory to answer, and a name alone
+            // cannot answer it when the same name exists at two precedence levels.
+            payload: { name: s.name, source: s.path, scope: s.scope,
+                       digest: s.digest, bytes: s.bytes },
+          }];
+        },
+      },
+    } : {}),
     read: {
       // CAPABILITY ITERATION 01 (real-repository baseline).
       //

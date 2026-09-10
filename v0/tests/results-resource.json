@@ -5,9 +5,9 @@
   "results": [
     {
       "group": "resource/contract: the additions are additive and documented",
-      "test": "the contract is at v5",
+      "test": "the contract is at or beyond v5",
       "pass": true,
-      "detail": ""
+      "detail": "v6"
     },
     {
       "group": "resource/contract: the additions are additive and documented",
@@ -71,9 +71,9 @@
     },
     {
       "group": "resource/contract: the additions are additive and documented",
-      "test": "v5 adds exactly 7",
+      "test": "v5 added its 7 types and nothing was lost since",
       "pass": true,
-      "detail": ""
+      "detail": "49 types"
     },
     {
       "group": "resource/C: identity is stable, recomputable, and per-run",
