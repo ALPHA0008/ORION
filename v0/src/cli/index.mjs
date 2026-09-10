@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { Store, uid } from '../core/run/store.mjs';
+import { TERMINAL } from '../core/event/index.mjs';
 import { LocalSandbox, attachCheckpoints } from '../sandbox/local/index.mjs';
 // W6: the backend contract, the second (isolated) backend, and default-deny egress.
 import { assertBackendContract } from '../sandbox/backend.mjs';
@@ -266,8 +267,19 @@ export function makeSandbox(workspace, env = process.env) {
       console.error(C.dim('  ORION_SANDBOX to use the local (containment-only) backend deliberately.'));
       process.exit(2);
     }
+    // W6.1: the image is selectable. `ContainerSandbox` has always accepted one and the CLI never
+    // passed it — the same unwired-at-the-composition-root defect as `reap`'s container prune, and
+    // it had a sharp consequence. The default `alpine:3` has no Node, so the W6.1 §11.2 gate
+    // watched a real model auto-allow its own verification command and then get
+    // `sh: node: not found`. Auto-allow worked exactly as designed and was useless, because the
+    // sandbox could not run the project's own toolchain.
+    //
+    // The default stays `alpine:3` — small, dependency-free, and right for shell work. A project
+    // whose tests need a runtime names an image that has it.
+    const image = String(env.ORION_IMAGE ?? '').trim() || undefined;
     const sandbox = new ContainerSandbox(workspace, {
       runtime,
+      ...(image ? { image } : {}),
       network: createNetworkPolicy({ mode: 'none' }),   // W6-F: default-deny, and here that is
     });                                                 // literally no network stack
     // Checkpoints still shell to HOST git against the host side of the bind mount — the Q4
@@ -724,11 +736,42 @@ const cmds = {
     store.close();
   },
 
-  reap() {
+  /**
+   * Reclaim what dead workers left behind — runs AND, since W6, their containers.
+   *
+   * W6.1: `pruneOrionContainers` was imported here in W6 and never called. That is the
+   * "mechanism unwired at the composition root" failure class this project keeps repeating, and
+   * it had a visible symptom: eight `orion-*` containers were found still running two hours after
+   * the runs that created them had ended. `reap`'s entire job is reclaiming what a dead worker
+   * left, and once the sandbox became a long-lived container, a leaked container is exactly that.
+   *
+   * Only containers whose run is TERMINAL are removed. A container belonging to a run that is
+   * still resumable must survive — reattaching to it is the whole of Recovery 2.0 (W6-I), and
+   * pruning it would turn every reattach into a recreate-with-notice.
+   */
+  async reap(rest = []) {
     const store = open();
     const r = reap(store); const h = expireHumanRequests(store);
     console.log(`requeued ${r.requeued}, parked ${r.parked}, expired human requests ${h.expired}`);
     for (const a of r.actions) console.log(C.dim(`  ${short(a.run_id)} ${a.action} (attempt ${a.attempts})`));
+
+    const runtime = detectRuntime();
+    if (runtime) {
+      // Which container names is a still-resumable run bound to? Those must survive.
+      const keep = new Set();
+      for (const run of store.listRuns({ limit: 500 })) {
+        if (TERMINAL.has(run.status)) continue;
+        const b = projectResources(store.events(run.id)).current;
+        if (b?.handle_name) keep.add(b.handle_name);
+      }
+      const { pruned, kept } = await pruneOrionContainers({ runtime, keep });
+      if (pruned || kept) {
+        console.log(`containers: removed ${pruned} orphaned`
+          + (kept ? `, kept ${kept} still reattachable` : ''));
+      }
+    } else if (has(rest, '--verbose')) {
+      console.log(C.dim('containers: no runtime available — nothing to prune'));
+    }
     store.close();
   },
 
@@ -796,7 +839,7 @@ function usage() {
   orionctl revoke <grant>         withdraw a remembered approval     [--reason "..."]
 
 ${C.dim('config:')}  ORION_BASE_URL  ORION_API_KEY  ORION_MODEL  ORION_HOME  ORION_POSTURE
-${C.dim('sandbox:')} ORION_SANDBOX=local|container   (container ⇒ isolated, --network none,
+${C.dim('sandbox:')} ORION_SANDBOX=local|container   ORION_IMAGE=<image>  (container ⇒ isolated, --network none,
           and commands are auto-allowed because the blast radius is the sandbox, not your machine)
 ${C.dim('answer:')}  orionctl answer <run> approve --remember [session|project|resource]`);
 }

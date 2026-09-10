@@ -21,6 +21,10 @@ export const suites = [
   // loudly (never silently passes) when no container runtime is available.
   ['crash/matrix-container', []],
   ['sandbox/sandbox',       []],
+  // W6.1 live proofs: the limits BIND, and egress really is denied. Both skip loudly with no
+  // container runtime rather than reporting green.
+  ['sandbox/limits',        []],
+  ['sandbox/network-live',  []],
   ['resource/resource',     []],
   ['shipped/w6-shipped',    []],
   ['recovery/recovery',     []],

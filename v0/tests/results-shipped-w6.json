@@ -1,6 +1,6 @@
 {
   "label": "shipped/w6",
-  "pass": 61,
+  "pass": 77,
   "fail": 0,
   "results": [
     {
@@ -103,19 +103,19 @@
       "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
       "test": "the bare --remember form is accepted",
       "pass": true,
-      "detail": "answered \"approve\"  now: orionctl resume #9e14074bbd\n  remembered (session): npm test  grant_2ba80bd0a909aed2\n"
+      "detail": "answered \"approve\"  now: orionctl resume #b4cb0dd8de\n  remembered (session): npm test  grant_2ba80bd0a909aed2\n"
     },
     {
       "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
       "test": "...and reports that it remembered something",
       "pass": true,
-      "detail": "answered \"approve\"  now: orionctl resume #9e14074bbd\n  remembered (session): npm test  grant_2ba80bd0a909aed2\n"
+      "detail": "answered \"approve\"  now: orionctl resume #b4cb0dd8de\n  remembered (session): npm test  grant_2ba80bd0a909aed2\n"
     },
     {
       "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
       "test": "...naming the command it remembered",
       "pass": true,
-      "detail": "answered \"approve\"  now: orionctl resume #9e14074bbd\n  remembered (session): npm test  grant_2ba80bd0a909aed2\n"
+      "detail": "answered \"approve\"  now: orionctl resume #b4cb0dd8de\n  remembered (session): npm test  grant_2ba80bd0a909aed2\n"
     },
     {
       "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
@@ -145,7 +145,7 @@
       "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
       "test": "an explicit project scope is honoured",
       "pass": true,
-      "detail": "answered \"approve\"  now: orionctl resume #b815b618bd\n  remembered (project): npm run build  grant_548087edf053a5ac\n"
+      "detail": "answered \"approve\"  now: orionctl resume #1f9e8305e9\n  remembered (project): npm run build  grant_19239bd9f2f78155\n"
     },
     {
       "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
@@ -169,19 +169,19 @@
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
       "test": "`orionctl grants` runs",
       "pass": true,
-      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-ozxase\n  none — every escalation will be as"
+      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-gnuwjb\n  none — every escalation will be as"
     },
     {
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
       "test": "...and says plainly that nothing is remembered",
       "pass": true,
-      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-ozxase\n  none — every escalation will be asked\n"
+      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-gnuwjb\n  none — every escalation will be asked\n"
     },
     {
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
       "test": "a recorded grant is listed by the CLI",
       "pass": true,
-      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-ozxase\ngrant_24e7016fcb24029b  project         npm test  [c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-ozxase]  b"
+      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-gnuwjb\ngrant_654beb090ee83de1  project         npm test  [c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-gnuwjb]  b"
     },
     {
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
@@ -199,7 +199,7 @@
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
       "test": "--json emits parseable output alone",
       "pass": true,
-      "detail": "{\n  \"project\": \"c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-ozxase\",\n  \"active\": [\n    {\n      \"grant_id\": \"g"
+      "detail": "{\n  \"project\": \"c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-gnuwjb\",\n  \"active\": [\n    {\n      \"grant_id\": \"g"
     },
     {
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
@@ -211,19 +211,19 @@
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
       "test": "`orionctl revoke` reports success",
       "pass": true,
-      "detail": "revoked grant_24e7016fcb24029b\n"
+      "detail": "revoked grant_654beb090ee83de1\n"
     },
     {
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
       "test": "...and the grant is gone from the list",
       "pass": true,
-      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-ozxase\n  none — every escalation will be asked\n  (1 revoked)\n"
+      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-gnuwjb\n  none — every escalation will be asked\n  (1 revoked)\n"
     },
     {
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
       "test": "...but is not deleted from the log — it is recorded as revoked",
       "pass": true,
-      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-ozxase\n  none — every escalation will be asked\n  (1 revoked)\n"
+      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-gnuwjb\n  none — every escalation will be asked\n  (1 revoked)\n"
     },
     {
       "group": "shipped/W6-I: a resumed run reattaches by id, in the event log",
@@ -367,7 +367,103 @@
       "group": "shipped/W6-B: the container backend is selectable and changes posture",
       "test": "a container that cannot be provided refuses rather than falling back",
       "pass": true,
-      "detail": "Run #32986d25e7  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w6s-nofallback-ws-RC5i29\n────────────────────────────────────────────────\nORION_SANDBOX=container was requested but no container runtime is avai"
+      "detail": "Run #b5ef11d204  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w6s-nofallback-ws-sFKT4U\n────────────────────────────────────────────────\nORION_SANDBOX=container was requested but no container runtime is avai"
+    },
+    {
+      "group": "shipped/W6.1: orionctl reap prunes orphaned containers but keeps live ones",
+      "test": "`orionctl reap` reports on containers",
+      "pass": true,
+      "detail": "requeued 0, parked 0, expired human requests 0\ncontainers: removed 1 orphaned, kept 1 still reattachable\n"
+    },
+    {
+      "group": "shipped/W6.1: orionctl reap prunes orphaned containers but keeps live ones",
+      "test": "...having removed the orphan",
+      "pass": true,
+      "detail": "requeued 0, parked 0, expired human requests 0\ncontainers: removed 1 orphaned, kept 1 still reattachable\n"
+    },
+    {
+      "group": "shipped/W6.1: orionctl reap prunes orphaned containers but keeps live ones",
+      "test": "...and KEPT the live run's container",
+      "pass": true,
+      "detail": "requeued 0, parked 0, expired human requests 0\ncontainers: removed 1 orphaned, kept 1 still reattachable\n"
+    },
+    {
+      "group": "shipped/W6.1: orionctl reap prunes orphaned containers but keeps live ones",
+      "test": "the orphan is gone",
+      "pass": true,
+      "detail": "orion-w6s-reap-ws-lYdXhT-mtvad4g8"
+    },
+    {
+      "group": "shipped/W6.1: orionctl reap prunes orphaned containers but keeps live ones",
+      "test": "the live container SURVIVED — reattachment is still possible",
+      "pass": true,
+      "detail": "orion-w6s-reap-ws-lYdXhT-mtvad4g8 in orion-w6s-reap-ws-lYdXhT-mtvad4g8"
+    },
+    {
+      "group": "shipped/W6.1: ORION_IMAGE reaches the container backend",
+      "test": "the default image is unchanged",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6.1: ORION_IMAGE reaches the container backend",
+      "test": "ORION_IMAGE selects another image",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6.1: ORION_IMAGE reaches the container backend",
+      "test": "a blank value falls back rather than breaking the run",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6.1: ORION_IMAGE reaches the container backend",
+      "test": "a custom image is still container-isolated",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6.1: ORION_IMAGE reaches the container backend",
+      "test": "...still has no network",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6.1: ORION_IMAGE reaches the container backend",
+      "test": "...and still carries the shipped limits",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6.1: the shipped container never claims egress control it lacks",
+      "test": "the shipped container declares NO network",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6.1: the shipped container never claims egress control it lacks",
+      "test": "...built from a `none` policy",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6.1: the shipped container never claims egress control it lacks",
+      "test": "a policy the backend cannot enforce is refused at construction",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6.1: the shipped container never claims egress control it lacks",
+      "test": "...with a named kind",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "shipped/W6.1: the shipped container never claims egress control it lacks",
+      "test": "...explaining why rather than failing opaquely",
+      "pass": true,
+      "detail": "network policy mode 'allowlist' cannot be enforced by the container backend (per"
     }
   ]
 }

@@ -401,4 +401,115 @@ describe('shipped/W6-B: the container backend is selectable and changes posture'
     probe.out.slice(0, 200));
 }
 
+// ═══════════════════════════════════════════ W6.1 — `reap` reclaims CONTAINERS too
+describe('shipped/W6.1: orionctl reap prunes orphaned containers but keeps live ones');
+{
+  // DEFECT FOUND IN W6.1. `pruneOrionContainers` was imported into the CLI in Wave 6 and never
+  // called — the "mechanism unwired at the composition root" failure class, with a visible
+  // symptom: eight `orion-*` containers were found still running two hours after the runs that
+  // created them had ended. `reap` exists to reclaim what a dead worker left, and once the
+  // sandbox became a long-lived container, a leaked container is exactly that.
+  //
+  // The safety half matters as much as the cleanup: a container belonging to a STILL-RESUMABLE
+  // run must survive, because reattaching to it is the whole of Recovery 2.0 (W6-I). A reap that
+  // pruned indiscriminately would turn every reattach into a recreate-with-notice — the cleanup
+  // would quietly destroy the property the wave was built to provide.
+  if (!runtime) {
+    check('SKIPPED — no container runtime available', true, 'container reaping is unproven here');
+  } else {
+    const home = mk('reap-home');
+    const work = mk('reap-ws');
+    const store = new Store(path.join(home, 'orion.db'));
+
+    // A live, still-resumable run bound to a real container.
+    const liveRun = uid('run');
+    store.createRun(liveRun, { task: 'still resumable' });
+    const c = store.claim('w', { runId: liveRun, leaseMs: 60_000 });
+    const savedEnv = process.env.ORION_SANDBOX;
+    process.env.ORION_SANDBOX = 'container';
+    const prepared = await prepareRun(store, liveRun, c.leaseToken, work);
+    const liveName = prepared.sandbox.containerName;
+    store.close();
+
+    // An orphan with no run behind it at all.
+    const orphan = `orion-w61-orphan-${Date.now().toString(36)}`;
+    const { execFile: ef } = await import('node:child_process');
+    const run = (await import('node:util')).promisify(ef);
+    await run(runtime, ['run', '--detach', '--name', orphan, '--network', 'none',
+                        'alpine:3', 'sleep', '300'], { encoding: 'utf8', timeout: 120_000 });
+
+    const before = orionctl(['reap'], { home, work });
+    check('`orionctl reap` reports on containers', /containers:/.test(before.out), before.out.slice(0, 200));
+    check('...having removed the orphan', /removed 1 orphaned/.test(before.out), before.out.slice(0, 200));
+    check('...and KEPT the live run\'s container', /kept 1 still reattachable/.test(before.out),
+      before.out.slice(0, 200));
+
+    const names = (await run(runtime, ['ps', '-a', '--filter', 'name=orion-', '--format', '{{.Names}}'],
+      { encoding: 'utf8', timeout: 60_000 })).stdout.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+    check('the orphan is gone', !names.includes(orphan), names.join(','));
+    check('the live container SURVIVED — reattachment is still possible',
+      names.includes(liveName), `${liveName} in ${names.join(',')}`);
+
+    // Clean up: release the live one, then sweep.
+    if (savedEnv === undefined) delete process.env.ORION_SANDBOX; else process.env.ORION_SANDBOX = savedEnv;
+    await prepared.sandbox.release?.();
+    await pruneOrionContainers({ runtime });
+  }
+}
+
+// ═══════════════════════════════════════════ W6.1 — the container image is selectable
+describe('shipped/W6.1: ORION_IMAGE reaches the container backend');
+{
+  // FOUND BY THE §11.2 GATE. `ContainerSandbox` has always accepted an `image`, and the CLI never
+  // passed one — the same unwired-at-the-composition-root defect as `reap`'s container prune.
+  // The consequence was sharp: the default `alpine:3` has no Node, so the gate watched a real
+  // model AUTO-ALLOW its own verification command and then get `sh: node: not found`. Auto-allow
+  // worked exactly as designed and was useless, because the sandbox could not run the project's
+  // own toolchain.
+  eq('the default image is unchanged', makeSandbox(mk('img-default'),
+    { ORION_SANDBOX: 'container' }).sandbox.image, 'alpine:3');
+  eq('ORION_IMAGE selects another image', makeSandbox(mk('img-node'),
+    { ORION_SANDBOX: 'container', ORION_IMAGE: 'node:22-alpine' }).sandbox.image, 'node:22-alpine');
+  eq('a blank value falls back rather than breaking the run', makeSandbox(mk('img-blank'),
+    { ORION_SANDBOX: 'container', ORION_IMAGE: '   ' }).sandbox.image, 'alpine:3');
+
+  // Selecting an image must not weaken anything else — the boundary is the point.
+  const custom = makeSandbox(mk('img-caps'),
+    { ORION_SANDBOX: 'container', ORION_IMAGE: 'node:22-alpine' }).sandbox;
+  eq('a custom image is still container-isolated', custom.capabilities.isolated, true);
+  eq('...still has no network', custom.capabilities.network, 'none');
+  eq('...and still carries the shipped limits', custom.limits.memory, '512m');
+}
+
+// ═══════════════════════════════════════════ W6.1 — the network declaration is truthful
+describe('shipped/W6.1: the shipped container never claims egress control it lacks');
+{
+  // The other W6.1 defect: `allowlist` mode returned no docker flags, so the container got the
+  // default bridge and full egress while `capabilities.network` declared `'restricted'`. Measured
+  // live, an unlisted host and a raw IP were both reachable. The shipped CLI was never exposed
+  // (it hardcodes `mode: 'none'`), but a library consumer was — and a capability that overstates
+  // what a backend provides is a security bug, because posture and operator trust are built on it.
+  if (!runtime) {
+    check('SKIPPED — no container runtime available', true, 'unproven here');
+  } else {
+    const { sandbox } = makeSandbox(mk('net-ws'), { ORION_SANDBOX: 'container' });
+    eq('the shipped container declares NO network', sandbox.capabilities.network, 'none');
+    eq('...built from a `none` policy', sandbox.networkPolicy.mode, 'none');
+
+    // An unenforceable policy can no longer produce a container at all.
+    const { ContainerSandbox } = await import('../../src/sandbox/container/index.mjs');
+    const { createNetworkPolicy } = await import('../../src/sandbox/network.mjs');
+    let threw = null;
+    try {
+      new ContainerSandbox(mk('net-refuse'),
+        { runtime, network: createNetworkPolicy({ mode: 'allowlist', allow: ['example.com'] }) });
+    } catch (e) { threw = e; }
+    check('a policy the backend cannot enforce is refused at construction', threw !== null);
+    eq('...with a named kind', threw?.kind, 'network_policy_unenforceable');
+    check('...explaining why rather than failing opaquely',
+      /not implemented|cannot be enforced/.test(String(threw?.message)),
+      String(threw?.message).slice(0, 80));
+  }
+}
+
 process.exit(summary('shipped/w6', path.join(HERE, '..', 'results-shipped-w6.json')) ? 1 : 0);

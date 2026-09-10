@@ -54,7 +54,7 @@ import { execFile as execFileCb, execFileSync } from 'node:child_process';
 import { promisify } from 'node:util';
 import { LocalSandbox, SandboxError, MAX_OUTPUT_BYTES, MAX_ERROR_BYTES, scrubEnv } from '../local/index.mjs';
 import { describeCapabilities, Isolation } from '../backend.mjs';
-import { createNetworkPolicy, networkFlagsFor } from '../network.mjs';
+import { createNetworkPolicy, networkFlagsFor, ENFORCEABLE_MODES } from '../network.mjs';
 
 const execFile = promisify(execFileCb);
 
@@ -113,6 +113,20 @@ export class ContainerSandbox extends LocalSandbox {
 
     this.image = image;
     this.networkPolicy = network ?? createNetworkPolicy({ mode: 'none' });
+
+    // W6.1 PROOF 3: refuse a policy this backend cannot actually enforce, HERE — at construction,
+    // which is wiring time — rather than on `acquire()` or, worse, never. Before this, an
+    // `allowlist` policy produced a container on the default bridge with full egress while
+    // `capabilities.network` said `'restricted'`; measured live, an unlisted host and a raw IP
+    // were both reachable. Failing closed is symmetric with `makeSandbox`'s refusal to fall back
+    // to the local sandbox when a container was asked for: in both cases the quiet path would
+    // leave the operator believing in a boundary that is not there.
+    if (!ENFORCEABLE_MODES.has(this.networkPolicy.mode))
+      throw new SandboxError(
+        `network policy mode '${this.networkPolicy.mode}' cannot be enforced by the container `
+        + `backend (per-domain egress filtering is not implemented). Use 'none' or 'deny'.`,
+        { kind: 'network_policy_unenforceable' });
+
     this.limits = Object.freeze({ cpus, memory, pidsLimit });
     this.user = user;
     this.containerName = containerName ?? `orion-${path.basename(this.root)}-${Date.now().toString(36)}`;
@@ -121,7 +135,11 @@ export class ContainerSandbox extends LocalSandbox {
 
     this.capabilities = describeCapabilities({
       isolation: Isolation.CONTAINER,
-      network: this.networkPolicy.mode === 'none' ? 'none' : 'restricted',
+      // Both enforceable modes receive `--network none`, so both declare `none`. `deny` used to
+      // declare `restricted`, which understated it rather than overstating — but a capability
+      // should say what the backend actually provides, and what it provides here is no network
+      // stack at all. The unenforceable modes are refused above, so there is no third case.
+      network: 'none',
       // The Q4 reconciliation, declared rather than implied — see the header.
       sharedWorkspace: true,
       runtime: this.runtime,
@@ -310,21 +328,39 @@ function shortenErr(s) {
   return `${t.slice(0, Math.floor(MAX_ERROR_BYTES * 0.7))}\n…[${t.length - MAX_ERROR_BYTES} more chars omitted]…\n${t.slice(-Math.floor(MAX_ERROR_BYTES * 0.2))}`;
 }
 
-/** Best-effort sweep of containers this runtime left behind. Used by tests and `orionctl reap`. */
-export async function pruneOrionContainers({ runtime = null, prefix = 'orion-' } = {}) {
+/** Every container this runtime owns, by name. */
+export async function listOrionContainers({ runtime = null, prefix = 'orion-' } = {}) {
   const rt = runtime ?? detectRuntime();
-  if (!rt) return { pruned: 0, runtime: null };
+  if (!rt) return [];
   try {
     const { stdout } = await execFile(rt,
       ['ps', '--all', '--filter', `name=${prefix}`, '--format', '{{.Names}}'],
       { encoding: 'utf8', timeout: 60_000, env: scrubEnv(process.env) });
-    const names = stdout.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
-    for (const n of names) {
-      try { await execFile(rt, ['rm', '--force', n], { timeout: 60_000, env: scrubEnv(process.env) }); }
-      catch { /* already gone */ }
-    }
-    return { pruned: names.length, runtime: rt };
-  } catch {
-    return { pruned: 0, runtime: rt };
+    return stdout.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  } catch { return []; }
+}
+
+/**
+ * Sweep containers this runtime left behind.
+ *
+ * `keep` is the W6.1 addition and it is not optional in practice: a container belonging to a run
+ * that is still resumable MUST survive, because reattaching to it is the whole of Recovery 2.0
+ * (W6-I). Pruning indiscriminately would turn every reattach into a recreate-with-notice — the
+ * cleanup would quietly destroy the property the wave was built to provide. Tests that own every
+ * container in the environment pass no `keep` and sweep everything.
+ */
+export async function pruneOrionContainers({ runtime = null, prefix = 'orion-', keep = null } = {}) {
+  const rt = runtime ?? detectRuntime();
+  if (!rt) return { pruned: 0, kept: 0, runtime: null };
+  const names = await listOrionContainers({ runtime: rt, prefix });
+  const spare = keep instanceof Set ? keep : new Set(keep ?? []);
+  let pruned = 0;
+  for (const n of names) {
+    if (spare.has(n)) continue;
+    try {
+      await execFile(rt, ['rm', '--force', n], { timeout: 60_000, env: scrubEnv(process.env) });
+      pruned++;
+    } catch { /* already gone */ }
   }
+  return { pruned, kept: names.length - pruned, runtime: rt };
 }

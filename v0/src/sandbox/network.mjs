@@ -133,10 +133,40 @@ export function createNetworkPolicy({ mode = 'none', allow = [] } = {}) {
   });
 }
 
-/** The docker/podman flag for a policy. Only `allowlist` gets a network at all. */
+/**
+ * Modes the CONTAINER BACKEND can actually enforce.
+ *
+ * W6.1 PROOF 3 measured what the other mode really did, and the answer was: nothing. `allowlist`
+ * returned no docker flags, so the container got the runtime's default bridge — full, unfiltered
+ * egress — while `capabilities.network` reported `'restricted'`. Measured live: with a policy
+ * allowing only `registry.npmjs.org`, both `example.com` and the raw IP `1.1.1.1` were reachable.
+ * Nothing anywhere called `policy.check()`, so the allowlist was a data structure no code asked.
+ *
+ * That is a capability LIE, which the backend contract treats as a security bug rather than a
+ * documentation one — a declaration is what posture and operator trust are built on.
+ *
+ * The honest fix is to fail closed. Enforcing a per-domain allowlist needs a mechanism this
+ * runtime does not have (an egress proxy on an `--internal` network, or in-container firewall
+ * rules requiring NET_ADMIN); until one exists, a mode that cannot restrict must not be offered
+ * as though it can. Silently handing a run the whole internet because the operator asked for a
+ * narrow allowlist is the exact exfiltration route the policy was meant to close.
+ */
+export const ENFORCEABLE_MODES = Object.freeze(new Set(['none', 'deny']));
+
+/**
+ * The docker/podman flags for a policy.
+ *
+ * Throws for a mode the backend cannot enforce, rather than returning `[]` and letting the caller
+ * start an unrestricted container. `policy.check()` remains correct and exported for a deployer
+ * implementing enforcement elsewhere — it is the decision function, not the mechanism.
+ */
 export function networkFlagsFor(policy) {
   // 'deny' still gets `--network none`: a policy that denies everything and a sandbox with no
   // stack are the same reachability, and the stronger mechanism is free.
-  if (!policy || policy.mode === 'none' || policy.mode === 'deny') return ['--network', 'none'];
-  return [];   // allowlist mode: the runtime's default bridge, with egress filtered above
+  if (!policy || ENFORCEABLE_MODES.has(policy.mode)) return ['--network', 'none'];
+  throw new Error(
+    `network policy mode '${policy.mode}' cannot be enforced by the container backend. `
+    + `Per-domain egress filtering is not implemented: the container would receive the runtime's `
+    + `default bridge and unrestricted egress while declaring itself restricted. `
+    + `Use mode 'none' (the shipped default) or 'deny'.`);
 }
