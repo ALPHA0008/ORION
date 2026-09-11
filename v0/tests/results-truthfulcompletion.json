@@ -163,13 +163,13 @@
       "group": "truthfulcompletion/cli-integration",
       "test": "orionctl did NOT print a success tick",
       "pass": true,
-      "detail": "ompletion_contract] model stopped before the declared objective was satisfied; g |  | failed — finished_without_change |   history:      orionctl explain #fc8db8d63c | "
+      "detail": "ompletion_contract] model stopped before the declared objective was satisfied; g |  | failed — finished_without_change |   history:      orionctl explain #d460c33000 | "
     },
     {
       "group": "truthfulcompletion/cli-integration",
       "test": "orionctl reported the run as not finishing its work",
       "pass": true,
-      "detail": "ompletion_contract] model stopped before the declared objective was satisfied; g |  | failed — finished_without_change |   history:      orionctl explain #fc8db8d63c | "
+      "detail": "ompletion_contract] model stopped before the declared objective was satisfied; g |  | failed — finished_without_change |   history:      orionctl explain #d460c33000 | "
     },
     {
       "group": "truthfulcompletion/cli-integration",

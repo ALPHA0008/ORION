@@ -60,10 +60,11 @@ export async function* sseEvents(body, { signal = null } = {}) {
 export function createStreamAccumulator({ onDelta, deltaBytes = DELTA_BYTES, deltaMs = DELTA_MS } = {}) {
   let text = '';
   let pending = '';
+  let reasoningText = '';
   let lastFlush = Date.now();
   let ttftMs = null;
   const started = Date.now();
-  const toolCalls = new Map();     // index -> { id, name, argsText }
+  const toolCalls = new Map();     // index -> { id, name, argsText, extra }
   let chunks = 0;
 
   const flush = (force = false) => {
@@ -79,15 +80,17 @@ export function createStreamAccumulator({ onDelta, deltaBytes = DELTA_BYTES, del
 
   return {
     /** Feed one decoded provider fragment. Returns nothing; side effects are the callbacks. */
-    push({ textDelta = '', toolCall = null } = {}) {
+    push({ textDelta = '', toolCall = null, reasoning = null } = {}) {
       // First observable output IS time-to-first-token. Measured once, from the call's start.
-      if (ttftMs === null && (textDelta || toolCall)) ttftMs = Date.now() - started;
+      if (ttftMs === null && (textDelta || toolCall || reasoning)) ttftMs = Date.now() - started;
       if (textDelta) { text += textDelta; pending += textDelta; flush(); }
+      if (reasoning != null) reasoningText += reasoning;
       if (toolCall) {
-        const cur = toolCalls.get(toolCall.index) ?? { id: null, name: null, argsText: '' };
+        const cur = toolCalls.get(toolCall.index) ?? { id: null, name: null, argsText: '', extra: null };
         if (toolCall.id) cur.id = toolCall.id;
         if (toolCall.name) cur.name = toolCall.name;
         if (toolCall.argsDelta) cur.argsText += toolCall.argsDelta;
+        if (toolCall.extra) cur.extra = toolCall.extra;
         toolCalls.set(toolCall.index, cur);
       }
     },
@@ -101,7 +104,11 @@ export function createStreamAccumulator({ onDelta, deltaBytes = DELTA_BYTES, del
           let args = {}, argError = null;
           try { args = tc.argsText ? JSON.parse(tc.argsText) : {}; }
           catch (e) { argError = `unparseable arguments: ${e.message}`; }
-          return { id: tc.id ?? `tc_${i}`, name: tc.name ?? 'unknown', args, argError };
+          const out = { id: tc.id ?? `tc_${i}`, name: tc.name ?? 'unknown', args, argError };
+          // Mirror normalise(): preserve vendor-specific extras (Gemini's thought_signature) so
+          // the tool_call survives the store→projection→buildMessages round-trip intact.
+          if (tc.extra && typeof tc.extra === 'object') out.vendor_extras = tc.extra;
+          return out;
         });
       return {
         content: text,
@@ -114,7 +121,8 @@ export function createStreamAccumulator({ onDelta, deltaBytes = DELTA_BYTES, del
         cost_usd: null,
         ttft_ms: ttftMs,
         duration_ms: Date.now() - started,
-        ext: { streamed: true, chunks, aborted, bytes: Buffer.byteLength(text) },
+        ext: { streamed: true, chunks, aborted, bytes: Buffer.byteLength(text),
+               ...(reasoningText ? { reasoning: reasoningText } : {}) },
       };
     },
 
@@ -131,6 +139,8 @@ export function decodeOpenAIChunk(data) {
   const d = choice.delta ?? {};
   const out = { finishReason: choice.finish_reason ?? null, usage: json.usage ?? null };
   if (typeof d.content === 'string' && d.content) out.textDelta = d.content;
+  // Preserve vendor-specific reasoning (Groq gpt-oss streams all output into `delta.reasoning`).
+  if (typeof d.reasoning === 'string' && d.reasoning) out.reasoning = d.reasoning;
   if (Array.isArray(d.tool_calls) && d.tool_calls.length) {
     const tc = d.tool_calls[0];
     out.toolCall = {
@@ -138,6 +148,8 @@ export function decodeOpenAIChunk(data) {
       id: tc.id ?? null,
       name: tc.function?.name ?? null,
       argsDelta: tc.function?.arguments ?? '',
+      extra: (tc.extra_content && typeof tc.extra_content === 'object')
+        ? tc.extra_content : (tc.extra && typeof tc.extra === 'object' ? tc.extra : null),
     };
   }
   return out;

@@ -1,6 +1,6 @@
 {
   "label": "streaming",
-  "pass": 44,
+  "pass": 48,
   "fail": 0,
   "results": [
     {
@@ -109,13 +109,13 @@
       "group": "streaming/S1-S2-a-streamed-turn-is-recorded",
       "test": "S2: ttft_ms is POPULATED (it was always null before this wave)",
       "pass": true,
-      "detail": "[16,3]"
+      "detail": "[15,3]"
     },
     {
       "group": "streaming/S1-S2-a-streamed-turn-is-recorded",
       "test": "S2: and it is greater than zero",
       "pass": true,
-      "detail": "16"
+      "detail": "15"
     },
     {
       "group": "streaming/S1-S2-a-streamed-turn-is-recorded",
@@ -169,7 +169,7 @@
       "group": "streaming/S6-BLOCKING-a-killed-stream-leaves-a-durable-partial",
       "test": "S6: it is marked aborted",
       "pass": true,
-      "detail": "{\"chunks\":3,\"bytes\":3600,\"ttft_ms\":2,\"duration_ms\":65,\"aborted\":true}"
+      "detail": "{\"chunks\":3,\"bytes\":3600,\"ttft_ms\":2,\"duration_ms\":66,\"aborted\":true}"
     },
     {
       "group": "streaming/S6-BLOCKING-a-killed-stream-leaves-a-durable-partial",
@@ -199,7 +199,7 @@
       "group": "streaming/S7-the-lease-survives-a-long-stream",
       "test": "S7: the stream really outlasted the lease",
       "pass": true,
-      "detail": "807ms vs 400ms"
+      "detail": "781ms vs 400ms"
     },
     {
       "group": "streaming/S7-the-lease-survives-a-long-stream",
@@ -264,6 +264,30 @@
     {
       "group": "streaming/P4-capability-mismatch-is-recorded-not-silent",
       "test": "P4: and no stream events were fabricated",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S9-vendor-extras-survive-a-streamed-tool-call-round-trip",
+      "test": "S9: the tool_call survives",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "group": "streaming/S9-vendor-extras-survive-a-streamed-tool-call-round-trip",
+      "test": "S9: args still parse",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "streaming/S9-vendor-extras-survive-a-streamed-tool-call-round-trip",
+      "test": "S9: vendor_extras (thought_signature) is preserved on the streamed tool_call",
+      "pass": true,
+      "detail": "{\"google\":{\"thought_signature\":\"sig-123\"}}"
+    },
+    {
+      "group": "streaming/S9-vendor-extras-survive-a-streamed-tool-call-round-trip",
+      "test": "S9: reasoning is preserved in ext",
       "pass": true,
       "detail": ""
     }

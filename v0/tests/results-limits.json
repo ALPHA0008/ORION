@@ -61,19 +61,19 @@
       "group": "limits/PROOF-2: the container resource limits bind",
       "test": "CPU usage was actually sampled",
       "pass": true,
-      "detail": "[99.6,99.25,99.36,99.26,99.42]"
+      "detail": "[99.08,98.92,99.37,99.27,98.99]"
     },
     {
       "group": "limits/PROOF-2: the container resource limits bind",
       "test": "six busy loops did NOT exceed the 1.0-CPU quota",
       "pass": true,
-      "detail": "peak 99.6% across [99.6,99.25,99.36,99.26,99.42] on a 24-core host"
+      "detail": "peak 99.37% across [99.08,98.92,99.37,99.27,98.99] on a 24-core host"
     },
     {
       "group": "limits/PROOF-2: the container resource limits bind",
       "test": "...and the load was real (not silently absent)",
       "pass": true,
-      "detail": "peak 99.6% — below this the loops never ran and the test would be vacuous"
+      "detail": "peak 99.37% — below this the loops never ran and the test would be vacuous"
     },
     {
       "group": "limits/PROOF-2: the container resource limits bind",

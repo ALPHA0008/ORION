@@ -103,7 +103,7 @@
       "group": "repl/durability",
       "test": "the run is visible from a separate process",
       "pass": true,
-      "detail": "run_f3f607b58c"
+      "detail": "run_8b2a2f9dc2"
     },
     {
       "group": "repl/durability",

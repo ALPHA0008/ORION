@@ -378,4 +378,30 @@ describe('streaming/P4-capability-mismatch-is-recorded-not-silent');
     !events.some(e => String(e.type).startsWith('stream.')));
 }
 
+describe('streaming/S9-vendor-extras-survive-a-streamed-tool-call-round-trip');
+{
+  // The live gate caught this: Gemini streams its thought_signature inside
+  // `delta.tool_calls[0].extra_content`, and the accumulator discarded it — so the worker's
+  // #buildMessages sent the tool_call back WITHOUT the signature, and Gemini 400'd on turn 2.
+  // `normalise` was fixed first; this asserts the STREAMED path preserves the same field.
+  const acc = createStreamAccumulator({ onDelta: () => {}, deltaMs: 1e9 });
+  acc.push({ toolCall: { index: 0, id: 'g1', name: 'glob', argsDelta: '', extra:
+    { google: { thought_signature: 'sig-123' } } } });
+  acc.push({ toolCall: { index: 0, id: 'g1', name: 'glob', argsDelta: '{"pattern":"*"}' } });
+  const out = acc.finish({ finishReason: 'tool_calls' });
+  check('S9: the tool_call survives', out.tool_calls.length === 1, `${out.tool_calls.length}`);
+  eq('S9: args still parse', out.tool_calls[0].args.pattern, '*');
+  check('S9: vendor_extras (thought_signature) is preserved on the streamed tool_call',
+    JSON.stringify(out.tool_calls[0].vendor_extras) === JSON.stringify(
+      { google: { thought_signature: 'sig-123' } }),
+    JSON.stringify(out.tool_calls[0].vendor_extras));
+
+  // And reasoning routed to delta.reasoning lands in ext for the reasoning-as-content shim.
+  const acc2 = createStreamAccumulator({ onDelta: () => {}, deltaMs: 1e9 });
+  acc2.push({ reasoning: 'step one ' });
+  acc2.push({ reasoning: 'step two' });
+  const out2 = acc2.finish({ finishReason: 'stop' });
+  eq('S9: reasoning is preserved in ext', out2.ext.reasoning, 'step one step two');
+}
+
 process.exit(summary('streaming', path.join(HERE, '..', 'results-streaming.json')) ? 1 : 0);

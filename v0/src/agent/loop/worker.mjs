@@ -825,7 +825,7 @@ export class Worker {
           ...(m.tool_calls?.length ? { tool_calls: m.tool_calls.map(t => ({
             id: t.id, type: 'function',
             function: { name: t.name, arguments: JSON.stringify(t.args ?? {}) },
-            ...(t.vendor_extras ? t.vendor_extras : {}) })) } : {}) });
+            ...(t.vendor_extras ? { extra_content: t.vendor_extras } : {}) })) } : {}) });
       else msgs.push({ role: m.role, content: String(m.content ?? '') });
     }
     return repairOrphans(msgs);
