@@ -31,6 +31,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { parseServers } from '../mcp/servers.mjs';
 
 /** Where configuration is read from, weakest first. */
 export function configSearchPaths({ workspace = null, home = null } = {}) {
@@ -49,7 +50,8 @@ export function configSearchPaths({ workspace = null, home = null } = {}) {
  */
 /**
  * @typedef {{ type: string, env?: string, describe?: string, enum?: string[],
- *             fields?: Record<string, string> }} ConfigSpec
+ *             fields?: Record<string, string>,
+ *             validate?: (value: any, ctx: { file: string|null, field: string }) => void }} ConfigSpec
  */
 /** @type {Readonly<Record<string, ConfigSpec>>} */
 export const CONFIG_SCHEMA = Object.freeze({
@@ -69,6 +71,11 @@ export const CONFIG_SCHEMA = Object.freeze({
     fields: { tokens: 'number', tool_calls: 'number', cost_usd: 'number' } },
   search: { type: 'object', describe: '{ maxHits, timeMs, maxResults }',
     fields: { maxHits: 'number', timeMs: 'number', maxResults: 'number' } },
+  // W9 — MCP servers. The value is a map of arbitrary server names, so it cannot be checked by the
+  // flat `fields` mechanism above; `validate` hands it to the MCP declaration parser, which is the
+  // authority on that shape and refuses anything that would put a secret in a committed file.
+  mcpServers: { type: 'object', describe: '{ "<name>": { command, args, env, cwd, timeoutMs } }',
+    validate: (value, { file }) => { parseServers(value, { file }); } },
 });
 
 /** Keys a config file may NOT set, with the reason, so the refusal teaches rather than blocks. */
@@ -124,6 +131,10 @@ export function readConfigFile(file) {
       throw new ConfigError(
         `${file}: \`${key}\` must be one of ${spec.enum.join(', ')} — got ${JSON.stringify(value)}`,
         { field: key, file });
+    // A key whose shape is richer than `fields` can express validates itself. The hook throws its
+    // own typed error (naming the exact nested field), which is what keeps an `mcpServers` typo as
+    // loud as a top-level one.
+    if (spec.validate && value) spec.validate(value, { file, field: key });
     if (spec.fields && value) {
       for (const [k, v] of Object.entries(value)) {
         if (!spec.fields[k])
@@ -150,7 +161,9 @@ export function readConfigFile(file) {
  *             files: {scope:string,file:string}[], errors: ConfigError[] }}
  */
 export function resolveConfig({ workspace = null, home = null, env = process.env } = {}) {
+  /** @type {Record<string, any>} */
   const values = {};
+  /** @type {Record<string, string>} */
   const sources = {};
   const files = [];
   const errors = [];

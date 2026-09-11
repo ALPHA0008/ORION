@@ -41,6 +41,11 @@ export function toAnthropicRequest({ messages, tools = [], model, temperature = 
     if (m.role === 'tool') {
       // A tool RESULT is a content block on a user message. Consecutive results coalesce into one
       // message, which is what the API expects when several tools ran in the same turn.
+      // Annotated because Anthropic content blocks are a UNION (`text` | `tool_use` | `tool_result`)
+      // and the checker narrows the array's element type from whichever block was pushed first —
+      // so a `tool_result` appended to a list that began with `tool_use` reads as a type error
+      // rather than as the heterogeneous list the API actually specifies.
+      /** @type {any} */
       const block = { type: 'tool_result', tool_use_id: m.tool_call_id, content: String(m.content ?? '') };
       const prev = out[out.length - 1];
       if (prev && prev.role === 'user' && Array.isArray(prev.content)

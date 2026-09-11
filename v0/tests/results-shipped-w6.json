@@ -103,19 +103,19 @@
       "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
       "test": "the bare --remember form is accepted",
       "pass": true,
-      "detail": "answered \"approve\"  now: orionctl resume #480eba564e\n  remembered (session): npm test  grant_2ba80bd0a909aed2\n"
+      "detail": "answered \"approve\"  now: orionctl resume #eb7dec7b34\n  remembered (session): npm test  grant_2ba80bd0a909aed2\n"
     },
     {
       "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
       "test": "...and reports that it remembered something",
       "pass": true,
-      "detail": "answered \"approve\"  now: orionctl resume #480eba564e\n  remembered (session): npm test  grant_2ba80bd0a909aed2\n"
+      "detail": "answered \"approve\"  now: orionctl resume #eb7dec7b34\n  remembered (session): npm test  grant_2ba80bd0a909aed2\n"
     },
     {
       "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
       "test": "...naming the command it remembered",
       "pass": true,
-      "detail": "answered \"approve\"  now: orionctl resume #480eba564e\n  remembered (session): npm test  grant_2ba80bd0a909aed2\n"
+      "detail": "answered \"approve\"  now: orionctl resume #eb7dec7b34\n  remembered (session): npm test  grant_2ba80bd0a909aed2\n"
     },
     {
       "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
@@ -145,7 +145,7 @@
       "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
       "test": "an explicit project scope is honoured",
       "pass": true,
-      "detail": "answered \"approve\"  now: orionctl resume #9a43bdc153\n  remembered (project): npm run build  grant_e2b5f8ca6ad7d228\n"
+      "detail": "answered \"approve\"  now: orionctl resume #223ca3af3c\n  remembered (project): npm run build  grant_f0e26ca9a7b359e8\n"
     },
     {
       "group": "shipped/W6-M: `answer --remember` records a grant END TO END",
@@ -169,19 +169,19 @@
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
       "test": "`orionctl grants` runs",
       "pass": true,
-      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-vtqfmg\n  none — every escalation will be as"
+      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-5vjqmg\n  none — every escalation will be as"
     },
     {
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
       "test": "...and says plainly that nothing is remembered",
       "pass": true,
-      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-vtqfmg\n  none — every escalation will be asked\n"
+      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-5vjqmg\n  none — every escalation will be asked\n"
     },
     {
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
       "test": "a recorded grant is listed by the CLI",
       "pass": true,
-      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-vtqfmg\ngrant_0140d2340539d44b  project         npm test  [c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-vtqfmg]  b"
+      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-5vjqmg\ngrant_2461aa734b236360  project         npm test  [c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-5vjqmg]  b"
     },
     {
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
@@ -199,7 +199,7 @@
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
       "test": "--json emits parseable output alone",
       "pass": true,
-      "detail": "{\n  \"project\": \"c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-vtqfmg\",\n  \"active\": [\n    {\n      \"grant_id\": \"g"
+      "detail": "{\n  \"project\": \"c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-5vjqmg\",\n  \"active\": [\n    {\n      \"grant_id\": \"g"
     },
     {
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
@@ -211,19 +211,19 @@
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
       "test": "`orionctl revoke` reports success",
       "pass": true,
-      "detail": "revoked grant_0140d2340539d44b\n"
+      "detail": "revoked grant_2461aa734b236360\n"
     },
     {
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
       "test": "...and the grant is gone from the list",
       "pass": true,
-      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-vtqfmg\n  none — every escalation will be asked\n  (1 revoked)\n"
+      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-5vjqmg\n  none — every escalation will be asked\n  (1 revoked)\n"
     },
     {
       "group": "shipped/W6-M: the grant CLI surface exists and reports honestly",
       "test": "...but is not deleted from the log — it is recorded as revoked",
       "pass": true,
-      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-vtqfmg\n  none — every escalation will be asked\n  (1 revoked)\n"
+      "detail": "remembered approvals  c:/users/abhijith.p/appdata/local/temp/w6s-grantcli-ws-5vjqmg\n  none — every escalation will be asked\n  (1 revoked)\n"
     },
     {
       "group": "shipped/W6-I: a resumed run reattaches by id, in the event log",
@@ -265,7 +265,7 @@
       "group": "shipped/W6-L: output arrives incrementally, and is committed",
       "test": "output deltas were committed",
       "pass": true,
-      "detail": "8"
+      "detail": "7"
     },
     {
       "group": "shipped/W6-L: output arrives incrementally, and is committed",
@@ -277,7 +277,7 @@
       "group": "shipped/W6-L: output arrives incrementally, and is committed",
       "test": "...but BOUNDED, not one per line",
       "pass": true,
-      "detail": "8 deltas for 300 lines"
+      "detail": "7 deltas for 300 lines"
     },
     {
       "group": "shipped/W6-L: output arrives incrementally, and is committed",
@@ -295,7 +295,7 @@
       "group": "shipped/W6-L: output arrives incrementally, and is committed",
       "test": "a live consumer saw them as they landed",
       "pass": true,
-      "detail": "8 rendered vs 8 committed"
+      "detail": "7 rendered vs 7 committed"
     },
     {
       "group": "shipped/W6-L: output arrives incrementally, and is committed",
@@ -367,7 +367,7 @@
       "group": "shipped/W6-B: the container backend is selectable and changes posture",
       "test": "a container that cannot be provided refuses rather than falling back",
       "pass": true,
-      "detail": "Run #5efb46800f  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w6s-nofallback-ws-URZiTA\n────────────────────────────────────────────────\nORION_SANDBOX=container was requested but no container runtime is avai"
+      "detail": "Run #f74cc7373e  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w6s-nofallback-ws-xH3VH6\n────────────────────────────────────────────────\nORION_SANDBOX=container was requested but no container runtime is avai"
     },
     {
       "group": "shipped/W6.1: orionctl reap prunes orphaned containers but keeps live ones",
@@ -391,13 +391,13 @@
       "group": "shipped/W6.1: orionctl reap prunes orphaned containers but keeps live ones",
       "test": "the orphan is gone",
       "pass": true,
-      "detail": "orion-w6s-reap-ws-3ZKSyG-mtwnkqoz"
+      "detail": "orion-w6s-reap-ws-utQkcq-mtwtoxru"
     },
     {
       "group": "shipped/W6.1: orionctl reap prunes orphaned containers but keeps live ones",
       "test": "the live container SURVIVED — reattachment is still possible",
       "pass": true,
-      "detail": "orion-w6s-reap-ws-3ZKSyG-mtwnkqoz in orion-w6s-reap-ws-3ZKSyG-mtwnkqoz"
+      "detail": "orion-w6s-reap-ws-utQkcq-mtwtoxru in orion-w6s-reap-ws-utQkcq-mtwtoxru"
     },
     {
       "group": "shipped/W6.1: ORION_IMAGE reaches the container backend",

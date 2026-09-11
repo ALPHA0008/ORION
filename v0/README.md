@@ -236,6 +236,43 @@ and they never displace the built-in refusal of catastrophic commands.
 
 A malformed rule file **refuses the run** rather than degrading to weaker policy than you wrote.
 
+### MCP servers
+
+Declare servers in `.orion.json` and their tools join the toolset the model is offered:
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": ["GITHUB_TOKEN"]
+    }
+  }
+}
+```
+
+Their tools appear as `mcp__github__<tool>`. They are ordinary tools from every other angle: they
+go through the authorizer (`denyTools: ["mcp__github__create_issue"]` works), they are recorded in
+the trajectory with provenance, and `explain` shows which server produced each result.
+
+**`env` lists variable NAMES, never values.** Other MCP clients accept `{"TOKEN": "value"}` here;
+this one refuses it, because the file is meant to be committed. The server receives a minimal base
+environment plus exactly the variables you named — not your whole environment.
+
+**Where the server runs.** With `ORION_SANDBOX=container` the server is started *inside* the run's
+container, so it inherits `--network none` and the CPU/memory/PID limits without MCP having to
+enforce anything itself. On the local sandbox there is no such boundary and the runtime says so
+rather than implying isolation it does not have.
+
+Every MCP tool is declared **`Mutating`** and **`UNSAFE` to re-issue**. The harness cannot know what
+third-party code does — a server tool called `get_issue` may post a comment — so it never
+auto-allows one at a strict posture and never silently retries one after a crash.
+
+MCP needs the optional `@modelcontextprotocol/sdk`. It is the project's only dependency, declared
+in `optionalDependencies` at an exact pin; `dependencies` stays empty. Without it, MCP degrades
+(recorded as a `degraded` event) and the run continues on built-in tools.
+
 ## Commands
 
 ```
@@ -316,6 +353,7 @@ $ orionctl resume #a81f2c
 | `verify` | read-only | run a check |
 | `plan` `plan_step` | read-only | declare and advance a plan |
 | `ask_user` | read-only | pause the run durably for a human |
+| `mcp__<server>__<tool>` | **mutating** | whatever a declared MCP server advertises (see above) |
 
 `grep` stays **literal unless you ask for a regex**, so `a.b` finds `a.b` and not `axb` — a pattern
 written before this existed still means what it meant. A malformed regex is an error, never a silent

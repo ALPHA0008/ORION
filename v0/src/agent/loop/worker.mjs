@@ -639,10 +639,18 @@ export class Worker {
     // not to have taken effect. The sandbox already tags this as `kind: 'timeout'`; this is the
     // one line that stops throwing that information away.
     const timedOut = failed != null && failed.kind === 'timeout';
+    // W9 — provenance for a call the harness did not implement. `tool.mcp` is declared on the tool
+    // itself (W5-T1: capability metadata is declared once and derived everywhere), so the worker
+    // attributes an MCP result without knowing what MCP is. ADR-004 makes event PAYLOADS
+    // extensible, so `ext` needs no contract change; `explain` reads it to answer "which server
+    // produced this?" from the log alone (Invariant 6/7).
+    const ext = tool?.mcp ? { mcp: { ...tool.mcp } } : null;
     const recorded = failed
       ? this.#append(runId, timedOut ? 'tool.timed_out' : 'tool.failed',
-          { tool_call_id: tcid, name: tc.name, error: String(failed.message ?? failed) })
-      : this.#append(runId, 'tool.succeeded', { tool_call_id: tcid, name: tc.name, result: String(out ?? '') });
+          { tool_call_id: tcid, name: tc.name, error: String(failed.message ?? failed),
+            ...(ext ? { ext } : {}) })
+      : this.#append(runId, 'tool.succeeded', { tool_call_id: tcid, name: tc.name,
+          result: String(out ?? ''), ...(ext ? { ext } : {}) });
     if (recorded === null) return this.#leaseLost();
     this.#hook('after:tool.succeeded', { runId, tcid });
 

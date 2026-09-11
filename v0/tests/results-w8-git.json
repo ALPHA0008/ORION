@@ -139,25 +139,25 @@
       "group": "w8/git: live navigation against a real repository",
       "test": "the current branch is marked",
       "pass": true,
-      "detail": "* main\t1 second ago"
+      "detail": "* main\t0 seconds ago"
     },
     {
       "group": "w8/git: live navigation against a real repository",
       "test": "the log carries the subject",
       "pass": true,
-      "detail": "7427dbc 2026-09-11 T — initial commit"
+      "detail": "474b00a 2026-09-11 T — initial commit"
     },
     {
       "group": "w8/git: live navigation against a real repository",
       "test": "...an abbreviated sha",
       "pass": true,
-      "detail": "7427dbc 2026-09-11 T — initial commit"
+      "detail": "474b00a 2026-09-11 T — initial commit"
     },
     {
       "group": "w8/git: live navigation against a real repository",
       "test": "...and a date",
       "pass": true,
-      "detail": "7427dbc 2026-09-11 T — initial commit"
+      "detail": "474b00a 2026-09-11 T — initial commit"
     },
     {
       "group": "w8/git: live navigation against a real repository",
@@ -175,13 +175,13 @@
       "group": "w8/git: live navigation against a real repository",
       "test": "blame names the author",
       "pass": true,
-      "detail": "^7427dbc (T                 2026-09-11 13:17:03 +0530 1) first line\n00000000 (Not Committed Yet 2026-09-11 13:17:04 +0530 2) CHANGED"
+      "detail": "^474b00a (T                 2026-09-11 16:08:17 +0530 1) first line\n00000000 (Not Committed Yet 2026-09-11 16:08:18 +0530 2) CHANGED"
     },
     {
       "group": "w8/git: live navigation against a real repository",
       "test": "...and carries the line content",
       "pass": true,
-      "detail": "^7427dbc (T                 2026-09-11 13:17:03 +0530 1) first line\n00000000 (Not Committed Yet 2026-09-11 13:17:04 +0530 2) CHANGED"
+      "detail": "^474b00a (T                 2026-09-11 16:08:17 +0530 1) first line\n00000000 (Not Committed Yet 2026-09-11 16:08:18 +0530 2) CHANGED"
     },
     {
       "group": "w8/git: live navigation against a real repository",

@@ -77,7 +77,16 @@ export function findSuperseded(msgs, { pathTools = PATH_TOOLS } = {}) {
       meta.set(tc.id, {
         name,
         path: typeof args.path === 'string' ? args.path : null,
-        argKey: `${name}:${stableArgs(args)}`,
+        // W9 — the OpenHarness heuristic: an `mcp__` result is ALWAYS compaction-eligible, so its
+        // supersede key is the tool NAME rather than name+arguments. A file read is authoritative
+        // world state and two reads of different paths are both still true; an MCP result is a
+        // snapshot of something external that the harness does not own, so the most recent answer
+        // from a given server tool is the one worth keeping in the window.
+        //
+        // "Eligible" is not "discarded": `compactMessages` replaces an elided result with a marker
+        // and preserves the bytes as an artifact, so the model is told what happened and the
+        // content remains recoverable from the log.
+        argKey: name.startsWith('mcp__') ? `${name}:*` : `${name}:${stableArgs(args)}`,
       });
     }
   }

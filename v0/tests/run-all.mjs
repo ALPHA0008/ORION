@@ -35,6 +35,10 @@ export const suites = [
   ['git/git',               []],
   ['config/config',         []],
   ['shipped/w8-shipped',    []],
+  // W9: MCP servers as W6 resources — declarations, namespacing, isolation routing, live protocol.
+  ['mcp/mcp',               []],
+  ['mcp/live',              []],
+  ['shipped/w9-shipped',    []],
   ['recovery/recovery',     []],
   ['replay/semantics',      []],
   ['integration/provider',  []],

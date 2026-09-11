@@ -31,7 +31,7 @@
       "group": "w8/config: the environment always wins",
       "test": "...attributed to the project file",
       "pass": true,
-      "detail": "project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-work-vBOZSq\\.orion.json)"
+      "detail": "project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-work-rbUbYx\\.orion.json)"
     },
     {
       "group": "w8/config: the environment always wins",
@@ -43,7 +43,7 @@
       "group": "w8/config: the environment always wins",
       "test": "...attributed to the user file",
       "pass": true,
-      "detail": "user (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-home-jbejyX\\config.json)"
+      "detail": "user (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-home-HOgS2E\\config.json)"
     },
     {
       "group": "w8/config: the environment always wins",
@@ -73,13 +73,13 @@
       "group": "w8/config: a wrong file fails loudly, naming the field",
       "test": "...and teaching the alternative",
       "pass": true,
-      "detail": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-bad-2VWo5c\\secret.json: `apiKey` is not allowed — a config file is meant to be committed; put the key in an environment variable and name it with `apiKeyEnv` instead"
+      "detail": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-bad-kO0Bgy\\secret.json: `apiKey` is not allowed — a config file is meant to be committed; put the key in an environment variable and name it with `apiKeyEnv` instead"
     },
     {
       "group": "w8/config: a wrong file fails loudly, naming the field",
       "test": "...without echoing the secret back",
       "pass": true,
-      "detail": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-bad-2VWo5c\\secret.json: `apiKey` is not allowed — a config file is meant to be committed; put the key in an environment variable and name it with `apiKeyEnv` instead"
+      "detail": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-bad-kO0Bgy\\secret.json: `apiKey` is not allowed — a config file is meant to be committed; put the key in an environment variable and name it with `apiKeyEnv` instead"
     },
     {
       "group": "w8/config: a wrong file fails loudly, naming the field",
@@ -103,7 +103,7 @@
       "group": "w8/config: a wrong file fails loudly, naming the field",
       "test": "...naming the expected type",
       "pass": true,
-      "detail": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-bad-2VWo5c\\type.json: `model` must be a string, got number"
+      "detail": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-bad-kO0Bgy\\type.json: `model` must be a string, got number"
     },
     {
       "group": "w8/config: a wrong file fails loudly, naming the field",
@@ -115,13 +115,13 @@
       "group": "w8/config: a wrong file fails loudly, naming the field",
       "test": "...listing the accepted values",
       "pass": true,
-      "detail": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-bad-2VWo5c\\enum.json: `posture` must be one of permissive, auto, strict — got \"yolo\""
+      "detail": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-bad-kO0Bgy\\enum.json: `posture` must be one of permissive, auto, strict — got \"yolo\""
     },
     {
       "group": "w8/config: a wrong file fails loudly, naming the field",
       "test": "nested fields are typed too",
       "pass": true,
-      "detail": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-bad-2VWo5c\\nested.json: `budget.tokens` must be a number"
+      "detail": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-bad-kO0Bgy\\nested.json: `budget.tokens` must be a number"
     },
     {
       "group": "w8/config: a wrong file fails loudly, naming the field",
@@ -151,13 +151,13 @@
       "group": "w8/config: the effective view never prints a secret",
       "test": "it reports the key as SET",
       "pass": true,
-      "detail": "config files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-uiwbfY\\.orion.json\n\neffective configuration:\n  baseUrl      http://x/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-uiwbfY\\.orion.json)\n  model        m                                  project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-uiwbfY\\.orion.json)\n  apiKeyEnv    MY_KEY                 "
+      "detail": "config files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-0gAhh4\\.orion.json\n\neffective configuration:\n  baseUrl      http://x/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-0gAhh4\\.orion.json)\n  model        m                                  project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-0gAhh4\\.orion.json)\n  apiKeyEnv    MY_KEY                 "
     },
     {
       "group": "w8/config: the effective view never prints a secret",
       "test": "...and never prints the value",
       "pass": true,
-      "detail": "config files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-uiwbfY\\.orion.json\n\neffective configuration:\n  baseUrl      http://x/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-uiwbfY\\.orion.json)\n  model        m                                  project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-uiwbfY\\.orion.json)\n  apiKeyEnv    MY_KEY                 "
+      "detail": "config files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-0gAhh4\\.orion.json\n\neffective configuration:\n  baseUrl      http://x/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-0gAhh4\\.orion.json)\n  model        m                                  project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-0gAhh4\\.orion.json)\n  apiKeyEnv    MY_KEY                 "
     },
     {
       "group": "w8/config: the effective view never prints a secret",
@@ -175,7 +175,7 @@
       "group": "w8/config: the effective view never prints a secret",
       "test": "an absent key is reported as NOT SET",
       "pass": true,
-      "detail": "config files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-uiwbfY\\.orion.json\n\neffective configuration:\n  baseUrl      http://x/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-uiwbfY\\.orion.json)\n  model        m                                  project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-uiwbfY\\.orion.json)\n  apiKeyEnv    MY_KEY                 "
+      "detail": "config files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-0gAhh4\\.orion.json\n\neffective configuration:\n  baseUrl      http://x/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-0gAhh4\\.orion.json)\n  model        m                                  project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-w-0gAhh4\\.orion.json)\n  apiKeyEnv    MY_KEY                 "
     },
     {
       "group": "w8/config: the effective view never prints a secret",
@@ -259,7 +259,7 @@
       "group": "w8/rules: a rule may only RAISE strictness",
       "test": "...explaining that rules cannot grant",
       "pass": true,
-      "detail": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-rules-14ufsN\\allow.json: `allowTools` is not supported. Rules may only RAISE strictness — they cannot grant permission. Widen access by choosing a sandbox that earns a more permissive posture (ORION_SANDBOX=container), or by recording a grant (orionctl answer --remember), which is auditable and revocable."
+      "detail": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-rules-xxiN0C\\allow.json: `allowTools` is not supported. Rules may only RAISE strictness — they cannot grant permission. Widen access by choosing a sandbox that earns a more permissive posture (ORION_SANDBOX=container), or by recording a grant (orionctl answer --remember), which is auditable and revocable."
     },
     {
       "group": "w8/rules: a rule may only RAISE strictness",
@@ -325,7 +325,7 @@
       "group": "w8/rules: validation is loud, because failing open is the wrong direction",
       "test": "...quoting the offending pattern",
       "pass": true,
-      "detail": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-badrules-isZsNS\\r2.json: `denyCommandPatterns` contains an invalid regular expression \"([unclosed\" — Invalid regular expression: /([unclosed/: Unterminated character class"
+      "detail": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8c-badrules-OMWmti\\r2.json: `denyCommandPatterns` contains an invalid regular expression \"([unclosed\" — Invalid regular expression: /([unclosed/: Unterminated character class"
     },
     {
       "group": "w8/rules: validation is loud, because failing open is the wrong direction",

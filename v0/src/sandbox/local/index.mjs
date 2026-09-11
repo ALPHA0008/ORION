@@ -628,7 +628,12 @@ function clamp(s, what) {
 
 /** Drop anything that looks like a credential before handing the env to a child process. */
 const SECRET_RE = /(KEY|TOKEN|SECRET|PASSWORD|PASSWD|CREDENTIAL|SESSION|COOKIE|AUTH)/i;
+/**
+ * @param {Record<string, string|undefined>} env
+ * @returns {Record<string, string|undefined>}
+ */
 export function scrubEnv(env) {
+  /** @type {Record<string, string|undefined>} */
   const out = {};
   for (const [k, v] of Object.entries(env)) if (!SECRET_RE.test(k)) out[k] = v;
   return out;

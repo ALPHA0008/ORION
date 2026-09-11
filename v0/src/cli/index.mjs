@@ -22,6 +22,10 @@ import { createAuthorizer, DEFAULT_DANGEROUS } from '../auth/default/index.mjs';
 // W8: configuration + permission rules, layered under the environment.
 import { resolveConfig, describeConfig, ConfigError } from '../config/index.mjs';
 import { resolveRules, hasRules, describeRules } from '../config/rules.mjs';
+// W9: MCP servers are W6 resources; their tools join the toolset the model is offered.
+import { parseServers } from '../mcp/servers.mjs';
+import { McpSessionManager } from '../mcp/session.mjs';
+import { toolsForSession, mergeTools } from '../mcp/tools.mjs';
 import { Worker, DEFAULT_SYSTEM } from '../agent/loop/worker.mjs';
 // W7: skills + project instructions — the runtime becomes instructable, with provenance.
 import { discoverSkills, renderDisclosure, disclosureBytes } from '../context/skills.mjs';
@@ -56,6 +60,31 @@ const C = process.stdout.isTTY
   : /** @type {any} */ (new Proxy({}, { get: () => (s => s) }));
 
 function open() { fs.mkdirSync(HOME, { recursive: true }); return new Store(DB); }
+
+/** The lease a run holds while it works; renewals must beat this or the run is reaped. */
+const LEASE_MS = 30_000;
+
+/**
+ * Run `fn` while keeping the run's lease alive.
+ *
+ * The worker has an identical private helper for long model and tool calls (W5-X2). This one
+ * exists because `prepareRun` also performs unbounded work — starting MCP servers, which on a
+ * container backend means a `docker exec` plus a runtime boot — and that happens BEFORE the worker
+ * exists, so the worker's version cannot cover it. Without this, a run with a containerised MCP
+ * server loses its lease before turn one, which is precisely what the W9 manual gate measured.
+ */
+async function withLeaseHeartbeat(store, runId, leaseToken, fn) {
+  // No token means no lease to keep (a test harness, or a command that never claimed one), so the
+  // heartbeat would be a no-op that logs a renewal failure every beat.
+  if (!leaseToken) return fn();
+  const timer = setInterval(() => {
+    try {
+      if (!store.renew(runId, leaseToken, { leaseMs: LEASE_MS })) clearInterval(timer);
+    } catch { clearInterval(timer); }   // a store error must not abort the connection
+  }, Math.max(250, Math.floor(LEASE_MS / 3)));
+  try { return await fn(); }
+  finally { clearInterval(timer); }
+}
 
 /**
  * Which provider quirk shims should this model run with? (D3)
@@ -451,7 +480,57 @@ export async function prepareRun(store, runId, leaseToken, workspace) {
   // The tools are composed ONCE, here at the composition root, so a config-supplied search budget
   // is reachable from every command that calls `prepareRun` — not merely from a test that imports
   // `makeTools` directly.
-  const tools = makeTools(sandbox, { skills, search: cfg.search });
+  const builtinTools = makeTools(sandbox, { skills, search: cfg.search });
+
+  // ── W9 — MCP servers, connected HERE for the same reason skills are ─────────────────
+  //
+  // Every turn-bearing command funnels through `prepareRun`, so this is the one place that can
+  // make MCP tools reachable from `run`, `resume` AND each turn of the interactive session. A
+  // connector wired into `run` alone is the composition-root failure this project has repeated
+  // across seven waves.
+  //
+  // Connecting before the worker exists means the tools are in the schema for TURN ONE, and the
+  // `resource.acquired` events are in the log before the first `model.requested` — so the digest
+  // that records what influenced the first turn is accurate.
+  let mcp = null;
+  let tools = builtinTools;
+  const declaredServers = parseServers(cfg.mcpServers, { file: 'configuration' });
+  if (declaredServers.length) {
+    mcp = new McpSessionManager({
+      store, runId, leaseToken, project, sandbox,
+      servers: declaredServers, env: process.env,
+      log: (s) => console.log(C.dim(s)),
+    });
+    // Connecting is SLOW, and the lease is 30s. Starting a server inside a container means a
+    // `docker exec`, a runtime boot and a protocol handshake, which measured well past the lease
+    // in the W9 gate — the run lost its lease before turn 1 and exited 1. W5-X2 established the
+    // rule for this exact class ("a tool call longer than the lease does not lose the lease");
+    // MCP connection is the same kind of unbounded work and needs the same heartbeat.
+    const sessions = await withLeaseHeartbeat(store, runId, leaseToken, () => mcp.connectAll());
+    /** @type {Record<string, any>} */
+    let advertised = {};
+    for (const session of sessions) {
+      const { tools: t, excluded } = toolsForSession(session, mcp);
+      advertised = { ...advertised, ...t };
+      // A malformed advertisement costs that TOOL, not the server and not the run — and it is
+      // recorded, because a tool the operator expects to exist and silently does not is exactly
+      // the class of failure this project refuses to ship.
+      for (const x of excluded) {
+        store.append(runId, 'degraded', {
+          subsystem: 'mcp',
+          reason: `\`${session.name}\` advertised \`${x.name}\` unusably: ${x.why}`,
+          what: 'mcp_tool_excluded', server: session.name, tool: x.name, detail: x.why,
+        }, { leaseToken });
+        console.log(C.y(`  mcp: ${session.name}/${x.name} excluded — ${x.why}`));
+      }
+    }
+    const merged = mergeTools(builtinTools, advertised);
+    tools = merged.tools;
+    // Built-in tools win (scope §8). Unreachable in practice — a built-in name cannot start with
+    // `mcp__` — but if it ever happens, the operator hears about it rather than losing a builtin.
+    for (const name of merged.shadowed)
+      console.log(C.y(`  mcp: \`${name}\` ignored — a built-in tool already owns that name`));
+  }
   // W8 — the deployer's permission rules, if any.
   //
   // A malformed rule file is FATAL rather than ignored. Every other kind of config error here
@@ -500,6 +579,10 @@ export async function prepareRun(store, runId, leaseToken, workspace) {
     // inspects `prepared.tools` proves the config's search budgets reached the real tools without
     // needing a live model to exercise them.
     tools,
+    // W9 — the MCP session manager, so the caller releases every session on completion. A session
+    // closed without a `resource.released` event is indistinguishable in the log from one that
+    // leaked, so releasing is the caller's explicit obligation rather than a finaliser's.
+    mcp,
     worker: (extra = {}) => new Worker(store, {
       sandbox, model: buildModel(), authorize,
       // W7: the `skill` tool exists only when there is something to activate, so a project with
@@ -541,11 +624,15 @@ const cmds = {
     const c = store.claim('cli', { runId });
     // W6: resource resolution happens BEFORE the worker exists, because posture is derived from
     // the backend rather than configured (W6-G).
-    const { worker, sandbox, resource } = await prepareRun(store, runId, c.leaseToken, WORK);
+    const { worker, sandbox, resource, mcp } = await prepareRun(store, runId, c.leaseToken, WORK);
     if (!worker) { store.close(); process.exitCode = 1; return; }
     // D2: a run is only reported complete when it demonstrably did something (ADR-013).
     const res = await worker({ completionContract: defaultCompletionContract(store, runId) })
       .run(runId, c.leaseToken, { input: task });
+    // W9: MCP sessions are released BEFORE the workspace resource, mirroring acquisition order in
+    // reverse. Each close appends `resource.released`, so the log shows every session the run
+    // opened being deliberately let go rather than merely ceasing to be mentioned.
+    await mcp?.releaseAll(`run ${res.status}`);
     await releaseResource({ store, runId, backend: sandbox, leaseToken: c.leaseToken,
                             reason: `run ${res.status}` });
     printLive(store, runId);
@@ -702,11 +789,15 @@ const cmds = {
     if (!c) { console.log(C.r('could not claim the run (another worker holds it)')); return void store.close(); }
     console.log(C.dim(`resuming from event ${store.lastSeq(runId)}…`));
     // W6-I: this is where Recovery 2.0 happens — reattach by identity, or say what was lost.
-    const { worker, sandbox, resource } = await prepareRun(store, runId, c.leaseToken, WORK);
+    const { worker, sandbox, resource, mcp } = await prepareRun(store, runId, c.leaseToken, WORK);
     if (!worker) { store.close(); process.exitCode = 1; return; }
     // The completion gate applies to a resumed run exactly as it does to a fresh one.
     const res = await worker({ completionContract: defaultCompletionContract(store, runId) })
       .run(runId, c.leaseToken, {});
+    // W9: MCP sessions are released BEFORE the workspace resource, mirroring acquisition order in
+    // reverse. Each close appends `resource.released`, so the log shows every session the run
+    // opened being deliberately let go rather than merely ceasing to be mentioned.
+    await mcp?.releaseAll(`run ${res.status}`);
     await releaseResource({ store, runId, backend: sandbox, leaseToken: c.leaseToken,
                             reason: `run ${res.status}` });
     printLive(store, runId);
@@ -1066,6 +1157,16 @@ ${C.dim('files:')}   .orion.json (project) and ~/.orion/config.json (user) suppl
           .orion-rules.json (project) and ~/.orion/rules.json (user) add permission
           rules — denyTools, escalateTools, denyCommandPatterns, protectedPaths.
           Rules may only RAISE strictness; scopes union rather than override.
+
+${C.dim('mcp:')}     .orion.json may declare "mcpServers": { "<name>": { "command": "...",
+          "args": [...], "env": ["VAR_NAME"], "cwd": "...", "timeoutMs": 120000 } }
+          Their tools appear to the model as \`mcp__<server>__<tool>\` and go through
+          the authorizer like any other tool (denyTools accepts those names).
+          With ORION_SANDBOX=container the server runs INSIDE the container, so it
+          inherits --network none and the resource limits. \`env\` lists variable
+          NAMES to pass through — never values; the file is meant to be committed.
+          Needs the optional @modelcontextprotocol/sdk; without it MCP degrades and
+          the run continues on built-in tools.
 
 ${C.dim('config:')}  ORION_BASE_URL  ORION_API_KEY  ORION_MODEL  ORION_HOME  ORION_POSTURE
 ${C.dim('sandbox:')} ORION_SANDBOX=local|container   ORION_IMAGE=<image>  (container ⇒ isolated, --network none,

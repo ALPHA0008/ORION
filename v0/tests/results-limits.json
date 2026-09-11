@@ -61,19 +61,19 @@
       "group": "limits/PROOF-2: the container resource limits bind",
       "test": "CPU usage was actually sampled",
       "pass": true,
-      "detail": "[99.42,99.08,99.19,99.15,99.16]"
+      "detail": "[99.63,99.98,99.74,99.84,99.82]"
     },
     {
       "group": "limits/PROOF-2: the container resource limits bind",
       "test": "six busy loops did NOT exceed the 1.0-CPU quota",
       "pass": true,
-      "detail": "peak 99.42% across [99.42,99.08,99.19,99.15,99.16] on a 24-core host"
+      "detail": "peak 99.98% across [99.63,99.98,99.74,99.84,99.82] on a 24-core host"
     },
     {
       "group": "limits/PROOF-2: the container resource limits bind",
       "test": "...and the load was real (not silently absent)",
       "pass": true,
-      "detail": "peak 99.42% — below this the loops never ran and the test would be vacuous"
+      "detail": "peak 99.98% — below this the loops never ran and the test would be vacuous"
     },
     {
       "group": "limits/PROOF-2: the container resource limits bind",
@@ -103,7 +103,7 @@
       "group": "limits/PROOF-2: the container resource limits bind",
       "test": "the cgroup counted at least one OOM",
       "pass": true,
-      "detail": "low 0 high 0 max 3493 oom 1 oom_kill 1 oom_group_kill 0 "
+      "detail": "low 0 high 0 max 3488 oom 1 oom_kill 1 oom_group_kill 0 "
     },
     {
       "group": "limits/PROOF-2: the container resource limits bind",

@@ -37,6 +37,10 @@ import path from 'node:path';
 /** Resource kinds. Deliberately small — a kind is added when a resource type is, not before. */
 export const ResourceKind = Object.freeze({
   WORKSPACE: 'workspace',
+  // W9 — an MCP session is a resource in exactly this sense: acquired, reattached, released or
+  // lost, with a derived identity. Declaring the kind here rather than writing `'mcp'` at each
+  // append site is what lets `bindingToReattach` scope by kind instead of guessing from shape.
+  MCP: 'mcp',
 });
 
 /** Lifecycle states a binding can be in, derived by the fold below. */
@@ -176,9 +180,25 @@ export function projectResources(events) {
 }
 
 /** The binding a resume should try to reattach to, or null when there is nothing to reattach. */
-export function bindingToReattach(events) {
-  const { current } = projectResources(events);
-  return current && current.state === BindingState.BOUND ? current : null;
+export function bindingToReattach(events, { kind = ResourceKind.WORKSPACE } = {}) {
+  // KIND-SCOPED since W9, and this is a correctness fix rather than a generalisation.
+  //
+  // Until W9 a run bound exactly one resource, so "the current binding" and "the workspace
+  // binding" were the same thing and `current` could stand in for both. MCP sessions are also W6
+  // resources and are acquired AFTER the workspace, so `current` became the MCP session — and
+  // `resolveResource` then compared the workspace's derived id against an MCP id, found a
+  // mismatch, and would have declared the workspace lost on every resumed run that used a server.
+  // Measured directly in the W9 gate before this fix.
+  //
+  // Scoping by kind restores the original meaning exactly: a log with only workspace resources
+  // folds to the same answer it always did.
+  const { bindings } = projectResources(events);
+  let best = null;
+  for (const b of Object.values(bindings)) {
+    if (b.kind !== kind || b.state !== BindingState.BOUND) continue;
+    if (!best || (b.acquired_seq ?? 0) >= (best.acquired_seq ?? 0)) best = b;
+  }
+  return best;
 }
 
 /** One-line human summary, for `explain`. */

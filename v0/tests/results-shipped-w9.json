@@ -1,0 +1,313 @@
+{
+  "label": "w9 shipped",
+  "pass": 51,
+  "fail": 0,
+  "results": [
+    {
+      "group": "w9/shipped: a server in .orion.json becomes a tool the model is offered",
+      "test": "the MCP tool is in the composed toolset",
+      "pass": true,
+      "detail": "read,grep,glob,git,write,edit,bash,verify,plan,plan_step,ask_user,mcp__demo__echo,mcp__demo__whoami,mcp__demo__reach_out,mcp__demo__explode"
+    },
+    {
+      "group": "w9/shipped: a server in .orion.json becomes a tool the model is offered",
+      "test": "...for every advertised tool",
+      "pass": true,
+      "detail": "read,grep,glob,git,write,edit,bash,verify,plan,plan_step,ask_user,mcp__demo__echo,mcp__demo__whoami,mcp__demo__reach_out,mcp__demo__explode"
+    },
+    {
+      "group": "w9/shipped: a server in .orion.json becomes a tool the model is offered",
+      "test": "the built-in `read` survives",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a server in .orion.json becomes a tool the model is offered",
+      "test": "the built-in `grep` survives",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a server in .orion.json becomes a tool the model is offered",
+      "test": "the built-in `glob` survives",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a server in .orion.json becomes a tool the model is offered",
+      "test": "the built-in `git` survives",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a server in .orion.json becomes a tool the model is offered",
+      "test": "the built-in `write` survives",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a server in .orion.json becomes a tool the model is offered",
+      "test": "the built-in `edit` survives",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a server in .orion.json becomes a tool the model is offered",
+      "test": "the built-in `bash` survives",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a server in .orion.json becomes a tool the model is offered",
+      "test": "the built-in `verify` survives",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a server in .orion.json becomes a tool the model is offered",
+      "test": "the toolset is 11 built-ins plus 4 advertised",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a server in .orion.json becomes a tool the model is offered",
+      "test": "every MCP tool is in the mutating set",
+      "pass": true,
+      "detail": "write,edit,bash,mcp__demo__echo,mcp__demo__whoami,mcp__demo__reach_out,mcp__demo__explode"
+    },
+    {
+      "group": "w9/shipped: a server in .orion.json becomes a tool the model is offered",
+      "test": "...alongside the three built-in writers",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a server in .orion.json becomes a tool the model is offered",
+      "test": "the session was acquired as a resource",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a server in .orion.json becomes a tool the model is offered",
+      "test": "...with the derived id",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a server in .orion.json becomes a tool the model is offered",
+      "test": "prepareRun exposes the session manager",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a server in .orion.json becomes a tool the model is offered",
+      "test": "releasing writes resource.released",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: an MCP tool really executes through the composed toolset",
+      "test": "the tool runs and returns the server's answer",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: an MCP tool really executes through the composed toolset",
+      "test": "provenance names the server",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: an MCP tool really executes through the composed toolset",
+      "test": "...the unqualified tool",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: an MCP tool really executes through the composed toolset",
+      "test": "...and the session id",
+      "pass": true,
+      "detail": "res_mcp_0b5841e7295bd2a4"
+    },
+    {
+      "group": "w9/shipped: a rule file denies an MCP tool through the real authorizer",
+      "test": "the denied MCP tool is denied by the SHIPPED authorizer",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a rule file denies an MCP tool through the real authorizer",
+      "test": "...while a sibling tool from the same server is unaffected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a rule file denies an MCP tool through the real authorizer",
+      "test": "...and built-in policy is untouched",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: an unreachable server degrades the run rather than ending it",
+      "test": "the run was still composed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: an unreachable server degrades the run rather than ending it",
+      "test": "...with the built-in tools intact",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: an unreachable server degrades the run rather than ending it",
+      "test": "...and no MCP tools",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: an unreachable server degrades the run rather than ending it",
+      "test": "the absence is recorded, not silent",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: an unreachable server degrades the run rather than ending it",
+      "test": "...naming the server the operator declared",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a project with no mcpServers is byte-for-byte the pre-W9 product",
+      "test": "no session manager is created",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a project with no mcpServers is byte-for-byte the pre-W9 product",
+      "test": "the toolset is exactly the 11 built-ins",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a project with no mcpServers is byte-for-byte the pre-W9 product",
+      "test": "...and the mutating set is unchanged",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: a project with no mcpServers is byte-for-byte the pre-W9 product",
+      "test": "no resource beyond the workspace was acquired",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: `orionctl config` shows declared servers, and a bad one exits non-zero",
+      "test": "the command succeeds",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: `orionctl config` shows declared servers, and a bad one exits non-zero",
+      "test": "the declared server is visible",
+      "pass": true,
+      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w9s-cfgws-U3N144\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w9s-h-1U3d3G\\.orion\n\nconfig files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w9s-cfgws-U3N144\\.orion.json\n\neffective configuration:\n  model        m                                  project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w9s-cfgws-U3N144\\.orion.js"
+    },
+    {
+      "group": "w9/shipped: `orionctl config` shows declared servers, and a bad one exits non-zero",
+      "test": "...and the variable NAME it passes",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: `orionctl config` shows declared servers, and a bad one exits non-zero",
+      "test": "...but never the value",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: `orionctl config` shows declared servers, and a bad one exits non-zero",
+      "test": "an inline env value exits non-zero",
+      "pass": true,
+      "detail": "exit 2"
+    },
+    {
+      "group": "w9/shipped: `orionctl config` shows declared servers, and a bad one exits non-zero",
+      "test": "...naming the offending field",
+      "pass": true,
+      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w9s-badws-waGJxg\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w9s-h-CEcHLl\\.orion\n\nconfig files: none found (built-in defaults + environment only)\n\neffective configuration:\n  apiKey       (NOT SET)                          env ORION_API_KEY\n\nrule files: none found (code defaults only)\n\n1 problem(s):\n  mcpServers.demo.env mu"
+    },
+    {
+      "group": "w9/shipped: `orionctl config` shows declared servers, and a bad one exits non-zero",
+      "test": "...teaching the pass-through form",
+      "pass": true,
+      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w9s-badws-waGJxg\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w9s-h-CEcHLl\\.orion\n\nconfig files: none found (built-in defaults + environment only)\n\neffective configuration:\n  apiKey       (NOT SET)                          env ORION_API_KEY\n\nrule files: none found (code defaults only)\n\n1 problem(s):\n  mcpServers.demo.env mu"
+    },
+    {
+      "group": "w9/shipped: `orionctl config` shows declared servers, and a bad one exits non-zero",
+      "test": "...without echoing the secret",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: `orionctl config` shows declared servers, and a bad one exits non-zero",
+      "test": "a nested typo exits non-zero",
+      "pass": true,
+      "detail": "exit 2"
+    },
+    {
+      "group": "w9/shipped: `orionctl config` shows declared servers, and a bad one exits non-zero",
+      "test": "...naming the exact field",
+      "pass": true,
+      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w9s-typows-ZmB2f3\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w9s-h-USmnB7\\.orion\n\nconfig files: none found (built-in defaults + environment only)\n\neffective configuration:\n  apiKey       (NOT SET)                          env ORION_API_KEY\n\nrule files: none found (code defaults only)\n\n1 problem(s):\n  mcpServers.demo.comma"
+    },
+    {
+      "group": "w9/shipped: `orionctl config` shows declared servers, and a bad one exits non-zero",
+      "test": "a server with no command exits non-zero",
+      "pass": true,
+      "detail": "exit 2"
+    },
+    {
+      "group": "w9/shipped: `orionctl config` shows declared servers, and a bad one exits non-zero",
+      "test": "...saying what is missing",
+      "pass": true,
+      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w9s-nocmdws-hYWuzE\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w9s-h-PpbxUi\\.orion\n\nconfig files: none found (built-in defaults + environment only)\n\neffective configuration:\n  apiKey       (NOT SET)                          env ORION_API_KEY\n\nrule files: none found (code defaults only)\n\n1 problem(s):\n  mcpServers.demo need"
+    },
+    {
+      "group": "w9/shipped: the CLI documents MCP where an operator will look",
+      "test": "help still works",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: the CLI documents MCP where an operator will look",
+      "test": "help mentions the mcpServers field",
+      "pass": true,
+      "detail": "} }\n          Their tools appear to the model as `mcp__<server>__<tool>` and go through\n          the authorizer like any other tool (denyTools accepts those names).\n          With ORION_SANDBOX=container the server runs INSIDE the container, so it\n          inherits --network none and the resource limits. `env` lists variable\n          NAMES to pass through — never values; the file is meant to be"
+    },
+    {
+      "group": "w9/shipped: the CLI documents MCP where an operator will look",
+      "test": "...and that servers run inside the sandbox",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: MCP is optional — the package declares zero required dependencies",
+      "test": "there are no required dependencies",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w9/shipped: MCP is optional — the package declares zero required dependencies",
+      "test": "the SDK is declared optional",
+      "pass": true,
+      "detail": "{\"@modelcontextprotocol/sdk\":\"1.30.0\"}"
+    },
+    {
+      "group": "w9/shipped: MCP is optional — the package declares zero required dependencies",
+      "test": "...at an exact version, not a range",
+      "pass": true,
+      "detail": "1.30.0"
+    }
+  ]
+}

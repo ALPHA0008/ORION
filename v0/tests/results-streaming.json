@@ -199,7 +199,7 @@
       "group": "streaming/S7-the-lease-survives-a-long-stream",
       "test": "S7: the stream really outlasted the lease",
       "pass": true,
-      "detail": "801ms vs 400ms"
+      "detail": "798ms vs 400ms"
     },
     {
       "group": "streaming/S7-the-lease-survives-a-long-stream",
