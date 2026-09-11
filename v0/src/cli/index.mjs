@@ -442,6 +442,16 @@ export async function prepareRun(store, runId, leaseToken, workspace) {
   ].filter(Boolean).join('\n\n');
 
   const project = projectKey(workspace);
+  // W8 (post-report): `config.search` is resolved HERE and wired into the tools, closing the
+  // "read but not consumed" negative. `buildModel()` re-resolves on worker construction and owns
+  // the FATAL validation path (exit 2); this call only supplies the search budgets, so an invalid
+  // config file still fails at the same place it always has — not silently weaker, just here for
+  // tool composition.
+  const { values: cfg } = resolveConfig({ workspace, home: HOME });
+  // The tools are composed ONCE, here at the composition root, so a config-supplied search budget
+  // is reachable from every command that calls `prepareRun` — not merely from a test that imports
+  // `makeTools` directly.
+  const tools = makeTools(sandbox, { skills, search: cfg.search });
   // W8 — the deployer's permission rules, if any.
   //
   // A malformed rule file is FATAL rather than ignored. Every other kind of config error here
@@ -486,11 +496,15 @@ export async function prepareRun(store, runId, leaseToken, workspace) {
     // wave's shipped test asks this function for decisions directly, which is how "the deployer's
     // rule file reaches the real authorizer" is proven rather than asserted.
     authorize,
+    // W8 (post-report): the COMPOSED toolset is exposed for the same reason — a shipped test that
+    // inspects `prepared.tools` proves the config's search budgets reached the real tools without
+    // needing a live model to exercise them.
+    tools,
     worker: (extra = {}) => new Worker(store, {
       sandbox, model: buildModel(), authorize,
       // W7: the `skill` tool exists only when there is something to activate, so a project with
       // no skills sees the identical toolset it saw before this wave.
-      tools: makeTools(sandbox, { skills }),
+      tools,
       systemPrompt,
       // F5: streaming reaches the product surface. Default ON; a provider that cannot stream
       // falls back with a recorded `degraded` event rather than silently.

@@ -1,6 +1,6 @@
 {
   "label": "w8 shipped",
-  "pass": 53,
+  "pass": 57,
   "fail": 0,
   "results": [
     {
@@ -148,6 +148,30 @@
       "detail": ""
     },
     {
+      "group": "w8/shipped: config `search` budgets reach the COMPOSED tools, not just the module",
+      "test": "the probe reached prepareRun.composed tools",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/shipped: config `search` budgets reach the COMPOSED tools, not just the module",
+      "test": "config search.maxHits=1 caps grep at 1 hit",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/shipped: config `search` budgets reach the COMPOSED tools, not just the module",
+      "test": "...with the honest truncation notice",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/shipped: config `search` budgets reach the COMPOSED tools, not just the module",
+      "test": "...and the matched file present",
+      "pass": true,
+      "detail": ""
+    },
+    {
       "group": "w8/shipped: an INVALID rule file refuses the run rather than running weaker",
       "test": "the run does not proceed",
       "pass": true,
@@ -157,19 +181,19 @@
       "group": "w8/shipped: an INVALID rule file refuses the run rather than running weaker",
       "test": "...and says the rules are the reason",
       "pass": true,
-      "detail": "Run #16c516c272  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-badws-I2foW0\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\npermission rules are invalid — refusing to run with weaker policy than intended:\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-badhome-Id81NV\\.orion\\rules.json: `denyTools` must be an array\n"
+      "detail": "Run #de04ae479b  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-badws-DtmFhQ\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\npermission rules are invalid — refusing to run with weaker policy than intended:\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-badhome-XlSfZ3\\.orion\\rules.json: `denyTools` must be an array\n"
     },
     {
       "group": "w8/shipped: an INVALID rule file refuses the run rather than running weaker",
       "test": "...naming the offending directive",
       "pass": true,
-      "detail": "Run #16c516c272  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-badws-I2foW0\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\npermission rules are invalid — refusing to run with weaker policy than intended:\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-badhome-Id81NV\\.orion\\rules.json: `denyTools` must be an array\n"
+      "detail": "Run #de04ae479b  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-badws-DtmFhQ\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\npermission rules are invalid — refusing to run with weaker policy than intended:\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-badhome-XlSfZ3\\.orion\\rules.json: `denyTools` must be an array\n"
     },
     {
       "group": "w8/shipped: an INVALID rule file refuses the run rather than running weaker",
       "test": "...and does not silently continue with weaker policy",
       "pass": true,
-      "detail": "Run #16c516c272  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-badws-I2foW0\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\npermission rules are invalid — refusing to run with weaker policy than intended:\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-badhome-Id81NV\\.orion\\rules.json: `denyTools` must be an array\n"
+      "detail": "Run #de04ae479b  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-badws-DtmFhQ\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\npermission rules are invalid — refusing to run with weaker policy than intended:\n  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-badhome-XlSfZ3\\.orion\\rules.json: `denyTools` must be an array\n"
     },
     {
       "group": "w8/shipped: `orionctl config` prints the effective configuration, never a secret",
@@ -181,25 +205,25 @@
       "group": "w8/shipped: `orionctl config` prints the effective configuration, never a secret",
       "test": "it shows the winning value",
       "pass": true,
-      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-chome-HPUKQs\\.orion\n\nconfig files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\\.orion.json\n\neffective configuration:\n  baseUrl      http://p/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\\.orion.json"
+      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-chome-NySdcC\\.orion\n\nconfig files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\\.orion.json\n\neffective configuration:\n  baseUrl      http://p/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\\.orion.json"
     },
     {
       "group": "w8/shipped: `orionctl config` prints the effective configuration, never a secret",
       "test": "...attributed to the environment",
       "pass": true,
-      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-chome-HPUKQs\\.orion\n\nconfig files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\\.orion.json\n\neffective configuration:\n  baseUrl      http://p/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\\.orion.json"
+      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-chome-NySdcC\\.orion\n\nconfig files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\\.orion.json\n\neffective configuration:\n  baseUrl      http://p/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\\.orion.json"
     },
     {
       "group": "w8/shipped: `orionctl config` prints the effective configuration, never a secret",
       "test": "...and the project value it overrode is visible as a source",
       "pass": true,
-      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-chome-HPUKQs\\.orion\n\nconfig files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\\.orion.json\n\neffective configuration:\n  baseUrl      http://p/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\\.orion.json"
+      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-chome-NySdcC\\.orion\n\nconfig files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\\.orion.json\n\neffective configuration:\n  baseUrl      http://p/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\\.orion.json"
     },
     {
       "group": "w8/shipped: `orionctl config` prints the effective configuration, never a secret",
       "test": "the file-supplied baseUrl is shown",
       "pass": true,
-      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-chome-HPUKQs\\.orion\n\nconfig files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\\.orion.json\n\neffective configuration:\n  baseUrl      http://p/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\\.orion.json"
+      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-chome-NySdcC\\.orion\n\nconfig files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\\.orion.json\n\neffective configuration:\n  baseUrl      http://p/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\\.orion.json"
     },
     {
       "group": "w8/shipped: `orionctl config` prints the effective configuration, never a secret",
@@ -211,13 +235,13 @@
       "group": "w8/shipped: `orionctl config` prints the effective configuration, never a secret",
       "test": "...only whether it is set",
       "pass": true,
-      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-chome-HPUKQs\\.orion\n\nconfig files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\\.orion.json\n\neffective configuration:\n  baseUrl      http://p/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\\.orion.json"
+      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-chome-NySdcC\\.orion\n\nconfig files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\\.orion.json\n\neffective configuration:\n  baseUrl      http://p/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\\.orion.json"
     },
     {
       "group": "w8/shipped: `orionctl config` prints the effective configuration, never a secret",
       "test": "an absent key is reported honestly",
       "pass": true,
-      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-chome-HPUKQs\\.orion\n\nconfig files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\\.orion.json\n\neffective configuration:\n  baseUrl      http://p/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-5xfQmh\\.orion.json"
+      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-chome-NySdcC\\.orion\n\nconfig files: project → C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\\.orion.json\n\neffective configuration:\n  baseUrl      http://p/v1                        project (C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-cws-GDYoWN\\.orion.json"
     },
     {
       "group": "w8/shipped: `orionctl config` prints the effective configuration, never a secret",
@@ -265,7 +289,7 @@
       "group": "w8/shipped: an invalid config file names the field and exits non-zero",
       "test": "...naming the offending field",
       "pass": true,
-      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-bcws-6Om7Nw\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-bchome-JIyJOC\\.orion\n\nconfig files: none found (built-in defaults + environment only)\n\neffective configuration:\n  apiKey       (NOT SET)                        "
+      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-bcws-dPDCMN\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-bchome-CEoYzO\\.orion\n\nconfig files: none found (built-in defaults + environment only)\n\neffective configuration:\n  apiKey       (NOT SET)                        "
     },
     {
       "group": "w8/shipped: an invalid config file names the field and exits non-zero",
@@ -277,13 +301,13 @@
       "group": "w8/shipped: an invalid config file names the field and exits non-zero",
       "test": "...teaching the env-var alternative",
       "pass": true,
-      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-secretws-PSj4F9\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-sh-9NQEkw\\.orion\n\nconfig files: none found (built-in defaults + environment only)\n\neffective configuration:\n  apiKey       (NOT SET)                          env ORION_API_KEY\n\nrule files: none found (code defaults only)\n\n1 problem(s):\n  C:\\Users\\abhijith."
+      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-secretws-C1SD5T\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-sh-wcZgJG\\.orion\n\nconfig files: none found (built-in defaults + environment only)\n\neffective configuration:\n  apiKey       (NOT SET)                          env ORION_API_KEY\n\nrule files: none found (code defaults only)\n\n1 problem(s):\n  C:\\Users\\abhijith."
     },
     {
       "group": "w8/shipped: an invalid config file names the field and exits non-zero",
       "test": "...without echoing the key back",
       "pass": true,
-      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-secretws-PSj4F9\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-sh-9NQEkw\\.orion\n\nconfig files: none found (built-in defaults + environment only)\n\neffective configuration:\n  apiKey       (NOT SET)                          env ORION_API_KEY\n\nrule files: none found (code defaults only)\n\n1 problem(s):\n  C:\\Users\\abhijith."
+      "detail": "orionctl config\n  workspace  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-secretws-C1SD5T\n  home       C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-sh-wcZgJG\\.orion\n\nconfig files: none found (built-in defaults + environment only)\n\neffective configuration:\n  apiKey       (NOT SET)                          env ORION_API_KEY\n\nrule files: none found (code defaults only)\n\n1 problem(s):\n  C:\\Users\\abhijith."
     },
     {
       "group": "w8/shipped: an unconfigured first run exits NON-ZERO (the measured bug)",
@@ -295,19 +319,19 @@
       "group": "w8/shipped: an unconfigured first run exits NON-ZERO (the measured bug)",
       "test": "...saying what is missing",
       "pass": true,
-      "detail": "Run #7f6bc66b2b  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-freshws-xrus4n\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\nNo model configured — ORION does not know what to talk to.\n\n  Set two environment variables:\n    ORION_BASE_URL   an OpenAI-compatible endpoint\n    ORION_API_KEY    the key for it\n\n  e.g.  ORION_BASE_URL=https://api.openai.com/v1 ORION_M"
+      "detail": "Run #4c816e17f3  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-freshws-rjkOig\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\nNo model configured — ORION does not know what to talk to.\n\n  Set two environment variables:\n    ORION_BASE_URL   an OpenAI-compatible endpoint\n    ORION_API_KEY    the key for it\n\n  e.g.  ORION_BASE_URL=https://api.openai.com/v1 ORION_M"
     },
     {
       "group": "w8/shipped: an unconfigured first run exits NON-ZERO (the measured bug)",
       "test": "...and how to fix it",
       "pass": true,
-      "detail": "Run #7f6bc66b2b  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-freshws-xrus4n\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\nNo model configured — ORION does not know what to talk to.\n\n  Set two environment variables:\n    ORION_BASE_URL   an OpenAI-compatible endpoint\n    ORION_API_KEY    the key for it\n\n  e.g.  ORION_BASE_URL=https://api.openai.com/v1 ORION_M"
+      "detail": "Run #4c816e17f3  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-freshws-rjkOig\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\nNo model configured — ORION does not know what to talk to.\n\n  Set two environment variables:\n    ORION_BASE_URL   an OpenAI-compatible endpoint\n    ORION_API_KEY    the key for it\n\n  e.g.  ORION_BASE_URL=https://api.openai.com/v1 ORION_M"
     },
     {
       "group": "w8/shipped: an unconfigured first run exits NON-ZERO (the measured bug)",
       "test": "...mentioning the config file as an alternative",
       "pass": true,
-      "detail": "Run #7f6bc66b2b  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-freshws-xrus4n\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\nNo model configured — ORION does not know what to talk to.\n\n  Set two environment variables:\n    ORION_BASE_URL   an OpenAI-compatible endpoint\n    ORION_API_KEY    the key for it\n\n  e.g.  ORION_BASE_URL=https://api.openai.com/v1 ORION_M"
+      "detail": "Run #4c816e17f3  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w8s-freshws-rjkOig\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\nNo model configured — ORION does not know what to talk to.\n\n  Set two environment variables:\n    ORION_BASE_URL   an OpenAI-compatible endpoint\n    ORION_API_KEY    the key for it\n\n  e.g.  ORION_BASE_URL=https://api.openai.com/v1 ORION_M"
     },
     {
       "group": "w8/shipped: an unconfigured first run exits NON-ZERO (the measured bug)",

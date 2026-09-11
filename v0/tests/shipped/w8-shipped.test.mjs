@@ -176,6 +176,59 @@ describe('w8/shipped: a rule file reaches the AUTHORIZER through prepareRun');
   }
 }
 
+describe('w8/shipped: config `search` budgets reach the COMPOSED tools, not just the module');
+{
+  // The quoted failure: config.search resolves and displays, but the search layer used its own
+  // defaults. A test that imports `makeTools` and passes a bag of options proves the MECHANISM;
+  // this proves the PRODUCT: a committed `.orion.json` search override lands in the tools that
+  // `prepareRun` hands the worker. HOME is read at import time, hence the subprocess probe.
+  const home = mk('searhome'); const ws = mk('searws');
+  write(path.join(ws, '.orion.json'), JSON.stringify({
+    baseUrl: 'http://127.0.0.1:9/v1', model: 'probe-model',
+    search: { maxHits: 1 },
+  }));
+  // Four matching files, so an un-wired search returns 4 hits and a wired maxHits=1 returns 1.
+  for (const n of ['a.mjs', 'b.mjs', 'c.mjs', 'd.mjs'])
+    write(path.join(ws, n), 'export const needle = 1;\n');
+
+  const probe = mk('searchprobe');
+  write(path.join(probe, 'p.mjs'), `
+    import { prepareRun } from ${JSON.stringify(pathToFileURL(CLI).href)};
+    import { Store, uid } from ${JSON.stringify(pathToFileURL(path.join(HERE, '..', '..', 'src', 'core', 'run', 'store.mjs')).href)};
+    const store = new Store(process.argv[2]);
+    const runId = store.createRun(uid('run'), { task: 'search wiring' });
+    const prepared = await prepareRun(store, runId, null, process.argv[3]);
+    store.close?.();
+    const g = await prepared.tools.grep.run({ pattern: 'needle' });
+    console.log(JSON.stringify({
+      base: (String(g).match(/:1: export/g) ?? []).length,
+      truncated: /TRUNCATED at 1 matches/.test(String(g)),
+      toolsExposed: !!prepared.tools,
+    }));
+  `);
+  const pr = spawnSync(process.execPath,
+    [path.join(probe, 'p.mjs'), path.join(mk('searchdb'), 's.db'), ws],
+    { encoding: 'utf8', env: {
+        PATH: process.env.PATH, SystemRoot: process.env.SystemRoot,
+        HOME: home, USERPROFILE: home, ORION_HOME: path.join(home, '.orion'),
+        ORION_API_KEY: 'unused-by-this-probe' } });
+
+  const line = String(pr.stdout ?? '').trim().split('\n').filter(l => l.startsWith('{')).pop();
+  const dec = line ? JSON.parse(line) : null;
+  check('the probe reached prepareRun.composed tools', dec?.toolsExposed === true,
+    String(pr.stderr ?? '').slice(0, 300));
+
+  if (dec) {
+    // The config's maxHits=1 is measured: 1 hit, truncation notice — NOT the sandbox default 100.
+    eq('config search.maxHits=1 caps grep at 1 hit', dec.base, 1);
+    check('...with the honest truncation notice', dec.truncated === true);
+    check('...and the matched file present', dec.base === 1);
+  }
+
+  // In-process keep-alive so the describe block's async work has settled.
+  await new Promise(r => setImmediate(r));
+}
+
 describe('w8/shipped: an INVALID rule file refuses the run rather than running weaker');
 {
   const home = mk('badhome'); const ws = mk('badws');

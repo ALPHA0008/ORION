@@ -271,13 +271,13 @@
       "group": "shipped/W7: the REAL orionctl reports the brief and the skills",
       "test": "the CLI reports which instruction file briefed the run",
       "pass": true,
-      "detail": "Run #726e484f69  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w7s-binary-work-DqwCYB\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\n  instructions: AGENTS.md\n  skills: 1 available (287 B disclosed)  commit-style\n  ⚠ [model] retrying after network\n  ⚠ [model] retryi"
+      "detail": "Run #39ccaae506  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w7s-binary-work-adKZqP\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\n  instructions: AGENTS.md\n  skills: 1 available (287 B disclosed)  commit-style\n  ⚠ [model] retrying after network\n  ⚠ [model] retryi"
     },
     {
       "group": "shipped/W7: the REAL orionctl reports the brief and the skills",
       "test": "...and how many skills are available, with their disclosure cost",
       "pass": true,
-      "detail": "Run #726e484f69  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w7s-binary-work-DqwCYB\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\n  instructions: AGENTS.md\n  skills: 1 available (287 B disclosed)  commit-style\n  ⚠ [model] retrying after network\n  ⚠ [model] retryi"
+      "detail": "Run #39ccaae506  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w7s-binary-work-adKZqP\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\n  instructions: AGENTS.md\n  skills: 1 available (287 B disclosed)  commit-style\n  ⚠ [model] retrying after network\n  ⚠ [model] retryi"
     },
     {
       "group": "shipped/W7: the REAL orionctl reports the brief and the skills",

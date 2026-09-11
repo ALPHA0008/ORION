@@ -168,9 +168,13 @@ function readPaged(sandbox, path, offset, limit) {
 
 /**
  * @param {any} sandbox
- * @param {{ skills?: any[] }} [opts]  W7: the discovered skill catalogue, if any.
+ * @param {{ skills?: any[], search?: { maxHits?: number, timeMs?: number, maxResults?: number } }} [opts]
+ *   W8 (post-report): `search` is the resolved `config.search` object. The three budgets it carries
+ *   become the DEFAULTS for the search tools, exactly as `config.search` promised. An operator who
+ *   sets `maxHits` in `.orion.json` is not merely told the value is read — the tools described here
+ *   use that value unless the model overrides it per call.
  */
-export function makeTools(sandbox, { skills = [] } = {}) {
+export function makeTools(sandbox, { skills = [], search = null } = {}) {
   // W7 B — the ACTIVATION MECHANISM.
   //
   // Activation is a TOOL CALL, and choosing that over the alternatives is the main design
@@ -194,6 +198,14 @@ export function makeTools(sandbox, { skills = [] } = {}) {
   // the trajectory answers the §1.2 question directly instead of requiring a reader to infer it
   // from a tool result's contents.
   const skillsByName = new Map(skills.map(s => [s.name, s]));
+
+  // W8 (post-report): the config-derived search budgets, when present, replace the tool-level
+  // defaults. Each is undefined unless the operator set it, so an absent field inherits the
+  // sandbox constant — the tool still works identically with no config.
+  const s = search ?? {};
+  const defaultMaxHits = s.maxHits ?? null;
+  const defaultMaxResults = s.maxResults ?? null;
+  const defaultTimeMs = s.timeMs ?? null;
 
   return {
     ...(skills.length ? {
@@ -281,8 +293,14 @@ export function makeTools(sandbox, { skills = [] } = {}) {
         } },
       effects: 'ReadOnly',
       recovery: () => ({ class: RecoveryClass.READ_ONLY }),
-      run: ({ pattern, path = '.', regex = false, ignore_case = false, glob = null }) =>
-        sandbox.grep(pattern, path, { regex, ignoreCase: ignore_case, glob }),
+      run: ({ pattern, path = '.', regex = false, ignore_case = false, glob = null }) => {
+        // The per-call args are the model's, the config DEFAULT is the operator's, and the
+        // sandbox constant is the floor. Least-specific default loses, per-field.
+        const o = { regex, ignoreCase: ignore_case, glob };
+        if (defaultMaxHits != null) o.maxHits = defaultMaxHits;
+        if (defaultTimeMs != null) o.timeMs = defaultTimeMs;
+        return sandbox.grep(pattern, path, o);
+      },
     },
 
     glob: {
@@ -301,8 +319,12 @@ export function makeTools(sandbox, { skills = [] } = {}) {
         } },
       effects: 'ReadOnly',
       recovery: () => ({ class: RecoveryClass.READ_ONLY }),
-      run: ({ pattern, path = '.', include_dirs = false }) =>
-        sandbox.glob(pattern, { path, filesOnly: !include_dirs }),
+      run: ({ pattern, path = '.', include_dirs = false }) => {
+        const o = { path, filesOnly: !include_dirs };
+        if (defaultMaxResults != null) o.maxResults = defaultMaxResults;
+        if (defaultTimeMs != null) o.timeMs = defaultTimeMs;
+        return sandbox.glob(pattern, o);
+      },
     },
 
     // ── git navigation (W8) — READ-ONLY ──────────────────────────────────────
