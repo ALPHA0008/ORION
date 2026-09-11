@@ -110,7 +110,9 @@ describe('shipped/W7-C: a project with no brief is unchanged');
   eq('no skill event', store.events(runId).filter(e => e.type === 'skill.disclosed').length, 0);
   check('the system prompt is exactly the runtime default',
     worker.systemPrompt.includes('coding agent') && !worker.systemPrompt.includes('Available skills'));
-  eq('and the toolset is the pre-W7 nine', Object.keys(worker.tools).length, 9);
+  // W8: the property, not the count — see the note in tests/context/skills.test.mjs.
+  check('and the shipped toolset carries no skill tool', !('skill' in worker.tools),
+    Object.keys(worker.tools).join(','));
   store.close();
 }
 

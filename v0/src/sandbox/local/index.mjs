@@ -11,6 +11,123 @@ export const MAX_OUTPUT_BYTES = 64 * 1024;   // tool output bounded AT SOURCE (A
 export const MAX_ERROR_BYTES = 2 * 1024;     // error text must be FAR smaller than output
 export const GREP_MAX_HITS = 500;
 
+// ── W8 (X6) — LAYERED SEARCH BUDGETS ────────────────────────────────────────
+//
+// A recursive walk over a repository the agent did not write is unbounded by nature: a
+// `node_modules` nobody excluded, a symlink loop, a monorepo with 400k files. An agent that hangs
+// is worse than one that returns a truncated answer, because the run's lease expires and the
+// crash looks like a product fault. So every level of the walk carries a ceiling, and hitting any
+// of them is REPORTED rather than silently absorbed — the same honesty contract `grep` has always
+// had for unreadable paths.
+//
+// The numbers are chosen against the shape of a real repository, not guessed:
+//
+//   GREP_MAX_HITS 500      unchanged from W1. 500 `path:line:` lines is already more than a
+//                          model can use; past that the right move is a narrower pattern.
+//   SEARCH_TIME_MS 5_000   the total wall clock for one search. A tool call that takes longer
+//                          than this has stopped being a search and started being a scan; the
+//                          lease heartbeat (W5 X2) keeps the run alive, but the model is idle.
+//   SEARCH_DIR_MS 750      per-directory. One pathological directory (hundreds of thousands of
+//                          entries) must not consume the whole budget and starve the rest of
+//                          the tree — the failure mode where a search "found nothing" because it
+//                          spent all its time in one place.
+//   SEARCH_MAX_FILES 20_000  files opened. This is the read ceiling; it bounds I/O even when the
+//                          clock says there is time left.
+//   SEARCH_MAX_ENTRIES 100_000  directory entries visited. Bounds a walk that is wide rather
+//                          than deep, which the file ceiling alone would not catch.
+//   GLOB_MAX_RESULTS 1_000 paths returned. Higher than the grep cap because a path is ~20x
+//                          smaller than a match line, so the byte cost is comparable.
+//   SEARCH_MAX_DEPTH 24    directory depth. A symlink loop that survives the containment check
+//                          would otherwise recurse forever; depth is the cheap backstop.
+export const SEARCH_TIME_MS = 5_000;
+export const SEARCH_DIR_MS = 750;
+export const SEARCH_MAX_FILES = 20_000;
+export const SEARCH_MAX_ENTRIES = 100_000;
+export const GLOB_MAX_RESULTS = 1_000;
+export const SEARCH_MAX_DEPTH = 24;
+
+/** Directories never walked: the runtime's own state, VCS internals, and dependency trees. */
+const SKIP_DIRS = new Set(['.git', 'node_modules', '.orion']);
+
+/**
+ * Translate a glob pattern into a RegExp over a POSIX-style relative path.
+ *
+ * Supports the subset that actually appears in use: `**` (any depth, including none), `*` (any
+ * run without a separator), `?` (one non-separator), `[abc]` classes, and `{a,b}` alternation.
+ * Everything else is escaped literally — a pattern is a path expression, not a regex, and
+ * quietly treating a user's `.` or `+` as a metacharacter is how a glob silently over-matches.
+ */
+export function globToRegExp(pattern) {
+  const p = String(pattern ?? '').replace(/\\/g, '/');
+  let out = '';
+  for (let i = 0; i < p.length; i++) {
+    const c = p[i];
+    if (c === '*') {
+      if (p[i + 1] === '*') {
+        // `**/` matches zero or more directories; a bare `**` matches across separators.
+        i++;
+        if (p[i + 1] === '/') { i++; out += '(?:[^/]*/)*'; }
+        else out += '.*';
+      } else out += '[^/]*';
+    } else if (c === '?') out += '[^/]';
+    else if (c === '[') {
+      const close = p.indexOf(']', i + 1);
+      if (close < 0) out += '\\[';
+      else { out += p.slice(i, close + 1); i = close; }
+    } else if (c === '{') {
+      const close = p.indexOf('}', i + 1);
+      if (close < 0) out += '\\{';
+      else {
+        out += '(?:' + p.slice(i + 1, close).split(',')
+          .map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')';
+        i = close;
+      }
+    } else if (c === '/') {
+      // Match EITHER separator. The walk always builds POSIX-style relative paths, so this is
+      // not needed internally — but a caller on Windows will reasonably pass a path with
+      // backslashes, and a matcher that silently fails to match it is a trap that reads as
+      // "the file does not exist". Normalising the pattern alone would not fix that direction.
+      out += '[/\\\\]';
+    } else out += c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+  return new RegExp(`^${out}$`);
+}
+
+/**
+ * A budget that every walk shares.
+ *
+ * Kept as an object rather than closures so the caller can read back WHY a search stopped — the
+ * distinction between "found nothing" and "ran out of time before it could look" is exactly the
+ * thing a model must not have to guess at.
+ */
+function makeBudget({ timeMs = SEARCH_TIME_MS, maxFiles = SEARCH_MAX_FILES,
+                      maxEntries = SEARCH_MAX_ENTRIES, maxDepth = SEARCH_MAX_DEPTH } = {}) {
+  return {
+    startedAt: Date.now(), timeMs, maxFiles, maxEntries, maxDepth,
+    files: 0, entries: 0,
+    stopped: null,          // 'time' | 'files' | 'entries' | 'depth' | 'hits'
+    dirTimeouts: [],        // directories abandoned on the per-directory clock
+    outOfTime() { return Date.now() - this.startedAt >= this.timeMs; },
+  };
+}
+
+/** Human-readable budget notes, appended to the [INCOMPLETE RESULT] block. */
+function budgetNotes(b) {
+  const n = [];
+  if (b.stopped === 'time')
+    n.push(`search STOPPED after ${b.timeMs}ms — narrow the path or pattern`);
+  if (b.stopped === 'files')
+    n.push(`search STOPPED after reading ${b.maxFiles} files`);
+  if (b.stopped === 'entries')
+    n.push(`search STOPPED after visiting ${b.maxEntries} directory entries`);
+  if (b.stopped === 'depth')
+    n.push(`search STOPPED at depth ${b.maxDepth}`);
+  if (b.dirTimeouts.length)
+    n.push(`${b.dirTimeouts.length} director(y/ies) abandoned after ${SEARCH_DIR_MS}ms: ` +
+      `${b.dirTimeouts.slice(0, 3).join(', ')}${b.dirTimeouts.length > 3 ? ', …' : ''}`);
+  return n;
+}
+
 /**
  * The sandbox's error taxonomy, as a type rather than four ad-hoc augmentations of `Error`.
  *
@@ -94,13 +211,53 @@ export class LocalSandbox {
    * truncation are counted and reported in the result. An agent that reads "(no matches)"
    * when half the tree was unreadable will confidently conclude the wrong thing.
    */
-  grep(pattern, start = '.') {
+  /**
+   * @param {string} pattern
+   * @param {string} [start]
+   * @param {{ regex?: boolean, ignoreCase?: boolean, maxHits?: number, timeMs?: number,
+   *           glob?: string }} [opts]
+   */
+  grep(pattern, start = '.', opts = {}) {
+    const {
+      // W8: REGEX, opt-in and BACKWARD COMPATIBLE. The default stays literal, so every existing
+      // caller — and every model that learned the old call shape — behaves exactly as before.
+      // Opting in rather than auto-detecting is deliberate: a literal search for `a.b` must not
+      // silently become a regex that also matches `axb`, which is precisely the kind of quiet
+      // over-match that makes a search untrustworthy.
+      regex = false,
+      ignoreCase = false,
+      maxHits = GREP_MAX_HITS,
+      timeMs = SEARCH_TIME_MS,
+      glob = null,               // restrict to paths matching a glob, e.g. '**/*.mjs'
+    } = opts;
+
+    let re = null;
+    if (regex) {
+      try { re = new RegExp(pattern, ignoreCase ? 'i' : ''); }
+      catch (e) {
+        // A malformed regex is a CALLER error and must say so. Returning "(no matches)" would be
+        // indistinguishable from a correct search that found nothing — the worst possible
+        // failure for a tool an agent uses to decide what exists.
+        throw new SandboxError(`invalid regular expression: ${String(e.message ?? e)}`,
+          { kind: 'bad_pattern' });
+      }
+    }
+    const needle = ignoreCase && !regex ? String(pattern).toLowerCase() : String(pattern);
+    const globRe = glob ? globToRegExp(glob) : null;
+    const matches = (line) => re
+      ? re.test(line)
+      : (ignoreCase ? line.toLowerCase() : line).includes(needle);
+
     const hits = [];
     const skipped = { dirs: [], files: [] };
+    const budget = makeBudget({ timeMs });
     let truncated = false;
 
     // Scanning one file, factored out so `walk` and the file-path entry below share it.
     const scanFile = (rel) => {
+      if (globRe && !globRe.test(rel)) return;
+      if (budget.files >= budget.maxFiles) { budget.stopped ??= 'files'; return; }
+      budget.files++;
       let text;
       // Files are read as UTF-8. A binary file is therefore scanned as lossy-decoded text rather
       // than detected and skipped: it will not crash, but matches in it are not meaningful.
@@ -108,25 +265,31 @@ export class LocalSandbox {
       catch (e) { skipped.files.push(`${rel} (${e.code ?? 'error'})`); return; }
       const lines = text.split('\n');
       for (let i = 0; i < lines.length; i++) {
-        if (!lines[i].includes(pattern)) continue;
+        if (!matches(lines[i])) continue;
         hits.push(`${rel}:${i + 1}: ${lines[i].trim().slice(0, 200)}`);
-        if (hits.length >= GREP_MAX_HITS) { truncated = true; return; }
+        if (hits.length >= maxHits) { truncated = true; return; }
       }
     };
 
-    const walk = (rel) => {
-      if (truncated) return;
+    const walk = (rel, depth = 0) => {
+      if (truncated || budget.stopped) return;
+      if (depth > budget.maxDepth) { budget.stopped ??= 'depth'; return; }
+      if (budget.outOfTime()) { budget.stopped ??= 'time'; return; }
       let entries;
       try { entries = fs.readdirSync(this._abs(rel), { withFileTypes: true }); }
       catch (e) { skipped.dirs.push(`${rel} (${e.code ?? 'error'})`); return; }
+      // Per-directory clock: one pathological directory must not starve the rest of the tree.
+      const dirStart = Date.now();
       for (const ent of entries) {
-        if (truncated) return;
+        if (truncated || budget.stopped) return;
+        if (Date.now() - dirStart >= SEARCH_DIR_MS) { budget.dirTimeouts.push(rel); return; }
+        if (budget.entries++ >= budget.maxEntries) { budget.stopped ??= 'entries'; return; }
         // Name-based, like the existing .git / node_modules exclusions, so it applies at any
         // depth. `.orion` is the runtime's OWN state — event-log database and workspace shadow
         // repos — and searching it fed the agent its own trajectory as if it were source.
-        if (ent.name === '.git' || ent.name === 'node_modules' || ent.name === '.orion') continue;
+        if (SKIP_DIRS.has(ent.name)) continue;
         const child = rel === '.' ? ent.name : `${rel}/${ent.name}`;
-        if (ent.isDirectory()) { walk(child); continue; }
+        if (ent.isDirectory()) { walk(child, depth + 1); continue; }
         scanFile(child);
       }
     };
@@ -142,18 +305,88 @@ export class LocalSandbox {
 
     const notes = [];
     if (truncated)
-      notes.push(`results TRUNCATED at ${GREP_MAX_HITS} matches — narrow the pattern or path`);
+      notes.push(`results TRUNCATED at ${maxHits} matches — narrow the pattern or path`);
     if (skipped.files.length)
       notes.push(`${skipped.files.length} file(s) unreadable and SKIPPED: ` +
         `${skipped.files.slice(0, 5).join(', ')}${skipped.files.length > 5 ? ', …' : ''}`);
     if (skipped.dirs.length)
       notes.push(`${skipped.dirs.length} director(y/ies) unreadable and SKIPPED: ` +
         `${skipped.dirs.slice(0, 5).join(', ')}${skipped.dirs.length > 5 ? ', …' : ''}`);
+    notes.push(...budgetNotes(budget));
 
     const body = hits.length ? hits.join('\n') : '(no matches)';
     const suffix = notes.length ? `\n\n[INCOMPLETE RESULT] ${notes.join('; ')}` : '';
     // Clamp the BODY, then append the notice, so truncation can never eat the warning.
     return clamp(body, 'grep') + suffix;
+  }
+
+  /**
+   * W8 — find files by glob. The other half of "see a repository you did not write".
+   *
+   * Shares grep's budgets and its honesty contract verbatim: a capped or abandoned walk says so
+   * in the same `[INCOMPLETE RESULT]` block, because a truncated file listing that looks complete
+   * is how an agent concludes a symbol does not exist.
+   *
+   * @param {string} pattern
+   * @param {{ path?: string, maxResults?: number, timeMs?: number, filesOnly?: boolean }} [opts]
+   */
+  glob(pattern, { path: start = '.', maxResults = GLOB_MAX_RESULTS,
+                  timeMs = SEARCH_TIME_MS, filesOnly = true } = {}) {
+    if (typeof pattern !== 'string' || !pattern.trim())
+      throw new SandboxError('glob needs a pattern, e.g. "**/*.mjs"', { kind: 'bad_pattern' });
+
+    let re;
+    try { re = globToRegExp(pattern); }
+    catch (e) {
+      throw new SandboxError(`invalid glob pattern: ${String(e.message ?? e)}`, { kind: 'bad_pattern' });
+    }
+
+    const found = [];
+    const skipped = { dirs: [] };
+    const budget = makeBudget({ timeMs });
+    let truncated = false;
+
+    // Patterns are matched against the path RELATIVE TO THE SEARCH ROOT, so `**/*.mjs` behaves
+    // the same whether the caller searched `.` or `src` — the alternative (matching the
+    // workspace-relative path) makes a scoped search silently miss everything.
+    const base = start === '.' ? '' : `${String(start).replace(/\\/g, '/').replace(/\/+$/, '')}/`;
+
+    const walk = (rel, depth = 0) => {
+      if (truncated || budget.stopped) return;
+      if (depth > budget.maxDepth) { budget.stopped ??= 'depth'; return; }
+      if (budget.outOfTime()) { budget.stopped ??= 'time'; return; }
+      let entries;
+      try { entries = fs.readdirSync(this._abs(rel), { withFileTypes: true }); }
+      catch (e) { skipped.dirs.push(`${rel} (${e.code ?? 'error'})`); return; }
+      const dirStart = Date.now();
+      for (const ent of entries) {
+        if (truncated || budget.stopped) return;
+        if (Date.now() - dirStart >= SEARCH_DIR_MS) { budget.dirTimeouts.push(rel); return; }
+        if (budget.entries++ >= budget.maxEntries) { budget.stopped ??= 'entries'; return; }
+        if (SKIP_DIRS.has(ent.name)) continue;
+        const child = rel === '.' ? ent.name : `${rel}/${ent.name}`;
+        const relToBase = base && child.startsWith(base) ? child.slice(base.length) : child;
+        const isDir = ent.isDirectory();
+        if ((!filesOnly || !isDir) && re.test(relToBase)) {
+          found.push(isDir ? `${child}/` : child);
+          if (found.length >= maxResults) { truncated = true; return; }
+        }
+        if (isDir) walk(child, depth + 1);
+      }
+    };
+    walk(start);
+
+    const notes = [];
+    if (truncated)
+      notes.push(`results TRUNCATED at ${maxResults} paths — narrow the pattern or path`);
+    if (skipped.dirs.length)
+      notes.push(`${skipped.dirs.length} director(y/ies) unreadable and SKIPPED: ` +
+        `${skipped.dirs.slice(0, 5).join(', ')}${skipped.dirs.length > 5 ? ', …' : ''}`);
+    notes.push(...budgetNotes(budget));
+
+    const body = found.length ? found.sort().join('\n') : '(no matches)';
+    const suffix = notes.length ? `\n\n[INCOMPLETE RESULT] ${notes.join('; ')}` : '';
+    return clamp(body, 'glob') + suffix;
   }
 
   /**

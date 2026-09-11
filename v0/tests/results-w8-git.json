@@ -1,0 +1,361 @@
+{
+  "label": "w8 git",
+  "pass": 59,
+  "fail": 0,
+  "results": [
+    {
+      "group": "w8/git: the two ordinary failures are ANSWERS, not stack traces",
+      "test": "a non-repo is reported as not-a-repo, not crashed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: the two ordinary failures are ANSWERS, not stack traces",
+      "test": "...and status raises a typed GitError",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: the two ordinary failures are ANSWERS, not stack traces",
+      "test": "...with the kind a caller can branch on",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: the two ordinary failures are ANSWERS, not stack traces",
+      "test": "...phrased for a human",
+      "pass": true,
+      "detail": "this workspace is not a git repository"
+    },
+    {
+      "group": "w8/git: the two ordinary failures are ANSWERS, not stack traces",
+      "test": "the two unavailability kinds are distinguishable",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: the two ordinary failures are ANSWERS, not stack traces",
+      "test": "a missing binary has its own kind",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: the two ordinary failures are ANSWERS, not stack traces",
+      "test": "blame without a path is rejected before invoking git",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: budgets are declared, bounded, and shared with the search layer",
+      "test": "a git call has a wall clock",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: budgets are declared, bounded, and shared with the search layer",
+      "test": "output is clamped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: budgets are declared, bounded, and shared with the search layer",
+      "test": "the clamp is smaller than the buffer it reads into",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "a repo is recognised",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "a clean tree says so plainly",
+      "pass": true,
+      "detail": "## main\n(working tree clean)"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "...and still reports the branch",
+      "pass": true,
+      "detail": "## main\n(working tree clean)"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "a modified file appears",
+      "pass": true,
+      "detail": "## main\n M a.txt\n?? new.txt"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "...marked modified",
+      "pass": true,
+      "detail": "## main\n M a.txt\n?? new.txt"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "an untracked file appears",
+      "pass": true,
+      "detail": "## main\n M a.txt\n?? new.txt"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "the worktree diff shows the removal",
+      "pass": true,
+      "detail": "diff --git a/a.txt b/a.txt\nindex 06fcdd7..9ee42ab 100644\n--- a/a.txt\n+++ b/a.txt\n@@ -1,2 +1,2 @@\n first line\n-second line\n+CHANGED"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "...and the addition",
+      "pass": true,
+      "detail": "diff --git a/a.txt b/a.txt\nindex 06fcdd7..9ee42ab 100644\n--- a/a.txt\n+++ b/a.txt\n@@ -1,2 +1,2 @@\n first line\n-second line\n+CHANGED"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "...without ANSI colour",
+      "pass": true,
+      "detail": "\"diff --git a/a.txt b/a.txt\\nindex 06fcdd7..9ee42ab 100644\\n---\""
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "nothing is staged yet",
+      "pass": true,
+      "detail": "(no staged changes)"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "...and after add, the staged diff is populated",
+      "pass": true,
+      "detail": "diff --git a/a.txt b/a.txt\nindex 06fcdd7..9ee42ab 100644\n--- a/a.txt\n+++ b/a.txt\n@@ -1,2 +1,2 @@\n first line\n-second line\n+CHANGED"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "a path scope that matches nothing is reported, not errored",
+      "pass": true,
+      "detail": "(no staged changes)"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "the current branch is marked",
+      "pass": true,
+      "detail": "* main\t1 second ago"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "the log carries the subject",
+      "pass": true,
+      "detail": "3f7c482 2026-09-11 T — initial commit"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "...an abbreviated sha",
+      "pass": true,
+      "detail": "3f7c482 2026-09-11 T — initial commit"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "...and a date",
+      "pass": true,
+      "detail": "3f7c482 2026-09-11 T — initial commit"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "the limit is honoured",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "a nonsense limit is clamped, not obeyed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "blame names the author",
+      "pass": true,
+      "detail": "^3f7c482 (T                 2026-09-11 11:00:40 +0530 1) first line\n00000000 (Not Committed Yet 2026-09-11 11:00:41 +0530 2) CHANGED"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "...and carries the line content",
+      "pass": true,
+      "detail": "^3f7c482 (T                 2026-09-11 11:00:40 +0530 1) first line\n00000000 (Not Committed Yet 2026-09-11 11:00:41 +0530 2) CHANGED"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "a line range narrows the output",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "an inherited GIT_DIR does NOT redirect the answer to the shadow repo",
+      "pass": true,
+      "detail": "## main\nM  a.txt\n?? new.txt"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "...and the project changes are still the ones reported",
+      "pass": true,
+      "detail": "## main\nM  a.txt\n?? new.txt"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "...and isRepo still answers about the project",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "...and the oversized diff is genuinely large before clamping",
+      "pass": true,
+      "detail": "26316"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "oversized output is clamped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "...and SAYS it was clamped",
+      "pass": true,
+      "detail": "xxxxxxxxxxxxxxxxx\n+line 368 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n+line 369\n\n[INCOMPLETE RESULT] git diff truncated: 262144 bytes > 32768 limit — narrow the path or use --staged"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "...naming a size limit rather than blaming line endings",
+      "pass": true,
+      "detail": "xxxxxxxxxxxxxxxxx\n+line 368 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n+line 369\n\n[INCOMPLETE RESULT] git diff truncated: 262144 bytes > 32768 limit — narrow the path or use --staged"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "a warning on a SUCCESSFUL run is not promoted to an error",
+      "pass": true,
+      "detail": "diff --git a/huge.txt b/huge.txt\nindex e31de1f..3f50778 100644\n--- a/huge.txt\n+++ b/huge.txt\n@@ -1 +1,2 @@\n seed\n+second"
+    },
+    {
+      "group": "w8/git: live navigation against a real repository",
+      "test": "...and the warning text is not shown to the model",
+      "pass": true,
+      "detail": "diff --git a/huge.txt b/huge.txt\nindex e31de1f..3f50778 100644\n--- a/huge.txt\n+++ b/huge.txt\n@@ -1 +1,2 @@\n seed\n+second"
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "a git tool exists",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "...and is offered to the model",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "...as ONE tool with a selector, not five sibling tools",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "...whose description names the five queries",
+      "pass": true,
+      "detail": "Ask the repository about itself (read-only). `what`: \"status\" (what changed), \"diff\" (worktree, or staged with staged:true), \"branch\" (local branches, current marked), \"log\" (recent commits, optionally for a path), \"blame\" (who last touched each line — needs `path`). Never modifies the repository."
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "git is declared ReadOnly",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "...so it is not in the mutating set",
+      "pass": true,
+      "detail": "write,edit,bash"
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "...and the mutating set is still exactly the three writers",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "a read-only tool never needs a human after a crash",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "commit is NOT a supported query",
+      "pass": true,
+      "detail": "unknown git query: commit. Use status, diff, branch, log or blame."
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "checkout is NOT a supported query",
+      "pass": true,
+      "detail": "unknown git query: checkout. Use status, diff, branch, log or blame."
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "push is NOT a supported query",
+      "pass": true,
+      "detail": "unknown git query: push. Use status, diff, branch, log or blame."
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "reset is NOT a supported query",
+      "pass": true,
+      "detail": "unknown git query: reset. Use status, diff, branch, log or blame."
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "merge is NOT a supported query",
+      "pass": true,
+      "detail": "unknown git query: merge. Use status, diff, branch, log or blame."
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "rebase is NOT a supported query",
+      "pass": true,
+      "detail": "unknown git query: rebase. Use status, diff, branch, log or blame."
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "add is NOT a supported query",
+      "pass": true,
+      "detail": "unknown git query: add. Use status, diff, branch, log or blame."
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "stash is NOT a supported query",
+      "pass": true,
+      "detail": "unknown git query: stash. Use status, diff, branch, log or blame."
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "an unknown query names the ones that exist",
+      "pass": true,
+      "detail": "unknown git query: nonsense. Use status, diff, branch, log or blame."
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "...and the wired tool actually answers about the real repo",
+      "pass": true,
+      "detail": "## main\n(working tree clean)"
+    },
+    {
+      "group": "w8/git: the tool is declared read-only and reaches the model",
+      "test": "the \"branches\" spelling is accepted as well as \"branch\"",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

@@ -1,7 +1,11 @@
-// V0 toolset: read, grep, write, edit, bash, verify, plan, plan_step, ask_user.
+// V0 toolset: read, grep, glob, git, write, edit, bash, verify, plan, plan_step, ask_user.
 // Each tool computes recovery() FROM ITS ARGUMENTS (ADR-002).
 
 import { RecoveryClass, classifyShell, isKnownDangerous } from '../../core/recovery/index.mjs';
+// W8: read-only git navigation. Kept in the sandbox layer because it shells out through the same
+// containment the rest of the toolset does.
+import { status as gitStatus, diff as gitDiff, branches as gitBranches, log as gitLog,
+         blame as gitBlame } from '../../sandbox/git.mjs';
 import crypto from 'node:crypto';
 
 const sha = (s) => crypto.createHash('sha256').update(String(s)).digest('hex').slice(0, 16);
@@ -259,12 +263,86 @@ export function makeTools(sandbox, { skills = [] } = {}) {
     },
 
     grep: {
-      description: 'Search the workspace for a literal string. Returns path:line: matches.',
+      // W8: regex is OPT-IN. The default stays literal so every model that learned the old call
+      // shape still works, and — more importantly — so a literal search for `a.b` cannot silently
+      // become a regex that also matches `axb`. Quiet over-matching is what makes a search
+      // untrustworthy, and a search an agent cannot trust is worse than none.
+      description:
+        'Search the workspace. By default `pattern` is a literal string; set `regex: true` to '
+        + 'treat it as a regular expression. Optionally restrict to files matching `glob` '
+        + '(e.g. "**/*.mjs"). Returns path:line: matches. Says so when results are incomplete.',
       schema: { type: 'object', required: ['pattern'],
-        properties: { pattern: { type: 'string' }, path: { type: 'string' } } },
+        properties: {
+          pattern: { type: 'string' },
+          path: { type: 'string', description: 'file or directory to search (default: the workspace)' },
+          regex: { type: 'boolean', description: 'treat `pattern` as a regular expression' },
+          ignore_case: { type: 'boolean' },
+          glob: { type: 'string', description: 'only search files matching this glob' },
+        } },
       effects: 'ReadOnly',
       recovery: () => ({ class: RecoveryClass.READ_ONLY }),
-      run: ({ pattern, path = '.' }) => sandbox.grep(pattern, path),
+      run: ({ pattern, path = '.', regex = false, ignore_case = false, glob = null }) =>
+        sandbox.grep(pattern, path, { regex, ignoreCase: ignore_case, glob }),
+    },
+
+    glob: {
+      // The other half of "see a repository you did not write". Measured evidence in the plan has
+      // file-visibility problems dominating run failures: an agent that can only read a path it
+      // already knows cannot find a symbol, so it pages through files and dies on no_progress.
+      description:
+        'Find files by glob pattern (e.g. "**/*.mjs", "src/**/*.test.*"). Supports **, *, ?, '
+        + '[abc] and {a,b}. Returns matching paths, one per line. Use this to discover what '
+        + 'exists before reading; it is far cheaper than paging through directories.',
+      schema: { type: 'object', required: ['pattern'],
+        properties: {
+          pattern: { type: 'string' },
+          path: { type: 'string', description: 'directory to search under (default: the workspace)' },
+          include_dirs: { type: 'boolean', description: 'also return matching directories' },
+        } },
+      effects: 'ReadOnly',
+      recovery: () => ({ class: RecoveryClass.READ_ONLY }),
+      run: ({ pattern, path = '.', include_dirs = false }) =>
+        sandbox.glob(pattern, { path, filesOnly: !include_dirs }),
+    },
+
+    // ── git navigation (W8) — READ-ONLY ──────────────────────────────────────
+    //
+    // One tool with a `what` selector rather than five sibling tools. The toolset is sent on
+    // every model call, so five near-identical schemas would cost that on every turn for a
+    // capability used a handful of times in a run — and W3's budget discipline is the reason to
+    // care. It also keeps the git surface legible as one thing the agent may ASK ABOUT and, by
+    // construction, cannot write to.
+    git: {
+      description:
+        'Ask the repository about itself (read-only). `what`: "status" (what changed), '
+        + '"diff" (worktree, or staged with staged:true), "branch" (local branches, current '
+        + 'marked), "log" (recent commits, optionally for a path), "blame" (who last touched '
+        + 'each line — needs `path`). Never modifies the repository.',
+      schema: { type: 'object', required: ['what'],
+        properties: {
+          what: { type: 'string', description: 'status | diff | branch | log | blame' },
+          path: { type: 'string', description: 'restrict to a path (required for blame)' },
+          staged: { type: 'boolean', description: 'diff the index instead of the worktree' },
+          limit: { type: 'integer', description: 'for log: how many commits (default 20)' },
+        } },
+      effects: 'ReadOnly',
+      // Reading repository state changes nothing, so it is safely re-runnable after a crash and
+      // never needs a human at any posture.
+      recovery: () => ({ class: RecoveryClass.READ_ONLY }),
+      run: async ({ what, path: p = null, staged = false, limit = 20 }) => {
+        const root = sandbox.root;
+        const which = String(what ?? '').trim().toLowerCase();
+        switch (which) {
+          case 'status': return gitStatus(root);
+          case 'diff':   return gitDiff(root, { staged, path: p });
+          case 'branch':
+          case 'branches': return gitBranches(root);
+          case 'log':    return gitLog(root, { path: p, limit });
+          case 'blame':  return gitBlame(root, { path: p });
+          default:
+            throw new Error(`unknown git query: ${what}. Use status, diff, branch, log or blame.`);
+        }
+      },
     },
 
     write: {

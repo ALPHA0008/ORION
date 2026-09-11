@@ -197,7 +197,11 @@ describe('w7/B: activation is a tool call, and it emits provenance');
   // identical toolset it saw before this wave.
   const bare = makeTools(null);
   check('no skills: no `skill` tool', !('skill' in bare));
-  eq('...and the toolset is unchanged at 9', Object.keys(bare).length, 9);
+  // W8: the PROPERTY, not the count. This asserted 9 until W8 added glob and git; the thing it
+  // exists to protect is that a project with no skills gets the toolset it would have had
+  // anyway, which is 'no skill tool' — not a number that every future wave must come and edit.
+  eq('...and nothing else was added by the skills machinery',
+    Object.keys(bare).filter(n => n === 'skill').length, 0);
 
   const tools = makeTools(null, { skills });
   check('with skills: the tool is offered', 'skill' in tools);

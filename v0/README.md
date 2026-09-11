@@ -188,6 +188,54 @@ export ORION_API_KEY=not-needed
 `orionctl doctor` reports home, database integrity, run count, endpoint, posture, stale leases and
 pending questions.
 
+### Configuration files
+
+The non-secret parts can be committed. `.orion.json` in the project, `~/.orion/config.json` for
+your user — layered **under** the environment, which always wins.
+
+```json
+{
+  "baseUrl": "https://api.openai.com/v1",
+  "model": "gpt-4o-mini",
+  "apiKeyEnv": "ORION_API_KEY"
+}
+```
+
+**The key itself never goes in the file.** `apiKeyEnv` names the *variable* that holds it; writing
+`apiKey` is refused, because a config file is meant to be committed. Unknown keys are errors rather
+than being ignored — a typo'd setting you believe is in force is worse than one that fails loudly.
+
+`orionctl config` prints the effective configuration and where every value came from:
+
+```
+effective configuration:
+  baseUrl      https://api.openai.com/v1     project (./.orion.json)
+  model        gpt-4o-mini                   env ORION_MODEL
+  apiKey       (set)                         env ORION_API_KEY
+```
+
+The key's **value is never printed** — only whether it is set, and which variable was read.
+
+### Permission rules
+
+`.orion-rules.json` (project) or `~/.orion/rules.json` (user) tighten policy without touching code:
+
+```json
+{
+  "denyTools": ["bash"],
+  "denyCommandPatterns": ["\\bgit\\s+push\\b"],
+  "protectedPaths": ["(^|/)migrations/"],
+  "escalateTools": ["write"]
+}
+```
+
+Rules may only **raise** strictness. There is no `allowTools` — to widen access, choose a sandbox
+that earns a more permissive posture (`ORION_SANDBOX=container`) or record an auditable grant
+(`orionctl answer --remember`). User and project rules **union**; they never override each other,
+and they never displace the built-in refusal of catastrophic commands.
+
+A malformed rule file **refuses the run** rather than degrading to weaker policy than you wrote.
+
 ## Commands
 
 ```
@@ -203,6 +251,7 @@ orionctl fork <run> --at <seq>  branch from a point in history
 orionctl rerun <run>            fresh run of the same task
 orionctl reap                   reclaim runs whose worker died
 orionctl doctor                 environment check
+orionctl config                 effective configuration + rules, and where each came from [--json]
 orionctl --version              package version
 ```
 
@@ -253,6 +302,34 @@ paused — awaiting_human
 $ orionctl answer #a81f2c "yes, keep it"
 $ orionctl resume #a81f2c
 ```
+
+## Tools
+
+| tool | effects | what it does |
+|---|---|---|
+| `read` | read-only | a file, paged |
+| `glob` | read-only | find files by pattern — `src/**/*.ts`, `{a,b}`, `?`, `[abc]` |
+| `grep` | read-only | search contents; literal by default, `regex: true` opts in |
+| `git` | read-only | `status` · `diff` · `branch` · `log` · `blame` |
+| `write` `edit` | **mutating** | change a file |
+| `bash` | **mutating** | run a command |
+| `verify` | read-only | run a check |
+| `plan` `plan_step` | read-only | declare and advance a plan |
+| `ask_user` | read-only | pause the run durably for a human |
+
+`grep` stays **literal unless you ask for a regex**, so `a.b` finds `a.b` and not `axb` — a pattern
+written before this existed still means what it meant. A malformed regex is an error, never a silent
+empty result: "no matches" is an answer, and a wrong one.
+
+Search and git are **bounded, and say so**. Walks stop at 5 s (750 ms per directory), 20 000 files
+read, 100 000 entries traversed, depth 24; `.git`, `node_modules` and `.orion` are skipped; git
+output is clamped at 32 KB. Whenever a bound bites, the result carries `[INCOMPLETE RESULT]` naming
+the budget that stopped it — a short list is never mistaken for a complete one.
+
+Git navigation is **read-only**. The runtime already maintains a shadow repository to rewind the
+world during recovery; a `commit` or `checkout` tool would drive the same working tree with a
+different notion of HEAD, and getting that wrong destroys a working tree rather than returning a
+wrong answer.
 
 ## The three verbs, precisely
 

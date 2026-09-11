@@ -38,7 +38,7 @@ Nothing mutates a run except by appending an event.
 | `core/lease/reaper` | reclaim runs whose worker died |
 | `agent/loop/worker` | the loop; stateless — all state comes from the log |
 | `agent/model` | one thin OpenAI-compatible client |
-| `agent/tools` | 9 tools, each declaring `recovery(args)` and its `effects` |
+| `agent/tools` | 11 tools, each declaring `recovery(args)` and its `effects` |
 | `core/resource` | acquire / reattach / lose a resource; Recovery 2.0 |
 | `core/projection/resource` | the fold that derives the current resource binding |
 | `core/projection/grant` | the fold that derives remembered approvals |

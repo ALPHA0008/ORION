@@ -18,7 +18,10 @@ import { projectResources, summariseResources } from '../core/projection/resourc
 import { describeGrant, projectGrants, summariseGrants, projectKey, GrantScope }
   from '../core/projection/grant.mjs';
 import { makeTools, mutatingTools } from '../agent/tools/index.mjs';
-import { createAuthorizer } from '../auth/default/index.mjs';
+import { createAuthorizer, DEFAULT_DANGEROUS } from '../auth/default/index.mjs';
+// W8: configuration + permission rules, layered under the environment.
+import { resolveConfig, describeConfig, ConfigError } from '../config/index.mjs';
+import { resolveRules, hasRules, describeRules } from '../config/rules.mjs';
 import { Worker, DEFAULT_SYSTEM } from '../agent/loop/worker.mjs';
 // W7: skills + project instructions — the runtime becomes instructable, with provenance.
 import { discoverSkills, renderDisclosure, disclosureBytes } from '../context/skills.mjs';
@@ -29,6 +32,7 @@ import { replay, fork, rerun, nearestTurnBoundary } from '../core/replay/index.m
 import { reap, expireHumanRequests } from '../core/lease/reaper.mjs';
 import { createProvider } from '../agent/model/index.mjs';
 import { applyGemmaToolCallShim } from '../agent/model/shims/gemma-tool-calls.mjs';
+import { applyReasoningAsContent } from '../agent/model/shims/reasoning-as-content.mjs';
 import { projectPlan, planSatisfied, summarisePlan } from '../core/projection/plan.mjs';
 import { repl, banner } from './repl.mjs';
 
@@ -75,12 +79,17 @@ export function selectShims(modelName, env = process.env) {
     return requested.split(',').map(s => s.trim().toLowerCase()).filter(Boolean)
       .map(name => {
         if (name === 'gemma' || name === 'gemma-tool-calls') return applyGemmaToolCallShim;
-        console.error(C.y(`unknown shim: ${name} (known: gemma)`));
+        if (name === 'reasoning-as-content') return applyReasoningAsContent;
+        console.error(C.y(`unknown shim: ${name} (known: gemma, reasoning-as-content)`));
         return null;
       }).filter(Boolean);
   }
   // Auto-detect: the quirk is a property of how Gemma is commonly served, not of one endpoint.
-  return /gemma/i.test(String(modelName ?? '')) ? [applyGemmaToolCallShim] : [];
+  if (/gemma/i.test(String(modelName ?? ''))) return [applyGemmaToolCallShim];
+  // gpt-oss-120b (and likely other open reasoning models served via Groq) route all output
+  // to the `reasoning` field and leave `content` empty.
+  if (/gpt-oss/i.test(String(modelName ?? ''))) return [applyReasoningAsContent];
+  return [];
 }
 
 /**
@@ -99,6 +108,41 @@ export function streamEnabled(env = process.env) {
 }
 
 /**
+ * W8 — the first-run flow. Bounded, honest, and NON-ZERO.
+ *
+ * The measured defect (`fresh-run-audit.md`): a new user runs `orionctl run "..."` with nothing
+ * configured, gets a message, and the process exits **0**. A shell script or CI job wrapping that
+ * sees success and carries on. Exiting 2 is the fix, and it is the reason this function exists
+ * rather than a longer `console.error` block.
+ *
+ * Deliberately NOT an interactive wizard. This is a CLI over a durable log, not an IDE; a prompt
+ * that blocks is unusable from CI, from a pipe, and from the very automation the runtime is for.
+ * What a stuck operator needs is the two things to set and the file they can commit — printed
+ * once, plainly, and never including a value that might be a secret.
+ */
+function firstRun({ workspace = WORK, home = HOME, env = process.env } = {}) {
+  const cfgPath = path.join(workspace, '.orion.json');
+  console.error(C.r('No model configured — ORION does not know what to talk to.'));
+  console.error('');
+  console.error('  Set two environment variables:');
+  console.error(C.dim('    ORION_BASE_URL   an OpenAI-compatible endpoint'));
+  console.error(C.dim('    ORION_API_KEY    the key for it'));
+  console.error('');
+  console.error('  e.g.  ORION_BASE_URL=https://api.openai.com/v1 ORION_MODEL=gpt-4o-mini');
+  console.error('        ORION_PROVIDER=anthropic  (uses https://api.anthropic.com)');
+  console.error('        ORION_BASE_URL=http://127.0.0.1:11434/v1  (a local Ollama)');
+  console.error('');
+  console.error(`  Or commit the non-secret parts to ${cfgPath}:`);
+  console.error(C.dim('    { "baseUrl": "https://api.openai.com/v1", "model": "gpt-4o-mini",'));
+  console.error(C.dim('      "apiKeyEnv": "ORION_API_KEY" }'));
+  console.error(C.dim('    The key itself stays in the environment — the file names the variable.'));
+  console.error('');
+  console.error('  Then:  orionctl config     to see exactly what a run would use.');
+  // Non-zero: the measured bug was a wrapper script treating "unconfigured" as success.
+  process.exit(2);
+}
+
+/**
  * Build the model from configuration (F5).
  *
  * Wave 4 added a provider seam and a second provider, and the CLI then hardcoded
@@ -106,21 +150,29 @@ export function streamEnabled(env = process.env) {
  * the product. That is the same class of defect as Waves 1-3 (a mechanism built, tested, and
  * never wired), which is why tests/shipped/ now exercises this path rather than the module.
  */
-export function buildModel(env = process.env) {
-  const kind = String(env.ORION_PROVIDER ?? 'openai-compat').trim().toLowerCase();
-  const apiKey = env.ORION_API_KEY ?? env.OPENAI_API_KEY ?? env.ANTHROPIC_API_KEY ?? null;
-  const model = env.ORION_MODEL ?? (kind === 'anthropic' ? 'claude-sonnet-5' : 'gpt-4o-mini');
-  // Anthropic has a real default endpoint; an OpenAI-compatible one could be anything, so it
-  // must be stated.
-  const baseUrl = env.ORION_BASE_URL ?? (kind === 'anthropic' ? 'https://api.anthropic.com' : null);
-
-  if (!baseUrl) {
-    console.error(C.r('No model configured.'));
-    console.error('  Set ORION_BASE_URL (an OpenAI-compatible endpoint) and ORION_API_KEY.');
-    console.error('  e.g. ORION_BASE_URL=https://api.openai.com/v1 ORION_MODEL=gpt-4o-mini');
-    console.error('  Or:  ORION_PROVIDER=anthropic ORION_API_KEY=sk-ant-...');
+export function buildModel(env = process.env, { workspace = WORK, home = HOME } = {}) {
+  // W8: the config FILE supplies defaults; the ENVIRONMENT still wins. `resolveConfig` already
+  // applies that ordering, so reading from it rather than from `env` directly is what makes a
+  // committed `.orion.json` work without changing any documented env behaviour.
+  const { values: cfg, errors: cfgErrors } = resolveConfig({ workspace, home, env });
+  if (cfgErrors.length) {
+    console.error(C.r('configuration is invalid:'));
+    for (const e of cfgErrors) console.error(`  ${e.message}`);
+    console.error(C.dim('  run `orionctl config` to see what would be used'));
     process.exit(2);
   }
+
+  const kind = String(cfg.provider ?? 'openai-compat').trim().toLowerCase();
+  // The key is read from the environment ALWAYS. `apiKeyEnv` names which variable — a config file
+  // never carries the value, and `readConfigFile` refuses one that tries.
+  const keyVar = cfg.apiKeyEnv ?? 'ORION_API_KEY';
+  const apiKey = env[keyVar] ?? env.ORION_API_KEY ?? env.OPENAI_API_KEY ?? env.ANTHROPIC_API_KEY ?? null;
+  const model = cfg.model ?? (kind === 'anthropic' ? 'claude-sonnet-5' : 'gpt-4o-mini');
+  // Anthropic has a real default endpoint; an OpenAI-compatible one could be anything, so it
+  // must be stated.
+  const baseUrl = cfg.baseUrl ?? (kind === 'anthropic' ? 'https://api.anthropic.com' : null);
+
+  if (!baseUrl) { firstRun({ workspace, home, env }); }
   try {
     return createProvider({ kind, baseUrl, apiKey, model, shims: selectShims(model, env) });
   } catch (e) {
@@ -390,6 +442,25 @@ export async function prepareRun(store, runId, leaseToken, workspace) {
   ].filter(Boolean).join('\n\n');
 
   const project = projectKey(workspace);
+  // W8 — the deployer's permission rules, if any.
+  //
+  // A malformed rule file is FATAL rather than ignored. Every other kind of config error here
+  // degrades to a default, but a policy file that fails to parse would degrade to *less*
+  // restriction than the operator asked for — and silently running with weaker policy than the
+  // deployer wrote is the one failure mode a security file must never have.
+  const { rules, files: ruleFiles, errors: ruleErrors } = resolveRules({ workspace, home: HOME });
+  if (ruleErrors.length) {
+    console.error(C.r('permission rules are invalid — refusing to run with weaker policy than intended:'));
+    for (const e of ruleErrors) console.error(`  ${e.message}`);
+    return { sandbox, resource, worker: null, fatal: 'rules' };
+  }
+  if (hasRules(rules)) {
+    console.log(C.dim(`  rules: ${ruleFiles.map(f => f.scope).join(', ')}`
+      + ` (${rules.denyTools.length} denied, ${rules.escalateTools.length} escalated,`
+      + ` ${rules.denyCommandPatterns.length} command patterns,`
+      + ` ${rules.protectedPaths.length} protected paths)`));
+  }
+
   const authorize = createAuthorizer({
     // DERIVED, not read from a flag. `resolveResource` already folded in any operator override
     // and refused to let it lower the floor the backend earns.
@@ -397,10 +468,24 @@ export async function prepareRun(store, runId, leaseToken, workspace) {
     // W6 M — approval memory, read at DECISION time so an approval given earlier this run (or in
     // an earlier run against this project) is visible to the check happening now.
     grants: () => store.grantEvents({ project }),
+    // W8 — rules layer ON TOP of the code defaults and can only add restriction. The default
+    // `denyCommandPatterns` is preserved by concatenation rather than replaced: a deployer who
+    // adds "never git push" must not thereby stop denying `rm -rf /`.
+    ...(hasRules(rules) ? {
+      denyTools: rules.denyTools,
+      escalateTools: rules.escalateTools,
+      denyCommandPatterns: [DEFAULT_DANGEROUS, ...rules.denyCommandPatterns],
+      protectedPaths: rules.protectedPaths,
+    } : {}),
   });
 
   return {
     sandbox, resource,
+    // Exposed so the composed policy can be INSPECTED without building a Worker (which would
+    // require a live model endpoint). The authorizer is the whole point of the rules layer: the
+    // wave's shipped test asks this function for decisions directly, which is how "the deployer's
+    // rule file reaches the real authorizer" is proven rather than asserted.
+    authorize,
     worker: (extra = {}) => new Worker(store, {
       sandbox, model: buildModel(), authorize,
       // W7: the `skill` tool exists only when there is something to activate, so a project with
@@ -837,6 +922,66 @@ const cmds = {
     store.close();
   },
 
+  /**
+   * W8 — answer "what will this run actually use?" without guessing.
+   *
+   * Configuration now comes from three places (built-in defaults, up to two files, and the
+   * environment) and permission rules from up to two more. That is exactly the point at which an
+   * operator can no longer hold the answer in their head, and the honest response is a command
+   * that prints the resolved values WITH their provenance rather than documentation describing
+   * the algorithm.
+   *
+   * Validation errors exit NON-ZERO so this is usable as a CI preflight — the same reasoning that
+   * made the first-run flow exit 2.
+   */
+  config(rest = []) {
+    const cfg = describeConfig({ workspace: WORK, home: HOME });
+    const rules = describeRules({ workspace: WORK, home: HOME });
+    const errors = [...cfg.errors, ...rules.errors];
+
+    if (has(rest, '--json')) {
+      emitJson({
+        workspace: WORK, home: HOME,
+        config_files: cfg.files, rule_files: rules.files,
+        // The VALUES, never a secret: `apiKeyEnv` names a variable and `api_key_set` reports
+        // whether it is populated. The key itself never enters stdout, a log, or a bug report.
+        effective: cfg.values,
+        sources: cfg.sources,
+        api_key_env: cfg.keyVar, api_key_set: cfg.keySet,
+        rules: {
+          denyTools: rules.rules.denyTools,
+          escalateTools: rules.rules.escalateTools,
+          denyCommandPatterns: rules.rules.denyCommandPatterns.map(String),
+          protectedPaths: rules.rules.protectedPaths.map(String),
+        },
+        errors: errors.map(e => ({ file: e.file ?? null, field: e.field ?? null, message: e.message })),
+        valid: errors.length === 0,
+      });
+      if (errors.length) process.exitCode = 2;
+      return;
+    }
+
+    console.log(C.b('orionctl config'));
+    console.log(C.dim(`  workspace  ${WORK}`));
+    console.log(C.dim(`  home       ${HOME}`));
+    console.log('');
+    console.log(cfg.text);
+    console.log('');
+    console.log(rules.text);
+
+    if (errors.length) {
+      console.log('');
+      console.log(C.r(`${errors.length} problem(s):`));
+      for (const e of errors) console.log(C.r(`  ${e.message}`));
+      process.exitCode = 2;
+      return;
+    }
+    console.log('');
+    console.log(C.g('configuration is valid'));
+    if (!cfg.keySet)
+      console.log(C.y(`  note: ${cfg.keyVar} is not set — a run needing a model will refuse to start`));
+  },
+
   help() { usage(); },
 };
 
@@ -899,6 +1044,14 @@ function usage() {
   orionctl doctor                 environment check
   orionctl grants                 approvals this project remembers   [--all] [--json]
   orionctl revoke <grant>         withdraw a remembered approval     [--reason "..."]
+  orionctl config                 effective configuration + rules, and where each came from [--json]
+
+${C.dim('files:')}   .orion.json (project) and ~/.orion/config.json (user) supply defaults.
+          The ENVIRONMENT always wins. The key itself is never stored in a file:
+          \`apiKeyEnv\` names the variable that holds it.
+          .orion-rules.json (project) and ~/.orion/rules.json (user) add permission
+          rules — denyTools, escalateTools, denyCommandPatterns, protectedPaths.
+          Rules may only RAISE strictness; scopes union rather than override.
 
 ${C.dim('config:')}  ORION_BASE_URL  ORION_API_KEY  ORION_MODEL  ORION_HOME  ORION_POSTURE
 ${C.dim('sandbox:')} ORION_SANDBOX=local|container   ORION_IMAGE=<image>  (container ⇒ isolated, --network none,

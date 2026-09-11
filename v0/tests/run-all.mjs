@@ -30,6 +30,11 @@ export const suites = [
   // W7: skills + project instructions, and the wiring that makes them reach the product.
   ['context/skills',        []],
   ['shipped/w7-shipped',    []],
+  // W8: search (glob + regex grep + bounded walk), read-only git, config and permission rules.
+  ['search/search',         []],
+  ['git/git',               []],
+  ['config/config',         []],
+  ['shipped/w8-shipped',    []],
   ['recovery/recovery',     []],
   ['replay/semantics',      []],
   ['integration/provider',  []],

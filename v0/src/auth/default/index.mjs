@@ -176,7 +176,10 @@ export function createAuthorizer({
   };
 }
 
-const DEFAULT_DANGEROUS = /\bmkfs\b|:\(\)\s*\{|\brm\s+-rf\s+\/(?!\w)|\bdd\s+if=.*of=\/dev\//;
+// W8: exported so a deployer's rule file can be CONCATENATED with it rather than replacing it.
+// A rules file that adds "never git push" must not thereby stop denying `rm -rf /` — and the only
+// way to guarantee that without a second copy of the pattern is to hand out the original.
+export const DEFAULT_DANGEROUS = /\bmkfs\b|:\(\)\s*\{|\brm\s+-rf\s+\/(?!\w)|\bdd\s+if=.*of=\/dev\//;
 
 function maxPosture(a, b, RANK) {
   if (!b) return a;
