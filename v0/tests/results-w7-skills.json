@@ -359,7 +359,7 @@
     },
     {
       "group": "w7/B: activation is a tool call, and it emits provenance",
-      "test": "...and the toolset is unchanged at 9",
+      "test": "...and nothing else was added by the skills machinery",
       "pass": true,
       "detail": ""
     },
@@ -427,7 +427,7 @@
       "group": "w7/B: activation is a tool call, and it emits provenance",
       "test": "...and its SOURCE PATH — the §1.2 requirement",
       "pass": true,
-      "detail": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w7-activate-acHfT4\\.claude\\skills\\commit-style\\SKILL.md"
+      "detail": "C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w7-activate-Qoewy0\\.claude\\skills\\commit-style\\SKILL.md"
     },
     {
       "group": "w7/B: activation is a tool call, and it emits provenance",

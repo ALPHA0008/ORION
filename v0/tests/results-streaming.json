@@ -109,13 +109,13 @@
       "group": "streaming/S1-S2-a-streamed-turn-is-recorded",
       "test": "S2: ttft_ms is POPULATED (it was always null before this wave)",
       "pass": true,
-      "detail": "[14,3]"
+      "detail": "[16,3]"
     },
     {
       "group": "streaming/S1-S2-a-streamed-turn-is-recorded",
       "test": "S2: and it is greater than zero",
       "pass": true,
-      "detail": "14"
+      "detail": "16"
     },
     {
       "group": "streaming/S1-S2-a-streamed-turn-is-recorded",
@@ -169,7 +169,7 @@
       "group": "streaming/S6-BLOCKING-a-killed-stream-leaves-a-durable-partial",
       "test": "S6: it is marked aborted",
       "pass": true,
-      "detail": "{\"chunks\":3,\"bytes\":3600,\"ttft_ms\":2,\"duration_ms\":75,\"aborted\":true}"
+      "detail": "{\"chunks\":3,\"bytes\":3600,\"ttft_ms\":2,\"duration_ms\":65,\"aborted\":true}"
     },
     {
       "group": "streaming/S6-BLOCKING-a-killed-stream-leaves-a-durable-partial",
@@ -199,7 +199,7 @@
       "group": "streaming/S7-the-lease-survives-a-long-stream",
       "test": "S7: the stream really outlasted the lease",
       "pass": true,
-      "detail": "770ms vs 400ms"
+      "detail": "807ms vs 400ms"
     },
     {
       "group": "streaming/S7-the-lease-survives-a-long-stream",

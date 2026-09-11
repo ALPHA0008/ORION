@@ -71,9 +71,9 @@
     },
     {
       "group": "shipped/W7-C: a project with no brief is unchanged",
-      "test": "and the toolset is the pre-W7 nine",
+      "test": "and the shipped toolset carries no skill tool",
       "pass": true,
-      "detail": ""
+      "detail": "read,grep,glob,git,write,edit,bash,verify,plan,plan_step,ask_user"
     },
     {
       "group": "shipped/W7-A/D: a skill authored for another harness loads unchanged",
@@ -271,13 +271,13 @@
       "group": "shipped/W7: the REAL orionctl reports the brief and the skills",
       "test": "the CLI reports which instruction file briefed the run",
       "pass": true,
-      "detail": "Run #351b6a0b2c  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w7s-binary-work-CM9s9C\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\n  instructions: AGENTS.md\n  skills: 1 available (287 B disclosed)  commit-style\n  ⚠ [model] retrying after network\n  ⚠ [model] retryi"
+      "detail": "Run #eb9f714a18  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w7s-binary-work-HmkMBt\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\n  instructions: AGENTS.md\n  skills: 1 available (287 B disclosed)  commit-style\n  ⚠ [model] retrying after network\n  ⚠ [model] retryi"
     },
     {
       "group": "shipped/W7: the REAL orionctl reports the brief and the skills",
       "test": "...and how many skills are available, with their disclosure cost",
       "pass": true,
-      "detail": "Run #351b6a0b2c  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w7s-binary-work-CM9s9C\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\n  instructions: AGENTS.md\n  skills: 1 available (287 B disclosed)  commit-style\n  ⚠ [model] retrying after network\n  ⚠ [model] retryi"
+      "detail": "Run #eb9f714a18  C:\\Users\\abhijith.p\\AppData\\Local\\Temp\\w7s-binary-work-HmkMBt\n────────────────────────────────────────────────\n  sandbox: LocalSandbox  posture: auto\n  instructions: AGENTS.md\n  skills: 1 available (287 B disclosed)  commit-style\n  ⚠ [model] retrying after network\n  ⚠ [model] retryi"
     },
     {
       "group": "shipped/W7: the REAL orionctl reports the brief and the skills",

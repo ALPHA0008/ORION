@@ -271,13 +271,13 @@
       "group": "providers/V1-V3-request-provenance",
       "test": "V1: model.requested carries endpoint_host",
       "pass": true,
-      "detail": "\"127.0.0.1:56217\""
+      "detail": "\"127.0.0.1:56715\""
     },
     {
       "group": "providers/V1-V3-request-provenance",
       "test": "V1: model.requested carries request_digest",
       "pass": true,
-      "detail": "\"ac1825ab03344721775664c96c9676c1c0b81b450ab20ea700dc3e1947d8fdfe\""
+      "detail": "\"5aa938b0b518e889b9cddb4e1a4ad6076d23d4701ed00e41cc65c44fff4fb845\""
     },
     {
       "group": "providers/V1-V3-request-provenance",
@@ -295,7 +295,7 @@
       "group": "providers/V1-V3-request-provenance",
       "test": "V1: model.requested carries tools",
       "pass": true,
-      "detail": "9"
+      "detail": "11"
     },
     {
       "group": "providers/V1-V3-request-provenance",
@@ -379,7 +379,7 @@
       "group": "providers/V4-digest-is-reproducible-under-replay-and-fork",
       "test": "a digest was recorded",
       "pass": true,
-      "detail": "ac1825ab03344721"
+      "detail": "5aa938b0b518e889"
     },
     {
       "group": "providers/V4-digest-is-reproducible-under-replay-and-fork",

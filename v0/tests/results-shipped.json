@@ -187,55 +187,55 @@
       "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
       "test": "F3d: read is a shipped tool",
       "pass": true,
-      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+      "detail": "read,grep,glob,git,write,edit,bash,verify,plan,plan_step,ask_user"
     },
     {
       "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
       "test": "F3d: write is a shipped tool",
       "pass": true,
-      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+      "detail": "read,grep,glob,git,write,edit,bash,verify,plan,plan_step,ask_user"
     },
     {
       "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
       "test": "F3d: edit is a shipped tool",
       "pass": true,
-      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+      "detail": "read,grep,glob,git,write,edit,bash,verify,plan,plan_step,ask_user"
     },
     {
       "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
       "test": "F3d: grep is a shipped tool",
       "pass": true,
-      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+      "detail": "read,grep,glob,git,write,edit,bash,verify,plan,plan_step,ask_user"
     },
     {
       "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
       "test": "F3d: bash is a shipped tool",
       "pass": true,
-      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+      "detail": "read,grep,glob,git,write,edit,bash,verify,plan,plan_step,ask_user"
     },
     {
       "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
       "test": "F3d: verify is a shipped tool",
       "pass": true,
-      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+      "detail": "read,grep,glob,git,write,edit,bash,verify,plan,plan_step,ask_user"
     },
     {
       "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
       "test": "F3d: plan is a shipped tool",
       "pass": true,
-      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+      "detail": "read,grep,glob,git,write,edit,bash,verify,plan,plan_step,ask_user"
     },
     {
       "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
       "test": "F3d: plan_step is a shipped tool",
       "pass": true,
-      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+      "detail": "read,grep,glob,git,write,edit,bash,verify,plan,plan_step,ask_user"
     },
     {
       "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
       "test": "F3d: ask_user is a shipped tool",
       "pass": true,
-      "detail": "read,grep,write,edit,bash,verify,plan,plan_step,ask_user"
+      "detail": "read,grep,glob,git,write,edit,bash,verify,plan,plan_step,ask_user"
     },
     {
       "group": "shipped/F3d-the-shipped-prompt-matches-the-shipped-tools",
@@ -361,7 +361,7 @@
       "group": "D1/D2: documentation states the real tool count and names",
       "test": "ARCHITECTURE.md states a tool count",
       "pass": true,
-      "detail": "9 tools"
+      "detail": "11 tools"
     },
     {
       "group": "D1/D2: documentation states the real tool count and names",
