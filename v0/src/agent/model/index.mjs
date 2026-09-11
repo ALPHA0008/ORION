@@ -199,7 +199,13 @@ function normalise(json, { pricing, duration_ms, attempts }) {
     try { args = typeof tc.function?.arguments === 'string'
       ? JSON.parse(tc.function.arguments || '{}') : (tc.function?.arguments ?? {}); }
     catch (e) { argError = `unparseable arguments: ${e.message}`; }
-    return { id: tc.id ?? `tc_${i}`, name: tc.function?.name ?? 'unknown', args, argError };
+    const result = { id: tc.id ?? `tc_${i}`, name: tc.function?.name ?? 'unknown', args, argError };
+    // Preserve vendor-specific extras (e.g. Gemini's thought_signature) so they survive
+    // the normalise→event→projection→buildMessages round-trip and the provider sees its own
+    // data when the worker reconstructs the assistant message.
+    if (tc.extra_content && typeof tc.extra_content === 'object')
+      result.vendor_extras = tc.extra_content;
+    return result;
   });
 
   return {
@@ -211,7 +217,8 @@ function normalise(json, { pricing, duration_ms, attempts }) {
     cost_usd: pricing ? round6((inTok / 1e6) * pricing.in_per_mtok + (outTok / 1e6) * pricing.out_per_mtok) : null,
     duration_ms,
     ext: { model: json.model ?? null, finish_reason: choice.finish_reason ?? null,
-           system_fingerprint: json.system_fingerprint ?? null, attempts },
+           system_fingerprint: json.system_fingerprint ?? null, attempts,
+           ...(msg.reasoning != null ? { reasoning: msg.reasoning } : {}) },
   };
 }
 
