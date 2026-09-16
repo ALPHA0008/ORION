@@ -76,6 +76,16 @@ export const CONFIG_SCHEMA = Object.freeze({
   // authority on that shape and refuses anything that would put a secret in a committed file.
   mcpServers: { type: 'object', describe: '{ "<name>": { command, args, env, cwd, timeoutMs } }',
     validate: (value, { file }) => { parseServers(value, { file }); } },
+  // W10 — delegation limits. These may only make the shipped ceilings SMALLER (`resolveQuota`
+  // clamps), for the same reason W8's rules may only raise strictness: a config file that could
+  // raise `maxLiveChildren` would reintroduce the store contention the design rejected.
+  subagents: { type: 'object',
+    describe: '{ maxLiveChildren, maxChildren, maxDepth, maxTurns, timeoutMs, budget }',
+    fields: { maxLiveChildren: 'number', maxChildren: 'number', maxDepth: 'number',
+              maxTurns: 'number', timeoutMs: 'number', budget: 'object' } },
+  // The model a subagent uses, when it should differ from the parent's. Explicit configuration
+  // only — the runtime never selects a model for itself.
+  childModel: { type: 'string', env: 'ORION_CHILD_MODEL' },
 });
 
 /** Keys a config file may NOT set, with the reason, so the refusal teaches rather than blocks. */

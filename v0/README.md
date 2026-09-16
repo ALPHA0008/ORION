@@ -354,6 +354,7 @@ $ orionctl resume #a81f2c
 | `plan` `plan_step` | read-only | declare and advance a plan |
 | `ask_user` | read-only | pause the run durably for a human |
 | `mcp__<server>__<tool>` | **mutating** | whatever a declared MCP server advertises (see above) |
+| `subagent` | **mutating** | delegate a bounded sub-task to a child run (see below) |
 
 `grep` stays **literal unless you ask for a regex**, so `a.b` finds `a.b` and not `axb` — a pattern
 written before this existed still means what it meant. A malformed regex is an error, never a silent
@@ -368,6 +369,55 @@ Git navigation is **read-only**. The runtime already maintains a shadow reposito
 world during recovery; a `commit` or `checkout` tool would drive the same working tree with a
 different notion of HEAD, and getting that wrong destroys a working tree rather than returning a
 wrong answer.
+
+## Subagents
+
+The model can delegate a bounded sub-task with the `subagent` tool. The child is **a real run**:
+its own run id, lease, plan, budget and event log — so it has its own context window, and only its
+final answer comes back to the parent.
+
+```console
+$ orionctl run "fix the failing test"
+  ✓ plan plan recorded — Investigate, fix, prove
+  ✓ subagent subagent run_9f4943e3b1 — completed (60 tokens) tools: read, grep, glob, git, verify
+  ✓ edit edited src/gamma.js
+  ✓ verify PASS (exit 0) node test.js PASS
+✓ model_finished
+
+$ orionctl explain run_9f4943e3b1
+  child of run_40eb5623bc (delegated sub-task)
+```
+
+That is the point of delegating: the child may burn fifty thousand tokens reading, and the parent
+pays only for the conclusion — while a reviewer can still open the child's trajectory and read
+every step it took.
+
+**A child can never do more than its parent.**
+
+- **Read-only by default** (`read`, `grep`, `glob`, `git`, `verify`, `plan`, `plan_step`). Any
+  mutating tool must be named explicitly by the parent, and appears in the log as a grant.
+- A parent **cannot grant a tool it does not hold**, nor one its own policy denies.
+- Posture is the **stricter** of the parent's and the child's request — never more permissive.
+- A child inherits every denial, and **no approvals**: "approve this once" does not silently become
+  "approve this for every child the model later spawns".
+- `ask_user` is refused — a child cannot reach a human, and waiting for one would deadlock the
+  parent that is waiting for the child.
+
+**Parallelism is bounded, not assumed.** At most **2** children live at once, **8** per run, depth
+**2**, with a per-child budget smaller than the parent's — and delegated tokens count against the
+parent's budget, so delegation cannot become unmetered spend. Tune these *downward* in
+`.orion.json`:
+
+```json
+{ "subagents": { "maxLiveChildren": 1, "maxChildren": 4, "maxDepth": 1, "timeoutMs": 300000 },
+  "childModel": "a-cheaper-model" }
+```
+
+Config may only make the ceilings smaller, for the same reason permission rules may only raise
+strictness. `denyTools: ["subagent"]` forbids delegation entirely.
+
+If a child dies with its process, the parent's log records it `lost` with an honest reason rather
+than leaving a spawn with no outcome.
 
 ## The three verbs, precisely
 

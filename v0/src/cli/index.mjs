@@ -26,6 +26,11 @@ import { resolveRules, hasRules, describeRules } from '../config/rules.mjs';
 import { parseServers } from '../mcp/servers.mjs';
 import { McpSessionManager } from '../mcp/session.mjs';
 import { toolsForSession, mergeTools } from '../mcp/tools.mjs';
+// W10: subagents as child trajectories — the two reserved contract members finally emitted.
+import { makeSubagentTool } from '../core/child/tool.mjs';
+import { reconcileChildren, setChildCompletionContract } from '../core/child/executor.mjs';
+import { projectLineage, summariseLineage } from '../core/projection/lineage.mjs';
+import { MAX_LIVE_CHILDREN, MAX_CHILD_DEPTH } from '../core/child/quota.mjs';
 import { Worker, DEFAULT_SYSTEM } from '../agent/loop/worker.mjs';
 // W7: skills + project instructions — the runtime becomes instructable, with provenance.
 import { discoverSkills, renderDisclosure, disclosureBytes } from '../context/skills.mjs';
@@ -179,7 +184,8 @@ function firstRun({ workspace = WORK, home = HOME, env = process.env } = {}) {
  * the product. That is the same class of defect as Waves 1-3 (a mechanism built, tested, and
  * never wired), which is why tests/shipped/ now exercises this path rather than the module.
  */
-export function buildModel(env = process.env, { workspace = WORK, home = HOME } = {}) {
+export function buildModel(env = process.env,
+                           { workspace = WORK, home = HOME, model: modelOverride = null } = {}) {
   // W8: the config FILE supplies defaults; the ENVIRONMENT still wins. `resolveConfig` already
   // applies that ordering, so reading from it rather than from `env` directly is what makes a
   // committed `.orion.json` work without changing any documented env behaviour.
@@ -196,7 +202,10 @@ export function buildModel(env = process.env, { workspace = WORK, home = HOME } 
   // never carries the value, and `readConfigFile` refuses one that tries.
   const keyVar = cfg.apiKeyEnv ?? 'ORION_API_KEY';
   const apiKey = env[keyVar] ?? env.ORION_API_KEY ?? env.OPENAI_API_KEY ?? env.ANTHROPIC_API_KEY ?? null;
-  const model = cfg.model ?? (kind === 'anthropic' ? 'claude-sonnet-5' : 'gpt-4o-mini');
+  // W10: an explicit override lets a child run a DIFFERENT model than its parent. It is supplied
+  // by the parent/config and recorded as provenance in `child.spawned` — the runtime never selects
+  // a model for itself (an explicit non-goal of that wave).
+  const model = modelOverride ?? cfg.model ?? (kind === 'anthropic' ? 'claude-sonnet-5' : 'gpt-4o-mini');
   // Anthropic has a real default endpoint; an OpenAI-compatible one could be anything, so it
   // must be stated.
   const baseUrl = cfg.baseUrl ?? (kind === 'anthropic' ? 'https://api.anthropic.com' : null);
@@ -323,6 +332,15 @@ export function defaultCompletionContract(store, runId, { tools = null } = {}) {
     },
   };
 }
+
+// W10 — a child's completion verdict is the SAME verdict, computed over the child's own log.
+//
+// Injected rather than imported by the executor, because the executor is imported BY this file
+// (via the subagent tool) and a direct import would be a cycle. The honest-completion rule
+// (ADR-013) has to apply inside a child or delegation becomes a laundering route: a parent could
+// report success on the strength of a child that stopped without doing anything.
+setChildCompletionContract((store, childRunId, childTools) =>
+  defaultCompletionContract(store, childRunId, { tools: childTools }));
 
 /**
  * W6 A/B — choose the execution backend.
@@ -567,6 +585,51 @@ export async function prepareRun(store, runId, leaseToken, workspace) {
       protectedPaths: rules.protectedPaths,
     } : {}),
   });
+
+  // ── W10 — delegation, composed HERE for the same reason MCP and skills are ──────────
+  //
+  // Every turn-bearing command funnels through `prepareRun`, so this is the one place that makes
+  // the `subagent` tool reachable from `run`, `resume` AND each turn of the interactive session.
+  // A delegation mechanism wired into `run` alone is the composition-root failure this project has
+  // repeated across seven waves.
+  //
+  // The child is given the parent's OWN composed toolset to draw from (`tools`), its authorizer
+  // OPTIONS rather than its authorizer (so the child's policy is rebuilt strictly, never reused),
+  // and the same sandbox — a child shares the parent's workspace and container rather than
+  // acquiring a second one.
+  const childAuthBase = {
+    denyTools: hasRules(rules) ? rules.denyTools : [],
+    escalateTools: hasRules(rules) ? rules.escalateTools : [],
+    denyCommandPatterns: [DEFAULT_DANGEROUS, ...(hasRules(rules) ? rules.denyCommandPatterns : [])],
+    protectedPaths: hasRules(rules) ? rules.protectedPaths : [],
+  };
+  const subagent = makeSubagentTool({
+    store, parentRunId: runId, parentLeaseToken: leaseToken,
+    tools, authOptions: childAuthBase, posture: resource.posture, sandbox,
+    // A child may use a DIFFERENT model, but only one the operator configured — never one the
+    // runtime picks for itself (an explicit non-goal of this wave). `childModel` in config names
+    // it; absent, the child uses the parent's model.
+    makeModel: (name) => buildModel(process.env, { workspace, home: HOME, model: name ?? cfg.childModel ?? null }),
+    modelName: cfg.childModel ?? cfg.model ?? null,
+    createAuthorizer,
+    quota: cfg.subagents ?? {},
+    depth: (store.run(runId)?.parent_run_id) ? 2 : 1,
+    parentBudget: cfg.budget ?? null,
+    project,
+    isolated: sandbox?.capabilities?.isolated ?? false,
+    log: (s) => console.log(C.dim(s)),
+  });
+  // The cast is needed because `makeTools` returns an object literal whose exact keys the checker
+  // has inferred; `tools` is a composed, extensible toolset (MCP already adds to it above) rather
+  // than a fixed shape.
+  if (subagent) /** @type {Record<string, any>} */ (tools).subagent = subagent;
+
+  // W10 — a parent resumed in a new process must account for children it believed were running.
+  // An in-process child cannot outlive the process that ran it, so a `running` child on resume is
+  // gone; recording it `lost` is what keeps a spawn from sitting in the log with no outcome
+  // forever. Honest, and the same accommodation W9 made for an MCP pipe that could not survive.
+  if (store.events(runId).some(e => e.type === 'child.spawned'))
+    reconcileChildren(store, runId, leaseToken, { log: (s) => console.log(C.dim(s)) });
 
   return {
     sandbox, resource,
@@ -1157,6 +1220,16 @@ ${C.dim('files:')}   .orion.json (project) and ~/.orion/config.json (user) suppl
           .orion-rules.json (project) and ~/.orion/rules.json (user) add permission
           rules — denyTools, escalateTools, denyCommandPatterns, protectedPaths.
           Rules may only RAISE strictness; scopes union rather than override.
+
+${C.dim('subagents:')} the model can delegate a bounded sub-task to a child run with its own
+          context window, plan and budget, via the \`subagent\` tool. A child is
+          READ-ONLY by default; the parent must name any mutating tool explicitly,
+          and can only grant tools it holds itself. A child never widens the parent's
+          posture or policy, and inherits no approvals. At most ${MAX_LIVE_CHILDREN} run at once
+          (depth ${MAX_CHILD_DEPTH}); tune DOWN with .orion.json "subagents": { maxLiveChildren,
+          maxChildren, maxDepth, maxTurns, timeoutMs, budget }, and pick a cheaper
+          model for children with "childModel". \`denyTools: ["subagent"]\` forbids
+          delegation entirely. See each child with: orionctl explain <run>
 
 ${C.dim('mcp:')}     .orion.json may declare "mcpServers": { "<name>": { "command": "...",
           "args": [...], "env": ["VAR_NAME"], "cwd": "...", "timeoutMs": 120000 } }

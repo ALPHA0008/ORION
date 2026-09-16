@@ -77,7 +77,14 @@ if (SDK_OK) {
   // The built-in toolset is untouched: MCP adds capability and removes none.
   for (const builtin of ['read', 'grep', 'glob', 'git', 'write', 'edit', 'bash', 'verify'])
     check(`the built-in \`${builtin}\` survives`, !!p.tools[builtin]);
-  eq('the toolset is 11 built-ins plus 4 advertised', Object.keys(p.tools).length, 15);
+  // Asserted as a DELTA rather than a total. The absolute count was 15 when this was written and
+  // became 16 the moment W10 added `subagent` — but the property being protected was never "the
+  // toolset is 15", it was "MCP contributes exactly the four tools the server advertised, and
+  // disturbs nothing else". The delta says that, and keeps saying it as the product grows.
+  eq('MCP contributed exactly the four advertised tools',
+    Object.keys(p.tools).filter(n => n.startsWith('mcp__')).length, 4);
+  check('...all from the declared server',
+    Object.keys(p.tools).filter(n => n.startsWith('mcp__')).every(n => n.startsWith('mcp__demo__')));
 
   // W5-T1/T2: capability is declared on the tool and derived everywhere. MCP tools are Mutating,
   // so they MUST appear in the mutating set — a third-party tool that slipped in as ReadOnly would
@@ -170,9 +177,14 @@ describe('w9/shipped: a project with no mcpServers is byte-for-byte the pre-W9 p
   const ws = mk('plain');
   const p = await prepared(ws);
   eq('no session manager is created', p.mcp, null);
-  eq('the toolset is exactly the 11 built-ins', Object.keys(p.tools).length, 11);
-  eq('...and the mutating set is unchanged',
-    [...mutatingTools(p.tools)].sort().join(','), 'bash,edit,write');
+  eq('no MCP tool is composed', Object.keys(p.tools).filter(n => n.startsWith('mcp__')).length, 0);
+  // Likewise a delta: what W9 guarantees is that MCP adds nothing mutating, not that the mutating
+  // set is frozen forever. W10's `subagent` is legitimately Mutating and is not an MCP tool.
+  eq('...and MCP added nothing to the mutating set',
+    [...mutatingTools(p.tools)].filter(n => n.startsWith('mcp__')).length, 0);
+  check('...leaving the three built-in writers intact',
+    ['bash', 'edit', 'write'].every(n => mutatingTools(p.tools).has(n)),
+    [...mutatingTools(p.tools)].join(','));
   eq('no resource beyond the workspace was acquired',
     p.store.events(p.runId).filter(e => e.type === 'resource.acquired'
       && e.payload.kind === 'mcp').length, 0);

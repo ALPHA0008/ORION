@@ -39,6 +39,10 @@ export const suites = [
   ['mcp/mcp',               []],
   ['mcp/live',              []],
   ['shipped/w9-shipped',    []],
+  // W10: subagents as child trajectories — the two reserved contract members, finally emitted.
+  ['subagent/scope',        []],
+  ['subagent/lifecycle',    []],
+  ['shipped/w10-shipped',   []],
   ['recovery/recovery',     []],
   ['replay/semantics',      []],
   ['integration/provider',  []],

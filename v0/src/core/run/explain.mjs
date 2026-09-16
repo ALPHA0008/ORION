@@ -41,7 +41,15 @@ export function explain(store, runId, { verbose = false, full = false, maxArg = 
   const lines = [];
 
   lines.push(`Run ${runId}`);
-  if (run?.parent_run_id) lines.push(`  forked from ${run.parent_run_id} at event ${run.forked_from_seq}`);
+  // A FORK and a CHILD both carry `parent_run_id`, and until W10 only forks ever did — so this
+  // line assumed one. A delegated child then rendered as "forked from X at event null", which is
+  // wrong twice: it is not a fork, and there is no branch point. `forked_from_seq` is the
+  // discriminator: a fork has one, a child does not.
+  if (run?.parent_run_id) {
+    lines.push(run.forked_from_seq === null || run.forked_from_seq === undefined
+      ? `  child of ${run.parent_run_id} (delegated sub-task)`
+      : `  forked from ${run.parent_run_id} at event ${run.forked_from_seq}`);
+  }
   if (run?.task) lines.push(`  task: ${clip(run.task, 100)}`);
   lines.push('─'.repeat(64));
 
@@ -76,6 +84,22 @@ export function explain(store, runId, { verbose = false, full = false, maxArg = 
       case 'human.responded': text = `human said: ${clip(p.response, 40)}`; break;
       case 'human.timed_out': text = `human request expired`; break;
       case 'degraded':      text = `DEGRADED [${p.subsystem}] ${clip(p.reason, 70)}`; break;
+      // W10 — the two members reserved since the Wave-1 audit. `explain` narrates a run from its
+      // log alone (Invariant 7), so delegated work has to be readable here or a reviewer would see
+      // a blank line where a whole child trajectory happened.
+      case 'child.spawned':
+        text = `delegated to ${p.child_run}`
+          + (p.model ? ` [${p.model}]` : '')
+          + (p.posture ? ` posture ${p.posture}` : '')
+          + ` tools: ${(p.scopes?.tools ?? []).join(',') || 'none'}`
+          + (p.scopes?.mutating?.length ? ` (can mutate: ${p.scopes.mutating.join(',')})` : '')
+          + (p.task ? ` — "${clip(p.task, 50)}"` : '');
+        break;
+      case 'child.finished':
+        text = `${p.child_run} ${p.status}`
+          + (p.tokens ? ` (${p.tokens}tok, ${p.tool_calls ?? 0} tool calls)` : '')
+          + (p.detail && p.status !== 'completed' ? ` — ${clip(p.detail, 50)}` : '');
+        break;
       case 'context.compacted': text = p.elided
         ? `compacted context (elided ${p.elided} superseded results, saved ${p.bytes_saved ?? 0}b)`
         : `compacted context (dropped ${p.dropped ?? '?'} messages)`; break;
@@ -117,7 +141,9 @@ export function summarise(store, runId, state) {
   if (open.length) for (const [id, r] of open) L.push(`  AWAITING    ${id}: "${clip(r.prompt, 60)}"`);
   const pend = Object.keys(state.pending_tool_calls);
   if (pend.length) L.push(`  in-flight   ${pend.length} tool call(s)`);
-  if (run?.parent_run_id) L.push(`  forked from ${run.parent_run_id} @${run.forked_from_seq}`);
+  if (run?.parent_run_id) L.push(run.forked_from_seq === null || run.forked_from_seq === undefined
+    ? `  child of     ${run.parent_run_id}`
+    : `  forked from ${run.parent_run_id} @${run.forked_from_seq}`);
   if (run?.lease_expires_at) L.push(`  lease       held by ${run.worker_id}, expires in ${Math.max(0, run.lease_expires_at - Date.now())}ms`);
   return L.join('\n');
 }
