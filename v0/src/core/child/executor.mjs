@@ -34,7 +34,9 @@ import { Worker, ExitReason, DEFAULT_SYSTEM } from '../../agent/loop/worker.mjs'
 import { projectLineage, ChildStatus } from '../projection/lineage.mjs';
 import { project } from '../projection/index.mjs';
 import { resolveChildTools, childAuthOptions, narrowestPosture, mutatingGrants } from './scope.mjs';
-import { canSpawn, resolveQuota, QuotaError } from './quota.mjs';
+// W10-A: `canSpawn`/`QuotaError` moved to `store.reserveChildSpawn`, which evaluates the verdict
+// inside the spawn transaction so concurrent siblings cannot race past the live ceiling.
+import { resolveQuota } from './quota.mjs';
 
 /** The instructions a child runs under. Deliberately narrower than the parent's. */
 export const CHILD_SYSTEM = [
@@ -84,16 +86,7 @@ export async function spawnChild({
   isolated = null, project: projectKeyValue = null,
 }) {
   const quota = resolveQuota(quotaCfg);
-  const events = store.events(parentRunId);
   const parentState = project(store, parentRunId);
-
-  // ── the gate, before anything is created ────────────────────────────────────────────
-  const verdict = canSpawn(events, {
-    quota, depth,
-    parentBudget,
-    parentTokens: parentState?.budget?.tokens ?? 0,
-  });
-  if (!verdict.ok) throw new QuotaError(verdict.reason, { kind: verdict.kind });
 
   // ── policy: strictest of parent and request, tools the parent actually holds ────────
   const childPosture = narrowestPosture(parentPosture, requestedPosture);
@@ -104,38 +97,53 @@ export async function spawnChild({
     { granted, posture: childPosture });
 
   const childId = childRunId();
-  // `parent` is the column the store has carried since Wave 1. Populating it means `runs` itself
-  // knows the lineage, so `orionctl list` and a future query can find children without replaying
-  // every log — while the EVENTS remain the authority the projection folds.
-  store.createRun(childId, { parent: parentRunId, task: String(task) });
-
   const childBudget = quota.budget;
   const childModel = makeModel ? makeModel(modelName) : null;
 
-  // ── child.spawned — reserved in the v6 vocabulary since Wave 1, emitted here for the first
-  //    time. Everything a reviewer needs to judge the delegation is in this one payload.
-  store.append(parentRunId, 'child.spawned', {
-    parent_run: parentRunId,
-    child_run: childId,
+  // ── the gate AND the child's durable birth, in ONE transaction (W10-A) ─────────────
+  //
+  // The quota verdict used to be computed here, outside any transaction, and the child was then
+  // created by two separate writes. That was correct only while spawns were serial. Now that a
+  // turn can dispatch sibling delegates concurrently, three racers could each fold "0 running"
+  // before any `child.spawned` committed and all three would spawn past the live ceiling.
+  //
+  // `reserveChildSpawn` evaluates the verdict and writes the `runs` row, the child's `run.created`
+  // and the parent's `child.spawned` under one write lock, so racers serialise and the second sees
+  // the first. A refusal writes nothing at all.
+  //
+  // `parent_run_id` is still populated (the column the store has carried since Wave 1), so `runs`
+  // itself knows the lineage — while the EVENTS remain the authority the projection folds.
+  store.reserveChildSpawn(parentRunId, parentLeaseToken, {
+    runId: childId,
     task: String(task),
-    reason: reason ? String(reason) : null,
-    // The grant, in the log: "this child was allowed exactly these tools, of which these can
-    // change the world". A reviewer never has to trust that the code did the right thing.
-    scopes: {
-      tools: granted,
-      mutating: mutatingGrants(childTools),
-      refused: refused.map(r => r.name),
-      deny_tools: childAuth.denyTools.length,
-    },
-    // Model provenance (§10.2 W10): a child may run a different model than its parent, and which
-    // one served it must be answerable from the log alone.
-    model: modelName ?? childModel?.name ?? null,
-    provider: provider ?? childModel?.provider ?? null,
-    posture: childPosture,
-    isolated: isolated ?? sandbox?.capabilities?.isolated ?? false,
+    quota,
     depth,
-    budget: childBudget,
-  }, { leaseToken: parentLeaseToken });
+    parentBudget,
+    parentTokens: parentState?.budget?.tokens ?? 0,
+    // Everything a reviewer needs to judge the delegation, in one payload.
+    spawnedPayload: {
+      parent_run: parentRunId,
+      child_run: childId,
+      task: String(task),
+      reason: reason ? String(reason) : null,
+      // The grant, in the log: "this child was allowed exactly these tools, of which these can
+      // change the world". A reviewer never has to trust that the code did the right thing.
+      scopes: {
+        tools: granted,
+        mutating: mutatingGrants(childTools),
+        refused: refused.map(r => r.name),
+        deny_tools: childAuth.denyTools.length,
+      },
+      // Model provenance (§10.2 W10): a child may run a different model than its parent, and which
+      // one served it must be answerable from the log alone.
+      model: modelName ?? childModel?.name ?? null,
+      provider: provider ?? childModel?.provider ?? null,
+      posture: childPosture,
+      isolated: isolated ?? sandbox?.capabilities?.isolated ?? false,
+      depth,
+      budget: childBudget,
+    },
+  });
 
   log?.(`  subagent: spawned ${childId} (${granted.length} tools, posture ${childPosture})`);
   for (const r of refused) log?.(`  subagent: refused \`${r.name}\` — ${r.why}`);

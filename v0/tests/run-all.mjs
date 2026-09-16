@@ -42,6 +42,7 @@ export const suites = [
   // W10: subagents as child trajectories — the two reserved contract members, finally emitted.
   ['subagent/scope',        []],
   ['subagent/lifecycle',    []],
+  ['subagent/parallel',     []],
   ['shipped/w10-shipped',   []],
   ['recovery/recovery',     []],
   ['replay/semantics',      []],

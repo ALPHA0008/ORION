@@ -14,6 +14,7 @@ import { mutatingTools, toolDefinitions } from '../../src/agent/tools/index.mjs'
 import { projectLineage } from '../../src/core/projection/lineage.mjs';
 import { DEFAULT_CHILD_TOOLS } from '../../src/core/child/scope.mjs';
 import { MAX_LIVE_CHILDREN, MAX_CHILD_DEPTH } from '../../src/core/child/quota.mjs';
+import { createAuthorizer } from '../../src/auth/default/index.mjs';
 import { describe, check, eq, summary } from '../harness.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -135,6 +136,61 @@ describe('w10/shipped: a child really runs through the composed tool');
   const row = p.store.run(c.child_run);
   check('the child exists in `runs`', !!row);
   eq('...with parent_run_id set', row.parent_run_id, p.runId);
+  p.store.close();
+}
+
+describe('w10/shipped: two delegates in ONE turn run as a batch through the composed toolset');
+{
+  // W10-A through the COMPOSITION ROOT. `tests/subagent/parallel` proves the dispatch mechanism
+  // with a hand-built Worker; this proves the product's own composed toolset takes the same path —
+  // the failure class this project has repeated across seven waves is a mechanism that works in a
+  // unit test and is never reached by the real wiring.
+  //
+  // The model endpoint is unreachable by design, so both children fail fast. That is exactly what
+  // makes this a cheap, deterministic wiring check: what is asserted is that BOTH were spawned and
+  // BOTH reached a terminal record from a single turn.
+  const ws = mk('batch');
+  const p = await prepared(ws);
+  const { Worker } = await import('../../src/agent/loop/worker.mjs');
+
+  const twoDelegates = {
+    content: '', finish: false,
+    tool_calls: [
+      { id: 'tc_a', name: 'subagent', args: { task: 'investigate A' } },
+      { id: 'tc_b', name: 'subagent', args: { task: 'investigate B' } },
+    ],
+  };
+  let turn = 0;
+  const parentModel = { name: 'scripted', provider: 'test', capabilities: new Set(['tools']),
+    async invoke() {
+      turn += 1;
+      return { input_tokens: 10, output_tokens: 5,
+               ...(turn === 1 ? twoDelegates
+                              : { content: 'both attempted', tool_calls: [], finish: true }) };
+    } };
+
+  const worker = new Worker(p.store, {
+    sandbox: p.sandbox, model: parentModel, tools: p.tools,
+    // `permissive` is what an isolated backend earns; at `auto` the Mutating+UNSAFE `subagent`
+    // escalates and the run parks for a human, which is correct policy but not what is under test.
+    authorize: createAuthorizer({ posture: 'permissive' }),
+    leaseMs: 120_000, maxTurns: 4,
+  });
+  await worker.run(p.runId, p.leaseToken, { input: 'delegate two at once' });
+
+  const lin = projectLineage(p.store.events(p.runId));
+  eq('BOTH children were spawned from one turn', lin.spawned, 2);
+  eq('...and both reached a terminal record', lin.finished, 2);
+  eq('...leaving nothing running', lin.running.length, 0);
+  eq('...both failed, the endpoint being dead by design', lin.failed, 2);
+
+  const ids = lin.children.map(c => c.child_run);
+  eq('...with two distinct child ids', new Set(ids).size, 2);
+  check('...each a real run row with parent_run_id set',
+    ids.every(id => p.store.run(id)?.parent_run_id === p.runId));
+  check('...and both named in child.spawned',
+    p.store.events(p.runId).filter(e => e.type === 'child.spawned')
+      .every(e => ids.includes(e.payload.child_run)));
   p.store.close();
 }
 

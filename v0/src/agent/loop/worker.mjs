@@ -474,11 +474,49 @@ export class Worker {
       // X5 checkpoints bracket the dispatch but never interrupt a single call: the model has
       // already responded, so stopping here wastes nothing and abandons nothing. Between calls
       // the previous one has reached its terminal event, so there is no orphan to recover.
-      for (const tc of resp.tool_calls) {
+      //
+      // W10-A — TRUE child concurrency. A maximal run of CONSECUTIVE `delegates: true` calls
+      // (`subagent`) is dispatched as one concurrent batch, because overlapping sibling children
+      // is the entire point of the delegation class: two investigations that each read for a
+      // minute should cost one minute, not two.
+      //
+      // Everything else keeps the sequential order and its per-call cancel checkpoint, verbatim.
+      // That is what preserves the two invariants a full-batch `Promise.all` would have broken:
+      //   - X5 (leaseheartbeat 346-407): when a signal aborts DURING the first tool of a turn, the
+      //     second must NEVER start. Batching the whole array would start it immediately.
+      //   - escalation (escalationgate): no events after `run.paused`. A batch member cannot park
+      //     mid-way, because a child can never escalate — `ask_user` is refused to children
+      //     (scope.mjs CHILD_FORBIDDEN_TOOLS), and that is precisely what makes delegates safe to
+      //     batch when nothing else is.
+      // A lone delegate is a batch of one, i.e. the ordinary sequential path.
+      for (let i = 0; i < resp.tool_calls.length; i++) {
+        const tc = resp.tool_calls[i];
         const c = this.#checkCancelled(runId, leaseToken, signal, 'before tool call');
         if (c) return c;
-        const paused = await this.#runToolCall(runId, leaseToken, tc);
-        if (paused) return paused;
+
+        const next = resp.tool_calls[i + 1];
+        if (this.tools[tc.name]?.delegates !== true || !next
+            || this.tools[next.name]?.delegates !== true) {
+          const paused = await this.#runToolCall(runId, leaseToken, tc);
+          if (paused) return paused;
+          continue;
+        }
+
+        const batch = [tc];
+        while (i + 1 < resp.tool_calls.length
+               && this.tools[resp.tool_calls[i + 1].name]?.delegates === true)
+          batch.push(resp.tool_calls[++i]);
+
+        const results = await Promise.all(batch.map(t => this.#runToolCall(runId, leaseToken, t)));
+        // A stop (lease lost) from any member ends the run. First in BATCH order rather than
+        // completion order, so the decision does not depend on which child happened to finish
+        // first — the one thing about a concurrent batch that is genuinely nondeterministic.
+        const stopped = results.find(r => r);
+        // A cancel that landed while the batch ran stops the run now, before any later call in
+        // this turn. Every member has already reached its terminal event, so nothing is abandoned.
+        const c2 = this.#checkCancelled(runId, leaseToken, signal, 'after delegation batch');
+        if (c2) return c2;
+        if (stopped) return stopped;
       }
 
       // WAVE 1: close the turn in the log.

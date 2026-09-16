@@ -5,6 +5,9 @@
 
 import { DatabaseSync } from 'node:sqlite';
 import { isKnownType, UnknownEventType, TERMINAL } from '../event/index.mjs';
+// W10-A: the delegation quota is evaluated INSIDE the spawn transaction (see `reserveChildSpawn`).
+// No cycle — `quota.mjs` imports only `projection/lineage.mjs`, which imports nothing.
+import { canSpawn, QuotaError } from '../child/quota.mjs';
 import crypto from 'node:crypto';
 
 export const uid = (p = 'run') => `${p}_${crypto.randomBytes(5).toString('hex')}`;
@@ -228,6 +231,59 @@ export class Store {
       .run(runId, parent, forkedFromSeq, scope, principal, Date.now(), task);
     this.append(runId, 'run.created', { scope, principal, parent, forked_from_seq: forkedFromSeq, task });
     return runId;
+  }
+
+  /**
+   * W10-A — atomically reserve one child spawn for `parentRunId`.
+   *
+   * WHY THIS HAS TO BE ONE TRANSACTION
+   *
+   * Once a turn can dispatch sibling `subagent` calls concurrently, the spawn gate is a race. The
+   * previous shape folded the lineage in `executor.mjs`, OUTSIDE any transaction: three racers
+   * could each read "0 children running" before any `child.spawned` had committed, and all three
+   * would spawn — quietly exceeding `MAX_LIVE_CHILDREN`, which is the one bound standing between
+   * delegation and a thundering herd against a single-file store.
+   *
+   * Putting the verdict and the writes in ONE immediate transaction makes racers serialise on the
+   * write lock, so the second racer folds a log that already contains the first's `child.spawned`.
+   * The check and the fact it checks can no longer disagree.
+   *
+   * All-or-nothing: a refused spawn leaves no `runs` row and no events, so a parent that hit the
+   * ceiling has no half-born child to explain.
+   *
+   * @param {string} parentRunId
+   * @param {any} leaseToken
+   * @param {{ runId: string, task: string, scope?: string, principal?: string, quota: any,
+   *           depth?: number, parentBudget?: any, parentTokens?: number,
+   *           spawnedPayload?: any, at?: number }} opts
+   * @throws {QuotaError} the parent asked for something it may not have (nothing was written)
+   * @throws {LeaseLostError} the parent no longer owns its lease (fencing, Invariant 4)
+   */
+  reserveChildSpawn(parentRunId, leaseToken,
+    { runId, task, scope = 'personal:local', principal = 'local',
+      quota, depth = 1, parentBudget = null, parentTokens = 0,
+      spawnedPayload = null, at = Date.now() }) {
+    const spawned = spawnedPayload ?? {};
+    return this.tx(() => {
+      // Fencing first: a worker that lost its lease may not create a child on its behalf.
+      if (leaseToken !== null && !this.#leaseIsLive(parentRunId, leaseToken))
+        throw new LeaseLostError(parentRunId);
+
+      const verdict = canSpawn(this.events(parentRunId),
+        { quota, depth, parentBudget, parentTokens });
+      if (!verdict.ok) throw new QuotaError(String(verdict.reason), { kind: String(verdict.kind) });
+
+      this._insRunFull.run(runId, parentRunId, null, scope, principal, 'pending', 0, at, String(task));
+      // `append` starts its own IMMEDIATE transaction and a nested BEGIN throws, so the two events
+      // are written through the prepared statements directly — the same thing `appendStatus` and
+      // `reclaimStale` already do inside their own `tx(...)`.
+      const childSeq = Number(this._maxSeq.get(runId).m) + 1;
+      this._insEvent.run(runId, childSeq, 'run.created', at, null, JSON.stringify(
+        { scope, principal, parent: parentRunId, forked_from_seq: null, task: String(task) }));
+      const parentSeq = Number(this._maxSeq.get(parentRunId).m) + 1;
+      this._insEvent.run(parentRunId, parentSeq, 'child.spawned', at, null, JSON.stringify(spawned));
+      return runId;
+    });
   }
 
   run(runId) { const r = this._getRun.get(runId); return r ? normaliseRun(r) : null; }
