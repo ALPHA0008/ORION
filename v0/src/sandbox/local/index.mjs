@@ -218,6 +218,12 @@ export class LocalSandbox {
    *           glob?: string }} [opts]
    */
   grep(pattern, start = '.', opts = {}) {
+    // An EMPTY path means the workspace root, not a directory named "". A default parameter only
+    // fires when the argument is absent, so an explicit `""` used to sail past it and resolve to
+    // something unreadable — the search then answered "(no matches)", which reads as "the string
+    // is not in this project" rather than "I could not look". Hosted models pass `path: ""` for
+    // the root routinely, and it cost several §11.2 gate attempts before it was traced here.
+    start = (typeof start === 'string' && !start.trim()) ? '.' : start;
     const {
       // W8: REGEX, opt-in and BACKWARD COMPATIBLE. The default stays literal, so every existing
       // caller — and every model that learned the old call shape — behaves exactly as before.
@@ -334,6 +340,10 @@ export class LocalSandbox {
                   timeMs = SEARCH_TIME_MS, filesOnly = true } = {}) {
     if (typeof pattern !== 'string' || !pattern.trim())
       throw new SandboxError('glob needs a pattern, e.g. "**/*.mjs"', { kind: 'bad_pattern' });
+    // See the note in `grep`: an explicit empty path means the root, and a default parameter does
+    // not catch it. Both search entry points have to agree, or the same model call succeeds
+    // through one tool and silently finds nothing through the other.
+    start = (typeof start === 'string' && !start.trim()) ? '.' : start;
 
     let re;
     try { re = globToRegExp(pattern); }

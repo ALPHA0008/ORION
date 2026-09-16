@@ -104,6 +104,44 @@ describe('w8/glob: finds files across a tree without reading them');
 }
 
 // ═══════════════════════════════════════════ grep: backward compatibility
+describe('w8/search: an EMPTY path means the root, in both search tools');
+{
+  // FOUND BY A HOSTED-MODEL GATE (W10 closeout). A default parameter only fires when the argument
+  // is ABSENT, so an explicit `path: ""` — which models pass routinely to mean "the workspace
+  // root" — sailed past `= '.'` and resolved to an unreadable directory. The search then answered
+  // "(no matches)", which a model reads as "the string is not in this project" rather than "I
+  // could not look: the worst possible failure mode for a search tool, and the exact class of
+  // dishonesty the [INCOMPLETE RESULT] contract exists to prevent.
+  //
+  // It cost several §11.2 gate attempts (and real provider budget) before being traced here.
+  const d = tree('emptypath');
+  const sb = new LocalSandbox(d);
+
+  const expected = sb.glob('**/*.mjs');
+  check('the baseline finds files', expected.includes('src/index.mjs'), expected);
+
+  for (const empty of ['', '   ']) {
+    eq(`glob with path=${JSON.stringify(empty)} equals the root walk`,
+      sb.glob('**/*.mjs', { path: empty }), expected);
+    check(`...and does not report a phantom unreadable directory`,
+      !sb.glob('**/*.mjs', { path: empty }).includes('unreadable'));
+  }
+  eq('glob with path="." is the same', sb.glob('**/*.mjs', { path: '.' }), expected);
+
+  // Both entry points must agree, or the same intent succeeds through one tool and silently finds
+  // nothing through the other.
+  const grepExpected = sb.grep('export');
+  check('the grep baseline finds hits', grepExpected.includes('src/index.mjs'), grepExpected);
+  eq('grep with an empty path equals the root walk', sb.grep('export', ''), grepExpected);
+  eq('...and whitespace is treated the same', sb.grep('export', '  '), grepExpected);
+  eq('grep with "." is the same', sb.grep('export', '.'), grepExpected);
+
+  // A REAL subdirectory must still scope the walk — the fix must not flatten every path to root.
+  const scoped = sb.glob('**/*.mjs', { path: 'src' });
+  check('a named subdirectory still scopes the search',
+    !scoped.includes('test/index.test.mjs'), scoped);
+}
+
 describe('w8/grep: the literal default is unchanged');
 {
   const d = tree('literal');
