@@ -39,7 +39,9 @@ function orionctl(args, { home, work, env = {}, timeout = 180_000 } = {}) {
     encoding: 'utf8', timeout,
     env: { ...process.env, ORION_HOME: home, ORION_WORKSPACE: work, ...env },
   });
-  return { out: (r.stdout ?? '') + (r.stderr ?? ''), status: r.status, signal: r.signal };
+  // `out` merges both streams for the human-readable assertions; `stdout` alone is the --json
+  // contract. Node 22 prints a SQLite ExperimentalWarning on stderr, which must not be parsed as JSON.
+  return { out: (r.stdout ?? '') + (r.stderr ?? ''), stdout: r.stdout ?? '', status: r.status, signal: r.signal };
 }
 
 // ═══════════════════════════════════════════ G — posture at the real entry point
@@ -236,8 +238,8 @@ describe('shipped/W6-M: the grant CLI surface exists and reports honestly');
   check('...and its decider', /human:seed/.test(listed.out));
 
   const json = orionctl(['grants', '--json'], { home, work });
-  let parsed = null; try { parsed = JSON.parse(json.out); } catch { /* reported below */ }
-  check('--json emits parseable output alone', parsed !== null, json.out.slice(0, 120));
+  let parsed = null; try { parsed = JSON.parse(json.stdout); } catch { /* reported below */ }
+  check('--json emits parseable output alone', parsed !== null, json.stdout.slice(0, 120));
   eq('...listing the active grant', parsed?.active?.length, 1);
 
   const revoked = orionctl(['revoke', g.grant_id], { home, work });
