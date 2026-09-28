@@ -11,7 +11,6 @@
 // talking to something real.
 
 import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path';
-import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { Store, uid } from '../../src/core/run/store.mjs';
 import { parseServers, mcpResourceId } from '../../src/mcp/servers.mjs';
@@ -21,6 +20,7 @@ import { loadSdk, McpFailure } from '../../src/mcp/client.mjs';
 import { createAuthorizer } from '../../src/auth/default/index.mjs';
 import { projectResources } from '../../src/core/projection/resource.mjs';
 import { explain } from '../../src/core/run/explain.mjs';
+import { detectRuntime } from '../../src/sandbox/container/index.mjs';
 import { describe, check, eq, summary } from '../harness.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -30,11 +30,12 @@ const mk = (tag) => fs.mkdtempSync(path.join(os.tmpdir(), `w9l-${tag}-`));
 const SDK = await loadSdk();
 const SDK_OK = !SDK.error;
 
-let DOCKER_OK = false;
-try {
-  execFileSync('docker', ['info'], { stdio: 'ignore', timeout: 20_000 });
-  DOCKER_OK = true;
-} catch { DOCKER_OK = false; }
+// The same guard every other container suite uses. `docker info` succeeding is NOT enough: a
+// daemon in Windows-container mode answers it and then cannot run the Linux image (FIX-winci —
+// this section crashed GitHub windows-latest with runtime_missing). `detectRuntime()` returns only
+// a runtime that serves Linux containers, and the sandbox below is built on exactly that runtime.
+const RUNTIME = detectRuntime();
+const DOCKER_OK = Boolean(RUNTIME);
 
 /** A store + run, so session events have somewhere real to land. */
 function freshRun() {
@@ -301,8 +302,12 @@ if (SDK_OK) {
 
 // ═══════════════════════════════════════════ container isolation
 describe(`w9/live: the server runs INSIDE the container and cannot reach the network`
-  + `${SDK_OK && DOCKER_OK ? '' : ' [SKIPPED — needs docker + sdk]'}`);
-if (SDK_OK && DOCKER_OK) {
+  + `${SDK_OK && DOCKER_OK ? '' : ' [SKIPPED — needs a Linux-container runtime + sdk]'}`);
+if (!(SDK_OK && DOCKER_OK)) {
+  check(`SKIPPED — no ${DOCKER_OK ? 'MCP SDK' : 'container runtime'} available`, true,
+    'UNPROVEN here: that the MCP server runs inside the container and cannot reach the network');
+  console.log('\n  w9/live container isolation: SKIPPED — no usable container runtime or SDK\n');
+} else {
   // The wave's central security claim, measured rather than asserted. The container is created
   // exactly as W6 creates one: `--network none`, resource limits, workspace bind-mounted.
   const ws = mk('cws');
@@ -314,7 +319,7 @@ if (SDK_OK && DOCKER_OK) {
     { recursive: true, dereference: false });
 
   const { ContainerSandbox } = await import('../../src/sandbox/container/index.mjs');
-  const sandbox = new ContainerSandbox(ws, { image: 'node:20-slim' });
+  const sandbox = new ContainerSandbox(ws, { image: 'node:20-slim', runtime: RUNTIME });
   let acquired = false;
   try {
     await sandbox.acquire();

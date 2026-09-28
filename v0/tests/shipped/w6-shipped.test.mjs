@@ -468,19 +468,28 @@ describe('shipped/W6.1: ORION_IMAGE reaches the container backend');
   // model AUTO-ALLOW its own verification command and then get `sh: node: not found`. Auto-allow
   // worked exactly as designed and was useless, because the sandbox could not run the project's
   // own toolchain.
-  eq('the default image is unchanged', makeSandbox(mk('img-default'),
-    { ORION_SANDBOX: 'container' }).sandbox.image, 'alpine:3');
-  eq('ORION_IMAGE selects another image', makeSandbox(mk('img-node'),
-    { ORION_SANDBOX: 'container', ORION_IMAGE: 'node:22-alpine' }).sandbox.image, 'node:22-alpine');
-  eq('a blank value falls back rather than breaking the run', makeSandbox(mk('img-blank'),
-    { ORION_SANDBOX: 'container', ORION_IMAGE: '   ' }).sandbox.image, 'alpine:3');
+  //
+  // FIX-winci: `makeSandbox` with ORION_SANDBOX=container and no usable runtime exits the PROCESS
+  // (the CLI refusal), which killed this whole suite on GitHub windows-latest. So it is guarded
+  // exactly like its sibling sections; the refusal itself is asserted in W6-B above.
+  if (!runtime) {
+    check('SKIPPED — no container runtime available', true,
+      'UNPROVEN here: that ORION_IMAGE reaches the shipped container backend');
+  } else {
+    eq('the default image is unchanged', makeSandbox(mk('img-default'),
+      { ORION_SANDBOX: 'container' }).sandbox.image, 'alpine:3');
+    eq('ORION_IMAGE selects another image', makeSandbox(mk('img-node'),
+      { ORION_SANDBOX: 'container', ORION_IMAGE: 'node:22-alpine' }).sandbox.image, 'node:22-alpine');
+    eq('a blank value falls back rather than breaking the run', makeSandbox(mk('img-blank'),
+      { ORION_SANDBOX: 'container', ORION_IMAGE: '   ' }).sandbox.image, 'alpine:3');
 
-  // Selecting an image must not weaken anything else — the boundary is the point.
-  const custom = makeSandbox(mk('img-caps'),
-    { ORION_SANDBOX: 'container', ORION_IMAGE: 'node:22-alpine' }).sandbox;
-  eq('a custom image is still container-isolated', custom.capabilities.isolated, true);
-  eq('...still has no network', custom.capabilities.network, 'none');
-  eq('...and still carries the shipped limits', custom.limits.memory, '512m');
+    // Selecting an image must not weaken anything else — the boundary is the point.
+    const custom = makeSandbox(mk('img-caps'),
+      { ORION_SANDBOX: 'container', ORION_IMAGE: 'node:22-alpine' }).sandbox;
+    eq('a custom image is still container-isolated', custom.capabilities.isolated, true);
+    eq('...still has no network', custom.capabilities.network, 'none');
+    eq('...and still carries the shipped limits', custom.limits.memory, '512m');
+  }
 }
 
 // ═══════════════════════════════════════════ W6.1 — the network declaration is truthful
