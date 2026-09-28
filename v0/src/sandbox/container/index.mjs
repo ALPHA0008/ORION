@@ -71,15 +71,40 @@ export const DEFAULT_IMAGE = 'alpine:3';
  * the common case on a developer machine, and reporting it as "available" would turn every
  * container test into a confusing failure instead of an honest skip.
  */
-export function detectRuntime({ candidates = ['docker', 'podman'], timeoutMs = 10_000 } = {}) {
+export function detectRuntime(opts = {}) {
+  return detectRuntimeReport(opts).runtime;
+}
+
+/**
+ * Detection with its reasons: `{ runtime, rejected: [{ bin, os }] }`. `rejected` lists daemons
+ * that ANSWERED but run non-Linux containers, so a caller can say why instead of "not found".
+ *
+ * FIX-winci: a daemon that answers is not enough. Docker in Windows-container mode (GitHub's
+ * windows-latest, or Docker Desktop switched over) cannot run our Linux image and rejects
+ * `--pids-limit` outright, so it is unusable and we try the next candidate.
+ *
+ * The engine OS comes from `version {{.Server.Os}}` (docker and current podman both expose it),
+ * then `info {{.OSType}}` (docker). Only an EXPLICIT non-linux answer rejects; an unknown answer
+ * (e.g. an older podman without the field — podman only ever runs Linux containers) is accepted.
+ * Why not reject unknown: that would break real Linux podman users to guard a case that does not
+ * occur, since every Windows-mode docker reports its OS. And accepting is still fail-closed —
+ * a wrong guess surfaces as a loud `run` failure, never a silent fallback to local.
+ */
+export function detectRuntimeReport({ candidates = ['docker', 'podman'], timeoutMs = 10_000 } = {}) {
+  const rejected = [];
+  const ask = (bin, args) => execFileSync(bin, args,
+    { stdio: ['ignore', 'pipe', 'pipe'], timeout: timeoutMs, encoding: 'utf8' }).trim();
+  const tryAsk = (bin, args) => { try { return ask(bin, args); } catch { return ''; } };
   for (const bin of candidates) {
     try {
-      execFileSync(bin, ['version', '--format', '{{.Server.Version}}'],
-        { stdio: ['ignore', 'pipe', 'pipe'], timeout: timeoutMs, encoding: 'utf8' });
-      return bin;
-    } catch { /* not installed, or the daemon is not answering — try the next */ }
+      ask(bin, ['version', '--format', '{{.Server.Version}}']);
+    } catch { continue; /* not installed, or the daemon is not answering — try the next */ }
+    const os = (tryAsk(bin, ['version', '--format', '{{.Server.Os}}'])
+      || tryAsk(bin, ['info', '--format', '{{.OSType}}'])).toLowerCase();
+    if (os && os !== 'linux' && !os.includes('no value')) { rejected.push({ bin, os }); continue; }
+    return { runtime: bin, rejected };
   }
-  return null;
+  return { runtime: null, rejected };
 }
 
 /**

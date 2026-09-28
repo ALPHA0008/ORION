@@ -11,7 +11,7 @@ import { TERMINAL } from '../core/event/index.mjs';
 import { LocalSandbox, attachCheckpoints } from '../sandbox/local/index.mjs';
 // W6: the backend contract, the second (isolated) backend, and default-deny egress.
 import { assertBackendContract } from '../sandbox/backend.mjs';
-import { ContainerSandbox, detectRuntime, pruneOrionContainers } from '../sandbox/container/index.mjs';
+import { ContainerSandbox, detectRuntime, detectRuntimeReport, pruneOrionContainers } from '../sandbox/container/index.mjs';
 import { createNetworkPolicy } from '../sandbox/network.mjs';
 // W6 C/D/H/I/J: resource identity and Recovery 2.0.
 import { resolveResource, releaseResource, Resolution } from '../core/resource/index.mjs';
@@ -373,7 +373,17 @@ export function makeSandbox(workspace, env = process.env) {
     createHash('sha1').update(workspace).digest('hex').slice(0, 16) + '.git');
 
   if (want === 'container' || want === 'docker' || want === 'podman') {
-    const runtime = detectRuntime(want === 'container' ? {} : { candidates: [want] });
+    const { runtime, rejected } = detectRuntimeReport(want === 'container' ? {} : { candidates: [want] });
+    if (!runtime && rejected.length) {
+      // FIX-winci: the daemon answered but runs Windows containers — say so, and how to fix it.
+      const which = rejected.map((r) => `${r.bin} (${r.os})`).join(', ');
+      console.error(C.r(`ORION_SANDBOX=${want} was requested but the runtime serves Windows containers: ${which}.`));
+      console.error('  ORION needs a Linux-container engine. Switch Docker Desktop to Linux containers');
+      console.error('  (tray icon -> "Switch to Linux containers..."), or use podman.');
+      console.error(C.dim('  Refusing to fall back to the local sandbox: that would run commands on this'));
+      console.error(C.dim('  machine while you believed they were isolated.'));
+      process.exit(2);
+    }
     if (!runtime) {
       console.error(C.r('ORION_SANDBOX=container was requested but no container runtime is available.'));
       console.error('  Looked for: docker, podman (the CLI must exist AND its daemon must answer).');

@@ -48,6 +48,9 @@ export const suites = [
   // shim, shadow naming) and the `--json 2>&1` contract through the real binary.
   ['p0/baseline',           []],
   ['shipped/p0-shipped',    []],
+  // FIX-winci: a Windows-container daemon is not a usable runtime (fake docker on PATH).
+  ['sandbox/wincontainers', []],
+  ['shipped/winci-shipped', []],
   ['recovery/recovery',     []],
   ['replay/semantics',      []],
   ['integration/provider',  []],
