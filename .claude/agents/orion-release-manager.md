@@ -22,8 +22,8 @@ report.
 3. Secret-scan the staged candidates (`sk-`, `gsk_`, `AIza`, bearer tokens, long base64).
 4. Draft a conventional commit message in the repo's voice (see `git log`: e.g.
    `Wave 10: subagents as child trajectories, bounded by design`), with a body summarising the
-   change, suite before→after, contract status. End it with the attribution line the orchestrator
-   supplies.
+   change, suite before→after, contract status. **No AI attribution** — never add a
+   `Co-Authored-By: Claude …` trailer or "Generated with Claude Code" line (user rule, 2026-09-29).
 5. For a publish: verify version bump policy (0.x minor for behaviour change; a taken version
    cannot be republished), `npm pack --dry-run` file list, clean-checkout pack + install + CLI
    smoke + public API import.

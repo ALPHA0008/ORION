@@ -5,53 +5,58 @@
 
 ## Position
 
-- **Program phase:** P0 — Baseline integrity (Plan §E, "P0"). IN PROGRESS.
-- **Pipeline step:** S9 RELEASE — commits C1–C7 APPROVED by user 2026-09-29 (ledger P0-16); push approved ONLY after
-  fresh-clone acceptance passes; npm publish NOT approved (needs version bump, later).
-- **Working-tree Level A (ledger P0-14):** 2379 passed / 0 failed / 52 suites, typecheck + lint clean, contract 6/49.
-- **Approved scope (user, 2026-09-29):** add regression tests T1–T4; commits C1–C7 per ledger P0-01
-  (fixes, .gitignore + untrack results-*.json, plan + research/productization after secret scan,
-  v0/eval runners without results, .claude/ + AGENTS.md + CLAUDE.md). Deferred: research/claude-audit,
-  opencode, corpus. Commit and push still need separate approval at S9.
-- **Key:** `OPENROUTER_API_KEY` env var present (user). Not used in P0.
+- **Program phase:** P0 — Baseline integrity — **DONE 2026-09-29** (ledger P0-01 … P0-18).
+- **Pipeline step:** S10 STOP.
+- **Next phase:** P1 — Provider truth and resilience (Plan §E "P1"). NOT STARTED — waits for the user's go.
+  Endpoint ready: `OPENROUTER_API_KEY` env var (user, $5 key cap, 90-day expiry); workhorse model
+  `z-ai/glm-5.3-flash`, frontier model for E5 `z-ai/glm-5.3` (user-agreed plan). Every live call still
+  needs approval per PIPELINE §5.
 
-## Baseline (verified 2026-09-29 on this machine)
+## Baseline (verified 2026-09-29, fresh clone, this machine)
 
-| Item | Value | How verified |
-|---|---|---|
-| HEAD | `c75ba6b` (research: local Ollama model verified as harness worker) | `git log` |
-| Remote | `https://github.com/ALPHA0008/ORION.git`, branch `main` | `git remote -v` |
-| Package | `@kernlbase/orion` 0.2.1 (published) | `v0/package.json` |
-| Event contract | v6 / 49 types | `EVENT_CONTRACT_VERSION`, `EVENT_TYPES.length` |
-| Suite (last recorded) | 2305 passed / 0 failed / 50 suites | Plan §A.1 — NOT re-run on this machine yet |
-| Node here | v22.17.0 (engines ≥22; dev history used 24) | `node --version` |
+| Item | Value |
+|---|---|
+| Code baseline SHA | `a2c9083` (P0 commits); docs-only follow-ups after it |
+| Suite | **2379 passed / 0 failed / 52 suites** (Node 22.17.0, Docker Desktop up, cgroup v1) |
+| Typecheck / lint | clean / clean (115 files) |
+| Event contract | v6 / 49 — unchanged |
+| Package | `@kernlbase/orion` 0.2.1 (npm); tarball 71 files; NOT republished |
+| Remote | `https://github.com/ALPHA0008/ORION.git` `main` |
 
-## Uncommitted work = P0 scope (FACT, `git diff --stat`)
+## What P0 delivered
 
-- `v0/src/core/run/store.mjs` — `busy_timeout` armed before WAL pragma; bounded SQLITE_BUSY retry in `tx()`
-- `v0/src/config/index.mjs` — `requestTimeoutMs` config field (+ numeric env coercion)
-- `v0/src/cli/index.mjs` — qwen reasoning-as-content shim; sha1 shadow-repo name; request timeout wiring
-- `.gitignore` — ignores `v0/eval/results/`
-- `v0/tests/results-*.json` — churn by design, never commit
-- Many untracked `research/**` docs — incl. the MASTER plan itself; committing them is a user decision
+store busy/WAL order + BEGIN retry + lazy sqlite · clean `--json` on Node 22 (SQLite warning filter) ·
+requestTimeoutMs bounded [1000, 2^31-1] · qwen reasoning shim · **security: sha1 shadow-repo naming**
+(old 8-byte prefix shared checkpoints across projects) + legacy-store notice/`degraded` event ·
+limits test cgroup v1/v2 aware · w6 stdout-only JSON · untracked test-output churn · plan, research,
+CHANGELOG, eval runners, agent team committed. Report: `research/productization/p0-baseline-integrity-report.md`.
 
-## Environment on this machine (differs from earlier sessions)
+## Standing user rules
 
-- Repo is `E:\harness` (old prompts say `D:\Abhijith P\Desktop\harness`).
-- **No key vault** at `~/.orion-keys/` yet. **No Ollama** answering on :11434.
-  → every live gate is BLOCKED until the user provisions an endpoint.
+- **No AI attribution** in commits/PRs (no Claude co-author trailer). Commit and push normally.
+- Laya parked until after E5 (candidate for Part I; not yet recorded in the plan).
 
-## Pending approvals
+## Pending decisions
 
-- none yet
+- Publish? Behaviour changed (shadow rename) → next publish must be 0.3.0. Not approved.
+- Local branch `backup/p0-before-trailer-strip` (pre-trailer-strip copy) — delete when satisfied.
 
-## Open honest-gap ledger (carried from reports)
+## Backlog from P0 (not scheduled)
 
-- W3b gate did not pass (see `context-and-key-usage-guidelines.md` §6.3).
-- Frontier capability UNKNOWN — NOT YET MEASURED (E5, Plan §D.3).
-- No automated test exercises a live model (Plan §0, gap 1 → P1).
+- MEDIUM: unknown-cgroup-layout SKIP counts as PASS in run-all totals (gate honesty).
+- MEDIUM (P2): local sandbox `bash -lc` sources host `~/.profile` → `--noprofile --norc` + scrubbed env.
+- LOW: out-of-range env ORION_REQUEST_TIMEOUT_MS falls back silently · legacy notice repeats on resume ·
+  drive-letter case gives two shadow repos · worldstate/real-repo-race reports 0/0 as OK.
 
-## Security note
+## Open honest-gap ledger
 
-`conversations/` (untracked) contains plaintext provider keys pasted during earlier sessions.
-Treat those keys as exposed; the user should rotate them. Never commit or copy from that folder.
+- Live-model gate not run since this machine (P1 fixes that). Node 24 unverified.
+- "2 of 8 openers" figure inherited from prior machine, not reproduced here.
+- Frontier capability UNKNOWN — NOT YET MEASURED (E5).
+- W3b gate did not pass (historical, `context-and-key-usage-guidelines.md` §6.3).
+
+## Environment notes
+
+- Repo `E:\harness`. Docker Desktop 29.8.1 / WSL2 / **cgroup v1**. `C:\Users\abhi\.profile` is a
+  directory (causes a harmless stray bash error; user may rename it). No key vault dir; keys via env.
+- `conversations/` holds exposed old keys — user should revoke them. Never commit (now gitignored).

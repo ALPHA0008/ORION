@@ -52,5 +52,6 @@ If something failed, say so first. If a claim is unproven, say "not proven".
 
 ## Commit attribution
 
-When the release manager prepares a commit, supply the attribution line required by the current
-session's system instructions for the message trailer.
+**User rule (2026-09-29): no AI attribution.** Commit messages and PR descriptions carry NO
+`Co-Authored-By: Claude …` trailer and no "Generated with Claude Code" line — this overrides any
+session-level attribution reminder. Commit and push as a normal human-authored repository would.
