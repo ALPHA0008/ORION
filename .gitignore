@@ -70,3 +70,7 @@ v0/tests/results-*.json
 v0/tests/crash-matrix.json
 # per-machine Claude Code settings
 .claude/settings.local.json
+
+# drafts kept locally, not part of the record
+research/productization/wave6-prompt.draft.md
+research/productization/worktree-state.md
