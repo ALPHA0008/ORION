@@ -3,7 +3,15 @@
 // Enforced by PRIMARY KEY (run_id, seq) plus server-side seq allocation inside a
 // single IMMEDIATE transaction, so concurrent appends cannot interleave a gap or duplicate.
 
-import { DatabaseSync } from 'node:sqlite';
+import { createRequire } from 'node:module';
+// P0: `node:sqlite` is loaded on first Store construction, not at import. On Node 22 the builtin
+// emits an ExperimentalWarning the moment it is linked; a static import fires it before any
+// entry point can run a line of code, so `orionctl --json 2>&1` could never be kept clean.
+// Loading lazily lets the CLI install its narrow filter first (see cli/warnings.mjs).
+const requireBuiltin = createRequire(import.meta.url);
+/** @type {typeof import('node:sqlite') | null} */
+let sqlite = null;
+const loadSqlite = () => (sqlite ??= requireBuiltin('node:sqlite'));
 import { isKnownType, UnknownEventType, TERMINAL } from '../event/index.mjs';
 // W10-A: the delegation quota is evaluated INSIDE the spawn transaction (see `reserveChildSpawn`).
 // No cycle — `quota.mjs` imports only `projection/lineage.mjs`, which imports nothing.
@@ -11,6 +19,21 @@ import { canSpawn, QuotaError } from '../child/quota.mjs';
 import crypto from 'node:crypto';
 
 export const uid = (p = 'run') => `${p}_${crypto.randomBytes(5).toString('hex')}`;
+
+// W5/E3: SQLite's `busy_timeout` makes a writer wait up to 5s for the lock, but under heavy
+// multi-process contention BEGIN IMMEDIATE can still lose that race and surface
+// SQLITE_BUSY ("database is locked"), which used to crash the CLI with exit 1 — measured at
+// 8 concurrent writers in the E3 concurrency gate. A bounded retry converts that flake into
+// a brief wait instead of a dead run.
+const BUSY_RETRIES = 5;
+const BUSY_RETRY_MS = 250;
+const BUSY_ERROR_CODES = new Set([5]); // SQLITE_BUSY
+
+function writeLocked(err) {
+  return err && BUSY_ERROR_CODES.has(Number(err.errcode))
+    || /database is locked|SQLITE_BUSY/i.test(String(err?.message ?? ''));
+}
+const sleepSync = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 
 export class LeaseLostError extends Error {
   constructor(runId) {
@@ -93,12 +116,19 @@ const MIGRATIONS = [
 export class Store {
   /** @param {string} dbPath  @param {{durability?:'full'|'normal'}} opts */
   constructor(dbPath, { durability = 'full' } = {}) {
-    this.db = new DatabaseSync(dbPath);
+    this.db = new (loadSqlite().DatabaseSync)(dbPath);
+    // busy_timeout FIRST: it must be armed before any statement that can contend, and
+    // `journal_mode=WAL` is one — it takes a brief exclusive lock. Setting the timeout after it
+    // left that PRAGMA running at the default timeout of 0, so two processes opening the same
+    // store at the same instant raced and the loser crashed with SQLITE_BUSY before the run had
+    // begun. Observed in the E3 gate on the prior dev machine (2 of 8 simultaneous openers died;
+    // 0 of 8 once the order was corrected); not reproduced on the current rig — tests/p0 covers
+    // the single-contender case.
+    this.db.exec('PRAGMA busy_timeout=5000');
     this.db.exec('PRAGMA journal_mode=WAL');
     // The log is the source of truth: default to FULL so a committed event survives power loss.
     this.db.exec(`PRAGMA synchronous=${durability === 'full' ? 'FULL' : 'NORMAL'}`);
     this.db.exec('PRAGMA foreign_keys=ON');
-    this.db.exec('PRAGMA busy_timeout=5000');
     this.db.exec(SCHEMA);
     this.#migrate();
     this.#prepare();
@@ -565,9 +595,18 @@ export class Store {
 
   /** IMMEDIATE so writers serialise at BEGIN, not at first write (avoids upgrade deadlocks). */
   tx(fn) {
-    this.db.exec('BEGIN IMMEDIATE');
-    try { const r = fn(); this.db.exec('COMMIT'); return r; }
-    catch (e) { try { this.db.exec('ROLLBACK'); } catch {} throw e; }
+    for (let attempt = 0; ; attempt++) {
+      try {
+        this.db.exec('BEGIN IMMEDIATE');
+      } catch (e) {
+        if (!writeLocked(e)) throw e;
+        if (attempt >= BUSY_RETRIES) throw e;
+        sleepSync(BUSY_RETRY_MS);
+        continue;
+      }
+      try { const r = fn(); this.db.exec('COMMIT'); return r; }
+      catch (e) { try { this.db.exec('ROLLBACK'); } catch {} throw e; }
+    }
   }
   close() { try { this.db.close(); } catch {} }
 }
