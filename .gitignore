@@ -53,3 +53,20 @@ Thumbs.db
 
 # npm pack output — build artifact, never committed
 *.tgz
+
+# ─── E4 evaluation results — measurement output, never committed ──────────────
+v0/eval/results/
+
+# ─── Never committed (P0, 2026-09-29) ─────────────────────────────────────────
+# raw chat transcripts — contain secrets
+conversations/
+# archify diagram output
+archify-out/
+# live-gate fixtures and homes created by test runs
+v0/tests/wg-fixtures/
+v0/tests/wg-homes/
+# per-run test output — churns on every suite run
+v0/tests/results-*.json
+v0/tests/crash-matrix.json
+# per-machine Claude Code settings
+.claude/settings.local.json
