@@ -6,7 +6,8 @@
 ## Position
 
 - **Program phase:** P0 — Baseline integrity — **DONE 2026-09-29** (ledger P0-01 … P0-18).
-- **Pipeline step:** S10 STOP.
+- **Pipeline step:** S10 STOP. Follow-up FIX-winci DONE: GitHub CI fully green (7/7 jobs) at `de73774`
+  — Windows CI had been red since the W6–W10 range (Docker in Windows-container mode); ledger FIX-winci-01…09.
 - **Next phase:** P1 — Provider truth and resilience (Plan §E "P1"). NOT STARTED — waits for the user's go.
   Endpoint ready: `OPENROUTER_API_KEY` env var (user, $5 key cap, 90-day expiry); workhorse model
   `z-ai/glm-5.3-flash`, frontier model for E5 `z-ai/glm-5.3` (user-agreed plan). Every live call still
@@ -16,7 +17,7 @@
 
 | Item | Value |
 |---|---|
-| Code baseline SHA | `a2c9083` (P0 commits); docs-only follow-ups after it |
+| Code baseline SHA | `de73774` — local 2397/0/54; CI green on node 22+24 × ubuntu+windows |
 | Suite | **2379 passed / 0 failed / 52 suites** (Node 22.17.0, Docker Desktop up, cgroup v1) |
 | Typecheck / lint | clean / clean (115 files) |
 | Event contract | v6 / 49 — unchanged |
@@ -41,7 +42,10 @@ CHANGELOG, eval runners, agent team committed. Report: `research/productization/
 - Publish? Behaviour changed (shadow rename) → next publish must be 0.3.0. Not approved.
 - Local branch `backup/p0-before-trailer-strip` (pre-trailer-strip copy) — delete when satisfied.
 
-## Backlog from P0 (not scheduled)
+## Backlog (not scheduled)
+
+- LOW (FIX-winci): "non-Linux" wording · fake-docker cleanup in finally · ContainerSandbox ctor should name rejected
+  runtimes · library-level process.exit in makeSandbox · keep ubuntu CI mandatory for container proofs.
 
 - MEDIUM: unknown-cgroup-layout SKIP counts as PASS in run-all totals (gate honesty).
 - MEDIUM (P2): local sandbox `bash -lc` sources host `~/.profile` → `--noprofile --norc` + scrubbed env.
@@ -50,7 +54,7 @@ CHANGELOG, eval runners, agent team committed. Report: `research/productization/
 
 ## Open honest-gap ledger
 
-- Live-model gate not run since this machine (P1 fixes that). Node 24 unverified.
+- Live-model gate not run since this machine (P1 fixes that). Node 24 verified on CI.
 - "2 of 8 openers" figure inherited from prior machine, not reproduced here.
 - Frontier capability UNKNOWN — NOT YET MEASURED (E5).
 - W3b gate did not pass (historical, `context-and-key-usage-guidelines.md` §6.3).
