@@ -44,6 +44,10 @@ export const suites = [
   ['subagent/lifecycle',    []],
   ['subagent/parallel',     []],
   ['shipped/w10-shipped',   []],
+  // P0: regressions for the baseline-integrity fixes (store contention, request timeout, qwen
+  // shim, shadow naming) and the `--json 2>&1` contract through the real binary.
+  ['p0/baseline',           []],
+  ['shipped/p0-shipped',    []],
   ['recovery/recovery',     []],
   ['replay/semantics',      []],
   ['integration/provider',  []],

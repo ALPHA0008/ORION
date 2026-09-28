@@ -53,6 +53,16 @@ export function configSearchPaths({ workspace = null, home = null } = {}) {
  *             fields?: Record<string, string>,
  *             validate?: (value: any, ctx: { file: string|null, field: string }) => void }} ConfigSpec
  */
+/** requestTimeoutMs bounds: 1s floor (anything shorter aborts every real request) and the
+ * setTimeout ceiling 2^31-1 (anything larger overflows to ~1ms in Node). */
+export const REQUEST_TIMEOUT_MIN_MS = 1000;
+export const REQUEST_TIMEOUT_MAX_MS = 2147483647;
+/** @param {unknown} value */
+export function isValidRequestTimeoutMs(value) {
+  return typeof value === 'number' && Number.isFinite(value)
+    && value >= REQUEST_TIMEOUT_MIN_MS && value <= REQUEST_TIMEOUT_MAX_MS;
+}
+
 /** @type {Readonly<Record<string, ConfigSpec>>} */
 export const CONFIG_SCHEMA = Object.freeze({
   provider: { type: 'string', env: 'ORION_PROVIDER',
@@ -60,6 +70,19 @@ export const CONFIG_SCHEMA = Object.freeze({
   baseUrl: { type: 'string', env: 'ORION_BASE_URL',
     describe: 'the provider endpoint' },
   model: { type: 'string', env: 'ORION_MODEL' },
+  // How long a single model request may take before the provider gives up and retries.
+  // This is the knob the local model rig needed: on CPU-bound hardware a 60s default can
+  // abort a slow-but-healthy response mid-stream. The provider constructors accept it and
+  // default to 60s; exposing it here makes the wall tunable instead of hardcoded.
+  requestTimeoutMs: { type: 'number', env: 'ORION_REQUEST_TIMEOUT_MS',
+    describe: 'per-request model timeout in ms (default 60000)',
+    validate: (value, { field }) => {
+      // Bounded, not just positive: below 1s every real request aborts (an abort storm), and above
+      // 2^31-1 ms Node's setTimeout overflows and fires after ~1ms — the same storm, disguised.
+      if (!isValidRequestTimeoutMs(value))
+        throw new ConfigError(`${field}: must be a positive number of milliseconds in [${REQUEST_TIMEOUT_MIN_MS}, ${REQUEST_TIMEOUT_MAX_MS}]`,
+          { field });
+    } },
   apiKeyEnv: { type: 'string',
     describe: 'NAME of the env var holding the key (never the key itself)' },
   posture: { type: 'string', env: 'ORION_POSTURE', enum: ['permissive', 'auto', 'strict'] },
@@ -194,7 +217,9 @@ export function resolveConfig({ workspace = null, home = null, env = process.env
     if (raw === undefined || raw === '') continue;
     values[key] = spec.type === 'boolean'
       ? !['0', 'off', 'false', 'no'].includes(String(raw).trim().toLowerCase())
-      : raw;
+      : spec.type === 'number'
+        ? Number(raw)
+        : raw;
     sources[key] = `env ${spec.env}`;
   }
 

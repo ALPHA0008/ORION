@@ -3,7 +3,9 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import os from 'node:os';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { filterSqliteExperimentalWarning } from './warnings.mjs';
 import { Store, uid } from '../core/run/store.mjs';
 import { TERMINAL } from '../core/event/index.mjs';
 import { LocalSandbox, attachCheckpoints } from '../sandbox/local/index.mjs';
@@ -20,7 +22,7 @@ import { describeGrant, projectGrants, summariseGrants, projectKey, GrantScope }
 import { makeTools, mutatingTools } from '../agent/tools/index.mjs';
 import { createAuthorizer, DEFAULT_DANGEROUS } from '../auth/default/index.mjs';
 // W8: configuration + permission rules, layered under the environment.
-import { resolveConfig, describeConfig, ConfigError } from '../config/index.mjs';
+import { resolveConfig, describeConfig, ConfigError, isValidRequestTimeoutMs } from '../config/index.mjs';
 import { resolveRules, hasRules, describeRules } from '../config/rules.mjs';
 // W9: MCP servers are W6 resources; their tools join the toolset the model is offered.
 import { parseServers } from '../mcp/servers.mjs';
@@ -123,6 +125,9 @@ export function selectShims(modelName, env = process.env) {
   // gpt-oss-120b (and likely other open reasoning models served via Groq) route all output
   // to the `reasoning` field and leave `content` empty.
   if (/gpt-oss/i.test(String(modelName ?? ''))) return [applyReasoningAsContent];
+  // qwen3.x under OpenAI-compat emits its entire response as reasoning deltas with zero
+  // content bytes; the answer lives in ext.reasoning and never reaches content.
+  if (/qwen/i.test(String(modelName ?? ''))) return [applyReasoningAsContent];
   return [];
 }
 
@@ -212,7 +217,15 @@ export function buildModel(env = process.env,
 
   if (!baseUrl) { firstRun({ workspace, home, env }); }
   try {
-    return createProvider({ kind, baseUrl, apiKey, model, shims: selectShims(model, env) });
+    // The schema validates a config FILE's requestTimeoutMs, but the environment bypasses that
+    // hook (env wins and is coerced only). Guard here with the SAME bounds so an out-of-range env
+    // value falls back to the provider default instead of arming an instant-abort timer.
+    const requestTimeoutMs = Number(cfg.requestTimeoutMs);
+    return createProvider({
+      kind, baseUrl, apiKey, model,
+      timeoutMs: isValidRequestTimeoutMs(requestTimeoutMs) ? requestTimeoutMs : undefined,
+      shims: selectShims(model, env),
+    });
   } catch (e) {
     // An unknown provider is a configuration mistake; say so plainly rather than failing later.
     console.error(C.r(e.message));
@@ -357,7 +370,7 @@ setChildCompletionContract((store, childRunId, childTools) =>
 export function makeSandbox(workspace, env = process.env) {
   const want = String(env.ORION_SANDBOX ?? 'local').trim().toLowerCase();
   const shadow = path.join(HOME, 'workspaces',
-    Buffer.from(workspace).toString('hex').slice(0, 16) + '.git');
+    createHash('sha1').update(workspace).digest('hex').slice(0, 16) + '.git');
 
   if (want === 'container' || want === 'docker' || want === 'podman') {
     const runtime = detectRuntime(want === 'container' ? {} : { candidates: [want] });
@@ -398,6 +411,24 @@ export function makeSandbox(workspace, env = process.env) {
 }
 
 /**
+ * Before P0-T4 a workspace's shadow was named from hex(workspace).slice(0,16), which collides
+ * across projects sharing a path prefix — so such a store may hold ANOTHER project's history.
+ * It is never opened again (only its existence is checked: one existsSync), but leaving it
+ * unmentioned would be a silent change, so the user is told once per prepareRun on stderr and
+ * the run log records it as `degraded` (ADR-010) under the run's lease.
+ */
+function noticeLegacyShadow(store, runId, leaseToken, workspace) {
+  const legacy = path.join(HOME, 'workspaces',
+    Buffer.from(workspace).toString('hex').slice(0, 16) + '.git');
+  if (!fs.existsSync(legacy)) return;
+  const reason = `legacy checkpoint store ${legacy} is no longer used and can be deleted`;
+  store.append(runId, 'degraded', {
+    subsystem: 'checkpoints', reason, what: 'legacy_shadow_ignored', path: legacy,
+  }, { leaseToken });
+  console.error(C.y(`⚠ ${reason}`));
+}
+
+/**
  * Bind a run to its resource and build a worker whose posture was DERIVED from that resource.
  *
  * The ordering here is the whole of W6's wiring, and it only works in this direction: the
@@ -408,6 +439,7 @@ export function makeSandbox(workspace, env = process.env) {
  */
 export async function prepareRun(store, runId, leaseToken, workspace) {
   const { sandbox, backendName } = makeSandbox(workspace);
+  noticeLegacyShadow(store, runId, leaseToken, workspace);
 
   // W6 C/D/H/I/J — acquire or reattach, and record which it was.
   const resource = await resolveResource({
@@ -1288,4 +1320,8 @@ async function cli() {
   try { await cmds[cmd](args); } catch (e) { console.error(C.r(e.message)); process.exit(1); }
 }
 
-if (path.resolve(process.argv[1] ?? '') === path.resolve(fileURLToPath(import.meta.url))) await cli();
+if (path.resolve(process.argv[1] ?? '') === path.resolve(fileURLToPath(import.meta.url))) {
+  // Only when this file IS the program: importers of the CLI module keep Node's default warnings.
+  filterSqliteExperimentalWarning();
+  await cli();
+}
